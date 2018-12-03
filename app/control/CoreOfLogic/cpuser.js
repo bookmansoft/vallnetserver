@@ -38,6 +38,20 @@ class cpuser extends facade.Control
         return {errcode: 'success', errmsg:'checkopenid:ok', data: data};
     };
 
+    //用户登录授权
+    async UserTokenNotify(user, params) {
+        //let cid = params.cid;
+        let uid = params.uid;
+        let token = params.token;
+        let cpusers = facade.GetMapping(tableType.cpUser).groupOf().where([['id','==',uid]]).records();
+        if(cpusers.length >0 ) {
+            let cpuser = cpusers[0];
+            cpuser.setAttr('addr', token.data.addr);     //修改所得记录的item字段，下次查询时将得到新值，同时会自动存入数据库
+            cpuser.orm.save();
+            return {errcode: 'success', errmsg:'usertokennotify:ok', token: token};
+        }
+        return {errcode: 'faile', errmsg:'usertokennotify:err', token: token};
+    }
 }
 
 exports = module.exports = cpuser;

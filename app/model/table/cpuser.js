@@ -10,7 +10,7 @@ let CpUser = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
     'CpUser',
     {
         openid: Sequelize.STRING,
-        block_addr: Sequelize.STRING,
+        addr: Sequelize.STRING,
         nick: Sequelize.STRING,
         avatar_uri: Sequelize.STRING,
         created_at: Sequelize.BIGINT

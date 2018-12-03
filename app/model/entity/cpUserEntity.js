@@ -72,7 +72,7 @@ class cpUserEntity extends BaseEntity
      */
     onUpdate() {
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        //facade.current.notifyEvent('blockuser.update', {test:this})
+        facade.current.notifyEvent('cpuser.update', {cpuser: this})
     }
 }
 

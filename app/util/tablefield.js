@@ -107,7 +107,7 @@ let userBaseWechat = [
 let cpUser = [
     'id',
     'openid',
-    'block_addr',
+    'addr',
     'nick',
     'avatar_uri',
     'created_at'
