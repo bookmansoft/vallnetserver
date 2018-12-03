@@ -1,0 +1,8 @@
+{
+  "dev": {
+    "driver": "mysql",
+    "user": "root",
+    "password": "123",
+    "host": "localhost"
+  }
+}
