@@ -9,7 +9,17 @@ const toolkit = require('gamegoldtoolkit')
 const remote = new toolkit.conn();
 //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 remote.setFetch(require('node-fetch'))  
-
+function remoteSetup() {
+    remote.setup({
+        type:   'testnet',
+        ip:     '114.116.14.176',     //远程服务器地址
+        head:   'http',               //远程服务器通讯协议，分为 http 和 https
+        id:     'primary',            //默认访问的钱包编号
+        apiKey: 'bookmansoft',        //远程服务器基本校验密码
+        cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
+        token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
+    });
+}
 /**
  * 微信接口
  * Create by gamegold Fuzhou on 2018-11-27
@@ -20,6 +30,7 @@ class wechat extends facade.Control
      * 中间件设置
      */
     get middleware() {
+        console.log('wechat middleware');
         return ['parseParams', 'commonHandle'];
     }
 
@@ -92,6 +103,7 @@ class wechat extends facade.Control
             let userProfile = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
             if(userProfile.length == 0) {
                 //创建账户
+                remoteSetup();
                 let ret = await remote.execute('token.user', ['first-acc-01', openid, openid]);   
                 let block_addr = (ret != null &&  ret.data.hasOwnProperty("addr")) ? ret.data.addr : '';
                 //添加用户个人信息

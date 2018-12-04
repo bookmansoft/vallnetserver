@@ -6,6 +6,7 @@ let {MiddlewareParam} = facade.const
  * @param {MiddlewareParam} sofar
  */
 async function handle(sofar) {
+    console.log('MiddlewareParam');
 }
 
 module.exports.handle = handle;

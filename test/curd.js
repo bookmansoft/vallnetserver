@@ -30,7 +30,7 @@ describe('CURD', function() {
         console.log(msg);
     });
 
-    it('列表', async () => {
+    it.only('列表', async () => {
         let msg = await remote.fetching({func: "test.List"});
         console.log(msg);
     });

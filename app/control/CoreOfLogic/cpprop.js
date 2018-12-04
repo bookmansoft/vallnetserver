@@ -7,15 +7,17 @@ const toolkit = require('gamegoldtoolkit')
 const remote = new toolkit.conn();
 //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 remote.setFetch(require('node-fetch'))  
-remote.setup({
-    type:   'testnet',
-    ip:     '114.116.19.125',     //远程服务器地址
-    head:   'http',               //远程服务器通讯协议，分为 http 和 https
-    id:     'primary',            //默认访问的钱包编号
-    apiKey: 'bookmansoft',        //远程服务器基本校验密码
-    cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
-    token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
-});
+function remoteSetup() {
+    remote.setup({
+        type:   'testnet',
+        ip:     '114.116.19.125',     //远程服务器地址
+        head:   'http',               //远程服务器通讯协议，分为 http 和 https
+        id:     'primary',            //默认访问的钱包编号
+        apiKey: 'bookmansoft',        //远程服务器基本校验密码
+        cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
+        token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
+    });
+}
 /**
  * 游戏用户
  * Create by gamegold Fuzhou on 2018-11-27
@@ -26,6 +28,7 @@ class cpprop extends facade.Control
      * 中间件设置
      */
     get middleware() {
+        console.log('cpprop middleware');
         return ['parseParams', 'commonHandle'];
     }
 
@@ -37,6 +40,7 @@ class cpprop extends facade.Control
 
     //道具确权
     async QueryProps(user, params) {
+        remoteSetup();
         let cid = params.cid;
         let user_addr = params.user_addr;
         let ret = await remote.execute('queryProps', [
