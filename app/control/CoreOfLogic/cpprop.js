@@ -54,6 +54,15 @@ class cpprop extends facade.Control
         });
         return {errcode: 'success', errmsg:'queryprops:ok', queryprops: queryprops};    
     }
+
+    //道具详情查询
+    async PropInfo(user, params) { 
+        let oid = params.oid;
+        let prop = facade.GetMapping(tableType.cpProp).groupOf().where([
+            ['oid', '==', oid]
+        ]).records(tableField.cpProp)[0];
+        return {errcode: 'success', errmsg:'queryprops:ok', prop: !!prop ? prop : null};
+    }
 }
 
 exports = module.exports = cpprop;

@@ -10,8 +10,8 @@ describe('wechat.GetOpenId', function() {
         await remote.login({openid: `${Math.random()*1000000000 | 0}`});
     });
 
-    it.only('game.Info', async () => {
-        let msg = await remote.fetching({func: 'profile.Mine', openid: 'oHvae4rF-nfnTQVxuCw6PS9Y8vw0'});
+    it.only('prop.Info', async () => {
+        let msg = await remote.fetching({func: 'cpprop.PropInfo', oid: '518314212395'});
         console.log(msg);
     });
     
