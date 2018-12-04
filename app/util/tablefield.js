@@ -94,6 +94,13 @@ let userWallet = [
     'buy_count'
 ];
 
+let userGame = [
+    'id',
+    'uid',
+    'openid',
+    'game_id'
+];
+
 let userBaseWechat = [
     'id',
     'openid',
@@ -146,5 +153,5 @@ let cpOrder = [
 exports = module.exports = tableField = {
     blockGame,blockGameCate,blockGameProp,blockGameProvider,
     userBase,userProfile,userWallet,userBaseWechat,
-    cpUser, cpProp, cpOrder
+    cpUser, cpProp, cpOrder, userGame
 }

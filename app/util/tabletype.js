@@ -10,7 +10,8 @@ let tableType ={
     "blockGameProvider": 109,
     "cpUser": 110,
     "cpProp": 111,
-    "cpOrder": 112
+    "cpOrder": 112,
+    'userGame': 113
 }
 
 exports = module.exports = tableType;
