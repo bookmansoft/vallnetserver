@@ -104,8 +104,9 @@ class wechat extends facade.Control
             if(userProfile.length == 0) {
                 //创建账户
                 remoteSetup();
-                let ret = await remote.execute('token.user', ['first-acc-01', openid, openid]);   
-                let block_addr = (ret != null &&  ret.data.hasOwnProperty("addr")) ? ret.data.addr : '';
+                //let ret = await remote.execute('token.user', ['first-acc-01', openid, openid]);   
+                let ret = await remote.execute('address.create', [openid]);   
+                let block_addr = ret.hasOwnProperty("address") ? ret.address : '';
                 //添加用户个人信息
                 let userProfileItem = {
                     uid: uid,

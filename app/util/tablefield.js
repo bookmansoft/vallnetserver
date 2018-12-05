@@ -101,6 +101,25 @@ let userGame = [
     'game_id'
 ];
 
+let userProp = [
+    'uid',
+    'openid',
+    'cid',
+    'oid',
+    'pid',
+    'oper',
+    'current_hash',
+    'current_index',
+    'current_rev',
+    'current_time',
+    'current_height',
+    'gold',
+    'status',
+    'cp_url',
+    'cp_name',
+    'cp_ip'
+];
+
 let userBaseWechat = [
     'id',
     'openid',
@@ -151,7 +170,7 @@ let cpOrder = [
 ];
 
 exports = module.exports = tableField = {
-    blockGame,blockGameCate,blockGameProp,blockGameProvider,
-    userBase,userProfile,userWallet,userBaseWechat,
-    cpUser, cpProp, cpOrder, userGame
+    blockGame, blockGameCate, blockGameProp, blockGameProvider,
+    userBase, userProfile, userWallet, userBaseWechat,
+    cpUser, cpProp, cpOrder, userGame, userProp
 }
