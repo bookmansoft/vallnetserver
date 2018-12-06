@@ -25,6 +25,11 @@ class test extends facade.Control
         return {code: ReturnCode.Success, data: test.item};
     }
 
+    async Creates(user, objData) {
+        facade.GetMapping(tableType.test).Creates(objData.items, true);
+        return {code: ReturnCode.Success};
+    }
+
     /**
      * 改
      * @param {*} user 
@@ -62,6 +67,11 @@ class test extends facade.Control
      */
     Delete(user, objData) {
         facade.GetMapping(tableType.test).Delete(objData.id, true);
+        return {code: ReturnCode.Success};
+    }
+
+    Deletes(user, objData) {
+        facade.GetMapping(tableType.test).Deletes(objData.ids, true);
         return {code: ReturnCode.Success};
     }
 

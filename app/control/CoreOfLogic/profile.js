@@ -42,17 +42,46 @@ class profile extends facade.Control
             let userProfile = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
             if(userProfile.length >0 ) {
                 data = userProfile[0].orm;
-                /*
                 let ret = await remote.execute('prop.count', [openid]);
                 if(!!ret) {
                     data.current_prop_count = ret;
                     userProfile[0].setAttr('current_prop_count', ret);
                     userProfile[0].orm.save();
                 }
-                remote.execute('prop.list', [openid]).then(ret => {
-                    ret.forEach(element => {
-                        
+                /*
+                let cpProps = facade.GetMapping(tableType.userProp).groupOf().where([['uid', '==', uid]]).records(['id']);
+                if(cpProps.length >0 ) {
+                    let ids = [];
+                    cpProps.forEach(element => {
+                        ids.push(element.id);
                     });
+                    await facade.GetMapping(tableType.userProp).Deletes(ids, true);
+                }
+                remote.execute('prop.list', [1, openid]).then(ret => {
+                    console.log(ret);
+                    if(!!ret) {
+                        ret.forEach(element => {
+                            let itemData = {
+                                uid: uid,
+                                openid: openid,
+                                cid: element.cid,
+                                oid: element.oid,
+                                pid: element.pid,
+                                oper: element.oper,
+                                current_hash: element.current.hash,
+                                current_index: element.current.index,
+                                current_rev: element.current.rev,
+                                current_height: element.current.height,
+                                time: element.time,
+                                gold: element.gold,
+                                status: element.status,
+                                cp_url: element.cp.url,
+                                cp_name: element.cp.name,
+                                cp_ip: element.cp.ip
+                            };
+                            facade.GetMapping(tableType.userProp).Create(itemData);
+                        });
+                    }
                 });
                 */
             }
@@ -86,30 +115,35 @@ class profile extends facade.Control
 
     //我的游戏
     async UserGame(user, params)  {
-        let openid = params.openid;
-        let userWechats = facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records(['uid']);
-        if(userWechats.length >0 ) {
-            let uid = userWechats[0].uid;
-            let userGames = facade.GetMapping(tableType.userGame).groupOf().where([
-                ['uid', '==', uid]
-            ]).records(['game_id']);
-            if(userGames.length >0 ) {
-                let gameIds = new Array();
-                userGames.forEach(element => {
-                    gameIds.push(element.game_id);
-                });
-                let blockGames = facade.GetMapping(tableType.blockGame).groupOf().where([
-                    ['id', 'include', gameIds]
-                ]).records(tableField.blockGame);
-                return {errcode: 'success', data: blockGames};
-            }
+        let uid = params.uid;
+        let userGames = facade.GetMapping(tableType.userGame).groupOf().where([
+            ['uid', '==', uid]
+        ]).records(['game_id']);
+        if(userGames.length >0 ) {
+            let gameIds = new Array();
+            userGames.forEach(element => {
+                gameIds.push(element.game_id);
+            });
+            let blockGames = facade.GetMapping(tableType.blockGame).groupOf().where([
+                ['id', 'include', gameIds]
+            ]).records(tableField.blockGame);
+            return {errcode: 'success', data: blockGames};
         }
-        return {errcode: 'success', data: null};
     }
 
     //我的道具
     async UserProp(user, params)  {
-
+        let uid = params.uid;
+        let openid = params.openid;
+        let page = params.page;
+        let ret = await remote.execute('prop.list', [page, openid]);
+        let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        if(userProfiles.length >0 ) {
+            userProfile = userProfiles[0];
+            userProfile.setAttr('prop_count', userProfile.orm.current_prop_count);
+            userProfile.orm.save();
+        }
+        return {errcode: 'success', errmsg: 'userprop:ok', props: ret};
     }
 }
 

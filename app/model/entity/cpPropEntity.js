@@ -74,6 +74,18 @@ class cpPropEntity extends BaseEntity
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
         //facade.current.notifyEvent('blockuser.update', {test:this})
     }
+
+    //user.destroy({'where':{'id':{eq:23}}});//将表内userId等于23的元组删除
+    static async onDestroy(options) {
+        try{
+            let it = await CpProp().destroy(options);
+            return it;
+        }
+        catch(e){
+            console.error(e);
+        }
+        return null;    
+    }
 }
 
 exports = module.exports = cpPropEntity;
