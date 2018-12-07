@@ -139,7 +139,7 @@ class profile extends facade.Control
         let ret = await remote.execute('prop.list', [page, openid]);
         let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfiles.length >0 ) {
-            userProfile = userProfiles[0];
+            let userProfile = userProfiles[0];
             userProfile.setAttr('prop_count', userProfile.orm.current_prop_count);
             userProfile.orm.save();
         }
