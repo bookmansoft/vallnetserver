@@ -88,7 +88,7 @@
     "escape-html": "^1.0.3",
     "exit-on-epipe": "^1.0.0",
     "gamecloud": "^1.1.20",
-    "gamegoldtoolkit": "^1.5.8",
+    "gamegoldtoolkit": "^1.5.10",
     "getpass": "^0.1.7",
     "has-cors": "^1.1.0",
     "has-flag": "^2.0.0",

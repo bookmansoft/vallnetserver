@@ -7,8 +7,7 @@ const toolkit = require('gamegoldtoolkit')
 const remote = new toolkit.conn();
 //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 remote.setFetch(require('node-fetch'))  
-function remoteSetup() {
-    remote.setup({
+remote.setup({
         type:   'testnet',
         ip:     '114.116.14.176',     //远程服务器地址
         head:   'http',               //远程服务器通讯协议，分为 http 和 https
@@ -16,8 +15,8 @@ function remoteSetup() {
         apiKey: 'bookmansoft',        //远程服务器基本校验密码
         cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
         token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
-    });
-}
+});
+
 /**
  * 节点控制器--道具
  * Updated by thomasFuzhou on 2018-11-19.
@@ -33,7 +32,6 @@ class prop extends facade.Control
 
     //道具发送
     async PropOrder(user, params)  {
-        remoteSetup();
         let cid = params.cid;
         let prop_ori_id = params.prop_ori_id;
         let prop_value = params.prop_value;
@@ -51,7 +49,6 @@ class prop extends facade.Control
 
     //道具确权
     async QueryProps(user, params) {
-        remoteSetup();
         let cid = params.cid;
         let user_addr = params.user_addr;
         let ret = await remote.execute('queryProps', [
@@ -64,7 +61,6 @@ class prop extends facade.Control
 
     //我的道具
     async PropList(user, params) {
-        remoteSetup();
         let page = params.page;
         let openid = params.openid;
         let ret = await remote.execute('prop.list', [
@@ -77,7 +73,6 @@ class prop extends facade.Control
 
     //道具熔铸
     async PropFound(user, params) {
-        remoteSetup();
         let txid = params.txid;
         let ret = await remote.execute('prop.found', [
             txid, //生产者编码
@@ -89,7 +84,6 @@ class prop extends facade.Control
     //道具捐赠
     //prop.donate hash index [openid]
     async PropDonate(user, params) {
-        remoteSetup();
         let txid = params.txid;
         let index = params.index;
         let openid = params.openid;
@@ -105,7 +99,6 @@ class prop extends facade.Control
     //道具接收
     //prop.receive raw [openid]
     async PropReceive(user, params) {
-        remoteSetup();
         let raw = params.raw;
         let openid = params.openid;
         let ret = await remote.execute('prop.receive', [
@@ -119,7 +112,6 @@ class prop extends facade.Control
     //道具转移
     //prop.send addr hash index [openid]
     async PropSend(user, params) {
-        remoteSetup();
         let addr = params.addr;
         let txid = params.txid;
         let index = params.index;
@@ -137,7 +129,6 @@ class prop extends facade.Control
     //道具出售
     //prop.sale hash index fixedPrice [openid]
     async PropSale(user, params) {
-        remoteSetup();
         let txid = params.txid;
         let index = params.index;
         let fixedPrice = params.fixedPrice;
@@ -154,7 +145,6 @@ class prop extends facade.Control
 
     //道具市场
     async PropListMarket(user, params) {
-        remoteSetup();
         let ret = await remote.execute('prop.list.market', []);
         console.log(ret);
         return {errcode: 'success', errmsg: 'prop.list.market:ok', ret: ret};
@@ -163,7 +153,6 @@ class prop extends facade.Control
     //道具购买
     //prop.buy pid, price, openid
     async PropBuy(user, params) {
-        remoteSetup();
         let pid = params.pid;
         let price = params.price;
         let openid = params.openid;
