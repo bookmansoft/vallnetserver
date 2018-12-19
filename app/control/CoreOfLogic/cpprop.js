@@ -9,7 +9,7 @@ const remote = new toolkit.conn();
 remote.setFetch(require('node-fetch'))  
 remote.setup({
         type:   'testnet',
-        ip:     '114.116.19.125',     //远程服务器地址
+        ip:     '114.116.12.248',     //远程服务器地址
         head:   'http',               //远程服务器通讯协议，分为 http 和 https
         id:     'primary',            //默认访问的钱包编号
         apiKey: 'bookmansoft',        //远程服务器基本校验密码
