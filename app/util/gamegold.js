@@ -1,6 +1,6 @@
 let remoteSetup = {
     type:   'testnet',
-    ip:     '127.0.0.1',     //远程服务器地址
+    ip:     '119.3.201.58',     //远程服务器地址
     head:   'http',               //远程服务器通讯协议，分为 http 和 https
     id:     'primary',            //默认访问的钱包编号
     apiKey: 'bookmansoft',        //远程服务器基本校验密码
