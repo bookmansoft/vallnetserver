@@ -95,9 +95,10 @@ class wechat extends facade.Control
             let userProfile = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
             if(userProfile.length == 0) {
                 //创建账户
-                //let ret = await remote.execute('token.user', ['first-acc-01', openid, openid]);   
-                let ret = await remote.execute('address.create', [openid]);   
-                let block_addr = (!!ret && ret.hasOwnProperty("address")) ? ret.address : '';
+                let ret = await remote.execute('token.user', ['first-acc-01', openid, openid]);
+                let block_addr = (!!ret && ret.hasOwnProperty("data")) ? ret.data.addr : '';
+                //let ret = await remote.execute('address.create', [openid]);   
+                //let block_addr = (!!ret && ret.hasOwnProperty("address")) ? ret.address : '';
                 //添加用户个人信息
                 let userProfileItem = {
                     uid: uid,
