@@ -8,6 +8,7 @@ var toolkit = require('gamegoldtoolkit')
 var remote = new toolkit.conn();
 //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 remote.setFetch(require('node-fetch')) 
+/*
 remote.setup({
         type:   'testnet',
         ip:     '114.116.12.248',     //远程服务器地址
@@ -17,6 +18,7 @@ remote.setup({
         cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
         token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
 });
+*/
 /**
  * 游戏用户
  * Create by gamegold Fuzhou on 2018-11-27

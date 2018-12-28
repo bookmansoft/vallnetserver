@@ -4,6 +4,9 @@ let randomHelp = require('../../util/randomHelp');
 let md5 = require('md5');
 let tableType = require('../../util/tabletype');
 let remoteSetup = require('../../util/gamegold');
+let signature = require('../../util/signature.js');
+let wechatcfg = require('../../util/wechat.cfg');
+
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
@@ -95,7 +98,8 @@ class wechat extends facade.Control
             let userProfile = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
             if(userProfile.length == 0) {
                 //创建账户
-                let ret = await remote.execute('token.user', ['first-acc-01', openid, openid]);
+                let play_uid = openid;
+                let ret = await remote.execute('token.user', ['first-acc-01', play_uid, null, openid]);
                 let block_addr = (!!ret && ret.hasOwnProperty("data")) ? ret.data.addr : '';
                 //let ret = await remote.execute('address.create', [openid]);   
                 //let block_addr = (!!ret && ret.hasOwnProperty("address")) ? ret.address : '';
@@ -120,6 +124,70 @@ class wechat extends facade.Control
             errmsg = 'regUserProfile:not ready';
         }
         return {errcode: 'success', errmsg: errmsg};
+    }
+
+   /**
+     * 获取签名
+     * 【用法还不明确】
+     * @param {*} user 
+     * @param {*} params
+     */
+    async WechatConfig(user, params) {
+        let url = params.url;
+        //console.log("url " + url);
+        let res = await new Promise(function (resolve, reject) {
+            signature.sign(url, function(data) {
+                //console.log("data " + data);
+                let wxconfig = {
+                    //debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                    appId: wechatcfg.appid, // 必填，公众号的唯一标识
+                    timestamp: data.timestamp, // 必填，生成签名的时间戳
+                    nonceStr: data.noncestr, // 必填，生成签名的随机串
+                    signature: data.signature,// 必填，签名，见附录1
+                    /*
+                    jsApiList: ['checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'hideMenuItems',
+                    'showMenuItems',
+                    'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem',
+                    'translateVoice',
+                    'startRecord',
+                    'stopRecord',
+                    'onRecordEnd',
+                    'playVoice',
+                    'pauseVoice',
+                    'stopVoice',
+                    'uploadVoice',
+                    'downloadVoice',
+                    'chooseImage',
+                    'previewImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'getNetworkType',
+                    'openLocation',
+                    'getLocation',
+                    'hideOptionMenu',
+                    'showOptionMenu',
+                    'closeWindow',
+                    'scanQRCode',
+                    'chooseWXPay',
+                    'openProductSpecificView',
+                    'addCard',
+                    'chooseCard',
+                    'openCard'] // 必填，需要使用的JS接口列表，
+                    */
+                jsApiList: ['checkJsApi',
+                    'scanQRCode',]
+                }
+                //res.json(wxconfig);
+                resolve(wxconfig);
+            });
+        })
+        return {errcode: 'success', wxconfig: res}
     }
 }
 
