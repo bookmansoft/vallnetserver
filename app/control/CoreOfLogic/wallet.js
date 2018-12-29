@@ -73,12 +73,12 @@ class wallet extends facade.Control
     /**
      * 查询交易记录
      * tx.list openid [number]
-     * @param {*} user 
+     * @param {*} user        
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
-    async TxLogs(user, params) {
+    async TxLogs(user, params) {                      
         let openid = params.openid;
-        let number = 10000;
+        let number = 10000;                          
         let ret = await remote.execute('tx.list', [
             openid, 
             number

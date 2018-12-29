@@ -1,12 +1,12 @@
 let facade = require('gamecloud')
-
+let remoteSetup = require('../../util/gamegold');
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
 const remote = new toolkit.conn();
 //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 remote.setFetch(require('node-fetch'))  
-
+remote.setup(remoteSetup);
 /**
  * 交易对
  * Updated by thomasFuzhou on 2018-11-19.
