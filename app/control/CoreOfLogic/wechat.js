@@ -6,6 +6,7 @@ let tableType = require('../../util/tabletype');
 let remoteSetup = require('../../util/gamegold');
 let signature = require('../../util/signature.js');
 let wechatcfg = require('../../util/wechat.cfg');
+let wxUnifiedorder = require('../../util/wx_unifiedorder');
 
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
@@ -190,6 +191,27 @@ class wechat extends facade.Control
         })
         console.log({errcode: 'success', wxconfig: res})
         return {errcode: 'success', wxconfig: res}
+    }
+
+    /**
+     * 统一下单
+     * 【用法还不明确】
+     * @param {*} user 
+     * @param {*} params
+    */
+    async UnifiedOrder(user, params) {
+        let openid = params.openid;
+        let ip = params.userip;
+        let price = params.price;
+        let productIntro = params.productIntro;
+        try {
+            let res = await wxUnifiedorder.unifiedOrder(openid, ip, price, productIntro);
+            return {errcode: 'success', unifiedOrder: res}
+        }catch(e) {
+            console.log(e);
+            return {errcode: 'error', errmsg: e}
+        }
+        
     }
 }
 

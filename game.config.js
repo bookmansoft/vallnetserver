@@ -9,8 +9,8 @@ let mysql = {
     "logging" : false,          //记录日志
     "db": "wechat-wallet",          //数据库名称    
     "sa": "root",               //数据库用户名
-    "pwd": "123",        //数据库用户密码
-    "host": "localhost",        //数据库服务器IP地址
+    "pwd": "bookman.mysql.Passw0rd",               //数据库用户密码
+    "host": "119.3.201.58",        //数据库服务器IP地址
     "port": 3306                //数据库服务器端口号
 };
 

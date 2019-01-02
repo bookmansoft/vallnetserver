@@ -74,6 +74,12 @@ let userProfile = [
     'no_reading_msg_count',
     'comment_count',
     'buy_count',
+    'vip_level',
+    'vip_start_time',
+    'vip_end_time',
+    'vip_last_get_time',
+    'vip_last_get_count',
+    'vip_usable_count',
     'games',
     'avatar_uri',
     'desc'

@@ -8,6 +8,10 @@ class userProfileEntity extends BaseEntity
 {
     //region 集合功能
 
+    constructor(orm, router){
+        super(orm, router);
+    }
+
     /**
      * 为 Mapping 映射进行参数配置
      */

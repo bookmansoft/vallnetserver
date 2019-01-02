@@ -23,7 +23,7 @@ class profile extends facade.Control
     }
 
     //用户信息
-    async Mine(user, params)  {
+    async Info(user, params)  {
         let openid = params.openid;
         let userWechats = facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records(['uid']);
         var data = null;
@@ -135,6 +135,88 @@ class profile extends facade.Control
         }
         return {errcode: 'success', errmsg: 'userprop:ok', props: ret};
     }
+
+    //购买VIP会员 
+    async UserVipBuy(user, params)  {
+        let uid = params.uid;     
+        let vip_level =  params.vip_level;
+        //let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records(tableField.userProfiles);
+        let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        if(userProfiles. length >0 ) {
+            let userProfile = userProfiles[0];
+            if(userProfile.orm.vip_level >= vip_level) {
+                return {errcode: 'error', errmsg: '当前已经是VIP'+vip_level};
+            }
+            let vip_start_time = parseInt(new Date().getTime() / 1000);
+            let vip_end_time = vip_start_time + 3600 * 24 * 30;
+            userProfile.setAttr('vip_level', vip_level);
+            userProfile.setAttr('vip_start_time', vip_start_time);
+            userProfile.setAttr('vip_end_time', vip_end_time);
+            userProfile.orm.save();
+            return {errcode: 'success', errmsg: 'uservipbuy:ok'}; 
+        } else {
+            return {errcode: 'error', errmsg: 'no user'};
+        }
+    }
+    
+    //用户信息
+    async Mine(user, params)  {
+        let uid = params.uid;
+        let openid = params.openid;
+        let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        if(userProfiles.length >0 ) {
+            let userProfile = userProfiles[0];
+            let ret = await remote.execute('prop.count', [openid]);
+            if(!!ret) {
+                data.current_prop_count = ret;
+                userProfile.setAttr('current_prop_count', ret);
+                userProfile.orm.save()
+            }
+            let get_all_count = 0
+            if(userProfile.orm.vip_level > 0) {
+                
+                let current_time = parseInt(new Date().getTime() / 1000);
+                let day = 24 * 3600
+                let delta_time = 0
+                let get_count = 0
+                
+                if(userProfile.orm.vip_level==1) {
+                    get_count = 10
+                } else if(userProfile.orm.vip_level==2) {
+                    get_count = 100
+                } else if(userProfile.orm.vip_level==3) {
+                    get_count = 300 
+                }
+                get_all_count = get_count * 30
+
+                if( userProfile.orm.vip_last_get_time == 0 ) {
+                    userProfile.setAttr('vip_last_get_time', current_time);
+                    userProfile.setAttr('vip_last_get_count', get_count);
+                    userProfile.orm.save();
+                } else {
+                    delta_time = current_time - userProfile.orm.vip_last_get_time
+                    let delta_day = parseInt(delta_time / day)
+                    if(delta_day > 0) {
+                        userProfile.setAttr('vip_last_get_time', current_time);
+                        userProfile.setAttr('vip_last_get_count', get_count * delta_day);
+                        userProfile.orm.save();
+                    }
+                }
+            }
+            let data = {
+                vip_level: userProfile.orm.vip_level,
+                vip_start_time:  userProfile.orm.vip_start_time,
+                vip_end_time:  userProfile.orm.vip_end_time,
+                vip_last_get_time:  userProfile.orm.vip_last_get_time,
+                vip_last_get_count:  userProfile.orm.vip_last_get_count,
+                vip_usable_count:  userProfile.orm.vip_usable_count,
+                vip_get_all_count: get_all_count
+            }
+
+            return {errcode: 'success', mine: data};
+        }
+        return {errcode: 'success', mine: null};
+    };
 }
 
 exports = module.exports = profile;
