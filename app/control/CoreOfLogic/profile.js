@@ -9,6 +9,7 @@ const remote = new toolkit.conn();
 //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 remote.setFetch(require('node-fetch'))  
 remote.setup(remoteSetup);
+
 /**
  * 个人中心
  * Create by gamegold Fuzhou on 2018-11-27
@@ -172,7 +173,7 @@ class profile extends facade.Control
                 userProfile.setAttr('current_prop_count', ret);
                 userProfile.orm.save()
             }
-            let get_all_count = 0
+            let vip_get_all_count = 0
             if(userProfile.orm.vip_level > 0) {
                 
                 let current_time = parseInt(new Date().getTime() / 1000);
@@ -187,7 +188,7 @@ class profile extends facade.Control
                 } else if(userProfile.orm.vip_level==3) {
                     get_count = 300 
                 }
-                get_all_count = get_count * 30
+                vip_get_all_count = get_count * 30
 
                 if( userProfile.orm.vip_last_get_time == 0 ) {
                     userProfile.setAttr('vip_last_get_time', current_time);
@@ -210,7 +211,7 @@ class profile extends facade.Control
                 vip_last_get_time:  userProfile.orm.vip_last_get_time,
                 vip_last_get_count:  userProfile.orm.vip_last_get_count,
                 vip_usable_count:  userProfile.orm.vip_usable_count,
-                vip_get_all_count: get_all_count
+                vip_get_all_count: vip_get_all_count
             }
 
             return {errcode: 'success', mine: data};

@@ -26,61 +26,74 @@ class cp extends facade.Control
     /**
      * 查询系统中现有的所有CP列表：cp.list
      * @param {*} user 
-     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
+     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
-    async List(user, paramGold) {
-        console.log(paramGold.items);
-        let ret = await remote.execute('cp.list', paramGold.items);
-        console.log(ret);
-        return {code: ReturnCode.Success,list: ret};
+    async List(user, params) {
+        let page = params.page;
+        let num = params.num;
+        let ret = await remote.execute('cp.list', [
+            page,
+            num
+        ]);
+        return {errcode: 'success', cp: ret};
+    }
+
+    /**
+     * 查询系统中现有的CP数量
+     * @param {*} user 
+     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
+     */
+    async CpCount(user, params) {
+        let page = 1;
+        let num = 100000;
+        let ret = await remote.execute('cp.list', [
+            page,
+            num
+        ]);
+        let count = ret==null ? 0 : ret.list.length
+        return {errcode: 'success', cp_count: count};
     }
 
     /**
      * CP注册指令：cp.create "name" "url" ["ip"]
      * @param {*} user 
-     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
+     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
-    async Create(user, paramGold) {
-        console.log(paramGold.items);
-        let ret = await remote.execute('cp.create', paramGold.items);
-        console.log(ret);
-        return {code: ReturnCode.Success,result: ret};
+    async Create(user, params) {
+        let ret = await remote.execute('cp.create', params.items);
+        return {errcode: 'success',result: ret};
     }
 
     /**
      * CP修改/转让指令： cp.change "name" ["url" "ip" "addr"]
      * @param {*} user 
-     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
+     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
-    async Change(user, paramGold) {
-        console.log(paramGold.items);
-        let ret = await remote.execute('cp.change', paramGold.items);
-        console.log(ret);
-        return {code: ReturnCode.Success,result: ret};
+    async Change(user, params) {
+        console.log(params.items);
+        let ret = await remote.execute('cp.change', params.items);
+        return {errcode: 'success',result: ret};
     }
 
     /**
      * 根据ID查询CP注册信息 cid CP编码
      * @param {*} user 
-     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
+     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
-    async ById(user, paramGold) {
-        console.log(paramGold.items);
-        let ret = await remote.execute('cp.ById', paramGold.items);
-        console.log(ret);
-        return {code: ReturnCode.Success,result: ret};
+    async ById(user, params) {
+        console.log(params.items);
+        let ret = await remote.execute('cp.ById', params.items);
+        return {errcode: 'success',result: ret};
     }
 
     /**
      * 根据名称查询CP注册信息 name CP名称
      * @param {*} user 
-     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
+     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
-    async ByName(user, paramGold) {
-        console.log(paramGold.items);
-        let ret = await remote.execute('cp.ByName', paramGold.items);
-        console.log(ret);
-        return {code: ReturnCode.Success,result: ret};
+    async ByName(user, params) {
+        let ret = await remote.execute('cp.ByName', params.items);
+        return {errcode: 'success',result: ret};
     }
 
     //申请令牌
