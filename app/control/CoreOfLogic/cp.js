@@ -1,7 +1,9 @@
 let facade = require('gamecloud')
 let remoteSetup = require('../../util/gamegold');
 let {ReturnCode, NotifyType} = facade.const
-
+let tableType = require('../../util/tabletype');
+let tableField = require('../../util/tablefield');
+let userhelp = require('../../util/userhelp');
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
@@ -9,6 +11,7 @@ const remote = new toolkit.conn();
 //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 remote.setFetch(require('node-fetch'))  
 remote.setup(remoteSetup);
+let userHelp = new userhelp();
 
 /**
  * 游戏的控制器
@@ -104,6 +107,25 @@ class cp extends facade.Control
             null,
             params.openid
         ]);
+        if (!!ret && ret.hasOwnProperty("data")) {
+            let addr = ret.data.addr;
+            let userWallet = facade.GetMapping(tableType.userWallet).groupOf().where([
+                ['cid', '==', params.cid],
+                ['cp_uid', '==', params.uid],
+                ['openid', '==', params.openid]
+            ]).records();
+            if(userWallet.length == 0) {
+                let uid = await userHelp.getUserIdFromOpenId(params.openid)
+                let userWalletItem = {
+                    uid: uid,
+                    cid: params.cid,
+                    addr: addr,
+                    cp_uid: params.uid,
+                    openid: params.openid,
+                };
+                facade.GetMapping(tableType.userWallet).Create(userWalletItem);
+            }
+        }
         return {errcode: 'success', errmsg:'usertoken:ok', ret: ret};
     }
 }
