@@ -169,6 +169,7 @@ class profile extends facade.Control
             let userProfile = userProfiles[0];
             let ret = await remote.execute('prop.count', [openid])
             let current_prop_count = 0
+            let prop_count = userProfile.orm.prop_count
             if(!!ret) {
                 current_prop_count = ret;
                 userProfile.setAttr('current_prop_count', ret)
@@ -213,7 +214,8 @@ class profile extends facade.Control
                 vip_last_get_count:  userProfile.orm.vip_last_get_count,
                 vip_usable_count:  userProfile.orm.vip_usable_count,
                 vip_get_all_count: vip_get_all_count,
-                current_prop_count: current_prop_count
+                current_prop_count: current_prop_count,
+                prop_count: prop_count
             }
 
             return {errcode: 'success', mine: data};
