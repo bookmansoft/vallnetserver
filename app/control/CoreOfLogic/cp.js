@@ -4,6 +4,7 @@ let {ReturnCode, NotifyType} = facade.const
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
 let userhelp = require('../../util/userhelp');
+const axios = require('axios')
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
@@ -39,6 +40,20 @@ class cp extends facade.Control
             num
         ]);
         return {errcode: 'success', cp: ret};
+    }
+
+    async GetCpProxy(user, params) {
+        let url = params.url;
+            // 使用 axios 发送数据带微信支付服务器, 没错, 后端也可以使用 axios
+        let result = await new Promise(function(resolve, reject){
+            axios.get(url).then(res => {
+                // 微信返回的数据也是 xml, 使用 xmlParser 将它转换成 js 的对象
+                resolve(res.data);
+            }).catch(err => {
+                reject(err)
+            })
+        });
+        return {errcode: 'success', result: result};
     }
 
     /**
