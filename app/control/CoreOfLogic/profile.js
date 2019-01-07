@@ -220,7 +220,7 @@ class profile extends facade.Control
 
             return {errcode: 'success', mine: data};
         }
-        return {errcode: 'success', mine: null};
+        return {errcode: 'fail', mine: null};
     };
 }
 
