@@ -167,10 +167,11 @@ class profile extends facade.Control
         let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfiles.length >0 ) {
             let userProfile = userProfiles[0];
-            let ret = await remote.execute('prop.count', [openid]);
+            let ret = await remote.execute('prop.count', [openid])
+            let current_prop_count = 0
             if(!!ret) {
-                data.current_prop_count = ret;
-                userProfile.setAttr('current_prop_count', ret);
+                current_prop_count = ret;
+                userProfile.setAttr('current_prop_count', ret)
                 userProfile.orm.save()
             }
             let vip_get_all_count = 0
@@ -211,7 +212,8 @@ class profile extends facade.Control
                 vip_last_get_time:  userProfile.orm.vip_last_get_time,
                 vip_last_get_count:  userProfile.orm.vip_last_get_count,
                 vip_usable_count:  userProfile.orm.vip_usable_count,
-                vip_get_all_count: vip_get_all_count
+                vip_get_all_count: vip_get_all_count,
+                current_prop_count: current_prop_count
             }
 
             return {errcode: 'success', mine: data};
