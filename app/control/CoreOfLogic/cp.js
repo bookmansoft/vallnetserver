@@ -100,7 +100,8 @@ class cp extends facade.Control
      */
     async ById(user, params) {
         console.log(params.items);
-        let ret = await remote.execute('cp.ById', params.items);
+        let cid = params.cid
+        let ret = await remote.execute('cp.byId', [cid]);
         return {errcode: 'success',result: ret};
     }
 
