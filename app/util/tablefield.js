@@ -175,8 +175,19 @@ let cpOrder = [
     'update_time'
 ];
 
+let order = [ 
+    'uid',
+    'order_sn',
+    'order_num',
+    'product_id',
+    'product_info',
+    'order_status',
+    'pay_status',
+    'create_time',
+    'update_time',
+]
 exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
     userBase, userProfile, userWallet, userBaseWechat,
-    cpUser, cpProp, cpOrder, userGame, userProp
+    cpUser, cpProp, cpOrder, userGame, userProp, order
 }

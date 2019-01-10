@@ -182,7 +182,8 @@ class wechat extends facade.Control
                     'openCard'] // 必填，需要使用的JS接口列表，
                     */
                 jsApiList: ['checkJsApi',
-                    'scanQRCode',]
+                    'scanQRCode',
+                    'chooseWXPay']
                 }
                 //res.json(wxconfig);
                 console.log("wxconfig " + wxconfig);
@@ -200,12 +201,13 @@ class wechat extends facade.Control
      * @param {*} params
     */
     async UnifiedOrder(user, params) {
-        let openid = params.openid;
-        let ip = params.userip;
-        let price = params.price;
-        let productIntro = params.productIntro;
+        let openid = params.openid
+        let ip = params.userip
+        let price = params.price
+        let productIntro = params.productIntro
+        let tradeId = params.tradeId
         try {
-            let res = await wxUnifiedorder.unifiedOrder(openid, ip, price, productIntro);
+            let res = await wxUnifiedorder.unifiedOrder(openid, ip, price, productIntro, tradeId);
             return {errcode: 'success', unifiedOrder: res}
         }catch(e) {
             console.log(e);

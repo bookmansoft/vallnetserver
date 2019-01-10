@@ -5,13 +5,15 @@ const xmlParser = new xml2js.Parser()
 
 const appId = 'wx4b3efb80ac5de780'
 const appSecret = '36ad9a51a413cb4dbe1562206c6c0ba4'
+
 // 商户号
 const mchId = '1520782501'
 // 支付的 key
 const PAY_API_KEY = '41134e3b985d0254c6c7c64912fc0935'
 const notifyUrl = 'https://mini.gamegold.xin/gg-wechat-server/wx/notify'
 
-async function unifiedOrder(openId, ip, price, productIntro) {
+async function unifiedOrder(openId, ip, price, productIntro, tradeId) {
+
     // attach 是一个任意的字符串, 会原样返回, 可以用作一个标记
     const attach = 'GJS-ORG'
     // 一个随机字符串
@@ -19,7 +21,7 @@ async function unifiedOrder(openId, ip, price, productIntro) {
     // 用户的 openId
     //const openId = 'user openId'
     // 生成商家内部自定义的订单号, 商家内部的系统用的, 不用 attach 加入也是可以的
-    const tradeId = getTradeId(attach)
+    //const tradeId = getTradeId(attach)
     // 生成签名
     const sign = getPrePaySign(appId, attach, productIntro, mchId, nonceStr, notifyUrl, openId, tradeId, ip, price)
     // 这里是在 express 获取用户的 ip, 因为使用了 nginx 的反向代理, 所以这样获取
@@ -149,4 +151,6 @@ function getPayParams(prepayId, tradeId) {
     return payParamsObj
 }
 
-exports.unifiedOrder = unifiedOrder
+exports = module.exports = {
+    unifiedOrder, getTradeId
+}

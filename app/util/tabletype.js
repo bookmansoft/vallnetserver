@@ -12,7 +12,8 @@ let tableType ={
     "cpProp": 111,
     "cpOrder": 112,
     'userGame': 113,
-    'userProp': 114
+    'userProp': 114,
+    'order': 115,
 }
 
 exports = module.exports = tableType;

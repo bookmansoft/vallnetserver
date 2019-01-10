@@ -1,6 +1,8 @@
 let facade = require('gamecloud')
-let {ReturnCode, NotifyType} = facade.const
+let wxUnifiedorder = require('../../util/wx_unifiedorder');
 let remoteSetup = require('../../util/gamegold');
+let tableType = require('../../util/tabletype');
+let tableField = require('../../util/tablefield');
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
@@ -43,6 +45,50 @@ class order extends facade.Control
           ]);
         console.log(ret);
         return {errcode: 'success', errmsg: 'orderpay:ok', ret: ret};
+    }
+
+    /**
+     * 普通订单下单
+     */
+    async CommonOrderRepay(user, params) {
+        let uid = params.uid
+        let price = params.price
+        let productId = params.productId
+        let productIntro = params.productIntro
+        let current_time = parseInt(new Date().getTime() / 1000)
+        let tradeId = wxUnifiedorder.getTradeId('bgw')
+        let orderItem = {
+            uid: uid,
+            order_sn: tradeId,
+            order_num: price,
+            product_id: productId,
+            product_info: productIntro,
+            order_status: 0,
+            pay_status: 0,
+            create_time: current_time,
+            update_time: 0,
+        };
+        facade.GetMapping(tableType.order).Create(orderItem);
+        return {errcode: 'success', errmsg: 'order:ok', tradeId: tradeId};
+    }
+
+    async OrderPayResutl(user, params) {
+        let uid = params.uid
+        let tradeId = params.tradeId
+        let status = params.status
+        let uid = params.uid;     
+
+        let userOrders = facade.GetMapping(tableType.order).groupOf().where([['order_sn', '==', tradeId]]).records();
+        if(userOrders.length >0 ) {
+            let order = userOrders[0];
+            let current_time = parseInt(new Date().getTime() / 1000)
+            order.setAttr('pay_status', status);
+            order.setAttr('update_time', current_time);
+            order.orm.save();
+            return {errcode: 'success', errmsg: 'result:ok'}; 
+        } else {
+            return {errcode: 'error', errmsg: 'no order'};
+        }
     }
 }
 
