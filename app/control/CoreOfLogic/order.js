@@ -76,7 +76,6 @@ class order extends facade.Control
         let uid = params.uid
         let tradeId = params.tradeId
         let status = params.status
-        let uid = params.uid;     
 
         let userOrders = facade.GetMapping(tableType.order).groupOf().where([['order_sn', '==', tradeId]]).records();
         if(userOrders.length >0 ) {
