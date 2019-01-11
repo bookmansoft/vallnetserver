@@ -179,31 +179,28 @@ class profile extends facade.Control
             if(userProfile.orm.vip_level > 0) {
                 
                 let current_time = parseInt(new Date().getTime() / 1000);
-                let day = 24 * 3600
+                let day_time = 24 * 3600
                 let delta_time = 0
-                let get_count = 0
-                
-                if(userProfile.orm.vip_level==1) {
-                    get_count = 10
-                } else if(userProfile.orm.vip_level==2) {
-                    get_count = 100
-                } else if(userProfile.orm.vip_level==3) {
-                    get_count = 300 
-                }
-                vip_get_all_count = get_count * 30
+                let time_get_count = 0
 
-                if( userProfile.orm.vip_last_get_time == 0 ) {
+                if(userProfile.orm.vip_level==1) {
+                    time_get_count = 10
+                } else if(userProfile.orm.vip_level==2) {
+                    time_get_count = 110
+                } else if(userProfile.orm.vip_level==3) {
+                    time_get_count = 330 
+                }
+                vip_get_all_count = time_get_count * day_time * 30
+
+                delta_time = current_time - userProfile.orm.vip_start_time
+                if(delta_time > 0 && current_time < userProfile.orm.vip_end_time) {
+                    let vip_last_get_count = delta_time * time_get_count
+                    let get_count = vip_last_get_count - userProfile.orm.vip_last_get_count
+                    let vip_usable_count = get_count + userProfile.orm.vip_usable_count
                     userProfile.setAttr('vip_last_get_time', current_time);
-                    userProfile.setAttr('vip_last_get_count', get_count);
+                    userProfile.setAttr('vip_last_get_count', vip_last_get_count);
+                    userProfile.setAttr('vip_usable_count', vip_usable_count);
                     userProfile.orm.save();
-                } else {
-                    delta_time = current_time - userProfile.orm.vip_last_get_time
-                    let delta_day = parseInt(delta_time / day)
-                    if(delta_day > 0) {
-                        userProfile.setAttr('vip_last_get_time', current_time);
-                        userProfile.setAttr('vip_last_get_count', get_count * delta_day);
-                        userProfile.orm.save();
-                    }
                 }
             }
             let data = {
