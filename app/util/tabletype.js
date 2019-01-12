@@ -14,6 +14,7 @@ let tableType ={
     'userGame': 113,
     'userProp': 114,
     'order': 115,
+    'vipdraw': 116,
 }
 
 exports = module.exports = tableType;

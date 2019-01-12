@@ -186,8 +186,17 @@ let order = [
     'create_time',
     'update_time',
 ]
+
+let vipdraw = [ 
+    'uid',
+    'draw_count',
+    'pay_status',
+    'remainder',
+    'draw_at',
+]
+
 exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
     userBase, userProfile, userWallet, userBaseWechat,
-    cpUser, cpProp, cpOrder, userGame, userProp, order
+    cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw
 }
