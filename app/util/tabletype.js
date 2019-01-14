@@ -15,6 +15,7 @@ let tableType ={
     'userProp': 114,
     'order': 115,
     'vipdraw': 116,
+    'vip': 117,
 }
 
 exports = module.exports = tableType;
