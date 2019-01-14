@@ -33,7 +33,13 @@ let UserProfile = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         buy_count: Sequelize.INTEGER,
         games: Sequelize.STRING,
         avatar_uri: Sequelize.STRING,
-        desc: Sequelize.STRING
+        desc: Sequelize.STRING,
+        vip_level: Sequelize.INTEGER,
+        vip_start_time: Sequelize.INTEGER,
+        vip_end_time: Sequelize.INTEGER,
+        vip_last_get_time: Sequelize.INTEGER,
+        vip_last_get_count: Sequelize.INTEGER,
+        vip_usable_count: Sequelize.INTEGER,
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段

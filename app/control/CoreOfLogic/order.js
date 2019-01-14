@@ -3,6 +3,7 @@ let wxUnifiedorder = require('../../util/wx_unifiedorder');
 let remoteSetup = require('../../util/gamegold');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
+let VipHelp = require('../../util/viphelp');
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
@@ -99,36 +100,8 @@ class order extends facade.Control
             if(status==1) { //支付成功 
                 let vip_level =  order.orm.product_id
                 uid = order.orm.uid
-                let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
-                if(userProfiles. length >0 ) {
-                    let userProfile = userProfiles[0];
-                    if(userProfile.orm.vip_level < vip_level) {
-                        let vip_usable_count = userProfile.orm.vip_usable_count
-                        if(userProfile.orm.vip_level > 0 && current_time < userProfile.orm.vip_end_time) {
-                            let time_get_count = 0
-                            if(userProfile.orm.vip_level==1) {
-                                time_get_count = 10
-                            } else if(userProfile.orm.vip_level==2) {
-                                time_get_count = 110
-                            } else if(userProfile.orm.vip_level==3) {
-                                time_get_count = 330 
-                            }
-                            let vip_last_get_count = (userProfile.orm.vip_end_time - userProfile.orm.vip_start_time) * time_get_count
-                            let get_count = vip_last_get_count - userProfile.orm.vip_last_get_count
-                            vip_usable_count = get_count + vip_usable_count
-                        }
-
-                        let vip_start_time = parseInt(new Date().getTime() / 1000);
-                        let vip_end_time = vip_start_time + 3600 * 24 * 30;
-                        userProfile.setAttr('vip_level', vip_level);
-                        userProfile.setAttr('vip_start_time', vip_start_time);
-                        userProfile.setAttr('vip_end_time', vip_end_time);
-                        userProfile.setAttr('vip_last_get_time', vip_start_time);
-                        userProfile.setAttr('vip_last_get_count', 0);
-                        userProfile.setAttr('vip_usable_count', vip_usable_count);
-                        userProfile.orm.save();
-                    }
-                }
+                let vipHelp = new VipHelp()
+                vipHelp.recharge(uid, vip_level)
             }
             return {errcode: 'success', errmsg: 'result:ok'}; 
         } else {

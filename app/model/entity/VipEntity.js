@@ -13,7 +13,7 @@ class VipEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.vipdraw,                     //表类型
+            etype: tableType.vip,                     //表类型
             model: Vip,               //表映射类
             entity: VipEntity,        //ORM映射类
         };

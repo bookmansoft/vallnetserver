@@ -2,6 +2,7 @@ let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
 let remoteSetup = require('../../util/gamegold');
+let VipHelp = require('../../util/viphelp');
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
@@ -108,53 +109,20 @@ class profile extends facade.Control
         let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfiles.length >0 ) {
             let userProfile = userProfiles[0];
-            let ret = await remote.execute('prop.count', [openid])
             let current_prop_count = 0
-            let prop_count = userProfile.orm.prop_count
-            let vip_get_count = 0
+            let ret = await remote.execute('prop.count', [openid])
             if(!!ret) {
                 current_prop_count = ret;
                 userProfile.setAttr('current_prop_count', ret)
                 userProfile.orm.save()
             }
-            let vip_get_all_count = 0
-            if(userProfile.orm.vip_level > 0) {
-                
-                let current_time = parseInt(new Date().getTime() / 1000);
-                let day_time = 24 * 3600
-                let delta_time = 0
-                let time_get_count = 0
-
-                if(userProfile.orm.vip_level==1) {
-                    time_get_count = 10
-                } else if(userProfile.orm.vip_level==2) {
-                    time_get_count = 110
-                } else if(userProfile.orm.vip_level==3) {
-                    time_get_count = 330 
-                }
-                vip_get_all_count = time_get_count * day_time * 30
-
-                delta_time = current_time - userProfile.orm.vip_start_time
-                if(delta_time > 0 && current_time < userProfile.orm.vip_end_time) {
-                    let vip_last_get_count = delta_time * time_get_count
-                    vip_get_count = vip_last_get_count - userProfile.orm.vip_last_get_count
-                    let vip_usable_count = vip_get_count + userProfile.orm.vip_usable_count
-                    userProfile.setAttr('vip_last_get_time', current_time);
-                    userProfile.setAttr('vip_last_get_count', vip_last_get_count);
-                    userProfile.setAttr('vip_usable_count', vip_usable_count);
-                    userProfile.orm.save();
-                }
-            }
+            
+            let prop_count = userProfile.orm.prop_count
+            let vipHelp = new VipHelp()
+            let vip = await vipHelp.getVip(uid)
 
             let data = {
-                vip_level: userProfile.orm.vip_level,
-                vip_start_time:  userProfile.orm.vip_start_time,
-                vip_end_time:  userProfile.orm.vip_end_time,
-                vip_last_get_time:  userProfile.orm.vip_last_get_time,
-                vip_last_get_count:  userProfile.orm.vip_last_get_count,
-                vip_usable_count:  userProfile.orm.vip_usable_count,
-                vip_get_all_count: vip_get_all_count,
-                vip_get_count: vip_get_count,
+                vip: vip,
                 current_prop_count: current_prop_count,
                 prop_count: prop_count
             }
@@ -168,40 +136,9 @@ class profile extends facade.Control
     async VipDraw(user, params)  {
         let uid = params.uid;
         let draw_count = params.draw_count;
-        let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
-        if(userProfiles.length >0 ) {
-            let userProfile = userProfiles[0]
-            let vip_usable_count = userProfile.orm.vip_usable_count
-            //let k = vip_usable_count / 100000
-            if( draw_count < 10 * 100000) {
-                return {errcode: 'fail', errmsg: 'draw is not enouth'};
-            }
-            if(draw_count > vip_usable_count) {
-                return {errcode: 'fail', errmsg: 'draw beyond'};
-            }
-            let ret = await remote.execute('tx.send', [
-                userProfile.orm.block_addr, 
-                draw_count
-            ]);   
-            if(!!!ret) {
-                return {errcode: 'fail', errmsg: 'txsend fail', ret: ret};
-            } else {
-                let remainder = vip_usable_count - draw_count
-                let current_time = parseInt(new Date().getTime() / 1000)
-                let drawItem = {
-                    uid: uid,
-                    draw_count: draw_count,
-                    remainder: remainder,
-                    draw_at: current_time,
-                }
-                facade.GetMapping(tableType.vipdraw).Create(drawItem);
-                userProfile.setAttr('vip_usable_count', remainder);
-                userProfile.orm.save();
-                return {errcode: 'success', errmsg: 'vipdraw:ok', ret:drawItem};
-            }
-        } else {
-            return {errcode: 'fail', errmsg: 'vipdraw:no user'};
-        }
+        let vipHelp = new VipHelp()
+        let ret = await vipHelp.vipDraw(uid, draw_count, remote)
+        return ret
     }
 
     /**
