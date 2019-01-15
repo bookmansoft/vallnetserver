@@ -1,5 +1,7 @@
 let facade = require('gamecloud')
 let {ReturnCode, NotifyType} = facade.const
+let tableType = require('../../util/tabletype');
+let tableField = require('../../util/tablefield');
 let remoteSetup = require('../../util/gamegold');
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
@@ -51,6 +53,23 @@ class prop extends facade.Control
         return {errcode: 'success', errmsg: 'queryProps:ok', ret: ret};
     }
 
+    //道具数量
+    async PropCount(user, params) {
+        let uid = params.uid;
+        let openid = params.openid;
+        let ret = await remote.execute('prop.count', [
+            openid //openid
+        ]);
+        let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        if(userProfiles.length >0 ) {
+            let userProfile = userProfiles[0];
+            userProfile.setAttr('prop_count', userProfile.orm.current_prop_count);
+            userProfile.orm.save();
+        }
+        return {errcode: 'success', errmsg: 'prop.count:ok', count: ret};
+    }
+
+        
     //我的道具
     async PropList(user, params) {
         let page = params.page;
