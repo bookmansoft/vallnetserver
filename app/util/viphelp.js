@@ -107,24 +107,24 @@ class viphelp {
      * 提币
      * @param {*} uid 
      */
-    async vipDraw(uid, draw_count, remote) {
+    async vipDraw(uid, draw_count, remote, addr) {
         let userVips = facade.GetMapping(tableType.vip).groupOf().where([['uid', '==', uid]]).records()
         if(userVips.length >0 ) {
             let userVip = userVips[0]
             let vip_usable_count = userVip.orm.vip_usable_count
             //let k = vip_usable_count / 100000
             if( draw_count < 10 * 100000) {
-                return {errcode: 'fail', errmsg: 'draw is not enouth'};
+                return {result: false, errmsg: 'draw is not enouth'};
             }
             if(draw_count > vip_usable_count) {
-                return {errcode: 'fail', errmsg: 'draw beyond'};
+                return {result: false, errmsg: 'draw beyond'};
             }
             let ret = await remote.execute('tx.send', [
-                userVip.orm.block_addr, 
+                addr, 
                 draw_count
             ]);   
             if(!!!ret) {
-                return {errcode: 'fail', errmsg: 'txsend fail', ret: ret};
+                return {result: false, errmsg: 'txsend fail'};
             } else {
                 let remainder = vip_usable_count - draw_count
                 let current_time = parseInt(new Date().getTime() / 1000)
@@ -137,10 +137,10 @@ class viphelp {
                 facade.GetMapping(tableType.vipdraw).Create(drawItem);
                 userVip.setAttr('vip_usable_count', remainder);
                 userVip.orm.save();
-                return {errcode: 'success', errmsg: 'vipdraw:ok', ret:drawItem};
+                return {result: true, errmsg: 'vipdraw:ok', drawItem: drawItem};
             }
         } else {
-            return {errcode: 'fail', errmsg: 'vipdraw:no user'};
+            return {result: false, errmsg: 'vipdraw:no user'};
         }
     }
 }

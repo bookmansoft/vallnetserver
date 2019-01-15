@@ -136,9 +136,19 @@ class profile extends facade.Control
     async VipDraw(user, params)  {
         let uid = params.uid;
         let draw_count = params.draw_count;
-        let vipHelp = new VipHelp()
-        let ret = await vipHelp.vipDraw(uid, draw_count, remote)
-        return ret
+        let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        if(userProfiles.length == 0 ) {
+            return {errcode: 'fail', errmsg: 'user not exist'};
+        } else {
+            let userProfile = userProfiles[0];
+            let vipHelp = new VipHelp()
+            let drawResult = await vipHelp.vipDraw(uid, draw_count, remote, userProfile.orm.block_addr)
+            if(drawResult.result == false) {
+                return {errcode: 'fail', errmsg: drawResult.errmsg};
+            } else {
+                return {errcode: 'success', errmsg: drawResult.errmsg, ret: drawResult.drawItem};
+            }
+        }
     }
 
     /**
