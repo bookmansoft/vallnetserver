@@ -182,6 +182,10 @@ class wechat extends facade.Control
                     'openCard'] // 必填，需要使用的JS接口列表，
                     */
                 jsApiList: ['checkJsApi',
+                    'chooseImage',
+                    'uploadImage',
+                    'downloadImage',
+                    'previewImage',
                     'scanQRCode',
                     'chooseWXPay']
                 }
