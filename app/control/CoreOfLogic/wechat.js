@@ -1,12 +1,15 @@
-let facade = require('gamecloud');
-let weChat = require('../../util/wechat');
-let randomHelp = require('../../util/randomHelp');
-let md5 = require('md5');
-let tableType = require('../../util/tabletype');
-let remoteSetup = require('../../util/gamegold');
-let signature = require('../../util/signature.js');
-let wechatcfg = require('../../util/wechat.cfg');
-let wxUnifiedorder = require('../../util/wx_unifiedorder');
+let facade = require('gamecloud')
+let weChat = require('../../util/wechat')
+let randomHelp = require('../../util/randomHelp')
+let md5 = require('md5')
+let tableType = require('../../util/tabletype')
+let remoteSetup = require('../../util/gamegold')
+let signature = require('../../util/signature.js')
+let wechatcfg = require('../../util/wechat.cfg')
+let wxUnifiedorder = require('../../util/wx_unifiedorder')
+const WechatAPI = require('co-wechat-api')
+const fs = require('fs')
+const axios = require('axios')
 
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
@@ -217,7 +220,24 @@ class wechat extends facade.Control
             console.log(e);
             return {errcode: 'error', errmsg: e}
         }
-        
+    }
+
+    async GetToken(user, params) {
+        const wxAppAPI = new WechatAPI(wechatcfg.miniBgwAppId, wechatcfg.miniBgwAppSecret)
+        const token = await wxAppAPI.ensureAccessToken()
+        // 拼接url
+        const url = `https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${token.accessToken}`
+
+        // 发送POST请求
+        const response = await axios.post(url, {
+        page: 'pages/index/index',
+        scene: 'abc123'
+        }, { responseType: 'stream' })
+
+        // 将请求结果中的二进制流写入到本地文件qrcode.png
+        response.data.pipe(fs.createWriteStream('qrcode.png'))
+
+        return {errcode: 'success', token: token}
     }
 }
 

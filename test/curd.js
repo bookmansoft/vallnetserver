@@ -15,7 +15,7 @@ describe('CURD', function() {
         console.log(msg);
     });
 
-    it.only('批量创建', async () => {
+    it('批量创建', async () => {
         let msg = await remote.fetching({func: "test.Creates", items:[{item:'1'},{item:'2'}]});
         console.log(msg);
     });
@@ -40,7 +40,7 @@ describe('CURD', function() {
         console.log(msg);
     });
 
-    it.only('列表', async () => {
+    it('列表', async () => {
         let msg = await remote.fetching({func: "test.List"});
         console.log(msg);
     });

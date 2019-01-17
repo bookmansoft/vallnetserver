@@ -1,5 +1,7 @@
 let facade = require('gamecloud')
 let remoteSetup = require('../../util/gamegold');
+let tableType = require('../../util/tabletype');
+let tableField = require('../../util/tablefield');
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
@@ -85,6 +87,111 @@ class wallet extends facade.Control
         ]);    
         console.log(ret);
         return {errcode: 'success', errmsg: 'tx.list:ok', list: ret};           
+    }
+
+    /**
+     * 系统通知
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async GetNotify(user, params) {
+        let openid = params.openid
+        let ret = await remote.execute('sys.listNotify', [
+            1 
+        ]);
+        if(!!ret && ret.length > 0) {
+            ret.forEach(element => {
+                let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([['sn', '==', element.sn]]).records();
+                if(blockNotifys.length==0) {
+                    let current_time = parseInt(new Date().getTime() / 1000)
+                    let notifyOpenid = ''
+                    try {
+                        let obj = eval('(' + (element.body.content) + ')')
+                        if(!!obj && obj.hasOwnProperty('addr')) {
+                            let addr = obj.addr
+                            let userWallets = facade.GetMapping(tableType.userWallet).groupOf().where([['addr', '==', addr]]).records();
+                            if(userWallets.length >0) {
+                                notifyOpenid = userWallets[0].orm.openid
+                            }
+                        }
+                    } catch(e) {
+
+                    }
+                    let notifyItem = {
+                        sn: element.sn,
+                        h: element.h,
+                        status: element.status,
+                        content: element.body.content,
+                        type: element.body.type,
+                        openid: notifyOpenid,
+                        create_time: current_time,
+                        update_time: 0
+                    }
+                    facade.GetMapping(tableType.blockNotify).Create(notifyItem);
+                }
+            });
+        }
+        let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([
+            ['openid', '==', openid],
+            ['status', '==', 1]
+        ]).records();
+        return {errcode: 'success', errmsg: 'notify.list:ok', count: blockNotifys.length}; 
+    }
+
+    /**
+     * 消息列表
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async NotifyList(user, params) {
+        let openid = params.openid
+        let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([
+            ['openid', '==', openid]
+        ]).records(tableField.blockNotify);
+        return {errcode: 'success', errmsg: 'notify.list:ok', notifys: blockNotifys}; 
+    }
+
+        /**
+     * 消息列表
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async NotifyOrderPay(user, params) {
+        let openid = params.openid
+        let sn = params.sn
+        let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([
+            ['openid', '==', openid],
+            ['sn', '==', sn]
+        ]).records();
+        if(blockNotifys.length > 0) {
+            let blockNotify = blockNotifys[0]
+            blockNotify.setAttr('status', 2);
+            blockNotify.orm.save()
+
+            let obj = eval('(' + (blockNotify.orm.content) + ')')
+            if(!!obj && obj.hasOwnProperty('cid') && obj.hasOwnProperty('price') && obj.hasOwnProperty('sn')) { 
+                let cid = obj.cid;
+                let uid = openid;
+                let openid = openid;
+                let sn = obj.sn;
+                let price = obj.price;
+                let ret = await remote.execute('order.pay', [
+                    cid, //game_id
+                    uid, //user_id
+                    sn, //order_sn订单编号
+                    price, //order_sum订单金额
+                    openid  //指定结算的钱包账户，一般为微信用户的openid
+                ]);
+                console.log(ret)
+                blockNotify.setAttr('status', 3);
+                blockNotify.orm.save()
+            } else {
+                return {errcode: 'fail', errmsg: 'invalid order'}; 
+            }
+        } else {
+            return {errcode: 'fail', errmsg: 'notify not exist'}; 
+        }
+        return {errcode: 'success', errmsg: 'notify.orderpay:ok'}; 
     }
 
 }

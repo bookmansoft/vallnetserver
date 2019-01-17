@@ -5,5 +5,9 @@ module.exports = {
     noncestr: 'Wm3WZYTPz0wzccnWsdfadf',
     accessTokenUrl:'https://api.weixin.qq.com/cgi-bin/token',
     ticketUrl:'https://api.weixin.qq.com/cgi-bin/ticket/getticket',
-    cache_duration:1000*60*60*24 //缓存时长为24小时
+    cache_duration:1000*60*60*24, //缓存时长为24小时
+    miniAppId: 'wx4b3efb80ac5de780',
+    miniAppSecret: '36ad9a51a413cb4dbe1562206c6c0ba4',
+    miniBgwAppId: 'wxdb571c43fa1ff06b',
+    miniBgwAppSecret: 'ce11b91e55ec25bccff837401746717c',
 }

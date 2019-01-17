@@ -72,6 +72,7 @@
     "bytes": "^2.5.0",
     "charenc": "0.0.2",
     "co": "^4.6.0",
+    "co-wechat-api": "^3.8.2",
     "component-bind": "^1.0.0",
     "component-emitter": "^1.2.1",
     "component-inherit": "0.0.3",

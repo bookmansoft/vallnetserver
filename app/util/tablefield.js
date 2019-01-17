@@ -202,8 +202,19 @@ let vipdraw = [
     'draw_at',
 ]
 
+let blockNotify = [
+    'sn',
+    'h',
+    'status',
+    'content',
+    'type',
+    'openid',
+    'create_time',
+    'update_time'
+]
+
 exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
     userBase, userProfile, userWallet, userBaseWechat,
-    cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip
+    cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify
 }
