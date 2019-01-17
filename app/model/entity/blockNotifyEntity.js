@@ -1,6 +1,6 @@
 let facade = require('gamecloud');
 let BaseEntity = facade.BaseEntity;
-let {BlockNotify} = require('../table/BlockNotify');
+let {BlockNotify} = require('../table/blockNotify');
 let tableType = require('../../util/tabletype');
 
 //区块链游戏库
