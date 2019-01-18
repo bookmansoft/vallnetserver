@@ -147,11 +147,19 @@ class wallet extends facade.Control
         let openid = params.openid
         let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([
             ['openid', '==', openid]
-        ]).records(tableField.blockNotify);
-        return {errcode: 'success', errmsg: 'notify.list:ok', notifys: blockNotifys}; 
+        ]).records();
+        let data = new Array()
+        if(blockNotifys.length >0 ) {
+            blockNotifys.forEach(element => {
+                element.setAttr('status', 2);
+                element.orm.save()
+                data.push(element.orm)
+            });
+        }
+        return {errcode: 'success', errmsg: 'notify.list:ok', notifys: data}; 
     }
 
-        /**
+    /**
      * 消息列表
      * @param {*} user 
      * @param {*} params 
@@ -165,14 +173,10 @@ class wallet extends facade.Control
         ]).records();
         if(blockNotifys.length > 0) {
             let blockNotify = blockNotifys[0]
-            blockNotify.setAttr('status', 2);
-            blockNotify.orm.save()
-
             let obj = eval('(' + (blockNotify.orm.content) + ')')
             if(!!obj && obj.hasOwnProperty('cid') && obj.hasOwnProperty('price') && obj.hasOwnProperty('sn')) { 
                 let cid = obj.cid;
                 let uid = openid;
-                let openid = openid;
                 let sn = obj.sn;
                 let price = obj.price;
                 let ret = await remote.execute('order.pay', [
@@ -182,16 +186,19 @@ class wallet extends facade.Control
                     price, //order_sum订单金额
                     openid  //指定结算的钱包账户，一般为微信用户的openid
                 ]);
-                console.log(ret)
-                blockNotify.setAttr('status', 3);
-                blockNotify.orm.save()
+               if(ret != null) {
+                  blockNotify.setAttr('status', 3);
+                  blockNotify.orm.save()
+                  return {errcode: 'success', errmsg: 'notify.orderpay:ok', ret:ret}; 
+               }  else {
+                  return {errcode: 'fail', errmsg: 'pay error', ret: null}; 
+               }
             } else {
                 return {errcode: 'fail', errmsg: 'invalid order'}; 
             }
         } else {
             return {errcode: 'fail', errmsg: 'notify not exist'}; 
         }
-        return {errcode: 'success', errmsg: 'notify.orderpay:ok'}; 
     }
 
 }

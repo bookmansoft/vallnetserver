@@ -45,7 +45,11 @@ class order extends facade.Control
             openid  //指定结算的钱包账户，一般为微信用户的openid
           ]);
         console.log(ret);
-        return {errcode: 'success', errmsg: 'orderpay:ok', ret: ret};
+        if(ret == null) {
+            return {errcode: 'faile', errmsg: 'pay error'};
+        } else {
+            return {errcode: 'success', errmsg: 'orderpay:ok', ret: ret};
+        }
     }
 
     /**
