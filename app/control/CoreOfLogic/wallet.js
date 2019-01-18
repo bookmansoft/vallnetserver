@@ -107,8 +107,8 @@ class wallet extends facade.Control
                     let notifyOpenid = ''
                     try {
                         let obj = eval('(' + (element.body.content) + ')')
-                        if(!!obj && obj.hasOwnProperty('addr')) {
-                            let addr = obj.addr
+                        if(!!obj && obj.hasOwnProperty('address')) {
+                            let addr = obj.address
                             let userWallets = facade.GetMapping(tableType.userWallet).groupOf().where([['addr', '==', addr]]).records();
                             if(userWallets.length >0) {
                                 notifyOpenid = userWallets[0].orm.openid
