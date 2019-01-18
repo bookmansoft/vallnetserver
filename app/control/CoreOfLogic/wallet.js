@@ -151,8 +151,10 @@ class wallet extends facade.Control
         let data = new Array()
         if(blockNotifys.length >0 ) {
             blockNotifys.forEach(element => {
-                element.setAttr('status', 2);
-                element.orm.save()
+                if(element.orm.status == 1) {
+                    element.setAttr('status', 2);
+                    element.orm.save()
+                }
                 data.push(element.orm)
             });
         }
