@@ -7,6 +7,8 @@ let remoteSetup = require('../../util/gamegold')
 let signature = require('../../util/signature.js')
 let wechatcfg = require('../../util/wechat.cfg')
 let wxUnifiedorder = require('../../util/wx_unifiedorder')
+let wxSendRecPack = require('../../util/wxRedPack')
+
 const WechatAPI = require('co-wechat-api')
 const fs = require('fs')
 const axios = require('axios')
@@ -148,49 +150,7 @@ class wechat extends facade.Control
                     timestamp: data.timestamp, // 必填，生成签名的时间戳
                     nonceStr: data.noncestr, // 必填，生成签名的随机串
                     signature: data.signature,// 必填，签名，见附录1
-                    /*
-                    jsApiList: ['checkJsApi',
-                    'onMenuShareTimeline',
-                    'onMenuShareAppMessage',
-                    'onMenuShareQQ',
-                    'onMenuShareWeibo',
-                    'hideMenuItems',
-                    'showMenuItems',
-                    'hideAllNonBaseMenuItem',
-                    'showAllNonBaseMenuItem',
-                    'translateVoice',
-                    'startRecord',
-                    'stopRecord',
-                    'onRecordEnd',
-                    'playVoice',
-                    'pauseVoice',
-                    'stopVoice',
-                    'uploadVoice',
-                    'downloadVoice',
-                    'chooseImage',
-                    'previewImage',
-                    'uploadImage',
-                    'downloadImage',
-                    'getNetworkType',
-                    'openLocation',
-                    'getLocation',
-                    'hideOptionMenu',
-                    'showOptionMenu',
-                    'closeWindow',
-                    'scanQRCode',
-                    'chooseWXPay',
-                    'openProductSpecificView',
-                    'addCard',
-                    'chooseCard',
-                    'openCard'] // 必填，需要使用的JS接口列表，
-                    */
-                jsApiList: ['checkJsApi',
-                    'chooseImage',
-                    'uploadImage',
-                    'downloadImage',
-                    'previewImage',
-                    'scanQRCode',
-                    'chooseWXPay']
+                    jsApiList: wechatcfg.jsApiList,
                 }
                 //res.json(wxconfig);
                 console.log("wxconfig " + wxconfig);
@@ -238,6 +198,12 @@ class wechat extends facade.Control
         response.data.pipe(fs.createWriteStream('qrcode.png'))
 
         return {errcode: 'success', token: token}
+    }
+
+    async SendRecPack(user, params) {
+        let openid = params.openid
+        let ret = await wxSendRecPack(200, openid)
+        return {errcode: 'success', ret: ret}
     }
 }
 

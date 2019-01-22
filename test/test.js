@@ -10,8 +10,8 @@ describe('TEST', function() {
         await remote.login({openid: `${Math.random()*1000000000 | 0}`});
     });
 
-    it.only('notify', async () => {
-        let msg = await remote.fetching({func: "wallet.NotifyList", openid: 'oHvae4rF-nfnTQVxuCw6PS9Y8vw0', uid:17});
+    it.only('wechat.redpack', async () => {
+        let msg = await remote.fetching({func: "wechat.SendRecPack", openid: 'oHvae4rF-nfnTQVxuCw6PS9Y8vw0', uid:17});
         console.log(msg);
     });
 
