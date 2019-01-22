@@ -39,6 +39,7 @@ class wechat extends facade.Control
     async GetMapOpenId(user, params) {
         let code = params.code
         var weChatEntity = new weChat();
+        console.log(code, wechatcfg.appid, wechatcfg.secret)
         let ret = await weChatEntity.getOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
         console.log(ret);
         if(ret.errcode !== undefined ) {
