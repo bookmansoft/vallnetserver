@@ -36,6 +36,21 @@ class wechat extends facade.Control
         return ['parseParams', 'commonHandle'];
     }
 
+    async GetMapOpenId(user, params) {
+        let code = params.code
+        var weChatEntity = new weChat();
+        let ret = await weChatEntity.getOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
+        console.log(ret);
+        if(ret.errcode !== undefined ) {
+            return {errcode: 'fail', errmsg: ret.errmsg};
+        } else {
+            console.log(ret)
+            //let openid = ret.openid
+            //let unionid = ret.unionid
+            return {errcode: 'success', errmsg:'getopenid:ok', ret: ret}
+        }
+    }
+
     /**
      * 获取openid
      * 【用法还不明确】
@@ -45,7 +60,7 @@ class wechat extends facade.Control
     async GetOpenId(user, params) {
        var weChatEntity = new weChat();
        try {
-            let ret = await weChatEntity.getOpenIdByCode(params.code);
+            let ret = await weChatEntity.getOpenIdByCode(params.code, wechatcfg.miniAppId, wechatcfg.miniAppSecret);
             console.log(ret);
             if(ret.errcode !== undefined ) {
                 return {errcode: 'fail', errmsg: ret.errmsg};

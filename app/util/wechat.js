@@ -15,15 +15,15 @@ class weChat {
      * @param {*} code 
      * @param {*} callback 
      */
-    async getOpenIdByCode(code) {
+    async getOpenIdByCode(code, appId, AppSecret) {
         let options = {
             uri: `https://api.weixin.qq.com/sns/jscode2session`,
             //uri: `https://api.weixin.qq.com/sns/oauth2/access_token`,
             json: true,
             qs: {
                 grant_type: `authorization_code`,
-                appid: this.app_id,
-                secret: this.app_secret,
+                appid: appId,
+                secret: AppSecret,
                 js_code: code
             }
         };
