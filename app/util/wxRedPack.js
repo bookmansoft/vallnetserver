@@ -23,7 +23,7 @@ let wxConfig = {
     wishing: '新年快乐',
     remark: '分享越多，快乐越多',
     mch_id: '1520782501',
-    wxappid: 'wx4b3efb80ac5de780',
+    wxappid: 'wx4a5e9d7ae34ad4b4',
     wxkey: '41134e3b985d0254c6c7c64912fc0935'
 }
 //生成微信红包数据
@@ -98,12 +98,15 @@ async function  sendRedPacket(total_amount, re_openid) {
             }).on('end', function () {
                 let parser = new xml2js.Parser({trim: true, explicitArray: false, explicitRoot: false});//解析签名结果xml转json
                 parser.parseString(body, function (err, result) {
+                    /*
                     if (result["result_code"] === "SUCCESS") {
                         resolve({"code": result["result_code"], "mch_billno": result["mch_billno"]});
                     } else {
                         console.log(result["return_msg"]);
                         resolve({"code": result["result_code"]});
                     }
+                    */
+                   resolve({return_msg: result["return_msg"]})
                 });
             });
  

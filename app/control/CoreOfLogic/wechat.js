@@ -237,8 +237,8 @@ class wechat extends facade.Control
 
     async SendRecPack(user, params) {
         let openid = params.openid
-        let ret = await wxSendRecPack(200, openid)
-        return {errcode: 'success', ret: ret}
+        let ret = await wxSendRecPack(100, openid)
+        return {errcode: 'success', ret: ret.return_msg}
     }
 }
 

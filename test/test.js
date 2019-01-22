@@ -11,7 +11,7 @@ describe('TEST', function() {
     });
 
     it.only('wechat.redpack', async () => {
-        let msg = await remote.fetching({func: "wechat.SendRecPack", openid: 'oHvae4rF-nfnTQVxuCw6PS9Y8vw0', uid:17});
+        let msg = await remote.fetching({func: "wechat.SendRecPack", openid: 'oqR1e1ads_cDhYGvjS9sftXEHlx4', uid:17});
         console.log(msg);
     });
 
