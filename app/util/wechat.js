@@ -18,6 +18,7 @@ class weChat {
     async getOpenIdByCode(code) {
         let options = {
             uri: `https://api.weixin.qq.com/sns/jscode2session`,
+            //uri: `https://api.weixin.qq.com/sns/oauth2/access_token`,
             json: true,
             qs: {
                 grant_type: `authorization_code`,

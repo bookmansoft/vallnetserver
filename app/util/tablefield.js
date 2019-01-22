@@ -74,6 +74,7 @@ let userProfile = [
     'no_reading_msg_count',
     'comment_count',
     'buy_count',
+    'unionid',
     'games',
     'avatar_uri',
     'desc'

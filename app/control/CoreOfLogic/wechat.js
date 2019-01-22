@@ -8,6 +8,7 @@ let signature = require('../../util/signature.js')
 let wechatcfg = require('../../util/wechat.cfg')
 let wxUnifiedorder = require('../../util/wx_unifiedorder')
 let wxSendRecPack = require('../../util/wxRedPack')
+let WXBizDataCrypt = require('../../util/WXBizDataCrypt')
 
 const WechatAPI = require('co-wechat-api')
 const fs = require('fs')
@@ -81,7 +82,7 @@ class wechat extends facade.Control
                         facade.GetMapping(tableType.userWechat).Create(userWechatItem);
                     }
                 }
-                return {errcode: 'success', errmsg:'getopenid:ok', detail:{openid: ret.openid}};
+                return {errcode: 'success', errmsg:'getopenid:ok', detail:{openid: ret.openid, sessionKey: ret.session_key}};
             }
        } catch(err) {
             console.log('get openid fail:' + err.message);
@@ -97,6 +98,9 @@ class wechat extends facade.Control
      */
     async RegUserProfile(user, params) {
         let openid = params.openid;
+        let sessionKey = params.sessionKey;
+        let iv = params.iv;
+        let encryptedData = params.encryptedData;
         let userBase = facade.GetMapping(tableType.userBase).groupOf().where([['openid', '==', openid]]).records(['id']);
         let errmsg = '';
         if(userBase.length > 0) {       //
@@ -109,6 +113,15 @@ class wechat extends facade.Control
                 let block_addr = (!!ret && ret.hasOwnProperty("data")) ? ret.data.addr : '';
                 //let ret = await remote.execute('address.create', [openid]);   
                 //let block_addr = (!!ret && ret.hasOwnProperty("address")) ? ret.address : '';
+                encryptedData = encryptedData.replace(/ /g,'+');
+                iv = iv.replace(/ /g,'+');
+                let pc = new WXBizDataCrypt(wechatcfg.miniAppId, sessionKey)
+                let data = pc.decryptData(encryptedData , iv)
+                console.log('解密后 data: ', data)
+                let unionId = ''
+                if(data != null && data.hasOwnProperty('unionId')) {
+                    unionId = data.unionId
+                }
                 //添加用户个人信息
                 let userProfileItem = {
                     uid: uid,
@@ -118,9 +131,15 @@ class wechat extends facade.Control
                     province: params.province,
                     block_addr: block_addr,
                     city: params.city,
-                    avatar_uri: params.avatarUrl
+                    avatar_uri: params.avatarUrl,
+                    unionid: unionId
                 };
                 facade.GetMapping(tableType.userProfile).Create(userProfileItem);
+                let userWechats = facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records();
+                if(userWechats.length >0 ) {
+                    userWechats[0].setAttr('unionid', unionId)
+                    userWechats[0].orm.save()
+                }
                 errmsg = 'regUserProfile:ok';
             } else {
                 //用户个人信息已存在
