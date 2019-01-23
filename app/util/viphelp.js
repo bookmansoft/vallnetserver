@@ -81,16 +81,16 @@ class viphelp {
                     let current_time = parseInt(new Date().getTime() / 1000);
                     let delta_time = 0
                     if(current_time > userVip.orm.vip_end_time) {
-                        delta_time = userVip.orm.vip_end_time - userVip.orm.vip_start_time
+                        delta_time = userVip.orm.vip_end_time - userVip.orm.vip_last_get_time
                         //设置过期
                         userVip.setAttr('is_expired', 1);
                     } else {
-                        delta_time = current_time - userVip.orm.vip_start_time
+                        delta_time = current_time - userVip.orm.vip_last_get_time
                     }
                     if(delta_time > 0) {
                         let vip_last_get_count = delta_time * time_get_count
-                        let vip_get_count = vip_last_get_count - userVip.orm.vip_last_get_count
-                        vip_usable_count =  userVip.orm.vip_usable_count + vip_get_count
+                        //let vip_get_count = vip_last_get_count - userVip.orm.vip_last_get_count
+                        vip_usable_count =  userVip.orm.vip_usable_count + vip_last_get_count
                         userVip.setAttr('vip_last_get_time', current_time);
                         userVip.setAttr('vip_last_get_count', vip_last_get_count);
                         userVip.setAttr('vip_usable_count', vip_usable_count);
