@@ -1,8 +1,7 @@
 let facade = require('gamecloud')
-let wxUnifiedorder = require('../../util/wx_unifiedorder');
+let wxUnifiedorder = require('../../util/wxUnifiedorder');
 let remoteSetup = require('../../util/gamegold');
 let tableType = require('../../util/tabletype');
-let tableField = require('../../util/tablefield');
 let VipHelp = require('../../util/viphelp');
 //引入工具包
 const toolkit = require('gamegoldtoolkit')

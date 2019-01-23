@@ -1,5 +1,7 @@
 module.exports = {
     grant_type: 'client_credential',
+    mch_id: '1520782501',
+    mch_key: '41134e3b985d0254c6c7c64912fc0935',
     appid: 'wx4a5e9d7ae34ad4b4',
     secret: '67ac3bcb97adf225c8b9986fb470a4a1',
     noncestr: 'Wm3WZYTPz0wzccnWsdfadf',
