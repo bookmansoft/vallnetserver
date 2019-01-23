@@ -46,6 +46,7 @@ class viphelp {
             } else if(userVip.orm.vip_level == vip_level) {     //续费
                 userVip.setAttr('vip_end_time', userVip.orm.vip_end_time + month_time);
             } else if(vip_level > userVip.orm.vip_level) {      //升级
+                await getVip(uid);
                 userVip.setAttr('vip_level', vip_level);
             }
             userVip.orm.save()
