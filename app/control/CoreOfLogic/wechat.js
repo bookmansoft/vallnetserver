@@ -222,22 +222,25 @@ class wechat extends facade.Control
         const token = await wxAppAPI.ensureAccessToken()
         // 拼接url
         const url = `https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${token.accessToken}`
-
         // 发送POST请求
         const response = await axios.post(url, {
         page: 'pages/index/index',
         scene: 'abc123'
         }, { responseType: 'stream' })
-
         // 将请求结果中的二进制流写入到本地文件qrcode.png
         response.data.pipe(fs.createWriteStream('qrcode.png'))
-
         return {errcode: 'success', token: token}
     }
 
     async SendRecPack(user, params) {
         let openid = params.openid
-        let ret = await wxSendRecPack(100, openid)
+        let redPackConfig = {
+            showName: '游戏金',
+            clientIp: params.userip,
+            wishing: '新年快乐，大吉大利',
+            remark: '分享越多，快乐越多，游戏金越多',
+        }
+        let ret = await wxSendRecPack(100, 1, openid, redPackConfig)
         return {errcode: 'success', ret: ret.return_msg}
     }
 }

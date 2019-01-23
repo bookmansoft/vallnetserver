@@ -1,3 +1,5 @@
+let wechatcfg = require('./wechat.cfg')
+
 //构建xml
 let fnCreateXml = function (json) {
     let _xml = '';
@@ -9,36 +11,36 @@ let fnCreateXml = function (json) {
  
 //生成url串用于微信md5校验
 let fnCreateUrlParam = function (json) {
-    let _str = '';
     let _arr = [];
     for (let key in json) {
         _arr.push(key + '=' + json[key]);
     }
     return _arr.join('&');
 };
-
-let wxConfig = {
+/*
+let redPackConfig = {
     showName: '百谷红包',
     clientIp: '110.90.229.163',
     wishing: '新年快乐',
     remark: '分享越多，快乐越多',
-    mch_id: '1520782501',
-    wxappid: 'wx4a5e9d7ae34ad4b4',
-    wxkey: '41134e3b985d0254c6c7c64912fc0935'
 }
+*/
 //生成微信红包数据
-let fnGetWeixinBonus = function (option) {
+let fnGetWeixinBonus = function (option, redPackConfig) {
     let total_amount = option.total_amount || 10, 	//红包总金额
         re_openid = option.re_openid, 				//红包发送的目标用户
         total_num = option.total_num || 1; 			//红包个数
     let now = new Date();
-    let showName = wxConfig.showName;				//红包名字
-    let clientIp = wxConfig.clientIp;				//客户端IP
-    let wishing = wxConfig.wishing;					//红包上显示的祝福语
-    let mch_id = wxConfig.mch_id;					//商户ID
-    let wxappid = wxConfig.wxappid;					//微信支付APPID
-    let wxkey = wxConfig.wxkey;						//公众号secret
-    let remark = wxConfig.remark;
+
+    let showName = redPackConfig.showName;			//红包名字
+    let clientIp = redPackConfig.clientIp;			//客户端IP
+    let wishing = redPackConfig.wishing;			//红包上显示的祝福语
+    let remark = redPackConfig.remark;              //备注
+
+    let mch_id = wechatcfg.mch_id;					//商户ID
+    let wxappid = wechatcfg.appid;					//微信公众号APPID
+    let wxkey = wechatcfg.mch_key;						//商户号key
+    
     let date_time = now.getFullYear() + '' + (now.getMonth() + 1) + '' + now.getDate();
     let date_no = (now.getTime() + '').substr(-8); //生成8为日期数据，精确到毫秒
     let random_no = Math.floor(Math.random() * 99);
@@ -72,11 +74,17 @@ let fnGetWeixinBonus = function (option) {
     return sendData;
 };
 
-async function  sendRedPacket(total_amount, re_openid) {
+/**
+ * 
+ * @param {*} total_amount  红包总金额
+ * @param {*} total_num     红包个数
+ * @param {*} re_openid     发送用户
+ */
+async function  sendRedPacket(total_amount, total_num, re_openid, redPackConfig) {
     return new Promise((resolve, reject) => {
         let host = 'api.mch.weixin.qq.com';
         let path = '/mmpaymkttransfers/sendredpack';
-        let total_num = 1;
+        //let total_num = 1;
         let fs = require('fs')
         let https = require('https')
         let xml2js = require('xml2js')
@@ -115,7 +123,7 @@ async function  sendRedPacket(total_amount, re_openid) {
         });
  
         let option = {total_amount, re_openid, total_num};
-        let sendData = fnGetWeixinBonus(option);
+        let sendData = fnGetWeixinBonus(option, redPackConfig);
         req.write(sendData);
         req.end();
     });
