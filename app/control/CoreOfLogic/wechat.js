@@ -6,7 +6,7 @@ let tableType = require('../../util/tabletype')
 let remoteSetup = require('../../util/gamegold')
 let signature = require('../../util/signature.js')
 let wechatcfg = require('../../util/wechat.cfg')
-let wxUnifiedorder = require('../../util/wx_unifiedorder')
+let wxUnifiedorder = require('../../util/wxUnifiedorder')
 let wxSendRecPack = require('../../util/wxRedPack')
 let WXBizDataCrypt = require('../../util/WXBizDataCrypt')
 
@@ -206,10 +206,10 @@ class wechat extends facade.Control
         let openid = params.openid
         let ip = params.userip
         let price = params.price
-        let productIntro = params.productIntro
+        let productInfo = params.productInfo
         let tradeId = params.tradeId
         try {
-            let res = await wxUnifiedorder.unifiedOrder(openid, ip, price, productIntro, tradeId);
+            let res = await wxUnifiedorder.unifiedOrder(openid, ip, price, productInfo, tradeId);
             return {errcode: 'success', unifiedOrder: res}
         }catch(e) {
             console.log(e);
