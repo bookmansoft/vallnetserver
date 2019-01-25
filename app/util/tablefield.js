@@ -214,8 +214,21 @@ let blockNotify = [
     'update_time'
 ]
 
+let redpack = [
+    'act_name',
+    'mch_billno',
+    'nick_name',
+    're_openid',
+    'remark',
+    'send_name',
+    'total_amount',
+    'total_num',
+    'wishing',
+    'return_msg',
+    'order_status'
+]
 exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
-    userBase, userProfile, userWallet, userBaseWechat,
+    userBase, userProfile, userWallet, userBaseWechat, redpack,
     cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify
 }

@@ -47,12 +47,13 @@ let fnGetWeixinBonus = function (option, redPackConfig) {
     if (random_no < 10) { //生成位数为2的随机码
         random_no = '0' + random_no;
     }
+
     let muc_id = mch_id;
     let xmlTemplate = '<xml>{content}</xml>';
     let contentJson = {};
     contentJson.act_name = showName;
     contentJson.client_ip = clientIp;
-    contentJson.mch_billno = muc_id + date_time + date_no + random_no; //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字; //+201502041234567893';
+    contentJson.mch_billno = redPackConfig.mch_billno; // muc_id + date_time + date_no + random_no; //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字; //+201502041234567893';
     contentJson.mch_id = muc_id;
  
     contentJson.nick_name = showName;

@@ -239,8 +239,25 @@ class wechat extends facade.Control
             clientIp: params.userip,
             wishing: '新年快乐，大吉大利',
             remark: '分享越多，快乐越多，游戏金越多',
+            mch_billno: wechatcfg.mch_id + date_time + date_no + random_no //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字;
         }
-        let ret = await wxSendRecPack(100, 1, openid, redPackConfig)
+        let total_amount = 100
+        let total_num = 1
+        let ret = await wxSendRecPack(total_amount, total_num, openid, redPackConfig)
+        let redpackItem = {
+            act_name: redPackConfig.showName,
+            mch_billno: redPackConfig.mch_billno,
+            nick_name: redPackConfig.showName,
+            re_openid: openid,
+            remark: redPackConfig.remark,
+            send_name: redPackConfig.showName,
+            total_amount: total_amount,
+            total_num: total_num,
+            wishing: redPackConfig.wishing,
+            return_msg: ret.return_msg,
+            order_status: 0,
+        }
+        facade.GetMapping(tableType.redpack).Create(redpackItem);
         return {errcode: 'success', ret: ret.return_msg}
     }
 }
