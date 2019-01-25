@@ -234,6 +234,13 @@ class wechat extends facade.Control
 
     async SendRecPack(user, params) {
         let openid = params.openid
+        let date_time = now.getFullYear() + '' + (now.getMonth() + 1) + '' + now.getDate();
+        let date_no = (now.getTime() + '').substr(-8); //生成8为日期数据，精确到毫秒
+        let random_no = Math.floor(Math.random() * 99);
+        if (random_no < 10) { //生成位数为2的随机码
+            random_no = '0' + random_no;
+        }
+        
         let redPackConfig = {
             showName: '游戏金',
             clientIp: params.userip,
