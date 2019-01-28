@@ -267,6 +267,7 @@ class wechat extends facade.Control
             order_status: 0,
         }
         facade.GetMapping(tableType.redpack).Create(redpackItem);
+        
         return {errcode: 'success', ret: ret.return_msg}
     }
 }
