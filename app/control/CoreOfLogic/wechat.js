@@ -7,7 +7,7 @@ let remoteSetup = require('../../util/gamegold')
 let signature = require('../../util/signature.js')
 let wechatcfg = require('../../util/wechat.cfg')
 let wxUnifiedorder = require('../../util/wxUnifiedorder')
-let wxSendRecPack = require('../../util/wxRedPack')
+let {sendRedPacket} = require('../../util/wxRedPack')
 let WXBizDataCrypt = require('../../util/WXBizDataCrypt')
 
 const WechatAPI = require('co-wechat-api')
@@ -252,7 +252,7 @@ class wechat extends facade.Control
         }
         let total_amount = 100
         let total_num = 1
-        let ret = await wxSendRecPack(total_amount, total_num, openid, redPackConfig)
+        let ret = await sendRedPacket(total_amount, total_num, openid, redPackConfig)
         let redpackItem = {
             act_name: redPackConfig.showName,
             mch_billno: redPackConfig.mch_billno,

@@ -5,9 +5,8 @@
 
 const remote = require('./util')
 
-async function beforeEach() {
-    let ret = await remote.login({openid: `${Math.random()*1000000000 | 0}`});
-    return ret
+async function beforeRemote() {
+    await remote.login({openid: `${Math.random()*1000000000 | 0}`});
 }
 
 async function test() {
@@ -16,10 +15,13 @@ async function test() {
 }
 
 async function start() {
-    let ret = await beforeEach()
-    console.log(ret)
+    await beforeRemote()
+}
+
+async function task() {
     let msg = await test()
-    console.log(msg)
+    console.log(msg) 
 }
 
 start()
+setInterval(task, 5000);

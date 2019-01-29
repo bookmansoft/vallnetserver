@@ -75,16 +75,43 @@ let fnGetWeixinBonus = function (option, redPackConfig) {
     return sendData;
 };
 
+//生成微信红包数据
+let fnGetHBInfo = function (mch_billno) {
+
+    let mch_id = wechatcfg.mch_id;					//商户ID
+    let wxappid = wechatcfg.appid;					//微信公众号APPID
+    let wxkey = wechatcfg.mch_key;						//商户号key
+    
+    let muc_id = mch_id;
+    let xmlTemplate = '<xml>{content}</xml>';
+    let contentJson = {};
+
+    contentJson.mch_billno = redPackConfig.mch_billno; // muc_id + date_time + date_no + random_no; //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字; //+201502041234567893';
+    contentJson.mch_id = muc_id;
+    contentJson.nick_name = showName;
+    contentJson.nonce_str = Math.random().toString(36).substr(2, 15);
+    contentJson.bill_type = 'MCHT';
+    contentJson.appid = wxappid;
+    contentJson.key = wxkey;
+    let contentStr = fnCreateUrlParam(contentJson);
+    let crypto = require('crypto');
+    contentJson.sign = crypto.createHash('md5').update(contentStr, 'utf8').digest('hex').toUpperCase();
+    delete contentJson.key;
+    let xmlData = fnCreateXml(contentJson);
+    let sendData = '<xml>' + xmlData + '</xml>'; //_xmlTemplate.replace(/{content}/)
+    return sendData;
+};
+
 /**
  * 
  * @param {*} total_amount  红包总金额
  * @param {*} total_num     红包个数
  * @param {*} re_openid     发送用户
  */
-async function  sendRedPacket(total_amount, total_num, re_openid, redPackConfig) {
+async function  redpackApi(host, path, sendData) {
     return new Promise((resolve, reject) => {
-        let host = 'api.mch.weixin.qq.com';
-        let path = '/mmpaymkttransfers/sendredpack';
+        //let host = 'api.mch.weixin.qq.com';
+        //let path = '/mmpaymkttransfers/sendredpack';
         //let total_num = 1;
         let fs = require('fs')
         let https = require('https')
@@ -115,7 +142,8 @@ async function  sendRedPacket(total_amount, total_num, re_openid, redPackConfig)
                         resolve({"code": result["result_code"]});
                     }
                     */
-                   resolve({return_msg: result["return_msg"]})
+                   //resolve({return_msg: result["return_msg"]})
+                   resolve(result)
                 });
             });
  
@@ -128,7 +156,35 @@ async function  sendRedPacket(total_amount, total_num, re_openid, redPackConfig)
         req.write(sendData);
         req.end();
     });
-
 }
 
-exports = module.exports = sendRedPacket
+/**
+ * 
+ * @param {*} total_amount  红包总金额
+ * @param {*} total_num     红包个数
+ * @param {*} re_openid     发送用户
+ */
+async function  sendRedPacket(total_amount, total_num, re_openid, redPackConfig) {
+    let host = 'api.mch.weixin.qq.com';
+    let path = '/mmpaymkttransfers/sendredpack';
+    let option = {total_amount, re_openid, total_num};
+    let sendData = fnGetWeixinBonus(option, redPackConfig);
+    let result = await redpackApi(host, path, sendData);
+    return {return_msg: result["return_msg"]}
+}
+
+/**
+* 
+* @param {*} mch_billno  商户订单号
+*/
+async function  getHBinfo(mch_billno) {
+    let host = 'api.mch.weixin.qq.com';
+    let path = '/mmpaymkttransfers/gethbinfo';
+    let sendData = fnGetHBInfo(mch_billno);
+    let result = await redpackApi(host, path, sendData);
+    return result
+}
+
+exports = module.exports = {
+    sendRedPacket, getHBinfo 
+}
