@@ -86,11 +86,11 @@ let fnGetHBInfo = function (mch_billno) {
     let xmlTemplate = '<xml>{content}</xml>';
     let contentJson = {};
 
-    contentJson.nonce_str = Math.random().toString(36).substr(2, 15);
-    contentJson.mch_billno = mch_billno; // muc_id + date_time + date_no + random_no; //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字; //+201502041234567893';
-    contentJson.mch_id = muc_id;
     contentJson.appid = wxappid;
     contentJson.bill_type = 'MCHT';
+    contentJson.mch_billno = mch_billno;
+    contentJson.mch_id = muc_id;
+    contentJson.nonce_str = Math.random().toString(36).substr(2, 15);
     contentJson.key = wxkey;
     let contentStr = fnCreateUrlParam(contentJson);
     let crypto = require('crypto');
