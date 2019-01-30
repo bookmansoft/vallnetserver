@@ -24,4 +24,5 @@ async function task() {
 }
 
 start()
-setInterval(task, 5000);
+task()
+//setInterval(task, 5000);
