@@ -39,7 +39,7 @@ let fnGetWeixinBonus = function (option, redPackConfig) {
 
     let mch_id = wechatcfg.mch_id;					//商户ID
     let wxappid = wechatcfg.appid;					//微信公众号APPID
-    let wxkey = wechatcfg.mch_key;						//商户号key
+    let wxkey = wechatcfg.mch_key;					//商户号key
     
     let date_time = now.getFullYear() + '' + (now.getMonth() + 1) + '' + now.getDate();
     let date_no = (now.getTime() + '').substr(-8); //生成8为日期数据，精确到毫秒
@@ -80,18 +80,17 @@ let fnGetHBInfo = function (mch_billno) {
 
     let mch_id = wechatcfg.mch_id;					//商户ID
     let wxappid = wechatcfg.appid;					//微信公众号APPID
-    let wxkey = wechatcfg.mch_key;						//商户号key
+    let wxkey = wechatcfg.mch_key;					//商户号key
     
     let muc_id = mch_id;
     let xmlTemplate = '<xml>{content}</xml>';
     let contentJson = {};
 
-    contentJson.mch_billno = redPackConfig.mch_billno; // muc_id + date_time + date_no + random_no; //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字; //+201502041234567893';
-    contentJson.mch_id = muc_id;
-    contentJson.nick_name = showName;
     contentJson.nonce_str = Math.random().toString(36).substr(2, 15);
-    contentJson.bill_type = 'MCHT';
+    contentJson.mch_billno = mch_billno; // muc_id + date_time + date_no + random_no; //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字; //+201502041234567893';
+    contentJson.mch_id = muc_id;
     contentJson.appid = wxappid;
+    contentJson.bill_type = 'MCHT';
     contentJson.key = wxkey;
     let contentStr = fnCreateUrlParam(contentJson);
     let crypto = require('crypto');
@@ -150,9 +149,6 @@ async function  redpackApi(host, path, sendData) {
         }).on('error', function (e) {
             console.log("Got error: " + e.message);
         });
- 
-        let option = {total_amount, re_openid, total_num};
-        let sendData = fnGetWeixinBonus(option, redPackConfig);
         req.write(sendData);
         req.end();
     });

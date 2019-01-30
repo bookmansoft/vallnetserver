@@ -7,7 +7,7 @@ let remoteSetup = require('../../util/gamegold')
 let signature = require('../../util/signature.js')
 let wechatcfg = require('../../util/wechat.cfg')
 let wxUnifiedorder = require('../../util/wxUnifiedorder')
-let {sendRedPacket} = require('../../util/wxRedPack')
+let {sendRedPacket, getHBinfo} = require('../../util/wxRedPack')
 let WXBizDataCrypt = require('../../util/WXBizDataCrypt')
 
 const WechatAPI = require('co-wechat-api')
@@ -269,6 +269,12 @@ class wechat extends facade.Control
         facade.GetMapping(tableType.redpack).Create(redpackItem);
         
         return {errcode: 'success', ret: ret.return_msg}
+    }
+
+    async GetRecPackInfo(user, params) {
+        let mch_billno = params.mch_billno
+        let ret = getHBinfo(mch_billno)
+        return {errcode: 'success', ret: ret}
     }
 }
 
