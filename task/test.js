@@ -24,5 +24,7 @@ async function task() {
 }
 
 start()
-task()
+setTimeout(()=>{
+    task()
+}, 1000)
 //setInterval(task, 5000);
