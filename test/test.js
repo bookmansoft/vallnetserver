@@ -11,7 +11,7 @@ describe('TEST', function() {
     });
 
     it.only('wechat.GetRedPackInfo', async () => {
-        let msg = await remote.fetching({func: "wechat.GetRecPackInfo", mch_billno: '152078250120191303727247540', uid:17});
+        let msg = await remote.fetching({func: "wechat.GetRecPackInfo", mch_billno: '152078250120191251387982305', uid:17});
         console.log(msg);
     });
 

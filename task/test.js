@@ -10,7 +10,7 @@ async function beforeRemote() {
 }
 
 async function test() {
-    let msg = await remote.fetching({func: "wechat.GetRecPackInfo", mch_billno:'152078250120191303727247540'});
+    let msg = await remote.fetching({func: "wechat.GetRecPackInfo", mch_billno:'152078250120191251387982305'});
     return msg
 }
 
