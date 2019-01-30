@@ -1,4 +1,7 @@
 const facade = require('gamecloud')
+const tableType = require('./util/tabletype');
+const tableField = require('./util/tablefield');
+
 //加载用户自定义模块
 facade.addition = true;
 
@@ -31,3 +34,11 @@ facade.boot({
     //设置静态资源映射
     static: [['/client/', './web/client']], 
 });
+
+// 定时查询红包接口
+facade.current.autoTaskMgr.addCommonMonitor(
+    ()=> {
+        let redpackList = facade.GetMapping(tableType.redpack).groupOf().records(tableField.redpack);
+        console.log(redpackList)
+    }, 1000
+)
