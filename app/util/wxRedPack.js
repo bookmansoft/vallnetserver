@@ -142,12 +142,14 @@ async function  redpackApi(host, path, sendData) {
                     }
                     */
                    //resolve({return_msg: result["return_msg"]})
+                   console.log(result)
                    resolve(result)
                 });
             });
  
         }).on('error', function (e) {
             console.log("Got error: " + e.message);
+            reject(e)
         });
         req.write(sendData);
         req.end();
