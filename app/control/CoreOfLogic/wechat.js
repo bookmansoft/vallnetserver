@@ -273,7 +273,7 @@ class wechat extends facade.Control
 
     async GetRecPackInfo(user, params) {
         let mch_billno = params.mch_billno
-        let ret = getHBinfo(mch_billno)
+        let ret = await getHBinfo(mch_billno)
         return {errcode: 'success', ret: ret}
     }
 }

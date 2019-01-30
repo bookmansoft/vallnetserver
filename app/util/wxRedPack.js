@@ -108,7 +108,7 @@ let fnGetHBInfo = function (mch_billno) {
  * @param {*} re_openid     发送用户
  */
 async function  redpackApi(host, path, sendData) {
-    return new Promise((resolve, reject) => {
+    let ret = new Promise((resolve, reject) => {
         //let host = 'api.mch.weixin.qq.com';
         //let path = '/mmpaymkttransfers/sendredpack';
         //let total_num = 1;
@@ -154,6 +154,8 @@ async function  redpackApi(host, path, sendData) {
         req.write(sendData);
         req.end();
     });
+
+    return ret
 }
 
 /**
