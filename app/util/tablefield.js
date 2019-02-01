@@ -227,8 +227,22 @@ let redpack = [
     'return_msg',
     'order_status'
 ]
+
+let redpackAct = [
+    'id',
+    'act_name',
+    'act_sequence',
+    'total_gamegold',
+    'each_gamegold',
+    'total_num',
+    'each_num',
+    'act_desc',
+    'act_start_at',
+    'act_end_at'
+]
+
 exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
-    userBase, userProfile, userWallet, userBaseWechat, redpack,
+    userBase, userProfile, userWallet, userBaseWechat, redpack, redpackAct,
     cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify
 }

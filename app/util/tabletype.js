@@ -17,7 +17,8 @@ let tableType ={
     'vipdraw': 116,
     'vip': 117,
     'blockNotify': 118,
-    'redpack': 119
+    'redpack': 119,
+    'redpackAct': 120,
 }
 
 exports = module.exports = tableType;
