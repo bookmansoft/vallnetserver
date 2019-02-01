@@ -19,6 +19,8 @@ let tableType ={
     'blockNotify': 118,
     'redpack': 119,
     'redpackAct': 120,
+    'userRedPack': 121,
+    'userRedPackAct': 122,
 }
 
 exports = module.exports = tableType;

@@ -241,8 +241,27 @@ let redpackAct = [
     'act_end_at'
 ]
 
+let userRedpack = [
+    'id',
+    'uid',
+    'act_id',
+    'gamegold',
+    'amount',
+    'act_at',
+]
+
+let userRedpackAct = [
+    'id',
+    'uid',
+    'act_id',
+    'act_count',
+    'amount_all',
+    'last_act_at',
+]
+
 exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
     userBase, userProfile, userWallet, userBaseWechat, redpack, redpackAct,
-    cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify
+    cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify,
+    userRedpack, userRedpackAct
 }

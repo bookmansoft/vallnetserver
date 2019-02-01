@@ -44,11 +44,28 @@ class manage extends facade.Control
         return {errcode: -1}
     }
 
-    //红包列表
-    async RedPackList(user, params)  {
+    //红包订单列表
+    async RedPackOrderList(user, params)  {
         //res.json({errcode: 'success', length: rows.length, data: rows});
-        let redpackList = facade.GetMapping(tableType.redpack).groupOf().records(tableField.redpack)
+        let redpackList = facade.GetMapping(tableType.redpack).groupOf().where([['uid', '==', uid]]).records(tableField.redpack)
         return {errcode: 'success', length:redpackList.length, data:redpackList}
+    };
+
+    //用户参与红包活动列表
+    async UserRedPackActList(user, params)  {
+        let paramsData = params.data
+        //res.json({errcode: 'success', length: rows.length, data: rows});
+        let data = facade.GetMapping(tableType.userRedPack).groupOf().records(tableField.userRedpack)
+        return {errcode: 'success', length:data.length, data:data}
+    };
+
+
+    //用户抽奖红包列表
+    async UserRedPackList(user, params)  {
+        //res.json({errcode: 'success', length: rows.length, data: rows});
+        let paramsData = params.data
+        let data = facade.GetMapping(tableType.userRedPackAct).groupOf().records(tableField.userRedpackAct)
+        return {errcode: 'success', length:data.length, data:data}
     };
 
 }
