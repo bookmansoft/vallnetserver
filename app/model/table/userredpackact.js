@@ -11,6 +11,7 @@ let UserRedPackAct = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
     {
         uid: Sequelize.INTEGER,
         act_id: Sequelize.INTEGER,
+        act_name: Sequelize.STRING,
         act_count: Sequelize.INTEGER,
         amount_all: Sequelize.INTEGER,
         last_act_at: Sequelize.INTEGER,

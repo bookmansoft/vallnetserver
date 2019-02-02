@@ -11,6 +11,7 @@ let UserRedPack = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
     {
         uid: Sequelize.INTEGER,
         act_id: Sequelize.INTEGER,
+        act_name: Sequelize.STRING,
         gamegold: Sequelize.INTEGER,
         amount: Sequelize.INTEGER,
         act_at: Sequelize.INTEGER,
