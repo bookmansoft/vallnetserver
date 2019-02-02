@@ -24,6 +24,7 @@ let UserProfile = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         nlevel: Sequelize.INTEGER,
         avatar: Sequelize.INTEGER,
         ranking: Sequelize.INTEGER,
+        wxopenid: Sequelize.STRING, 
         star_level: Sequelize.INTEGER,
         down_count: Sequelize.INTEGER,
         game_count: Sequelize.INTEGER,

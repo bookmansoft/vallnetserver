@@ -4,6 +4,7 @@ let randomHelp = require('../../util/randomHelp')
 let md5 = require('md5')
 let tableType = require('../../util/tabletype')
 let remoteSetup = require('../../util/gamegold')
+let userHelp = require('../../util/userhelp')
 let signature = require('../../util/signature.js')
 let wechatcfg = require('../../util/wechat.cfg')
 let wxUnifiedorder = require('../../util/wxUnifiedorder')
@@ -38,6 +39,8 @@ class wechat extends facade.Control
 
     async GetMapOpenId(user, params) {
         let code = params.code
+        let openid = params.openid
+
         var weChatEntity = new weChat();
         console.log(code, wechatcfg.appid, wechatcfg.secret)
         let ret = await weChatEntity.getMapOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
@@ -46,10 +49,20 @@ class wechat extends facade.Control
             return {errcode: 'fail', errmsg: ret.errmsg};
         } else {
             console.log(ret)
+            let userhelp = new userHelp()
+            let uid = userhelp.getUserIdFromOpenId(openid)
+            if(uid > 0) {
+                let userProfile = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+                if(userProfile.length >0 ) {
+                    userProfile[0].setAttr('wxopenid', ret.openid);
+                    userProfile[0].orm.save();
+                    return {errcode: 'success', errmsg:'getopenid:ok', userProfile: userProfile[0].orm}
+                }
+            } 
             //let openid = ret.openid
             //let unionid = ret.unionid
-            return {errcode: 'success', errmsg:'getopenid:ok', ret: ret}
         }
+        return {errcode: 'fail', errmsg: 'no user profile'};
     }
 
     /**

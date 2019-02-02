@@ -67,6 +67,7 @@ let userProfile = [
     'nlevel',
     'avatar',
     'ranking',
+    'wxopenid',
     'star_level',
     'down_count',
     'game_count',

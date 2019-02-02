@@ -69,7 +69,6 @@ class prop extends facade.Control
         return {errcode: 'success', errmsg: 'prop.count:ok', count: ret};
     }
 
-        
     //我的道具
     async PropList(user, params) {
         let page = params.page;
