@@ -36,9 +36,11 @@ facade.boot({
 });
 
 // 定时查询红包接口
+/*
 facade.current.autoTaskMgr.addCommonMonitor(
     ()=> {
         let redpackList = facade.GetMapping(tableType.redpack).groupOf().records(tableField.redpack);
         console.log(redpackList)
     }, 1000
 )
+*/
