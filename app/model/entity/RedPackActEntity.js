@@ -1,6 +1,6 @@
 let facade = require('gamecloud');
 let BaseEntity = facade.BaseEntity;
-let {RedPackAct} = require('../table/RedPackAct');
+let {RedPackAct} = require('../table/redpackact');
 let tableType = require('../../util/tabletype');
 
 //用户微信账号(openid)
