@@ -262,9 +262,23 @@ let userRedpackAct = [
     'last_act_at',
 ]
 
+let blockGameComment = [
+    'id',
+    'cid',
+    'reply_id',
+    'uid',
+    'nick',
+    'ip',
+    'resp_count',
+    'point_up_count',
+    'create_at',
+    'title',
+    'content',
+]
+
 exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
     userBase, userProfile, userWallet, userBaseWechat, redpack, redpackAct,
     cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify,
-    userRedpack, userRedpackAct
+    userRedpack, userRedpackAct, blockGameComment
 }

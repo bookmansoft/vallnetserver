@@ -21,6 +21,7 @@ let tableType ={
     'redpackAct': 120,
     'userRedPack': 121,
     'userRedPackAct': 122,
+    'blockGameComment': 123,
 }
 
 exports = module.exports = tableType;
