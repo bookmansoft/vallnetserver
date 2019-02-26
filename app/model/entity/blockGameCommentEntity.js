@@ -13,7 +13,7 @@ class blockGameCommentEntiy extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.blockGameProp,                     //表类型
+            etype: tableType.blockGameComment,                     //表类型
             model: BlockGameComment,               //表映射类
             entity: blockGameCommentEntiy,        //ORM映射类
         };
