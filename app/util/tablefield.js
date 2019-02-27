@@ -268,6 +268,7 @@ let blockGameComment = [
     'reply_id',
     'uid',
     'nick',
+    'avatar_url',
     'ip',
     'resp_count',
     'point_up_count',

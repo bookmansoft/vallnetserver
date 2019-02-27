@@ -13,6 +13,7 @@ let BlockGameComment = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define
         reply_id: Sequelize.INTEGER,
         uid: Sequelize.INTEGER,
         nick: Sequelize.STRING,
+        avatar_url: Sequelize.STRING,
         ip: Sequelize.STRING,
         resp_count: Sequelize.INTEGER,
         point_up_count: Sequelize.INTEGER,

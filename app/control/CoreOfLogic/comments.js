@@ -17,7 +17,10 @@ class comments extends facade.Control
 
     //评论列表
     async GameCommentList(user, params)  {
-        let dataList = facade.GetMapping(tableType.blockGameComment).groupOf().records(tableField.blockGameComment);
+        let cid = params.cid
+        let dataList = facade.GetMapping(tableType.blockGameComment).groupOf()
+            .where([['cid', '==', cid]])
+            .records(tableField.blockGameComment);
         return {errcode: 'success', data:dataList};
     };
 
@@ -29,6 +32,7 @@ class comments extends facade.Control
             cid: params.cid,
             reply_id: params.reply_id,
             nick: params.nick,
+            avatar_url: params.avatar_url,
             title: params.title,
             content: params.content,
             ip: "",
