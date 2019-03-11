@@ -37,6 +37,33 @@ class wechat extends facade.Control
         return ['parseParams', 'commonHandle'];
     }
 
+    async InitUserFromWechatCode(user, params) {
+        let code = params.code
+        
+        var weChatEntity = new weChat();
+        console.log(code, wechatcfg.appid, wechatcfg.secret)
+        let ret = await weChatEntity.getMapOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
+        console.log(ret);
+        if(ret.errcode !== undefined ) {
+            return {errcode: 'fail', errmsg: ret.errmsg};
+        } else {
+            console.log(ret)
+            let userhelp = new userHelp()
+            let uid = userhelp.getUserIdFromOpenId(openid)
+            if(uid == 0) {
+                userHelp.regUserFrom(ret.openid)
+            } 
+            let userProfile = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+            if(userProfile.length >0 ) {
+                return {errcode: 'success', errmsg:'getopenid:ok', userProfile: userProfile[0].orm}
+            } else {
+                return {errcode: 'fail', errmsg:'user not exist', userProfile: userProfile[0].orm}
+            }
+            //let openid = ret.openid
+            //let unionid = ret.unionid
+        }
+    }
+
     async GetMapOpenId(user, params) {
         let code = params.code
         let openid = params.openid
@@ -64,7 +91,6 @@ class wechat extends facade.Control
         }
         return {errcode: 'fail', errmsg: 'no user profile'};
     }
-
     /**
      * 获取openid
      * 【用法还不明确】

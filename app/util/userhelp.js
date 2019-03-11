@@ -1,6 +1,7 @@
 let facade = require('gamecloud')
 let tableType = require('./tabletype');
 let tableField = require('./tablefield');
+let randomHelp = require('./randomHelp')
 
 class userhelp {
      /**
@@ -17,6 +18,54 @@ class userhelp {
             return userWechats[0].uid;
         }
         return 0
+    }
+
+    async regUserFrom(openid) {
+        //注册新用户
+        console.log('now create new user');
+        let random = new randomHelp();
+        let user_name = random.randomString(8) + "_" + random.randomNum(8);
+        let auth_key = md5(user_name + "_" + random.randomNum(4));
+        let created_at = new Date().getTime();
+        let userBaseItem = {
+            user_name: user_name,
+            auth_key: auth_key,
+            password_hash: auth_key,
+            remember_token: random.randomString(32),
+            openid: openid,
+            flags: 1,
+            user_type: 2,
+            created_at: created_at
+        };
+        let newUserBase = await facade.GetMapping(tableType.userBase).Create(userBaseItem);
+        if(!!newUserBase) {
+            //微信openid与用户对应表
+            let uid = newUserBase.orm.id 
+            let userWechatItem = {
+                uid: uid,
+                openid: openid,
+                ntype: newUserBase.orm.user_type,
+                first_time: created_at,
+                last_time: created_at
+            };
+            facade.GetMapping(tableType.userWechat).Create(userWechatItem);
+
+            let ret = await remote.execute('token.user', ['first-acc-01', uid, null, uid]);
+            let block_addr = (!!ret && ret.hasOwnProperty("data")) ? ret.data.addr : '';
+
+            //添加用户个人信息
+            let userProfileItem = {
+                uid: uid,
+                nick: user_name,
+                gender: '1',
+                block_addr: block_addr,
+                avatar_uri: ''
+            };
+            facade.GetMapping(tableType.userProfile).Create(userProfileItem);
+
+            return userProfileItem
+        }
+        return null
     }
 }
 
