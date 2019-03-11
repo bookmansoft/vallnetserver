@@ -8,6 +8,7 @@ class weChat {
     constructor($id){
 
     }
+
     /**
      * 获取openid
      * @param {*} code 
