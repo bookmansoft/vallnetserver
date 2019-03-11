@@ -27,11 +27,11 @@ class profile extends facade.Control
     //用户信息
     async Info(user, params)  {
         let openid = params.openid;
-        let userWechats = facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records(['uid']);
+        let userWechats = await facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records(['uid']);
         var data = null;
         if(userWechats.length >0 ) {
             let uid = userWechats[0].uid;
-            let userProfile = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+            let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
             if(userProfile.length >0 ) {
                 data = userProfile[0].orm;
                 let ret = await remote.execute('prop.count', [openid]);
@@ -49,10 +49,10 @@ class profile extends facade.Control
     async AddUserGame(user, params)  {
         let openid = params.openid;
         let game_id = params.game_id;
-        let userWechats = facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records(['uid']);
+        let userWechats = await facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records(['uid']);
         if(userWechats.length >0 ) {
             let uid = userWechats[0].uid;
-            let userGames = facade.GetMapping(tableType.userGame).groupOf().where([
+            let userGames = await facade.GetMapping(tableType.userGame).groupOf().where([
                 ['uid', '==', uid],
                 ['game_id', '==', game_id],
             ]).records(['uid']);
@@ -72,7 +72,7 @@ class profile extends facade.Control
     //我的游戏
     async UserGame(user, params)  {
         let uid = params.uid;
-        let userGames = facade.GetMapping(tableType.userGame).groupOf().where([
+        let userGames = await facade.GetMapping(tableType.userGame).groupOf().where([
             ['uid', '==', uid]
         ]).records(['game_id']);
         if(userGames.length >0 ) {
@@ -80,7 +80,7 @@ class profile extends facade.Control
             userGames.forEach(element => {
                 gameIds.push(element.game_id);
             });
-            let blockGames = facade.GetMapping(tableType.blockGame).groupOf().where([
+            let blockGames = await facade.GetMapping(tableType.blockGame).groupOf().where([
                 ['id', 'include', gameIds]
             ]).records(tableField.blockGame);
             return {errcode: 'success', data: blockGames};
@@ -93,7 +93,7 @@ class profile extends facade.Control
         let openid = params.openid;
         let page = params.page;
         let ret = await remote.execute('prop.list', [page, openid]);
-        let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        let userProfiles = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfiles.length >0 ) {
             let userProfile = userProfiles[0];
             userProfile.setAttr('prop_count', userProfile.orm.current_prop_count);
@@ -106,7 +106,7 @@ class profile extends facade.Control
     async Mine(user, params)  {
         let uid = params.uid;
         let openid = params.openid;
-        let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        let userProfiles = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfiles.length >0 ) {
             let userProfile = userProfiles[0];
             let current_prop_count = 0
@@ -136,7 +136,7 @@ class profile extends facade.Control
     async VipDraw(user, params)  {
         let uid = params.uid;
         let draw_count = params.draw_count;
-        let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        let userProfiles = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfiles.length == 0 ) {
             return {errcode: 'fail', errmsg: 'user not exist'};
         } else {
@@ -162,13 +162,13 @@ class profile extends facade.Control
         let last = params.last
         let vipDrawLog = null; 
         if(last==1) {
-            vipDrawLog = facade.GetMapping(tableType.vipdraw)
+            vipDrawLog = await facade.GetMapping(tableType.vipdraw)
             .groupOf().where([['uid','==',uid]])
             .orderby('draw_at', 'desc')
             .paginate(5, 1, tableField.vipdraw)
             .records()
         } else {
-            vipDrawLog = facade.GetMapping(tableType.vipdraw)
+            vipDrawLog = await facade.GetMapping(tableType.vipdraw)
             .groupOf().where([['uid','==',uid]])
             .orderby('draw_at', 'desc')
             .records(tableField.vipdraw);

@@ -2,6 +2,14 @@ let facade = require('gamecloud')
 let tableType = require('./tabletype');
 let tableField = require('./tablefield');
 let randomHelp = require('./randomHelp')
+let md5 = require('md5')
+//引入工具包
+const toolkit = require('gamegoldtoolkit')
+let remoteSetup = require('./gamegold')
+const remote = new toolkit.conn();
+//兼容性设置，提供模拟浏览器环境中的 fetch 函数
+remote.setFetch(require('node-fetch'))  
+remote.setup(remoteSetup);
 
 class userhelp {
      /**
@@ -13,14 +21,14 @@ class userhelp {
     }
 
     async getUserIdFromOpenId(openid) {
-        let userWechats = facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records(['uid']);
+        let userWechats = await facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records(['uid']);
         if(userWechats.length >0 ) {
             return userWechats[0].uid;
         }
         return 0
     }
 
-    async regUserFrom(openid) {
+    async regUserFromWechat(openid, userInfo) {
         //注册新用户
         console.log('now create new user');
         let random = new randomHelp();
@@ -56,10 +64,13 @@ class userhelp {
             //添加用户个人信息
             let userProfileItem = {
                 uid: uid,
-                nick: user_name,
-                gender: '1',
-                block_addr: block_addr,
-                avatar_uri: ''
+                nick: userInfo.nickname,
+                gender: userInfo.sex,
+                country: userInfo.country,
+                province: userInfo.province,
+                city: userInfo.city,
+                avatar_uri: userInfo.headimgurl,
+                block_addr: block_addr
             };
             facade.GetMapping(tableType.userProfile).Create(userProfileItem);
 

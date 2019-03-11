@@ -65,6 +65,32 @@ class weChat {
         });
         return res;
     }
+
+        /**
+     * 获取公众号openid
+     * @param {*} code 
+     * @param {*} callback 
+     */
+    async getMapUserInfo(access_token, openid) {
+        let options = {
+            uri: `https://api.weixin.qq.com/sns/userinfo`,
+            json: true,
+            qs: {
+                access_token: access_token,
+                openid: openid
+            }
+        };
+        var res = await new Promise(function (resolve, reject) {
+            request.get(options, (err, response, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            });
+        });
+        return res;
+    }
 }
 
 module.exports = weChat;

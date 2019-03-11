@@ -48,19 +48,25 @@ class wechat extends facade.Control
             return {errcode: 'fail', errmsg: ret.errmsg};
         } else {
             console.log(ret)
-            let userhelp = new userHelp()
-            let uid = userhelp.getUserIdFromOpenId(openid)
-            if(uid == 0) {
-                userHelp.regUserFrom(ret.openid)
-            } 
-            let userProfile = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
-            if(userProfile.length >0 ) {
-                return {errcode: 'success', errmsg:'getopenid:ok', userProfile: userProfile[0].orm}
-            } else {
-                return {errcode: 'fail', errmsg:'user not exist', userProfile: userProfile[0].orm}
+            let openid = ret.openid
+            let access_token = ret.access_token
+            let retUser = await weChatEntity.getMapUserInfo(access_token, openid)
+            if(retUser.errcode !== undefined ) {
+                return {errcode: 'fail', errmsg: retUser.errmsg};
             }
-            //let openid = ret.openid
-            //let unionid = ret.unionid
+            let uhelp = new userHelp()
+            let uid = await uhelp.getUserIdFromOpenId(openid)
+            if(uid == 0) {
+                await uhelp.regUserFromWechat(openid, retUser)
+                return {errcode: 'success', errmsg:'getopenid:ok', uid: uid, openid: openid}
+            } else {
+                let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+                if(userProfile.length >0 ) {
+                    return {errcode: 'success', errmsg:'getopenid:ok', uid: userProfile[0].orm.uid, openid: openid}
+                } else {
+                    return {errcode: 'fail', errmsg:'user not exist', userProfile: null}
+                }
+            }
         }
     }
 
