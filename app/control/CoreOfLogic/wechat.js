@@ -37,7 +37,7 @@ class wechat extends facade.Control
         return ['parseParams', 'commonHandle'];
     }
 
-    async InitUserFromWechatCode(user, params) {
+    async InitUserFromCode(user, params) {
         let code = params.code
         
         var weChatEntity = new weChat();
