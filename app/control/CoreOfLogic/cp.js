@@ -119,25 +119,25 @@ class cp extends facade.Control
     async UserToken(user, params) {
         let ret = await remote.execute('token.user', [
             params.cid,
-            params.uid,
+            params.user_id,
             null,
-            params.openid
+            params.account
         ]);
         if (!!ret && ret.hasOwnProperty("data")) {
             let addr = ret.data.addr;
             let userWallet = facade.GetMapping(tableType.userWallet).groupOf().where([
                 ['cid', '==', params.cid],
-                ['cp_uid', '==', params.uid],
-                ['openid', '==', params.openid]
+                ['user_id', '==', params.user_id],
+                ['account', '==', params.account]
             ]).records();
             if(userWallet.length == 0) {
                 let uid = await userHelp.getUserIdFromOpenId(params.openid)
                 let userWalletItem = {
-                    uid: uid,
+                    uid: params.uid,
                     cid: params.cid,
                     addr: addr,
-                    cp_uid: params.uid,
-                    openid: params.openid,
+                    user_id: params.user_id,
+                    account: params.account,
                 };
                 facade.GetMapping(tableType.userWallet).Create(userWalletItem);
             }

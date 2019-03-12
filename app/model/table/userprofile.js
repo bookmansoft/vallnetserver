@@ -24,7 +24,6 @@ let UserProfile = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         nlevel: Sequelize.INTEGER,
         avatar: Sequelize.INTEGER,
         ranking: Sequelize.INTEGER,
-        wxopenid: Sequelize.STRING, 
         star_level: Sequelize.INTEGER,
         down_count: Sequelize.INTEGER,
         game_count: Sequelize.INTEGER,
@@ -34,8 +33,7 @@ let UserProfile = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         buy_count: Sequelize.INTEGER,
         games: Sequelize.STRING,
         avatar_uri: Sequelize.STRING,
-        desc: Sequelize.STRING,
-        unionid: Sequelize.STRING,
+        desc: Sequelize.STRING
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段

@@ -57,12 +57,13 @@ class wechat extends facade.Control
             let uhelp = new userHelp()
             let uid = await uhelp.getUserIdFromOpenId(openid)
             if(uid == 0) {
-                await uhelp.regUserFromWechat(openid, retUser)
-                return {errcode: 'success', errmsg:'getopenid:ok', uid: uid, openid: openid}
+                let userProfile = await uhelp.regUserFromWechat(openid, retUser)
+                return {errcode: 'success', errmsg:'getopenid:ok', uid: uid, openid: openid, userProfile: userProfile}
             } else {
                 let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
                 if(userProfile.length >0 ) {
-                    return {errcode: 'success', errmsg:'getopenid:ok', uid: userProfile[0].orm.uid, openid: openid}
+                    userProfile = userProfile[0].orm
+                    return {errcode: 'success', errmsg:'getopenid:ok', uid: userProfile.uid, openid: openid, userProfile: userProfile}
                 } else {
                     return {errcode: 'fail', errmsg:'user not exist', userProfile: null}
                 }

@@ -14,7 +14,6 @@ let UserBase = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         auth_key: Sequelize.STRING,
         registration_ip: Sequelize.STRING,
         remember_token: Sequelize.STRING,
-        openid: Sequelize.STRING,
         created_at: Sequelize.BIGINT,
         updated_at: Sequelize.BIGINT,
         blocked_at: Sequelize.BIGINT,

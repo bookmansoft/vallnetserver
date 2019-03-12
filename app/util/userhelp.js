@@ -70,7 +70,9 @@ class userhelp {
                 province: userInfo.province,
                 city: userInfo.city,
                 avatar_uri: userInfo.headimgurl,
-                block_addr: block_addr
+                block_addr: block_addr,
+                prop_count: 0,
+                current_prop_count: 0,
             };
             facade.GetMapping(tableType.userProfile).Create(userProfileItem);
 

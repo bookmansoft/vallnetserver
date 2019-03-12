@@ -31,17 +31,17 @@ class order extends facade.Control
      */
     async OrderPay(user, params) {
         let cid = params.cid;
-        let uid = params.uid;
-        let openid = params.openid;
+        let user_id = params.user_id;
+        let account = params.account;
         let sn = params.sn;
         let price = params.price;
         console.log(params);
         let ret = await remote.execute('order.pay', [
             cid, //game_id
-            uid, //user_id
+            user_id, //user_id
             sn, //order_sn订单编号
             price, //order_sum订单金额
-            openid  //指定结算的钱包账户，一般为微信用户的openid
+            account  //指定结算的钱包账户，一般为微信用户的openid
           ]);
         console.log(ret);
         if(ret == null) {
