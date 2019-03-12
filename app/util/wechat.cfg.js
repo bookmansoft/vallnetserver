@@ -12,14 +12,14 @@ module.exports = {
     miniAppSecret: '36ad9a51a413cb4dbe1562206c6c0ba4',
     miniBgwAppId: 'wxdb571c43fa1ff06b',
     miniBgwAppSecret: 'ce11b91e55ec25bccff837401746717c',
-    jsApiList: ['checkJsApi',
+    /*jsApiList: ['checkJsApi',
     'chooseImage',
     'uploadImage',
     'downloadImage',
     'previewImage',
     'scanQRCode',
     'chooseWXPay']
-    /*
+    */
     jsApiList: ['checkJsApi',
     'onMenuShareTimeline',
     'onMenuShareAppMessage',
@@ -54,5 +54,4 @@ module.exports = {
     'addCard',
     'chooseCard',
     'openCard'] // 必填，需要使用的JS接口列表，
-    */
 }

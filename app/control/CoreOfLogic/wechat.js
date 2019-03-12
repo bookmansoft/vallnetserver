@@ -97,6 +97,7 @@ class wechat extends facade.Control
         }
         return {errcode: 'fail', errmsg: 'no user profile'};
     }
+    
     /**
      * 获取openid
      * 【用法还不明确】
