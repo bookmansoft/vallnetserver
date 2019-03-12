@@ -125,13 +125,12 @@ class cp extends facade.Control
         ]);
         if (!!ret && ret.hasOwnProperty("data")) {
             let addr = ret.data.addr;
-            let userWallet = facade.GetMapping(tableType.userWallet).groupOf().where([
+            let userWallet = await facade.GetMapping(tableType.userWallet).groupOf().where([
                 ['cid', '==', params.cid],
                 ['user_id', '==', params.user_id],
                 ['account', '==', params.account]
             ]).records();
             if(userWallet.length == 0) {
-                let uid = await userHelp.getUserIdFromOpenId(params.openid)
                 let userWalletItem = {
                     uid: params.uid,
                     cid: params.cid,
