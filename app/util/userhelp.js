@@ -20,12 +20,34 @@ class userhelp {
 
     }
 
-    async getUserIdFromOpenId(openid) {
-        let userWechats = await facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records(['uid']);
+    async getUserIdFromOpenId(openid, ntype) {
+        let userWechats = await facade.GetMapping(tableType.userWechat).groupOf()
+            .where([
+                ['openid', '==', openid],
+                ['ntype', '==', ntype],
+            ])
+            .records(['uid']);
         if(userWechats.length >0 ) {
             return userWechats[0].uid;
         }
         return 0
+    }
+
+    async getUserFromOpenId(openid, ntype) {
+        let userWechats = await facade.GetMapping(tableType.userWechat).groupOf()
+            .where([
+                ['openid', '==', openid],
+                ['ntype', '==', ntype],
+            ]).records(['uid'])
+        if(userWechats.length >0 ) {
+            let uid = userWechats[0].uid
+            let userBase = await facade.GetMapping(tableType.userBase).groupOf()
+                .where([['id', '==', uid]]).records(['id', 'user_name'])
+            if(userBase.length >0 ) {
+                return userBase[0]
+            }
+        }
+        return {id:0, user_name:''}
     }
 
     async regUserFromWechat(openid, userInfo) {
