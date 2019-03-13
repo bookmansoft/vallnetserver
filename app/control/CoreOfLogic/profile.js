@@ -26,47 +26,39 @@ class profile extends facade.Control
 
     //用户信息
     async Info(user, params)  {
-        let openid = params.openid;
-        let userWechats = await facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records(['uid']);
-        var data = null;
-        if(userWechats.length >0 ) {
-            let uid = userWechats[0].uid;
-            let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
-            if(userProfile.length >0 ) {
-                data = userProfile[0].orm;
-                let ret = await remote.execute('prop.count', [openid]);
-                if(!!ret) {
-                    data.current_prop_count = ret;
-                    userProfile[0].setAttr('current_prop_count', ret);
-                    userProfile[0].orm.save();
-                }
+        let uid = params.uid;
+        let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        if(userProfile.length >0 ) {
+            let profile = userProfile[0].orm;
+            let ret = await remote.execute('prop.count', [uid+'']);
+            if(!!ret) {
+                profile.current_prop_count = ret;
+                userProfile[0].setAttr('current_prop_count', ret);
+                userProfile[0].orm.save();
             }
+            return {errcode: 'success', profile: profile};
         }
-        return {errcode: 'success', profile: data};
+        
+        return {errcode: 'fail', profile: null};
     };
 
     //新增游戏
     async AddUserGame(user, params)  {
-        let openid = params.openid;
+        let uid = params.uid;
         let game_id = params.game_id;
-        let userWechats = await facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records(['uid']);
-        if(userWechats.length >0 ) {
-            let uid = userWechats[0].uid;
-            let userGames = await facade.GetMapping(tableType.userGame).groupOf().where([
-                ['uid', '==', uid],
-                ['game_id', '==', game_id],
-            ]).records(['uid']);
-            if(userGames.length ==0 ) {
-                let userGameItem = {
-                    openid: openid,
-                    uid: uid,
-                    game_id: game_id
-                };
-                facade.GetMapping(tableType.userGame).Create(userGameItem);
-            }
-            return {errcode: 'success', item: userGameItem};
+        let userGames = await facade.GetMapping(tableType.userGame).groupOf().where([
+            ['uid', '==', uid],
+            ['game_id', '==', game_id],
+        ]).records(['uid']);
+        if(userGames.length ==0 ) {
+            let userGameItem = {
+                openid: openid,
+                uid: uid,
+                game_id: game_id
+            };
+            facade.GetMapping(tableType.userGame).Create(userGameItem);
         }
-        return {errcode: 'success'};
+        return {errcode: 'success', item: userGameItem};
     }
 
     //我的游戏
@@ -90,9 +82,8 @@ class profile extends facade.Control
     //我的道具
     async UserProp(user, params)  {
         let uid = params.uid;
-        let openid = params.openid;
         let page = params.page;
-        let ret = await remote.execute('prop.list', [page, openid]);
+        let ret = await remote.execute('prop.list', [page, uid]);
         let userProfiles = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfiles.length >0 ) {
             let userProfile = userProfiles[0];
@@ -105,12 +96,11 @@ class profile extends facade.Control
     //用户信息
     async Mine(user, params)  {
         let uid = params.uid;
-        let openid = params.openid;
         let userProfiles = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfiles.length >0 ) {
             let userProfile = userProfiles[0];
             let current_prop_count = 0
-            let ret = await remote.execute('prop.count', [openid])
+            let ret = await remote.execute('prop.count', [uid])
             if(!!ret) {
                 current_prop_count = ret;
                 userProfile.setAttr('current_prop_count', ret)

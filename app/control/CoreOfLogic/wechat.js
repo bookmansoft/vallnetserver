@@ -69,6 +69,23 @@ class wechat extends facade.Control
         }
     }
 
+    async InitUserFromOpenId(user, params) {
+        let openid = params.openid
+        let uhelp = new userHelp()
+        let uid = await uhelp.getUserIdFromOpenId(openid, 2)
+        if(uid == 0) {
+            uid = await uhelp.regUserFromWechat(openid, null)
+        } 
+        let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        if(userProfile.length >0 ) {
+            userProfile = userProfile[0].orm
+            return {errcode: 'success', errmsg:'getopenid:ok', uid: uid, openid: openid, userProfile: userProfile}
+        } else {
+            return {errcode: 'fail', errmsg:'user not exist', userProfile: null}
+        }
+        
+    }
+
     async GetUserFromMapCode(user, params) {
         let code = params.code
         var weChatEntity = new weChat();
@@ -81,7 +98,7 @@ class wechat extends facade.Control
             console.log(ret)
             let openid = ret.openid
             let userhelp = new userHelp()
-            let user = await userhelp.getUserFromOpenId(openid, 1)
+            let user = await userhelp.getUserFromOpenId(openid, 2)
             return {errcode: 'success', openid: openid, user: user}
         }
     }

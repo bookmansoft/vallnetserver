@@ -54,7 +54,7 @@ class userhelp {
         //注册新用户
         console.log('now create new user');
         let random = new randomHelp();
-        let user_name = random.randomString(8) + "_" + random.randomNum(8);
+        let user_name = random.randomString(4) + "_" + random.randomNum(4);
         let auth_key = md5(user_name + "_" + random.randomNum(4));
         let created_at = new Date().getTime();
         let userBaseItem = {
@@ -84,23 +84,33 @@ class userhelp {
             let block_addr = (!!ret && ret.hasOwnProperty("data")) ? ret.data.addr : '';
 
             //添加用户个人信息
-            let userProfileItem = {
-                uid: uid,
-                nick: userInfo.nickname,
-                gender: userInfo.sex,
-                country: userInfo.country,
-                province: userInfo.province,
-                city: userInfo.city,
-                avatar_uri: userInfo.headimgurl,
-                block_addr: block_addr,
-                prop_count: 0,
-                current_prop_count: 0,
-            };
-            facade.GetMapping(tableType.userProfile).Create(userProfileItem);
-
-            return userProfileItem
+            let userProfileItem = null
+            if(userInfo == null) {
+                userProfileItem = {
+                    uid: uid,
+                    nick: user_name,
+                    gender: '1',
+                    block_addr: block_addr,
+                    avatar_uri: './static/img/icon/mine_no.png'
+                };
+            } else {
+                userProfileItem = {
+                    uid: uid,
+                    nick: userInfo.nickname,
+                    gender: userInfo.sex,
+                    country: userInfo.country,
+                    province: userInfo.province,
+                    city: userInfo.city,
+                    avatar_uri: userInfo.headimgurl,
+                    block_addr: block_addr,
+                    prop_count: 0,
+                    current_prop_count: 0,
+                };
+            }
+            await facade.GetMapping(tableType.userProfile).Create(userProfileItem);
+            return uid
         }
-        return null
+        return 0
     }
 }
 

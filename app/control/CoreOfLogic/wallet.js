@@ -47,11 +47,11 @@ class wallet extends facade.Control
     async TxSend(user, params) {
         let addr = params.addr;
         let amount = params.amount;
-        let openid = params.openid;
+        let uid = params.uid;
         let ret = await remote.execute('tx.send', [
             addr, 
             amount,
-            openid
+            uid
         ]);      
         console.log(ret);
         return {errcode: 'success', errmsg: 'tx.send:ok', ret: ret}; 
@@ -64,9 +64,9 @@ class wallet extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
      async BalanceAll(user, params) {
-        let openid = params.openid;
+        let uid = params.uid;
         let ret = await remote.execute('balance.all', [
-            openid //openid
+            uid //openid
         ]);    
         console.log(ret);
         return {errcode: 'success', errmsg: 'balance.all:ok', balance: ret}; 
@@ -79,10 +79,10 @@ class wallet extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async TxLogs(user, params) {                      
-        let openid = params.openid;
+        let uid = params.uid;
         let number = 10000;                          
         let ret = await remote.execute('tx.list', [
-            openid, 
+            uid, 
             number
         ]);    
         console.log(ret);
@@ -95,7 +95,7 @@ class wallet extends facade.Control
      * @param {*} params 
      */
     async GetNotify(user, params) {
-        let openid = params.openid
+        let uid = params.uid
         let ret = await remote.execute('sys.listNotify', [
             1 
         ]);
