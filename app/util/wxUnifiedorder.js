@@ -77,6 +77,7 @@ function getNonceStr() {
     }
     return text
 }
+
 function getPaySign(appId, timeStamp, nonceStr, package) {
     var stringA = 'appId=' + appId +
         '&nonceStr=' + nonceStr +
@@ -88,6 +89,7 @@ function getPaySign(appId, timeStamp, nonceStr, package) {
     var sign = md5(stringSignTemp).toUpperCase()
     return sign
 }
+
 function getTradeId(attach) {
     var date = new Date().getTime().toString()
     var text = ""
