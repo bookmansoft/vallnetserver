@@ -3,7 +3,7 @@ const md5 = require('blueimp-md5')
 const xml2js = require('xml2js')
 const xmlParser = new xml2js.Parser()
 
-const appId = 'wx4b3efb80ac5de780'
+//const appId = 'wx4b3efb80ac5de780'
 const appSecret = '36ad9a51a413cb4dbe1562206c6c0ba4'
 
 // 商户号
@@ -12,7 +12,7 @@ const mchId = '1520782501'
 const PAY_API_KEY = '41134e3b985d0254c6c7c64912fc0935'
 const notifyUrl = 'https://mini.gamegold.xin/gg-wechat-server/wx/notify'
 
-async function unifiedOrder(openId, ip, price, productIntro, tradeId) {
+async function unifiedOrder(appId, openId, ip, price, productIntro, tradeId) {
 
     // attach 是一个任意的字符串, 会原样返回, 可以用作一个标记
     const attach = 'GJS-ORG'
@@ -41,7 +41,7 @@ async function unifiedOrder(openId, ip, price, productIntro, tradeId) {
                         console.log(success);
                         if (success.xml.return_code[0] === 'SUCCESS') {
                             const prepayId = success.xml.prepay_id[0]
-                            const payParamsObj = getPayParams(prepayId, tradeId)
+                            const payParamsObj = getPayParams(appId, prepayId, tradeId)
                             // 返回给前端, 这里是 express 的写法
                             //res.json(payParamsObj)
                             console.log('payParamsObj', payParamsObj);
@@ -136,13 +136,14 @@ function wxSendData(appId, attach, productIntro, mchId, nonceStr, notifyUrl, ope
     return sendData
 }
 
-function getPayParams(prepayId, tradeId) {
+function getPayParams(appId, prepayId, tradeId) {
     const nonceStr = getNonceStr()
     const timeStamp = new Date().getTime().toString()
     const package = 'prepay_id=' + prepayId
     const paySign = getPaySign(appId, timeStamp, nonceStr, package)
     // 前端需要的所有数据, 都从这里返回过去
     const payParamsObj = {
+        appId: appId,
         nonceStr: nonceStr,
         timeStamp: timeStamp,
         package: package,

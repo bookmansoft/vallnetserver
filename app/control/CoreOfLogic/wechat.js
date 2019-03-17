@@ -259,8 +259,10 @@ class wechat extends facade.Control
         let price = params.price
         let productInfo = params.productInfo
         let tradeId = params.tradeId
+        let appId = params.appId
+        //const appId = 'wx4b3efb80ac5de780'
         try {
-            let res = await wxUnifiedorder.unifiedOrder(openid, ip, price, productInfo, tradeId);
+            let res = await wxUnifiedorder.unifiedOrder(appId, openid, ip, price, productInfo, tradeId);
             return {errcode: 'success', unifiedOrder: res}
         }catch(e) {
             console.log(e);

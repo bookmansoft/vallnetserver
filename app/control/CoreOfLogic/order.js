@@ -73,7 +73,8 @@ class order extends facade.Control
             update_time: 0,
         };
         await facade.GetMapping(tableType.order).Create(orderItem);
-        return {errcode: 'success', errmsg: 'order:ok', tradeId: tradeId};
+        //return {errcode: 'success', errmsg: 'order:ok', tradeId: tradeId};
+        return {errcode: 'success', errmsg: 'order:ok', tradeId: tradeId, order:orderItem};
     }
 
     async OrderStatus(user, params) {
