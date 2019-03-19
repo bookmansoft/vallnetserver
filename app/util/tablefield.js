@@ -236,7 +236,8 @@ let redpackAct = [
     'each_num',
     'act_desc',
     'act_start_at',
-    'act_end_at'
+    'act_end_at',
+    'status'
 ]
 
 let userRedpack = [
@@ -247,6 +248,7 @@ let userRedpack = [
     'gamegold',
     'amount',
     'act_at',
+    'status'
 ]
 
 let userRedpackAct = [

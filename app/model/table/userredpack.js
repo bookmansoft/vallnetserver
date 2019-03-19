@@ -15,6 +15,7 @@ let UserRedPack = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         gamegold: Sequelize.INTEGER,
         amount: Sequelize.INTEGER,
         act_at: Sequelize.INTEGER,
+        status: Sequelize.INTEGER
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段

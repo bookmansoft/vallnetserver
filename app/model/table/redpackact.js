@@ -18,6 +18,7 @@ let RedPackAct = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         act_desc: Sequelize.STRING,
         act_start_at: Sequelize.INTEGER,
         act_end_at: Sequelize.INTEGER,
+        status: Sequelize.INTEGER,
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段
