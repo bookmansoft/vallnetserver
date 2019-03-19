@@ -14,7 +14,7 @@ let BlockNotify = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         status: Sequelize.INTEGER,
         content: Sequelize.STRING,
         type: Sequelize.STRING,
-        openid: Sequelize.STRING,
+        uid: Sequelize.INTEGER,
         create_time: Sequelize.INTEGER,
         update_time: Sequelize.INTEGER
     },

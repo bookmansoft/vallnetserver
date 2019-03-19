@@ -52,14 +52,14 @@ class manage extends facade.Control
                 ['act_id', '==', act_id]
             ]).records(tableField.userRedpack)
         if(userRedPacts.length >0 ) {
-            let userRedPact = userRedPacts[0]
-            return {errcode: 'success', data: userRedPact}    
+            return {errcode: 'success', data: userRedPacts}    
         }
         return {errcode: 'error', errmsg: '无红包参与记录'}
     }
 
     //用户抽中红包
     async UserRedPackAdd(user, params)  {
+        let current_time = parseInt(new Date().getTime() / 1000)
         let uid = params.uid
         let act_id = params.act_id
         let act_name = params.act_name
@@ -71,6 +71,7 @@ class manage extends facade.Control
             act_name: act_name,
             gamegold: gamegold,
             amount: amount,
+            act_at: current_time,
             status: 0
         }
         await facade.GetMapping(tableType.userRedPack).Create(userRedpackItem)
@@ -81,7 +82,6 @@ class manage extends facade.Control
             ['act_id', '==', act_id]
         ]).records()
 
-        let current_time = parseInt(new Date().getTime() / 1000)
         if(userRedPactActs.length >0 ) {
             let userRedPactAct = userRedPactActs[0]
             userRedPactAct.setAttr('act_count', userRedPactAct.orm.act_count+1);
@@ -151,10 +151,10 @@ class manage extends facade.Control
             facade.GetMapping(tableType.redpack).Create(redpackItem);
 
             userRedPact.setAttr('status', 1)
-            userRedPact.save()
-            return {errcode: 'success', data: userRedPact}
+            userRedPact.orm.save()
+            return {errcode: 'success'}
         } else {
-            return {errcode: 'error', errmsg: '无红包参与记录'}
+            return {errcode: 'error'}
         }
         
     };

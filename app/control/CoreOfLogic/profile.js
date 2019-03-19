@@ -27,10 +27,11 @@ class profile extends facade.Control
     //用户信息
     async Info(user, params)  {
         let uid = params.uid;
+        console.log('info uid', uid)
         let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfile.length >0 ) {
             let profile = userProfile[0].orm;
-            let ret = await remote.execute('prop.count', [uid+'']);
+            let ret = await remote.execute('prop.count', [uid.toString()]);
             if(!!ret) {
                 profile.current_prop_count = ret;
                 userProfile[0].setAttr('current_prop_count', ret);
@@ -83,7 +84,7 @@ class profile extends facade.Control
     async UserProp(user, params)  {
         let uid = params.uid;
         let page = params.page;
-        let ret = await remote.execute('prop.list', [page, uid]);
+        let ret = await remote.execute('prop.list', [page, uid.toString()]);
         let userProfiles = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfiles.length >0 ) {
             let userProfile = userProfiles[0];
@@ -96,11 +97,13 @@ class profile extends facade.Control
     //用户信息
     async Mine(user, params)  {
         let uid = params.uid;
+        console.log('mine uid', uid)
         let userProfiles = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfiles.length >0 ) {
             let userProfile = userProfiles[0];
             let current_prop_count = 0
-            let ret = await remote.execute('prop.count', [uid])
+            let ret = await remote.execute('prop.count', [uid.toString()])
+            console.log(ret)
             if(!!ret) {
                 current_prop_count = ret;
                 userProfile.setAttr('current_prop_count', ret)

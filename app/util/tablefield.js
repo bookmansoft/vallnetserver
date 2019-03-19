@@ -207,7 +207,7 @@ let blockNotify = [
     'status',
     'content',
     'type',
-    'openid',
+    'uid',
     'create_time',
     'update_time'
 ]

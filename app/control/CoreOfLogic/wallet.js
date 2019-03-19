@@ -49,10 +49,10 @@ class wallet extends facade.Control
         let amount = params.amount;
         let uid = params.uid;
         let ret = await remote.execute('tx.send', [
-            addr, 
+            addr,
             amount,
             uid
-        ]);      
+        ]); 
         console.log(ret);
         return {errcode: 'success', errmsg: 'tx.send:ok', ret: ret}; 
     }
@@ -104,14 +104,14 @@ class wallet extends facade.Control
                 let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([['sn', '==', element.sn]]).records();
                 if(blockNotifys.length==0) {
                     let current_time = parseInt(new Date().getTime() / 1000)
-                    let notifyOpenid = ''
+                    let notifyUid = ''
                     try {
                         let obj = eval('(' + (element.body.content) + ')')
                         if(!!obj && obj.hasOwnProperty('address')) {
                             let addr = obj.address
                             let userWallets = facade.GetMapping(tableType.userWallet).groupOf().where([['addr', '==', addr]]).records();
                             if(userWallets.length >0) {
-                                notifyOpenid = userWallets[0].orm.openid
+                                notifyUid = userWallets[0].orm.uid
                             }
                         }
                     } catch(e) {
@@ -123,7 +123,7 @@ class wallet extends facade.Control
                         status: element.status,
                         content: element.body.content,
                         type: element.body.type,
-                        openid: notifyOpenid,
+                        uid: notifyUid,
                         create_time: current_time,
                         update_time: 0
                     }
@@ -132,7 +132,7 @@ class wallet extends facade.Control
             });
         }
         let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([
-            ['openid', '==', openid],
+            ['uid', '==', uid],
             ['status', '==', 1]
         ]).records();
         return {errcode: 'success', errmsg: 'notify.list:ok', count: blockNotifys.length}; 
