@@ -27,11 +27,13 @@ describe('认证', function() {
         }
     });
 
-    it('请求服务端推送一条下行消息', async () => {
+    it.only('请求服务端推送一条下行消息', async () => {
         let msg = await remote.login({openid: `${Math.random()*1000000000 | 0}`});
+        console.log(remote.NotifyType.test)
         if(remote.isSuccess(msg)) { 
             await remote.watch(msg => {
                 console.log(msg);
+                console.log('收到消息了');
             }, remote.NotifyType.test).fetching({func: "test.notify", id: 2});
         }
     });

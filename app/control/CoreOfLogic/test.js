@@ -20,6 +20,16 @@ class test extends facade.Control
      * @param {*} user 
      * @param {*} objData 
      */
+    async TestA(user, objData) {
+        console.log(user)
+        return {code: ReturnCode.Success};
+    }
+
+    /**
+     * 增
+     * @param {*} user 
+     * @param {*} objData 
+     */
     async Create(user, objData) {
         let test = await facade.GetMapping(tableType.test).Create(Math.random().toString());
         return {code: ReturnCode.Success, data: test.item};
@@ -105,7 +115,14 @@ class test extends facade.Control
      * @returns {Promise.<void>}
      */
     async notify(user, objData) {
-        user.notify({type: NotifyType.test, info:objData.id});   //下行通知
+        let notifyData = {type: NotifyType.test, info:objData.id}
+        console.log('user', user)
+        user.notify(notifyData);   //下行通知
+        
+        setTimeout(()=>{
+            user.notify({type: NotifyType.test, info:'好消息'});
+        }, 5000)
+        
         return {code: ReturnCode.Success};
     }
 }
