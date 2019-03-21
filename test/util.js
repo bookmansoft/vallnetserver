@@ -22,7 +22,7 @@ let remote = new gameconn(
     {
         "UrlHead": "http",              //协议选择: http/https
         "webserver": {
-            "host": "192.168.1.9",        //远程主机地址
+            "host": "192.168.5.73",        //远程主机地址
             "port": 9901                //远程主机端口
         },
         "auth": {

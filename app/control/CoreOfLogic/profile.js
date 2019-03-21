@@ -3,6 +3,7 @@ let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
 let remoteSetup = require('../../util/gamegold');
 let VipHelp = require('../../util/viphelp');
+const gamegoldHelp = require('../../util/gamegoldHelp');
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 //创建授权式连接器实例
@@ -10,6 +11,8 @@ const remote = new toolkit.conn();
 //兼容性设置，提供模拟浏览器环境中的 fetch 函数
 remote.setFetch(require('node-fetch'))  
 remote.setup(remoteSetup);
+
+
 
 /**
  * 个人中心
@@ -31,7 +34,7 @@ class profile extends facade.Control
         let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfile.length >0 ) {
             let profile = userProfile[0].orm;
-            let ret = await remote.execute('prop.count', [uid.toString()]);
+            let ret = await gamegoldHelp.execute('prop.count', [uid.toString()]);
             if(!!ret) {
                 profile.current_prop_count = ret;
                 userProfile[0].setAttr('current_prop_count', ret);

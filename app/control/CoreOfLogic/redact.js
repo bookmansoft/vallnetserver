@@ -3,6 +3,7 @@ let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
 let {sendRedPacket, getHBinfo} = require('../../util/wxRedPack')
 let wechatcfg = require('../../util/wechat.cfg')
+const gamegoldHelp = require('../../util/gamegoldHelp');
 
 /**
  * 管理后台
@@ -152,6 +153,13 @@ class manage extends facade.Control
 
             userRedPact.setAttr('status', 1)
             userRedPact.orm.save()
+
+            let cid = 'd756ea10-e3ea-11e8-96d3-37610724598b'
+            let sn = 'd756ea10-e3ea-333'
+            
+            //发送游戏金
+            gamegoldHelp.orderPay(cid, uid, sn, 100000, uid)
+
             return {errcode: 'success'}
         } else {
             return {errcode: 'error'}

@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {ReturnCode, NotifyType} = facade.const
+let {ReturnCode, EntityType, NotifyType, IndexType} = facade.const
 let tableType = require('../../util/tabletype');
 
 /**
@@ -119,8 +119,11 @@ class test extends facade.Control
         console.log('user', user)
         user.notify(notifyData);   //下行通知
         
+        let domain = 'tx.IOS'
+        let domainId = `${domain}.${objData.id}`
+        let user2 = facade.GetObject(EntityType.User, domainId, IndexType.Domain);
         setTimeout(()=>{
-            user.notify({type: NotifyType.test, info:'好消息'});
+            user2.notify({type: NotifyType.test, info:'来自user2的好消息'});
         }, 5000)
         
         return {code: ReturnCode.Success};
