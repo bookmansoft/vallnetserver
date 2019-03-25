@@ -34,8 +34,8 @@ let config = {
                 "redis": redis,
                 "mysql": mysql,
                 "webserver": {
-                    "mapping": "192.168.1.9",
-                    "host": "192.168.1.9",
+                    "mapping": "127.0.0.1",
+                    "host": "127.0.0.1",
                     "port": 9901
                 },
                 "auth": {
@@ -73,8 +73,8 @@ let config = {
             "1":{
                 "mysql": mysql,
                 "webserver": {
-                    "mapping": "192.168.1.9",
-                    "host": "192.168.1.9",
+                    "mapping": "127.0.0.1",
+                    "host": "127.0.0.1",
                     "port": 9401
                 }
             }
@@ -83,8 +83,8 @@ let config = {
             "1":{
                 "mysql": mysql,
                 "webserver": {
-                    "mapping": "192.168.1.9",
-                    "host": "192.168.1.9",
+                    "mapping": "127.0.0.1",
+                    "host": "127.0.0.1",
                     "port": 9101
                 }
             }
