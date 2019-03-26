@@ -16,12 +16,13 @@ class gamegoldHelp {
     constructor(){
 
     }
-    static init() {
+    static async init() {
         this.remote = new toolkit.conn();
         //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-        this.remote.setmode('webSocket')
-        this.remote.setFetch(require('node-fetch'))  
         this.remote.setup(remoteSetup);
+        await this.remote.setmode(this.remote.CommMode.ws).login()
+        //this.remote.setFetch(require('node-fetch'))  
+        await this.remote.join()
     }
 
     static async execute(method, params) {
@@ -31,6 +32,10 @@ class gamegoldHelp {
 
     static watchNotify(cb, etype = '0') {
         this.remote.watchNotify(cb, etype)
+    }
+
+    static watch(cb, etype = '0') {
+        this.remote.watch(cb, etype)
     }
 
     static async orderPay(cid, user_id, sn, price, account) {
