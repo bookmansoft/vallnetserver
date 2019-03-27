@@ -90,7 +90,7 @@ class prop extends facade.Control
     //道具捐赠
     //prop.donate hash index [openid]
     async PropDonate(user, params) {
-        let txid = params.txid;
+        let txid = gamegoldHelp.revHex(params.txid);
         let index = params.index;
         let uid = params.uid;
         let ret = await gamegoldHelp.execute('prop.donate', [

@@ -1,6 +1,7 @@
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 let remoteSetup = require('./gamegold')
+const _assert = require('assert');
 
 class gamegoldHelp {
      /**
@@ -45,6 +46,31 @@ class gamegoldHelp {
             return {errcode: 'faile', errmsg: 'pay error'};
         } else {
             return {errcode: 'success', errmsg: 'orderpay:ok', ret: ret};
+        }
+    }
+
+    static revHex(data) {
+        this.assert(typeof data === 'string');
+        this.assert(data.length > 0);
+        this.assert(data.length % 2 === 0);
+      
+        let out = '';
+      
+        for (let i = 0; i < data.length; i += 2)
+          out = data.slice(i, i + 2) + out;
+      
+        return out;
+    }  
+
+    static assert(value, message) {
+        if (!value) {
+          throw new assert.AssertionError({
+            message,
+            actual: value,
+            expected: true,
+            operator: '==',
+            stackStartFunction: assert
+          });
         }
     }
 
