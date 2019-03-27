@@ -26,6 +26,9 @@ if(env.portal) { //如果该服务器兼任门户，则启动索引服务
     });
 }
 
+//启动gamegold 连接器
+gamegoldWork()
+
 facade.boot({
     env: env,
     //指示加载自定义数据库表
@@ -36,11 +39,8 @@ facade.boot({
     static: [['/client/', './web/client']], 
 });
 
-
-gamegoldWork()
-
-
 async function gamegoldWork() {
+
     await gamegoldHelp.init()
 
     //通过监听收到消息
@@ -48,6 +48,7 @@ async function gamegoldWork() {
         console.log(msg);
     }, 'tx.client');
 
+    /*
     //获得一个新的地址
     let ret = await gamegoldHelp.execute('address.create', []);
     let newaddr = ret.result.address;
@@ -59,8 +60,7 @@ async function gamegoldWork() {
 
     ret = await gamegoldHelp.execute('balance.all', [])
     console.log(ret.result);
-
-
+    */
 
 }
 

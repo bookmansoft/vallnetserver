@@ -1,9 +1,3 @@
-let facade = require('gamecloud')
-let tableType = require('./tabletype');
-let tableField = require('./tablefield');
-let randomHelp = require('./randomHelp')
-let md5 = require('md5')
-
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 let remoteSetup = require('./gamegold')

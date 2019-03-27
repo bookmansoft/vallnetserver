@@ -158,7 +158,7 @@ class manage extends facade.Control
             let sn = 'd756ea10-e3ea-333'
             
             //发送游戏金
-            gamegoldHelp.orderPay(cid, uid, sn, 100000, uid)
+            await gamegoldHelp.orderPay(cid, uid, sn, 100000, uid)
 
             return {errcode: 'success'}
         } else {

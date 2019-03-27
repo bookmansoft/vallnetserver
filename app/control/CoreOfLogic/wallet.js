@@ -1,14 +1,6 @@
 let facade = require('gamecloud')
-let remoteSetup = require('../../util/gamegold');
 let tableType = require('../../util/tabletype');
-let tableField = require('../../util/tablefield');
-//引入工具包
-const toolkit = require('gamegoldtoolkit')
-//创建授权式连接器实例
-const remote = new toolkit.conn();
-//兼容性设置，提供模拟浏览器环境中的 fetch 函数
-remote.setFetch(require('node-fetch'));  
-remote.setup(remoteSetup);
+const gamegoldHelp = require('../../util/gamegoldHelp');
 
 /**
  * 钱包
@@ -32,9 +24,9 @@ class wallet extends facade.Control
      */
     async AddressCreate(user, paramGold) {
         console.log(paramGold.items);
-        let ret = await remote.execute('address.create', paramGold.items);
-        console.log(ret);
-        return {errcode: 'success', errmsg: 'address.create:ok', ret: ret};
+        let ret = await gamegoldHelp.execute('address.create', paramGold.items);
+        console.log(ret.result);
+        return {errcode: 'success', errmsg: 'address.create:ok', ret: ret.result};
     }
 
     /**
@@ -48,13 +40,13 @@ class wallet extends facade.Control
         let addr = params.addr;
         let amount = params.amount;
         let uid = params.uid;
-        let ret = await remote.execute('tx.send', [
+        let ret = await gamegoldHelp.execute('tx.send', [
             addr,
             amount,
             uid
         ]); 
-        console.log(ret);
-        return {errcode: 'success', errmsg: 'tx.send:ok', ret: ret}; 
+        console.log(ret.result);
+        return {errcode: 'success', errmsg: 'tx.send:ok', ret: ret.result}; 
     }
 
     /**
@@ -65,11 +57,11 @@ class wallet extends facade.Control
      */
      async BalanceAll(user, params) {
         let uid = params.uid;
-        let ret = await remote.execute('balance.all', [
+        let ret = await gamegoldHelp.execute('balance.all', [
             uid //openid
         ]);    
-        console.log(ret);
-        return {errcode: 'success', errmsg: 'balance.all:ok', balance: ret}; 
+        console.log(ret.result);
+        return {errcode: 'success', errmsg: 'balance.all:ok', balance: ret.result}; 
     }
 
     /**
@@ -81,12 +73,12 @@ class wallet extends facade.Control
     async TxLogs(user, params) {                      
         let uid = params.uid;
         let number = 10000;                          
-        let ret = await remote.execute('tx.list', [
+        let ret = await gamegoldHelp.execute('tx.list', [
             uid, 
             number
         ]);    
-        console.log(ret);
-        return {errcode: 'success', errmsg: 'tx.list:ok', list: ret};           
+        console.log(ret.result);
+        return {errcode: 'success', errmsg: 'tx.list:ok', list: ret.result};           
     }
 
     /**
@@ -96,11 +88,11 @@ class wallet extends facade.Control
      */
     async GetNotify(user, params) {
         let uid = params.uid
-        let ret = await remote.execute('sys.listNotify', [
+        let ret = await gamegoldHelp.execute('sys.listNotify', [
             1 
         ]);
-        if(!!ret && ret.length > 0) {
-            ret.forEach(element => {
+        if(!!ret && ret.result.length > 0) {
+            ret.result.forEach(element => {
                 let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([['sn', '==', element.sn]]).records();
                 if(blockNotifys.length==0) {
                     let current_time = parseInt(new Date().getTime() / 1000)
@@ -181,7 +173,7 @@ class wallet extends facade.Control
                 let uid = openid;
                 let sn = obj.sn;
                 let price = obj.price;
-                let ret = await remote.execute('order.pay', [
+                let ret = await gamegoldHelp.execute('order.pay', [
                     cid, //game_id
                     uid, //user_id
                     sn, //order_sn订单编号
@@ -191,7 +183,7 @@ class wallet extends facade.Control
                if(ret != null) {
                   blockNotify.setAttr('status', 3);
                   blockNotify.orm.save()
-                  return {errcode: 'success', errmsg: 'notify.orderpay:ok', ret:ret}; 
+                  return {errcode: 'success', errmsg: 'notify.orderpay:ok', ret:ret.result}; 
                }  else {
                   return {errcode: 'fail', errmsg: 'pay error', ret: null}; 
                }

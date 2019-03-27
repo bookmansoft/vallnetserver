@@ -1,15 +1,8 @@
 let facade = require('gamecloud')
 let wxUnifiedorder = require('../../util/wxUnifiedorder');
-let remoteSetup = require('../../util/gamegold');
 let tableType = require('../../util/tabletype');
 let VipHelp = require('../../util/viphelp');
-//引入工具包
-const toolkit = require('gamegoldtoolkit')
-//创建授权式连接器实例
-const remote = new toolkit.conn();
-//兼容性设置，提供模拟浏览器环境中的 fetch 函数
-remote.setFetch(require('node-fetch'))  
-remote.setup(remoteSetup);
+const gamegoldHelp = require('../../util/gamegoldHelp');
 
 /**
  * 节点控制器--订单
@@ -36,18 +29,18 @@ class order extends facade.Control
         let sn = params.sn;
         let price = params.price;
         console.log(params);
-        let ret = await remote.execute('order.pay', [
+        let ret = await gamegoldHelp.execute('order.pay', [
             cid, //game_id
             user_id, //user_id
             sn, //order_sn订单编号
             price, //order_sum订单金额
             account  //指定结算的钱包账户，一般为微信用户的openid
           ]);
-        console.log(ret);
-        if(ret == null) {
+        console.log(ret.result);
+        if(ret.result == null) {
             return {errcode: 'faile', errmsg: 'pay error'};
         } else {
-            return {errcode: 'success', errmsg: 'orderpay:ok', ret: ret};
+            return {errcode: 'success', errmsg: 'orderpay:ok', ret: ret.result};
         }
     }
 
