@@ -2,6 +2,7 @@ let facade = require('gamecloud')
 let tableType = require('../../util/tabletype');
 const axios = require('axios')
 const gamegoldHelp = require('../../util/gamegoldHelp');
+const redisHelp = require('../../util/redisHelp');
 
 /**
  * 游戏的控制器
@@ -28,6 +29,12 @@ class cp extends facade.Control
             page,
             num
         ]);
+        console.log(ret.result)
+        if(ret.code==0) {
+            ret.result.list.forEach(element => {
+                redisHelp.heset("hashkeycp", element.cid, JSON.stringify(element))
+            });
+        }
         return {errcode: 'success', cp: ret.result};
     }
 
@@ -91,6 +98,7 @@ class cp extends facade.Control
         console.log(params.items);
         let cid = params.cid
         let ret = await gamegoldHelp.execute('cp.byId', [cid]);
+        console.log(ret.result)
         return {errcode: 'success',result: ret.result};
     }
 

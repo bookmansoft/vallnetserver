@@ -1,6 +1,7 @@
 let facade = require('gamecloud')
 let tableType = require('../../util/tabletype');
 const gamegoldHelp = require('../../util/gamegoldHelp');
+const redisHelp = require('../../util/redisHelp');
 
 /**
  * 节点控制器--道具
@@ -66,14 +67,21 @@ class prop extends facade.Control
             uid //openid
         ]);
         console.log(ret.result);
-        return {errcode: 'success', errmsg: 'prop.list:ok', props: ret.result.list};
+        let props = Array()
+        for(let i=0; i<ret.result.list.length; i++) {
+            let element = ret.result.list[i]
+            let cp = await redisHelp.hget("hashkeycp", element.cid)
+            element.cp = JSON.parse(cp)
+            props.push(element)
+        }
+        return {errcode: 'success', errmsg: 'prop.list:ok', props: props};
     }
 
     //道具熔铸
     async PropFound(user, params) {
-        let txid = params.txid;
+        let pid = params.pid;
         let ret = await gamegoldHelp.execute('prop.found', [
-            txid, //生产者编码
+            pid, //生产者编码
         ]);
         console.log(ret.result);
         return {errcode: 'success', errmsg: 'prop.found:ok', ret: ret.result};
@@ -84,11 +92,11 @@ class prop extends facade.Control
     async PropDonate(user, params) {
         let txid = params.txid;
         let index = params.index;
-        let openid = params.openid;
+        let uid = params.uid;
         let ret = await gamegoldHelp.execute('prop.donate', [
             txid,
             index,
-            openid
+            uid
         ]);
         console.log(ret.result);
         return {errcode: 'success', errmsg: 'prop.donate:ok', ret: ret.result};
@@ -98,10 +106,10 @@ class prop extends facade.Control
     //prop.receive raw [openid]
     async PropReceive(user, params) {
         let raw = params.raw;
-        let openid = params.openid;
+        let uid = params.uid;
         let ret = await gamegoldHelp.execute('prop.receive', [
             raw, 
-            openid,
+            uid,
         ]);    
         console.log(ret.result);
         return {errcode: 'success', errmsg: 'prop.receive:ok', ret: ret.result};
@@ -111,14 +119,12 @@ class prop extends facade.Control
     //prop.send addr hash index [openid]
     async PropSend(user, params) {
         let addr = params.addr;
-        let txid = params.txid;
-        let index = params.index;
-        let openid = params.openid;
+        let pid = params.pid;
+        let uid = params.uid;
         let ret = await gamegoldHelp.execute('prop.send', [
             addr, 
-            txid,
-            index,
-            openid
+            pid,
+            uid
         ]); 
         console.log(ret.result);
         return {errcode: 'success', errmsg: 'prop.send:ok', ret: ret.result};
@@ -127,15 +133,13 @@ class prop extends facade.Control
     //道具出售
     //prop.sale hash index fixedPrice [openid]
     async PropSale(user, params) {
-        let txid = params.txid;
-        let index = params.index;
+        let pid = params.pid;
         let fixedPrice = params.fixedPrice;
-        let openid = params.openid;
+        let uid = params.uid;
         let ret = await gamegoldHelp.execute('prop.sale', [
-            txid,
-            index,
+            pid,
             fixedPrice,
-            openid
+            uid
         ]);
         console.log(ret.result);
         return {errcode: 'success', errmsg: 'prop.sale:ok', ret: ret.result};
@@ -143,9 +147,9 @@ class prop extends facade.Control
 
     //道具市场
     async PropListMarket(user, params) {
-        let ret = await gamegoldHelp.execute('prop.list.market', []);
+        let ret = await gamegoldHelp.execute('prop.remoteQuery', [[['pst', 2]]]);
         console.log(ret.result);
-        return {errcode: 'success', errmsg: 'prop.list.market:ok', ret: ret.result};
+        return {errcode: 'success', errmsg: 'prop.list.market:ok', ret: ret.result.list};
     }
 
     //道具购买
@@ -153,14 +157,19 @@ class prop extends facade.Control
     async PropBuy(user, params) {
         let pid = params.pid;
         let price = params.price;
-        let openid = params.openid;
+        let uid = params.uid;
         let ret = await gamegoldHelp.execute('prop.buy', [
             pid,
             price,
-            openid
+            uid
         ]);     
         console.log(ret.result);
-        return {errcode: 'success', errmsg: 'prop.buy:ok', ret: ret.result}; 
+        if(!!ret && ret.code == 0) {
+            return {errcode: 'success', errmsg: 'prop.buy:ok', ret: ret.result}; 
+        } else {
+            return {errcode: 'fail', errmsg: 'prop.buy:ok'}; 
+        }
+        
     }
 }
 
