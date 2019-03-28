@@ -4,6 +4,7 @@ let tableField = require('../../util/tablefield');
 let {sendRedPacket, getHBinfo} = require('../../util/wxRedPack')
 let wechatcfg = require('../../util/wechat.cfg')
 const gamegoldHelp = require('../../util/gamegoldHelp');
+const stringRandom = require('string-random');
 
 /**
  * 管理后台
@@ -60,12 +61,19 @@ class manage extends facade.Control
 
     //用户抽中红包
     async UserRedPackAdd(user, params)  {
-        let current_time = parseInt(new Date().getTime() / 1000)
         let uid = params.uid
         let act_id = params.act_id
         let act_name = params.act_name
         let gamegold = params.gamegold
         let amount = params.amount
+
+        let redpackAct = facade.GetObject(tableType.redpackAct, act_id); 
+        if(!!!redpackAct ) {
+            return {errcode: 'fail', errmsg: '无红包活动'}    
+        }
+
+        let current_time = parseInt(new Date().getTime() / 1000)
+
         let userRedpackItem = {
             uid: uid,
             act_id: act_id,
@@ -73,6 +81,7 @@ class manage extends facade.Control
             gamegold: gamegold,
             amount: amount,
             act_at: current_time,
+            cid: redpackAct.orm.cid,
             status: 0
         }
         await facade.GetMapping(tableType.userRedPack).Create(userRedpackItem)
@@ -117,6 +126,7 @@ class manage extends facade.Control
                 return {errcode: 'error', errmsg: '红包已领取'}
             }
 
+            /*
             let amount = userRedPact.orm.amount
             let now = new Date();
             let date_time = now.getFullYear() + '' + (now.getMonth() + 1) + '' + now.getDate();
@@ -133,10 +143,14 @@ class manage extends facade.Control
                 remark: '分享越多，快乐越多，游戏金越多',
                 mch_billno: wechatcfg.mch_id + date_time + date_no + random_no //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字;
             }
+
             let total_amount = amount
             let total_num = 1
             let ret = await sendRedPacket(total_amount, total_num, openid, redPackConfig)
             let redpackItem = {
+                user_redpack_id
+                uid
+                act_id
                 act_name: redPackConfig.showName,
                 mch_billno: redPackConfig.mch_billno,
                 nick_name: redPackConfig.showName,
@@ -149,18 +163,22 @@ class manage extends facade.Control
                 return_msg: ret.return_msg,
                 order_status: 0,
             }
+            
             facade.GetMapping(tableType.redpack).Create(redpackItem);
+            */
+           let cid = userRedPact.orm.cid
+           let sn = stringRandom(32)
 
             userRedPact.setAttr('status', 1)
+            userRedPact.setAttr('order_sn', sn)
+            userRedPact.setAttr('cid', cid)
             userRedPact.orm.save()
 
-            let cid = 'd756ea10-e3ea-11e8-96d3-37610724598b'
-            let sn = 'd756ea10-e3ea-333'
-            
             //发送游戏金
-            await gamegoldHelp.orderPay(cid, uid, sn, 100000, uid)
+            await gamegoldHelp.orderPay(cid, uid, sn, userRedPact.orm.gamegold, uid)
 
             return {errcode: 'success'}
+
         } else {
             return {errcode: 'error'}
         }

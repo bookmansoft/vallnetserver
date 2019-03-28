@@ -64,12 +64,8 @@ async function gamegoldWork() {
 
 }
 
-let hashkeycp = "hashkeycp"
 async function redisWork() {
     await redisHelp.init()
-    //await redisHelp.heset(hashkeycp, "ddddd", "123")
-    //let ret = await redisHelp.hget(hashkeycp, "229a4970-4f77-11e9-b118-e3d1ba95e1a5")
-    //console.log(ret)
 }
 
 // 定时查询红包接口
