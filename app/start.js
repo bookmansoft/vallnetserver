@@ -40,28 +40,7 @@ facade.boot({
 });
 
 async function gamegoldWork() {
-
     await gamegoldHelp.init()
-
-    //通过监听收到消息
-    gamegoldHelp.watch(msg => {
-        console.log(msg);
-    }, 'tx.client');
-
-    /*
-    //获得一个新的地址
-    let ret = await gamegoldHelp.execute('address.create', []);
-    let newaddr = ret.result.address;
-    console.log(newaddr);
-
-    //向该地址转账
-    ret = await gamegoldHelp.execute('tx.send', [newaddr, 20000]);
-    console.log(ret.result)
-
-    ret = await gamegoldHelp.execute('balance.all', [])
-    console.log(ret.result);
-    */
-
 }
 
 let hashkeycp = "hashkeycp"

@@ -18,8 +18,41 @@ class gamegoldHelp {
         await this.remote.setmode(this.remote.CommMode.ws).login()
         //this.remote.setFetch(require('node-fetch'))  
         await this.remote.join()
+        //监听
+        await this.subscribe()
     }
 
+    static async subscribe() {
+        //监听消息
+        this.remote = await this.remote.watch(msg => {
+            console.log('prop/receive', msg);
+        }, 'prop/receive');
+
+        this.remote = await this.remote.watch(msg => {
+            console.log('notify/receive', msg);
+        }, 'notify/receive');
+
+        this.remote = await this.remote.watch(msg => {
+            console.log('balance.account.client', msg.accountName);
+        }, 'balance.account.client')
+
+        this.remote = await this.remote.watch(msg => {
+            console.log('balance.client', msg);
+        }, 'balance.client')
+
+        this.remote = await this.remote.watch(msg => {
+            console.log('prop/auction', msg);
+        }, 'prop/auction')
+
+        this.remote = await this.remote.watch(msg => {
+            console.log('order.pay', msg);
+        }, 'order.pay')
+
+        let ret = await this.remote.execute('subscribe', ['prop/receive', 'notify/receive', 'balance.account.client', 'balance.client', 'prop/auction', 'order.pay']);
+        console.log(ret)
+
+    }
+    
     static async execute(method, params) {
         let ret = await this.remote.execute(method, params)
         return ret

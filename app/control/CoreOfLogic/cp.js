@@ -25,7 +25,7 @@ class cp extends facade.Control
     async List(user, params) {
         let page = params.page;
         let num = params.num;
-        let ret = await gamegoldHelp.execute('cp.list', [
+        let ret = await gamegoldHelp.execute('cp.remoteQuery', [
             page,
             num
         ]);
