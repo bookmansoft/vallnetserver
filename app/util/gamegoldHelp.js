@@ -45,7 +45,7 @@ class gamegoldHelp {
         this.remote = await this.remote.watch(msg => {
             console.log('prop/auction', msg);
             this.notfiyToClient(msg.accountName, 'prop/auction', msg)
-        }, 'prop/auction')
+        }, 'prop.auction')
 
         this.remote = await this.remote.watch(msg => {
             console.log('order.pay', msg);
