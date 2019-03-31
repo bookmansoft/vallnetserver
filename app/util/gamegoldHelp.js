@@ -2,6 +2,8 @@
 const toolkit = require('gamegoldtoolkit')
 let remoteSetup = require('./gamegold')
 const _assert = require('assert');
+let facade = require('gamecloud')
+let {ReturnCode, EntityType, NotifyType, IndexType} = facade.const
 
 class gamegoldHelp {
      /**
@@ -26,33 +28,44 @@ class gamegoldHelp {
         //监听消息
         this.remote = await this.remote.watch(msg => {
             console.log('prop/receive', msg);
+            this.notfiyToClient(msg.accountName, 'prop/receive', msg)
         }, 'prop/receive');
 
+        /*
         this.remote = await this.remote.watch(msg => {
             console.log('notify/receive', msg);
         }, 'notify/receive');
+        */
 
         this.remote = await this.remote.watch(msg => {
             console.log('balance.account.client', msg.accountName);
+            this.notfiyToClient(msg.accountName, 'balance.account.client', msg)
         }, 'balance.account.client')
 
         this.remote = await this.remote.watch(msg => {
-            console.log('balance.client', msg);
-        }, 'balance.client')
-
-        this.remote = await this.remote.watch(msg => {
             console.log('prop/auction', msg);
+            this.notfiyToClient(msg.accountName, 'prop/auction', msg)
         }, 'prop/auction')
 
         this.remote = await this.remote.watch(msg => {
             console.log('order.pay', msg);
         }, 'order.pay')
 
-        let ret = await this.remote.execute('subscribe', ['prop/receive', 'notify/receive', 'balance.account.client', 'balance.client', 'prop/auction', 'order.pay']);
+        let ret = await this.remote.execute('subscribe', ['prop/receive', 'balance.account.client', 'prop/auction', 'order.pay']);
         console.log(ret)
 
     }
     
+    static notfiyToClient(uid, msgType, msg) {
+        let domain = 'tx.IOS'
+        let domainId = `${domain}.${uid}`
+        let user = facade.GetObject(EntityType.User, domainId, IndexType.Domain);
+        user.notify({type: NotifyType.test, info: {
+            msgType: msgType,
+            msg: msg
+        }});
+    }
+
     static async execute(method, params) {
         let ret = await this.remote.execute(method, params)
         return ret
