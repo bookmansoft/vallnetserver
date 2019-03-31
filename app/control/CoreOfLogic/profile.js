@@ -129,7 +129,7 @@ class profile extends facade.Control
         } else {
             let userProfile = userProfiles[0];
             let vipHelp = new VipHelp()
-            let drawResult = await vipHelp.vipDraw(uid, draw_count, remote, userProfile.orm.block_addr)
+            let drawResult = await vipHelp.vipDraw(uid, draw_count, userProfile.orm.block_addr)
             if(drawResult.result == false) {
                 return {errcode: 'fail', errmsg: drawResult.errmsg};
             } else {

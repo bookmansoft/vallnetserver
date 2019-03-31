@@ -109,7 +109,7 @@ class viphelp {
      * 提币
      * @param {*} uid 
      */
-    async vipDraw(uid, draw_count, remote, addr) {
+    async vipDraw(uid, draw_count, addr) {
         let userVips = facade.GetMapping(tableType.vip).groupOf().where([['uid', '==', uid]]).records()
         if(userVips.length >0 ) {
             let userVip = userVips[0]
