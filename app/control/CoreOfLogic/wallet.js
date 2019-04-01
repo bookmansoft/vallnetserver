@@ -72,10 +72,10 @@ class wallet extends facade.Control
      */
     async TxLogs(user, params) {                      
         let uid = params.uid;
-        let number = 10000;                          
+        //let number = 10000;                          
         let ret = await gamegoldHelp.execute('tx.list', [
             uid, 
-            number
+            //number
         ]);    
         console.log(ret.result);
         return {errcode: 'success', errmsg: 'tx.list:ok', list: ret.result};           

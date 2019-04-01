@@ -74,7 +74,7 @@ class prop extends facade.Control
             element.cp = JSON.parse(cp)
             props.push(element)
         }
-        return {errcode: 'success', errmsg: 'prop.list:ok', props: props};
+        return {errcode: 'success', errmsg: 'prop.list:ok', props: props, count: ret.result.count};
     }
 
     //道具熔铸

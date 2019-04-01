@@ -24,11 +24,12 @@ class gamegoldHelp {
         await this.subscribe()
     }
 
+    //消息订阅
     static async subscribe() {
-        //监听消息
+        //prop/receive: 收到新的道具，或者已有道具发生变更
         this.remote = await this.remote.watch(msg => {
             console.log('prop/receive', msg);
-            this.notfiyToClient(msg.accountName, 'prop/receive', msg)
+            this.notfiyToClient(msg.account, 'prop/receive', msg)
         }, 'prop/receive');
 
         /*
@@ -36,17 +37,19 @@ class gamegoldHelp {
             console.log('notify/receive', msg);
         }, 'notify/receive');
         */
-
+        //子账户余额变动通知
         this.remote = await this.remote.watch(msg => {
             console.log('balance.account.client', msg.accountName);
             this.notfiyToClient(msg.accountName, 'balance.account.client', msg)
         }, 'balance.account.client')
 
+        //用户发布的道具被成功拍卖后的通知
         this.remote = await this.remote.watch(msg => {
             console.log('prop/auction', msg);
-            this.notfiyToClient(msg.accountName, 'prop/auction', msg)
+            this.notfiyToClient(msg.account, 'prop/auction', msg)
         }, 'prop.auction')
 
+        //用户执行 order.pay 之后，CP特约节点发起到账通知消息
         this.remote = await this.remote.watch(msg => {
             console.log('order.pay', msg);
         }, 'order.pay')
@@ -60,10 +63,13 @@ class gamegoldHelp {
         let domain = 'tx.IOS'
         let domainId = `${domain}.${uid}`
         let user = facade.GetObject(EntityType.User, domainId, IndexType.Domain);
-        user.notify({type: NotifyType.test, info: {
-            msgType: msgType,
-            msg: msg
-        }});
+        if(!!user) {
+            user.notify({type: NotifyType.test, info: {
+                msgType: msgType,
+                msg: msg
+            }});
+        }
+
     }
 
     static async execute(method, params) {
