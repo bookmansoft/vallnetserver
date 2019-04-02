@@ -1,18 +1,8 @@
 let facade = require('gamecloud')
-let remoteSetup = require('../../util/gamegold');
-let {ReturnCode, NotifyType} = facade.const
 let tableType = require('../../util/tabletype');
-let tableField = require('../../util/tablefield');
-let userhelp = require('../../util/userhelp');
 const axios = require('axios')
-//引入工具包
-const toolkit = require('gamegoldtoolkit')
-//创建授权式连接器实例
-const remote = new toolkit.conn();
-//兼容性设置，提供模拟浏览器环境中的 fetch 函数
-remote.setFetch(require('node-fetch'))  
-remote.setup(remoteSetup);
-let userHelp = new userhelp();
+const gamegoldHelp = require('../../util/gamegoldHelp');
+const redisHelp = require('../../util/redisHelp');
 
 /**
  * 游戏的控制器
@@ -35,11 +25,14 @@ class cp extends facade.Control
     async List(user, params) {
         let page = params.page;
         let num = params.num;
-        let ret = await remote.execute('cp.list', [
-            page,
-            num
-        ]);
-        return {errcode: 'success', cp: ret};
+        let ret = await gamegoldHelp.execute('cp.remoteQuery', []);
+        console.log(ret.result)
+        if(ret.code==0) {
+            ret.result.list.forEach(element => {
+                redisHelp.heset("hashkeycp", element.cid, JSON.stringify(element))
+            });
+        }
+        return {errcode: 'success', cp: ret.result};
     }
 
     async GetCpProxy(user, params) {
@@ -64,11 +57,11 @@ class cp extends facade.Control
     async CpCount(user, params) {
         let page = 1;
         let num = 100000;
-        let ret = await remote.execute('cp.list', [
+        let ret = await gamegoldHelp.execute('cp.list', [
             page,
             num
         ]);
-        let count = ret==null ? 0 : ret.list.length
+        let count = ret==null ? 0 : ret.result.list.length
         return {errcode: 'success', cp_count: count};
     }
 
@@ -78,8 +71,8 @@ class cp extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async Create(user, params) {
-        let ret = await remote.execute('cp.create', params.items);
-        return {errcode: 'success',result: ret};
+        let ret = await gamegoldHelp.execute('cp.create', params.items);
+        return {errcode: 'success',result: ret.result};
     }
 
     /**
@@ -89,8 +82,8 @@ class cp extends facade.Control
      */
     async Change(user, params) {
         console.log(params.items);
-        let ret = await remote.execute('cp.change', params.items);
-        return {errcode: 'success',result: ret};
+        let ret = await gamegoldHelp.execute('cp.change', params.items);
+        return {errcode: 'success',result: ret.result};
     }
 
     /**
@@ -101,8 +94,9 @@ class cp extends facade.Control
     async ById(user, params) {
         console.log(params.items);
         let cid = params.cid
-        let ret = await remote.execute('cp.byId', [cid]);
-        return {errcode: 'success',result: ret};
+        let ret = await gamegoldHelp.execute('cp.byId', [cid]);
+        console.log(ret.result)
+        return {errcode: 'success',result: ret.result};
     }
 
     /**
@@ -111,20 +105,20 @@ class cp extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async ByName(user, params) {
-        let ret = await remote.execute('cp.ByName', params.items);
-        return {errcode: 'success',result: ret};
+        let ret = await gamegoldHelp.execute('cp.ByName', params.items);
+        return {errcode: 'success',result: ret.result};
     }
 
     //申请令牌
     async UserToken(user, params) {
-        let ret = await remote.execute('token.user', [
+        let ret = await gamegoldHelp.execute('token.user', [
             params.cid,
             params.user_id,
             null,
             params.account
         ]);
-        if (!!ret && ret.hasOwnProperty("data")) {
-            let addr = ret.data.addr;
+        if (!!ret && ret.result.hasOwnProperty("data")) {
+            let addr = ret.result.data.addr;
             let userWallet = await facade.GetMapping(tableType.userWallet).groupOf().where([
                 ['cid', '==', params.cid],
                 ['user_id', '==', params.user_id],
@@ -141,7 +135,7 @@ class cp extends facade.Control
                 facade.GetMapping(tableType.userWallet).Create(userWalletItem);
             }
         }
-        return {errcode: 'success', errmsg:'usertoken:ok', ret: ret};
+        return {errcode: 'success', errmsg:'usertoken:ok', ret: ret.result};
     }
 }
 

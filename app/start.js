@@ -1,7 +1,6 @@
 const facade = require('gamecloud')
-const tableType = require('./util/tabletype');
-const tableField = require('./util/tablefield');
 const gamegoldHelp = require('./util/gamegoldHelp');
+const redisHelp = require('./util/redisHelp');
 
 //加载用户自定义模块
 facade.addition = true;
@@ -26,6 +25,10 @@ if(env.portal) { //如果该服务器兼任门户，则启动索引服务
     });
 }
 
+//启动gamegold 连接器
+gamegoldWork()
+redisWork()
+
 facade.boot({
     env: env,
     //指示加载自定义数据库表
@@ -36,7 +39,13 @@ facade.boot({
     static: [['/client/', './web/client']], 
 });
 
-gamegoldHelp.init()
+async function gamegoldWork() {
+    await gamegoldHelp.init()
+}
+
+async function redisWork() {
+    await redisHelp.init()
+}
 
 // 定时查询红包接口
 /*

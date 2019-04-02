@@ -1,17 +1,8 @@
 let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
-let remoteSetup = require('../../util/gamegold');
 let VipHelp = require('../../util/viphelp');
 const gamegoldHelp = require('../../util/gamegoldHelp');
-//引入工具包
-const toolkit = require('gamegoldtoolkit')
-//创建授权式连接器实例
-const remote = new toolkit.conn();
-//兼容性设置，提供模拟浏览器环境中的 fetch 函数
-remote.setFetch(require('node-fetch'))  
-remote.setup(remoteSetup);
-
 
 
 /**
@@ -34,10 +25,10 @@ class profile extends facade.Control
         let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfile.length >0 ) {
             let profile = userProfile[0].orm;
-            let ret = await gamegoldHelp.execute('prop.count', [uid.toString()]);
+            let ret = await gamegoldHelp.execute('prop.list', [1, uid]);
             if(!!ret) {
-                profile.current_prop_count = ret;
-                userProfile[0].setAttr('current_prop_count', ret);
+                profile.current_prop_count = ret.result.count;
+                userProfile[0].setAttr('current_prop_count', profile.current_prop_count);
                 userProfile[0].orm.save();
             }
             return {errcode: 'success', profile: profile};
@@ -87,14 +78,14 @@ class profile extends facade.Control
     async UserProp(user, params)  {
         let uid = params.uid;
         let page = params.page;
-        let ret = await remote.execute('prop.list', [page, uid.toString()]);
+        let ret = await remote.execute('prop.list', [page, uid]);
         let userProfiles = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfiles.length >0 ) {
             let userProfile = userProfiles[0];
             userProfile.setAttr('prop_count', userProfile.orm.current_prop_count);
             userProfile.orm.save();
         }
-        return {errcode: 'success', errmsg: 'userprop:ok', props: ret};
+        return {errcode: 'success', errmsg: 'userprop:ok', props: ret.result.list};
     }
     
     //用户信息
@@ -105,11 +96,11 @@ class profile extends facade.Control
         if(userProfiles.length >0 ) {
             let userProfile = userProfiles[0];
             let current_prop_count = 0
-            let ret = await remote.execute('prop.count', [uid.toString()])
+            let ret = await gamegoldHelp.execute('prop.list', [1, uid])
             console.log(ret)
             if(!!ret) {
-                current_prop_count = ret;
-                userProfile.setAttr('current_prop_count', ret)
+                current_prop_count = ret.result.count;
+                userProfile.setAttr('current_prop_count', current_prop_count)
                 userProfile.orm.save()
             }
             
@@ -138,7 +129,7 @@ class profile extends facade.Control
         } else {
             let userProfile = userProfiles[0];
             let vipHelp = new VipHelp()
-            let drawResult = await vipHelp.vipDraw(uid, draw_count, remote, userProfile.orm.block_addr)
+            let drawResult = await vipHelp.vipDraw(uid, draw_count, userProfile.orm.block_addr)
             if(drawResult.result == false) {
                 return {errcode: 'fail', errmsg: drawResult.errmsg};
             } else {

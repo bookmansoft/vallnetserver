@@ -213,6 +213,9 @@ let blockNotify = [
 ]
 
 let redpack = [
+    'user_redpack_id',
+    'uid',
+    'act_id',
     'act_name',
     'mch_billno',
     'nick_name',
@@ -237,6 +240,7 @@ let redpackAct = [
     'act_desc',
     'act_start_at',
     'act_end_at',
+    'cid',
     'status'
 ]
 
@@ -248,7 +252,9 @@ let userRedpack = [
     'gamegold',
     'amount',
     'act_at',
-    'status'
+    'status',
+    'order_sn',
+    'cid'
 ]
 
 let userRedpackAct = [

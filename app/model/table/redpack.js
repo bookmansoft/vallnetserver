@@ -9,6 +9,9 @@ let {Sequelize, seqconn} = facade.tools;
 let RedPack = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
     'RedPack',
     {
+        user_redpack_id: Sequelize.INTEGER,
+        uid: Sequelize.INTEGER,
+        act_id: Sequelize.INTEGER,
         act_name: Sequelize.STRING,
         mch_billno: Sequelize.STRING,
         nick_name: Sequelize.STRING,

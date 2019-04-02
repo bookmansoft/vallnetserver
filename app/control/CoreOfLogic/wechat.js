@@ -3,25 +3,17 @@ let weChat = require('../../util/wechat')
 let randomHelp = require('../../util/randomHelp')
 let md5 = require('md5')
 let tableType = require('../../util/tabletype')
-let remoteSetup = require('../../util/gamegold')
 let userHelp = require('../../util/userhelp')
 let signature = require('../../util/signature.js')
 let wechatcfg = require('../../util/wechat.cfg')
 let wxUnifiedorder = require('../../util/wxUnifiedorder')
 let {sendRedPacket, getHBinfo} = require('../../util/wxRedPack')
 let WXBizDataCrypt = require('../../util/WXBizDataCrypt')
-
+const gamegoldHelp = require('../../util/gamegoldHelp');
 const WechatAPI = require('co-wechat-api')
 const fs = require('fs')
 const axios = require('axios')
 
-//引入工具包
-const toolkit = require('gamegoldtoolkit')
-//创建授权式连接器实例
-const remote = new toolkit.conn();
-//兼容性设置，提供模拟浏览器环境中的 fetch 函数
-remote.setFetch(require('node-fetch'))  
-remote.setup(remoteSetup);
 
 /**
  * 微信接口
@@ -176,8 +168,8 @@ class wechat extends facade.Control
             if(userProfile.length == 0) {
                 //创建账户
                 let play_uid = openid;
-                let ret = await remote.execute('token.user', ['first-acc-01', play_uid, null, openid]);
-                let block_addr = (!!ret && ret.hasOwnProperty("data")) ? ret.data.addr : '';
+                let ret = await gamegoldHelp.execute('token.user', ['first-acc-01', play_uid, null, openid]);
+                let block_addr = (!!ret && ret.result.hasOwnProperty("data")) ? ret.result.data.addr : '';
                 //let ret = await remote.execute('address.create', [openid]);   
                 //let block_addr = (!!ret && ret.hasOwnProperty("address")) ? ret.address : '';
                 encryptedData = encryptedData.replace(/ /g,'+');

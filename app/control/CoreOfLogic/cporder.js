@@ -2,14 +2,7 @@ let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
 let randomHelp = require('../../util/randomHelp');
-let remoteSetup = require('../../util/gamegold_cp');
-//引入工具包
-var toolkit = require('gamegoldtoolkit')
-//创建授权式连接器实例
-var remote = new toolkit.conn();
-//兼容性设置，提供模拟浏览器环境中的 fetch 函数
-remote.setFetch(require('node-fetch')) 
-remote.setup(remoteSetup);
+const gamegoldHelp = require('../../util/gamegoldHelp');
 
 /**
  * 游戏用户
@@ -83,14 +76,14 @@ class cporder extends facade.Control
                 let prop_value = cporder_orm.prop_value;
                 //发送道具
                 //npm run cli rpc prop.order {game_id} {prop_ori_id} {prop_value} {user_addr}
-                let ret = await remote.execute('prop.order', [
+                let ret = await gamegoldHelp.execute('prop.order', [
                     cid,        //游戏编号
                     prop_oid,   //道具原始
                     prop_value, //道具含金量
                     user_addr   //游戏内玩家的有效地址
                 ]);
-                console.log(ret);
-                return {errcode: 'success', errmsg:'ordernotify:ok', cid: cid, user_addr: user_addr, ret: ret};
+                console.log(ret.result);
+                return {errcode: 'success', errmsg:'ordernotify:ok', cid: cid, user_addr: user_addr, ret: ret.result};
             }
         }
         return {errcode: 'success', errmsg:'ordernotify:ok'};

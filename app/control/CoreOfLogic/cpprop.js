@@ -1,14 +1,7 @@
 let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
-let remoteSetup = require('../../util/gamegold_cp');
-//引入工具包
-const toolkit = require('gamegoldtoolkit')
-//创建授权式连接器实例
-const remote = new toolkit.conn();
-//兼容性设置，提供模拟浏览器环境中的 fetch 函数
-remote.setFetch(require('node-fetch'))  
-remote.setup(remoteSetup);
+const gamegoldHelp = require('../../util/gamegoldHelp');
 
 /**
  * 游戏用户
@@ -34,12 +27,12 @@ class cpprop extends facade.Control
     async QueryProps(user, params) {
         let cid = params.cid;
         let user_addr = params.user_addr;
-        let ret = await remote.execute('queryProps', [
+        let ret = await gamegoldHelp.execute('queryProps', [
             cid, //游戏编号
             user_addr //游戏内玩家的有效地址
         ]);
         var queryprops = [];
-        await ret.forEach(element => {
+        await ret.result.forEach(element => {
             let prop = facade.GetMapping(tableType.cpProp).groupOf().where([
                 ['oid', '==', element.oid]
             ]).records(tableField.cpProp)[0];
