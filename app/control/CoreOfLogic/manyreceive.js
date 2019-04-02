@@ -83,7 +83,7 @@ class manyreceive extends facade.Control {
                 objData.receive_headimg,
                 objData.modify_date,
             );
-            // console.log("执行创建成功了吗？");
+             console.log("执行创建成功了吗？");
             if (manyreceive == null) {
                 return { code: -1, message: "违反唯一性约束" }
             }
