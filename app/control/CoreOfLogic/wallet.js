@@ -1,6 +1,7 @@
 let facade = require('gamecloud')
 let tableType = require('../../util/tabletype');
 const gamegoldHelp = require('../../util/gamegoldHelp');
+const assert = require('assert')
 
 /**
  * 钱包
@@ -60,7 +61,8 @@ class wallet extends facade.Control
         let ret = await gamegoldHelp.execute('balance.all', [
             uid //openid
         ]);    
-        console.log(ret.result);
+        assert(ret.result.confirmed);
+        //console.log(ret.result);
         return {errcode: 'success', errmsg: 'balance.all:ok', balance: ret.result}; 
     }
 
@@ -77,7 +79,8 @@ class wallet extends facade.Control
             uid, 
             //number
         ]);    
-        console.log(ret.result);
+        assert(ret.result[0].account);
+        //console.log(ret.result);
         return {errcode: 'success', errmsg: 'tx.list:ok', list: ret.result};           
     }
 
