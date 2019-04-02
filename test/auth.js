@@ -27,7 +27,7 @@ describe('认证', function() {
         }
     });
 
-    it.only('请求服务端推送一条下行消息', async () => {
+    it('请求服务端推送一条下行消息', async () => {
         let msg = await remote.login({openid: 10005882});
         console.log(remote.NotifyType.test)
         if(remote.isSuccess(msg)) { 

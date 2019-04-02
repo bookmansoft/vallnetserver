@@ -19,14 +19,22 @@ class ManyReceiveEntity extends BaseEntity
         };
     }
 
-    /**
-     * 创建记录时的钩子函数
-     */
-    static async onCreate(item) {
+    static async onCreate(send_id,receive_amount,send_openid,send_nickname,send_headimg,receive_openid,receive_nickname,receive_headimg,modify_date) {
         try{
-            let it = await ManyReceive().create(item);
+            console.log(24);
+            let it = await ManyReceive().create({
+                'send_id': send_id,
+                'receive_amount': receive_amount,
+                'send_openid': send_openid,
+                'send_nickname': send_nickname,
+                'send_headimg': send_headimg,
+                'receive_openid': receive_openid,
+                'receive_nickname': receive_nickname,
+                'receive_headimg': receive_headimg,
+                'modify_date': modify_date,
+            });
             await it.save();
-    
+            console.log(37);
             return it;
         }
         catch(e){
