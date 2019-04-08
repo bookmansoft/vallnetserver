@@ -193,7 +193,7 @@ class manyreceive extends facade.Control {
 
             //转化并设置数组属性
             $data.list = Object.keys($data.items).map(key => $data.items[key]);
-
+            console.log($data);
             return $data;
         } catch (error) {
             console.log(error);
