@@ -44,10 +44,10 @@ class manyreceive extends facade.Control {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 manyreceive.setAttr('send_id', objData.send_id);
                 manyreceive.setAttr('receive_amount', objData.receive_amount);
-                manyreceive.setAttr('send_openid', parseInt(objData.send_openid));
+                manyreceive.setAttr('send_uid', parseInt(objData.send_uid));
                 manyreceive.setAttr('send_nickname', parseInt(objData.send_nickname));
                 manyreceive.setAttr('send_headimg', parseInt(objData.send_headimg));
-                manyreceive.setAttr('receive_openid', parseInt(objData.receive_openid));
+                manyreceive.setAttr('receive_uid', parseInt(objData.receive_uid));
                 manyreceive.setAttr('receive_nickname', objData.receive_nickname);
                 manyreceive.setAttr('receive_headimg', objData.receive_headimg);
                 manyreceive.setAttr('modify_date', parseInt(objData.modify_date));
@@ -75,10 +75,10 @@ class manyreceive extends facade.Control {
             let manyreceive = await facade.GetMapping(tableType.manyReceive).Create(
                 objData.send_id,
                 objData.receive_amount,
-                objData.send_openid,
+                objData.send_uid,
                 objData.send_nickname,
                 objData.send_headimg,
-                objData.receive_openid,
+                objData.receive_uid,
                 objData.receive_nickname,
                 objData.receive_headimg,
                 objData.modify_date,
@@ -112,10 +112,10 @@ class manyreceive extends facade.Control {
                     data: {
                         send_id: manyreceive.getAttr('send_id'),
                         receive_amount: manyreceive.getAttr('receive_amount'),
-                        send_openid: manyreceive.getAttr('send_openid'),
+                        send_uid: manyreceive.getAttr('send_uid'),
                         send_nickname: manyreceive.getAttr('send_nickname'),
                         send_headimg: manyreceive.getAttr('send_headimg'),
-                        receive_openid: manyreceive.getAttr('receive_openid'),
+                        receive_uid: manyreceive.getAttr('receive_uid'),
                         receive_nickname: manyreceive.getAttr('receive_nickname'),
                         receive_headimg: manyreceive.getAttr('receive_headimg'),
                         modify_date: manyreceive.getAttr('modify_date'),
@@ -139,6 +139,7 @@ class manyreceive extends facade.Control {
      */
     ListRecord(user, objData) {
         try {
+            console.log("manyreceive.ListRecord:",objData);
             if (objData == null) {
                 objData = {};
             }
@@ -163,7 +164,7 @@ class manyreceive extends facade.Control {
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, currentPage, ['id', 'send_id', 'receive_amount', 'send_openid', 'send_nickname', 'send_headimg', 'receive_openid', 'receive_nickname', 'receive_headimg', 'modify_date']);
+                .paginate(10, currentPage, ['id', 'send_id', 'receive_amount', 'send_uid', 'send_nickname', 'send_headimg', 'receive_uid', 'receive_nickname', 'receive_headimg', 'modify_date']);
 
             let $data = { items: {}, list: [], pagination: {} };
             //扩展分页器对象
@@ -178,10 +179,10 @@ class manyreceive extends facade.Control {
                     id: $value['id'],
                     send_id: $value['send_id'],
                     receive_amount: $value['receive_amount'],
-                    send_openid: $value['send_openid'],
+                    send_uid: $value['send_uid'],
                     send_nickname: $value['send_nickname'],
                     send_headimg: $value['send_headimg'],
-                    receive_openid: $value['receive_openid'],
+                    receive_uid: $value['receive_uid'],
                     receive_nickname: $value['receive_nickname'],
                     receive_headimg: $value['receive_headimg'],
                     modify_date: $value['modify_date'],

@@ -34,7 +34,7 @@ describe('多人红包发送', function () {
             total_amount: 10012400,
             actual_amount: 500000,
             total_num: 2,
-            send_openid: 'dsfkadsflxsdfjlsdfjlsdjlds',
+            send_uid: parseInt(Math.random() * 5) +10015,
             send_nickname: 'thomas',
             send_headimg: 'http://sdsds',
             wishing: '祝福',

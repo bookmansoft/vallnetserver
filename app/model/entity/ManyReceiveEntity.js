@@ -3,7 +3,7 @@ let BaseEntity = facade.BaseEntity;
 let {ManyReceive} = require('../table/manyreceive');
 let tableType = require('../../util/tabletype');
 
-//用户微信账号(openid)
+//用户微信账号(uid)
 class ManyReceiveEntity extends BaseEntity
 {
     //region 集合功能
@@ -19,16 +19,16 @@ class ManyReceiveEntity extends BaseEntity
         };
     }
 
-    static async onCreate(send_id,receive_amount,send_openid,send_nickname,send_headimg,receive_openid,receive_nickname,receive_headimg,modify_date) {
+    static async onCreate(send_id,receive_amount,send_uid,send_nickname,send_headimg,receive_uid,receive_nickname,receive_headimg,modify_date) {
         try{
             console.log(24);
             let it = await ManyReceive().create({
                 'send_id': send_id,
                 'receive_amount': receive_amount,
-                'send_openid': send_openid,
+                'send_uid': send_uid,
                 'send_nickname': send_nickname,
                 'send_headimg': send_headimg,
-                'receive_openid': receive_openid,
+                'receive_uid': receive_uid,
                 'receive_nickname': receive_nickname,
                 'receive_headimg': receive_headimg,
                 'modify_date': modify_date,

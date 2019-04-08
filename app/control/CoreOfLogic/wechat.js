@@ -79,20 +79,28 @@ class wechat extends facade.Control
     }
 
     async GetUserFromMapCode(user, params) {
-        let code = params.code
-        var weChatEntity = new weChat();
-        console.log(code, wechatcfg.appid, wechatcfg.secret)
-        let ret = await weChatEntity.getMapOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
-        console.log(ret);
-        if(ret.errcode !== undefined ) {
-            return {errcode: 'fail', errmsg: ret.errmsg};
-        } else {
-            console.log(ret)
-            let openid = ret.openid
-            let userhelp = new userHelp()
-            let user = await userhelp.getUserFromOpenId(openid, 2)
-            return {errcode: 'success', openid: openid, user: user}
+        try {
+            console.log(83);
+            console.log(params);
+            let code = params.code
+            var weChatEntity = new weChat();
+            console.log(code, wechatcfg.appid, wechatcfg.secret)
+            let ret = await weChatEntity.getMapOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
+            console.log(ret);
+            if(ret.errcode !== undefined ) {
+                return {errcode: 'fail', errmsg: ret.errmsg};
+            } else {
+                console.log(ret)
+                let openid = ret.openid
+                let userhelp = new userHelp()
+                let user = await userhelp.getUserFromOpenId(openid, 2)
+                return {errcode: 'success', openid: openid, user: user}
+            }
         }
+        catch (ex) {
+            console.log(100);
+        }
+
     }
     
     /**

@@ -45,7 +45,7 @@ class manysend extends facade.Control {
                 manysend.setAttr('total_amount', objData.total_amount);
                 manysend.setAttr('actual_amount', objData.actual_amount);
                 manysend.setAttr('total_num', parseInt(objData.total_num));
-                manysend.setAttr('send_openid', parseInt(objData.send_openid));
+                manysend.setAttr('send_uid', parseInt(objData.send_uid));
                 manysend.setAttr('send_nickname', parseInt(objData.send_nickname));
                 manysend.setAttr('send_headimg', parseInt(objData.send_headimg));
                 manysend.setAttr('wishing', objData.wishing);
@@ -75,7 +75,7 @@ class manysend extends facade.Control {
                 objData.total_amount,
                 objData.actual_amount,
                 objData.total_num,
-                objData.send_openid,
+                objData.send_uid,
                 objData.send_nickname,
                 objData.send_headimg,
                 objData.wishing,
@@ -111,7 +111,7 @@ class manysend extends facade.Control {
                         total_amount: manysend.getAttr('total_amount'),
                         actual_amount: manysend.getAttr('actual_amount'),
                         total_num: manysend.getAttr('total_num'),
-                        send_openid: manysend.getAttr('send_openid'),
+                        send_uid: manysend.getAttr('send_uid'),
                         send_nickname: manysend.getAttr('send_nickname'),
                         send_headimg: manysend.getAttr('send_headimg'),
                         wishing: manysend.getAttr('wishing'),
@@ -160,7 +160,7 @@ class manysend extends facade.Control {
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, currentPage, ['id', 'total_amount', 'actual_amount', 'total_num', 'send_openid', 'send_nickname', 'send_headimg', 'wishing', 'modify_date']);
+                .paginate(10, currentPage, ['id', 'total_amount', 'actual_amount', 'total_num', 'send_uid', 'send_nickname', 'send_headimg', 'wishing', 'modify_date']);
 
             let $data = { items: {}, list: [], pagination: {} };
             //扩展分页器对象
@@ -176,7 +176,7 @@ class manysend extends facade.Control {
                     total_amount: $value['total_amount'],
                     actual_amount: $value['actual_amount'],
                     total_num: $value['total_num'],
-                    send_openid: $value['send_openid'],
+                    send_uid: $value['send_uid'],
                     send_nickname: $value['send_nickname'],
                     send_headimg: $value['send_headimg'],
                     wishing: $value['wishing'],
