@@ -24,6 +24,7 @@ let tableType ={
     'blockGameComment': 123,
     'manySend':131,
     'manyReceive':132,
+    'mobileVerify': 133
 }
 
 exports = module.exports = tableType;

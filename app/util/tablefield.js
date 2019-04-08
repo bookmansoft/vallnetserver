@@ -282,9 +282,17 @@ let blockGameComment = [
     'content',
 ]
 
+let mobileVerify = [
+    'mobile',
+    'code',
+    'daystamp',
+    'last_time',
+    'send_num'
+]
+
 exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
     userBase, userProfile, userWallet, userBaseWechat, redpack, redpackAct,
     cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify,
-    userRedpack, userRedpackAct, blockGameComment
+    userRedpack, userRedpackAct, blockGameComment, mobileVerify
 }

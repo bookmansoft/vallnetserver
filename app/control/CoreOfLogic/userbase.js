@@ -39,6 +39,23 @@ class userbase extends facade.Control
         return {code: ReturnCode.Success, data: $data};
     }
 
+    /**
+     * 验证码登录
+     */
+    MobileVerify(user, params) {
+        let mobile = params.mobile
+        let code = params.code
+    }
+
+    /**
+     * 获取验证码
+     * @param {*} user 
+     * @param {*} params 
+     */
+    GetVerifyCode(user, params) {
+        let mobile = params.mobile
+    }
+
 }
 
 exports = module.exports = userbase;
