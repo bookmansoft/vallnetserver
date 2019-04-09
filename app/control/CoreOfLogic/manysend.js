@@ -209,14 +209,14 @@ class manysend extends facade.Control {
     async Send(user, objData) {
         try {
             //读取用户表
-            let userProfile = facade.GetObject(tableType.userProfile, parseInt(objData.send_uid));
-            console.log(tableType.userProfile,objData.send_uid);
+            let userProfile = facade.GetObject(tableType.userProfile, parseInt(objData.uid));
+            console.log(objData.uid);
             //写发送表
             let manysend = await facade.GetMapping(tableType.manySend).Create(
                 objData.total_amount,
-                objData.actual_amount,
+                objData.total_amount, //actual_amount等同于输入参数total_amount
                 objData.total_num,
-                objData.send_uid,
+                objData.uid,
                 userProfile.getAttr("nick"),
                 userProfile.getAttr("avatar_uri"),
                 objData.wishing,
@@ -242,21 +242,23 @@ class manysend extends facade.Control {
                 }
             }
             //发送到指定账号
-            //cid 687a8b10-5a91-11e9-9a3f-bfc33c24ad96
-            let proxy_cid="687a8b10-5a91-11e9-9a3f-bfc33c24ad96";
-            let proxy_uid=manysend.ormAttr("id");
+            //cid 用固定的manyagent创建 687a8b10-5a91-11e9-9a3f-bfc33c24ad96
+            let retCp=await gamegoldHelp.execute('cp.byName', ['manyagent']);
+            // console.log(retCp.cid);
+            let agent_cid=retCp.cid;
+            let agent_uid=manysend.ormAttr("id");
 
-            let ret = await gamegoldHelp.execute('token.user', [proxy_cid,proxy_uid]);
+            let ret = await gamegoldHelp.execute('token.user', [agent_cid,agent_uid]);
             console.log("token.user返回的地址",ret.data.addr);
             let retSend = await gamegoldHelp.execute('tx.send', [
                 ret.data.addr,
                 objData.total_amount,
-                // objData.send_uid //不使用此参数，是否会导致任意账户的钱转移出来？
+                objData.uid //不使用此参数，是否会导致任意账户的钱转移出来？
             ]); 
             console.log([
                 ret.data.addr,
                 objData.total_amount,
-                objData.send_uid
+                objData.uid
             ]);
             console.log(retSend);
             // 接收表
@@ -264,7 +266,7 @@ class manysend extends facade.Control {
                 let manyreceive = await facade.GetMapping(tableType.manyReceive).Create(
                     manysend.ormAttr("id"),
                     receive_amount[i],
-                    objData.send_uid,
+                    objData.uid,
                     userProfile.getAttr("nick"),
                     userProfile.getAttr("avatar_uri"),
                     null,
