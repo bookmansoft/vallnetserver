@@ -17,7 +17,7 @@ class userProfileEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.userProfile,                     //表类型
+            etype: tableType.userProfile,     //表类型
             model: UserProfile,               //表映射类
             entity: userProfileEntity,        //ORM映射类
         };

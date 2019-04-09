@@ -86,6 +86,7 @@ class userhelp {
             let userProfileItem = null
             if(userInfo == null) {
                 userProfileItem = {
+                    id: uid,
                     uid: uid,
                     nick: user_name,
                     gender: '1',
