@@ -197,7 +197,90 @@ class manysend extends facade.Control {
 
     }
 
+    //-- 以下是业务方法 --------------------------------------------------------------------
+    /**
+     * 发送红包
+     * 增加manysend的一条数据库记录。
+     * 增加manyreceive的若干条数据库记录。
+     * 转账到指定账号。
+     * @param {*} user 
+     * @param {*} objData 
+     */
+    async Send(user, objData) {
+        try {
+            //读取用户表
+            let userProfile = facade.GetObject(tableType.userProfile, parseInt(objData.send_uid));
+            console.log(tableType.userProfile,objData.send_uid);
+            //写发送表
+            let manysend = await facade.GetMapping(tableType.manySend).Create(
+                objData.total_amount,
+                objData.actual_amount,
+                objData.total_num,
+                objData.send_uid,
+                userProfile.getAttr("nick"),
+                userProfile.getAttr("avatar_uri"),
+                objData.wishing,
+                objData.modify_date,
+            );
+            console.log("执行创建成功了吗？",manysend.ormAttr("id"));
+            if (manysend == null) {
+                return { code: -1, message: "违反唯一性约束" }
+            }
+            //将金额拆分到total_num个包中
+            let receive_amount=new Array(objData.total_num);
+            let left_amount=objData.total_amount;   //剩余金额
+            for (var i=0;i<receive_amount.length;i++) {
+                if (i==receive_amount.length-1) {
+                    receive_amount[i]=left_amount;
+                }
+                else {
+                    //剩余未分配的元素个数；包括这一个
+                    let left_num=receive_amount.length-i;
+                    receive_amount[i]=Math.random()*left_amount/left_num;
+                    //重新更新剩余金额
+                    left_amount=left_amount-receive_amount[i];
+                }
+            }
+            //发送到指定账号
+            //cid 687a8b10-5a91-11e9-9a3f-bfc33c24ad96
+            let proxy_cid="687a8b10-5a91-11e9-9a3f-bfc33c24ad96";
+            let proxy_uid=manysend.ormAttr("id");
 
+            let ret = await gamegoldHelp.execute('token.user', [proxy_cid,proxy_uid]);
+            console.log("token.user返回的地址",ret.data.addr);
+            let retSend = await gamegoldHelp.execute('tx.send', [
+                ret.data.addr,
+                objData.total_amount,
+                // objData.send_uid //不使用此参数，是否会导致任意账户的钱转移出来？
+            ]); 
+            console.log([
+                ret.data.addr,
+                objData.total_amount,
+                objData.send_uid
+            ]);
+            console.log(retSend);
+            // 接收表
+            for (var i=0;i<receive_amount.length;i++) {
+                let manyreceive = await facade.GetMapping(tableType.manyReceive).Create(
+                    manysend.ormAttr("id"),
+                    receive_amount[i],
+                    objData.send_uid,
+                    userProfile.getAttr("nick"),
+                    userProfile.getAttr("avatar_uri"),
+                    null,
+                    null,
+                    null,
+                    null,
+                );
+            }
+
+            return { code: 0, data: null };
+
+        } catch (error) {
+            console.log(error);
+            return { code: -1, data: null, message: "manysend.Send 方法出错" };
+        }
+    }
 }
 
 exports = module.exports = manysend;
