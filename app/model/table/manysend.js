@@ -29,6 +29,7 @@ let ManySend = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         send_headimg: Sequelize.STRING,
         wishing: Sequelize.STRING,
         modify_date: Sequelize.INTEGER,
+        state_id: Sequelize.INTEGER,
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段

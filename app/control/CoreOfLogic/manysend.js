@@ -221,6 +221,7 @@ class manysend extends facade.Control {
                 userProfile.getAttr("avatar_uri"),
                 objData.wishing,
                 objData.modify_date,
+                1,//状态：正常
             );
             console.log("执行创建成功了吗？",manysend.ormAttr("id"));
             if (manysend == null) {
