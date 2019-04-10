@@ -133,9 +133,9 @@ class manyreceive extends facade.Control {
 
     /**
      * 从数据库中获取列表
-     * 客户端直接调用此方法
+     * 此方法是业务方法，会排除掉实际未发送的红包，只留下已发送的红包
      * @param {*} user 
-     * @param {*} objData 查询及翻页参数，等整体调通以后再细化。
+     * @param {*} objData send_id;receive_flag
      */
     ListRecord(user, objData) {
         try {
@@ -157,7 +157,7 @@ class manyreceive extends facade.Control {
             let muster = facade.GetMapping(tableType.manyReceive)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
-                .orderby('id', 'desc') //根据id字段倒叙排列
+                .orderby('id', 'asc') //根据id字段正序排列
                 .paginate(100, currentPage, ['id', 'send_id', 'receive_amount', 'send_uid', 'send_nickname', 'send_headimg', 'receive_uid', 'receive_nickname', 'receive_headimg', 'modify_date']);
 
             let $data = { items: {}, list: [], pagination: {} };
@@ -166,23 +166,26 @@ class manyreceive extends facade.Control {
             $data.total = muster.pageNum;
             $data.page = muster.pageCur;
 
-            let $idx = (muster.pageCur - 1) * muster.pageSize;
-            $idx = $idx + 10;
+            let $idx = 0;
             for (let $value of muster.records()) {
-                $data.items[$idx] = {
-                    id: $value['id'],
-                    send_id: $value['send_id'],
-                    receive_amount: $value['receive_amount'],
-                    send_uid: $value['send_uid'],
-                    send_nickname: $value['send_nickname'],
-                    send_headimg: $value['send_headimg'],
-                    receive_uid: $value['receive_uid'],
-                    receive_nickname: $value['receive_nickname'],
-                    receive_headimg: $value['receive_headimg'],
-                    modify_date: $value['modify_date'],
-                    rank: $idx
-                };
-                $idx++;
+                //如果该标志为1，则是从服务端发起的，需要获取全部记录，即恒为true
+                if (objData.server_flag==1 || $value['receive_uid']!=null) {
+                    $data.items[$idx] = {
+                        id: $value['id'],
+                        send_id: $value['send_id'],
+                        receive_amount: $value['receive_amount'],
+                        send_uid: $value['send_uid'],
+                        send_nickname: $value['send_nickname'],
+                        send_headimg: $value['send_headimg'],
+                        receive_uid: $value['receive_uid'],
+                        receive_nickname: $value['receive_nickname'],
+                        receive_headimg: $value['receive_headimg'],
+                        modify_date: $value['modify_date'],
+                        rank: $idx
+                    };
+                    $idx++;
+                }
+
             }
 
             //转化并设置数组属性
@@ -217,18 +220,62 @@ class manyreceive extends facade.Control {
                     wishing: manysend.getAttr('wishing'),
                     modify_date: manysend.getAttr('modify_date'),
                     state_id: manysend.getAttr('state_id'),
+                    state_name: '',
                 };
                 console.log(manysendData);
-                //获取对应接收数据
-                let manyreceive=this.ListRecord(user,objData);
-                console.log("接收数据:",manyreceive.list);
-                //检查设置state_id是否应该为过期 3 ，并更新到数据库中
+                //检查设置state_id状态 ，并更新到数据库中
+                if (manysendData.state_id==1) { //仅对正常状态生效
+                    //首次查询，获取实际已领取的记录数。
+                    let actual_num=this.ListRecord(user, objData).list.length;
+                    if (manysendData.total_num==actual_num) {
+                        console.log("已领完");
+                        manysendData.state_id=2;
+                        //更新到数据库中。
+                        manysend.setAttr('state_id',2);
+                        manysend.Save();
+                    }
+                    else if (new Date().getTime()/1000 - manysendData.modify_date > 24*3600) {
+                        console.log("红包过期啦");
+                        manysendData.state_id=3;
+                        //更新到数据库中。
+                        manysend.setAttr('state_id',3);
+                        manysend.Save();
+                    }
+                    
 
-                //最后检查设置state_id是否应该为已领完 2 ，并更新到数据库中
+                }
+                //设置状态名称用于显示
+                manysendData.state_name = (manysendData.state_id == 2 ? '红包已领完' : '红包已过期');
+                
+                //经过上述处理，如果仍然是状态1，则确定可以抢红包。否则忽略抢红包逻辑
+                if (manysendData.state_id==1) { //仍然是正常状态
+                    //依次遍历，获取到第一个没有接收人的红包位置，并占据这个位置。
+                    objData.server_flag=1;  //设置获取所有记录，包括未填写收件人的记录
+                    let manyreceive = this.ListRecord(user, objData);
+                    console.log("全部接收列表数据（含空记录）:", manyreceive.list);
+                    //遍历并寻找第一个空记录
+                    for (var i=0;i<manyreceive.list.length;i++) {
+                        if (manyreceive.list[i].receive_uid==null) {
+                            console.log("第一条空记录",manyreceive.list[i].id);
+                            //todo: 设置收件人信息，并更新到数据库
+                            //读取用户表
+                            let userProfile = facade.GetObject(tableType.userProfile, parseInt(objData.uid));
+                            //重新单独获取收件表的记录才能更新
+                            let receiveData = facade.GetObject(tableType.manyReceive, parseInt(manyreceive.list[i].id));
+                            receiveData.setAttr("receive_uid",objData.uid);
+                            receiveData.setAttr("receive_nickname",userProfile.getAttr("nick"));
+                            receiveData.setAttr("receive_headimg",userProfile.getAttr("avatar_uri"));
+                            receiveData.Save();
+                            //todo: 区块链转账，并保证事务一致性
 
+                            break;//跳出循环
+                        }
+                    }
+                }
+                //将数据返回给客户端
                 return {
-                    data :manysendData,
-                    list: manyreceive.list,
+                    data: manysendData,
+                    list: manyreceive.list, //实际不使用，重新获取一次；以后可以注释本行
                 };
             }
             return { code: -1, data: null };
