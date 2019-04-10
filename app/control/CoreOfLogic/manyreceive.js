@@ -83,7 +83,7 @@ class manyreceive extends facade.Control {
                 objData.receive_headimg,
                 objData.modify_date,
             );
-             console.log("执行创建成功了吗？");
+            console.log("执行创建成功了吗？");
             if (manyreceive == null) {
                 return { code: -1, message: "违反唯一性约束" }
             }
@@ -139,22 +139,16 @@ class manyreceive extends facade.Control {
      */
     ListRecord(user, objData) {
         try {
-            console.log("manyreceive.ListRecord:",objData);
+            console.log("manyreceive.ListRecord:", objData);
             if (objData == null) {
                 objData = {};
             }
-            let currentPage = objData.currentPage;
-            console.log(Number.isNaN(parseInt(currentPage)));
-            if (Number.isNaN(parseInt(currentPage))) {
-                currentPage = 1;
-            }
-
+            let currentPage = 1;
             //构造查询条件
-            //id=3
             let paramArray = new Array();
             if (typeof (objData.id) != "undefined" && (objData.id != "")) {
                 console.log(`id 参数: ${objData.id}`);
-                let tmp = ['id', '==', objData.id];
+                let tmp = ['send_id', '==', objData.id];
                 paramArray.push(tmp);
             }
 
@@ -164,16 +158,16 @@ class manyreceive extends facade.Control {
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, currentPage, ['id', 'send_id', 'receive_amount', 'send_uid', 'send_nickname', 'send_headimg', 'receive_uid', 'receive_nickname', 'receive_headimg', 'modify_date']);
+                .paginate(100, currentPage, ['id', 'send_id', 'receive_amount', 'send_uid', 'send_nickname', 'send_headimg', 'receive_uid', 'receive_nickname', 'receive_headimg', 'modify_date']);
 
             let $data = { items: {}, list: [], pagination: {} };
             //扩展分页器对象
-            $data.pagination = { "total": muster.pageNum * 10, "pageSize": 10, "current": muster.pageCur };
+            $data.pagination = { "total": muster.pageNum * 100, "pageSize": 100, "current": muster.pageCur };
             $data.total = muster.pageNum;
             $data.page = muster.pageCur;
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
-            $idx = $idx + 5;
+            $idx = $idx + 10;
             for (let $value of muster.records()) {
                 $data.items[$idx] = {
                     id: $value['id'],
@@ -193,7 +187,7 @@ class manyreceive extends facade.Control {
 
             //转化并设置数组属性
             $data.list = Object.keys($data.items).map(key => $data.items[key]);
-            console.log($data);
+            //console.log($data);
             return $data;
         } catch (error) {
             console.log(error);
@@ -202,7 +196,47 @@ class manyreceive extends facade.Control {
 
     }
 
+    /**
+     * 打开接受红包。合并了send.get与receive.list方法的内容
+     * @param {*} user 
+     * @param {*} objData 
+     */
+    Receive(user, objData) {
+        try {
+            //获取到发送的记录
+            let manysend = facade.GetObject(tableType.manySend, parseInt(objData.id));
+            //console.log(manysend);
+            if (!!manysend) {
+                let manysendData = {
+                    total_amount: manysend.getAttr('total_amount'),
+                    actual_amount: manysend.getAttr('actual_amount'),
+                    total_num: manysend.getAttr('total_num'),
+                    send_uid: manysend.getAttr('send_uid'),
+                    send_nickname: manysend.getAttr('send_nickname'),
+                    send_headimg: manysend.getAttr('send_headimg'),
+                    wishing: manysend.getAttr('wishing'),
+                    modify_date: manysend.getAttr('modify_date'),
+                    state_id: manysend.getAttr('state_id'),
+                };
+                console.log(manysendData);
+                //获取对应接收数据
+                let manyreceive=this.ListRecord(user,objData);
+                console.log("接收数据:",manyreceive.list);
+                //检查设置state_id是否应该为过期 3 ，并更新到数据库中
 
+                //最后检查设置state_id是否应该为已领完 2 ，并更新到数据库中
+
+                return {
+                    data :manysendData,
+                    list: manyreceive.list,
+                };
+            }
+            return { code: -1, data: null };
+        } catch (error) {
+            console.log(error);
+            return { code: -1, data: null, message: "manysend.Retrieve方法出错" };
+        }
+    }
 }
 
 exports = module.exports = manyreceive;
