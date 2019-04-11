@@ -148,9 +148,9 @@ class manysend extends facade.Control {
             //构造查询条件
             //id=3
             let paramArray = new Array();
-            if (typeof (objData.id) != "undefined" && (objData.id != "")) {
-                console.log(`id 参数: ${objData.id}`);
-                let tmp = ['id', '==', objData.id];
+            if (typeof (objData.send_uid) != "undefined" && (objData.send_uid != "")) {
+                console.log(`send_uid 参数查询本人发送的所有红包: ${objData.send_uid}`);
+                let tmp = ['send_uid', '==', objData.send_uid];
                 paramArray.push(tmp);
             }
 
@@ -220,7 +220,7 @@ class manysend extends facade.Control {
                 userProfile.getAttr("nick"),
                 userProfile.getAttr("avatar_uri"),
                 objData.wishing,
-                objData.modify_date,
+                new Date().getTime()/1000,
                 1,//状态：正常
             );
             console.log("执行创建成功了吗？",manysend.ormAttr("id"));
@@ -247,9 +247,9 @@ class manysend extends facade.Control {
             let retCp=await gamegoldHelp.execute('cp.byName', ['manyagent']);
             // console.log(retCp.cid);
             let agent_cid=retCp.cid;
-            let agent_uid=manysend.ormAttr("id");
+            let agent_uid=manysend.ormAttr("id");//对应此地址的id
 
-            let ret = await gamegoldHelp.execute('token.user', [agent_cid,agent_uid]);
+            let ret = await gamegoldHelp.execute('token.user', [agent_cid,agent_uid,null,'manyagent']);
             console.log("token.user返回的地址",ret.data.addr);
             let retSend = await gamegoldHelp.execute('tx.send', [
                 ret.data.addr,

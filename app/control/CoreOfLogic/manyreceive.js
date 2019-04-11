@@ -147,8 +147,13 @@ class manyreceive extends facade.Control {
             //构造查询条件
             let paramArray = new Array();
             if (typeof (objData.id) != "undefined" && (objData.id != "")) {
-                console.log(`id 参数: ${objData.id}`);
+                console.log(`send_id 参数查询本红包组中的所有红包: ${objData.id}`);
                 let tmp = ['send_id', '==', objData.id];
+                paramArray.push(tmp);
+            }
+            if (typeof (objData.receive_uid) != "undefined" && (objData.receive_uid != "")) {
+                console.log(`receive_uid 参数查询本人接收的所有红包: ${objData.receive_uid}`);
+                let tmp = ['receive_uid', '==', objData.receive_uid];
                 paramArray.push(tmp);
             }
 
@@ -204,7 +209,7 @@ class manyreceive extends facade.Control {
      * @param {*} user 
      * @param {*} objData 
      */
-    Receive(user, objData) {
+    async Receive(user, objData) {
         try {
             //获取到发送的记录
             let manysend = facade.GetObject(tableType.manySend, parseInt(objData.id));
@@ -255,9 +260,17 @@ class manyreceive extends facade.Control {
                     console.log("全部接收列表数据（含空记录）:", manyreceive.list);
                     //遍历并寻找第一个空记录
                     for (var i=0;i<manyreceive.list.length;i++) {
+                        //前面的部分，先判断是否已经获取到本人的领取记录
+                        if (manyreceive.list[i].receive_uid==objData.uid) {
+                            //已领取过了.获取到本人记录后，应该直接退出
+                            manysendData.real_amount=manyreceive.list[i].receive_amount;//设置接收金额
+                            break;
+                        }
+
+                        //获取到空记录，说明存在记录。
                         if (manyreceive.list[i].receive_uid==null) {
                             console.log("第一条空记录",manyreceive.list[i].id);
-                            //todo: 设置收件人信息，并更新到数据库
+                            manysendData.real_amount=manyreceive.list[i].receive_amount;//设置接收金额
                             //读取用户表
                             let userProfile = facade.GetObject(tableType.userProfile, parseInt(objData.uid));
                             //重新单独获取收件表的记录才能更新
@@ -265,9 +278,20 @@ class manyreceive extends facade.Control {
                             receiveData.setAttr("receive_uid",objData.uid);
                             receiveData.setAttr("receive_nickname",userProfile.getAttr("nick"));
                             receiveData.setAttr("receive_headimg",userProfile.getAttr("avatar_uri"));
+                            receiveData.setAttr("modify_date",new Date().getTime()/1000);
                             receiveData.Save();
                             //todo: 区块链转账，并保证事务一致性
-
+                            console.log([
+                                userProfile.getAttr("block_addr"),
+                                receiveData.getAttr("receive_amount"),
+                                'manyagent'
+                            ]);
+                            let retSend = await gamegoldHelp.execute('tx.send', [
+                                userProfile.getAttr("block_addr"),
+                                receiveData.getAttr("receive_amount"),
+                                'manyagent'
+                            ]); 
+                            console.log("发送结果",retSend);
                             break;//跳出循环
                         }
                     }
