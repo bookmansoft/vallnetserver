@@ -1,25 +1,21 @@
 let facade = require('gamecloud');
 let BaseEntity = facade.BaseEntity;
-let {UserProfile} = require('../table/userprofile');
+let {MobileVerify} = require('../table/mobileverify');
 let tableType = require('../../util/tabletype');
 
-//用户个人属性
-class userProfileEntity extends BaseEntity
+//用户微信账号(openid)
+class MobileVerifyEntity extends BaseEntity
 {
     //region 集合功能
-
-    constructor(orm, router){
-        super(orm, router);
-    }
 
     /**
      * 为 Mapping 映射进行参数配置
      */
     static get mapParams() {
         return {
-            etype: tableType.userProfile,     //表类型
-            model: UserProfile,               //表映射类
-            entity: userProfileEntity,        //ORM映射类
+            etype: tableType.mobileVerify,                     //表类型
+            model: MobileVerify,               //表映射类
+            entity: MobileVerifyEntity,        //ORM映射类
         };
     }
 
@@ -28,7 +24,7 @@ class userProfileEntity extends BaseEntity
      */
     static async onCreate(item) {
         try{
-            let it = await UserProfile().create(item);
+            let it = await MobileVerify().create(item);
             await it.save();
     
             return it;
@@ -44,7 +40,7 @@ class userProfileEntity extends BaseEntity
      * @param {*} record 
      */
     static onMapping(record){
-        return new userProfileEntity(record, facade.current);
+        return new MobileVerifyEntity(record, facade.current);
     }
 
     /**
@@ -60,7 +56,7 @@ class userProfileEntity extends BaseEntity
         pwd = pwd || facade.current.options.mysql.pwd;
 
         try {
-            let ret = await UserProfile(db, sa, pwd).findAll();
+            let ret = await MobileVerify(db, sa, pwd).findAll();
             ret.map(it=>{
                 callback(it);
             });
@@ -80,4 +76,4 @@ class userProfileEntity extends BaseEntity
     }
 }
 
-exports = module.exports = userProfileEntity;
+exports = module.exports = MobileVerifyEntity;

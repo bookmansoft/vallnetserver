@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
 let tableType = require('./tabletype');
-let tableField = require('./tablefield');
 let randomHelp = require('./randomHelp')
 let md5 = require('md5')
 //引入工具包
@@ -87,6 +86,7 @@ class userhelp {
             let userProfileItem = null
             if(userInfo == null) {
                 userProfileItem = {
+                    id: uid,
                     uid: uid,
                     nick: user_name,
                     gender: '1',
@@ -112,6 +112,16 @@ class userhelp {
         }
         return 0
     }
+
+    isPoneAvailable($poneInput) {
+        var myreg=/^[1][3,4,5,7,8][0-9]{9}$/;
+        if (!myreg.test($poneInput.val())) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 }
 
 module.exports = userhelp;
