@@ -30,15 +30,16 @@ describe('多人红包发送', function () {
         await remote.login({ openid: `${Math.random() * 1000000000 | 0}` });
         console.log(32);
         let msg = await remote.fetching({
-            func: "manysend.CreateRecord", userinfo: { id: 1 },
-            total_amount: 10012400,
+            func: "manysend.Send", userinfo: { id: 1 },
+            total_amount: 1002400,
             actual_amount: 500000,
-            total_num: 2,
-            send_uid: parseInt(Math.random() * 5) +10015,
+            total_num: 3,
+            id: 10015,
             send_nickname: 'thomas',
             send_headimg: 'http://sdsds',
             wishing: '祝福',
             modify_date: 242424242,
+            state_id: 1
         });
         console.log(43);
     });

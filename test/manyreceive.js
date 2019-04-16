@@ -25,7 +25,7 @@ describe('多人红包发送', function () {
         }
     });
 
-    it.only('manyreceive创建表记录', async () => {
+    it('manyreceive创建表记录', async () => {
         console.log(30);
         await remote.login({ openid: `${Math.random() * 1000000000 | 0}` });
         console.log(32);
