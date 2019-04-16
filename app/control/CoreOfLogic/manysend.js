@@ -245,10 +245,10 @@ class manysend extends facade.Control {
             //发送到指定账号
             //cid 用固定的manyagent创建 687a8b10-5a91-11e9-9a3f-bfc33c24ad96
             let retCp=await gamegoldHelp.execute('cp.byName', ['manyagent']);
-            // console.log(retCp.cid);
+            console.log("248 cpid:",retCp.cid);
             let agent_cid=retCp.cid;
             let agent_uid=manysend.ormAttr("id");//对应此地址的id
-
+            console.log("251:",agent_cid,agent_uid);
             let ret = await gamegoldHelp.execute('token.user', [agent_cid,agent_uid,null,'manyagent']);
             console.log("token.user返回的地址",ret.data.addr);
             let retSend = await gamegoldHelp.execute('tx.send', [
