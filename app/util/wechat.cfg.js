@@ -21,6 +21,8 @@ module.exports = {
     'chooseWXPay']
     */
     jsApiList: ['checkJsApi',
+    'updateAppMessageShareData',
+    'updateTimelineShareData',
     'onMenuShareTimeline',
     'onMenuShareAppMessage',
     'onMenuShareQQ',
