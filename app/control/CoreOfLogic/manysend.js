@@ -250,14 +250,14 @@ class manysend extends facade.Control {
             let agent_uid=manysend.ormAttr("id");//对应此地址的id
             console.log("251:",agent_cid,agent_uid);
             let ret = await gamegoldHelp.execute('token.user', [agent_cid,agent_uid,null,'manyagent']);
-            console.log("token.user返回的地址",ret.data.addr);
+            console.log("token.user返回的地址",ret.result.data.addr);
             let retSend = await gamegoldHelp.execute('tx.send', [
-                ret.data.addr,
+                ret.result.data.addr,
                 objData.total_amount,
                 objData.uid //不使用此参数，是否会导致任意账户的钱转移出来？
             ]); 
             console.log([
-                ret.data.addr,
+                ret.result.data.addr,
                 objData.total_amount,
                 objData.uid
             ]);
