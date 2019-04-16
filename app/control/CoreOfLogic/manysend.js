@@ -277,7 +277,7 @@ class manysend extends facade.Control {
                 );
             }
 
-            return { code: 0, data: null };
+            return { code: 0, data: manysend.ormAttr("id") };
 
         } catch (error) {
             console.log(error);
