@@ -249,8 +249,6 @@ class manyreceive extends facade.Control {
                     
 
                 }
-                //设置状态名称用于显示
-                manysendData.state_name = (manysendData.state_id == 2 ? '红包已领完' : '红包已过期');
                 
                 //经过上述处理，如果仍然是状态1，则确定可以抢红包。否则忽略抢红包逻辑
                 if (manysendData.state_id==1) { //仍然是正常状态
@@ -296,6 +294,26 @@ class manyreceive extends facade.Control {
                         }
                     }
                 }
+                else {
+                    //虽然是已领完或者已过期状态，但是本人领取过，仍然按state=1处理
+                    console.log("299 已领完或已过期");
+                    objData.server_flag=1;  //设置获取所有记录，包括未填写收件人的记录
+                    let manyreceive = this.ListRecord(user, objData);
+                    // console.log("全部接收列表数据（含空记录）:", manyreceive.list);
+                    //遍历并寻找第一个空记录
+                    for (var i=0;i<manyreceive.list.length;i++) {
+                        //前面的部分，先判断是否已经获取到本人的领取记录
+                        if (manyreceive.list[i].receive_uid==objData.uid) {
+                            console.log("307 找到领取记录");
+                            //已领取过了.获取到本人记录后，应该直接退出
+                            manysendData.real_amount=manyreceive.list[i].receive_amount;//设置接收金额
+                            manysendData.state_id=1;//设置为正常状态
+                            break;
+                        }
+                    }
+                }
+                //设置状态名称用于显示
+                manysendData.state_name = (manysendData.state_id == 2 ? '红包已领完' : '红包已过期');
                 //将数据返回给客户端
                 return {
                     data: manysendData,
