@@ -91,15 +91,26 @@ class prop extends facade.Control
     //prop.donate hash index [openid]
     async PropDonate(user, params) {
         let txid = gamegoldHelp.revHex(params.txid);
+        let pid = params.pid;
         let index = params.index;
         let uid = params.uid;
+        /*
         let ret = await gamegoldHelp.execute('prop.donate', [
             txid,
             index,
             uid
         ]);
-        console.log(ret.result);
-        return {errcode: 'success', errmsg: 'prop.donate:ok', ret: ret.result};
+        */
+       let ret = await gamegoldHelp.execute('prop.donate', [
+            pid,
+            uid
+        ]);
+        console.log(ret);
+        if(!!!ret || ret.code != 0) {
+            return {errcode: 'fail', errmsg: 'fail'};
+        } else {
+            return {errcode: 'success', errmsg: 'prop.donate:ok', ret: ret.result};
+        }
     }
 
     //道具接收

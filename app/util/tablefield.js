@@ -290,9 +290,35 @@ let mobileVerify = [
     'send_num'
 ]
 
+let stock = [
+    'id',
+    'cid',
+    'cname',
+    'totality',
+    'remainder',
+    'price',
+    'gold',
+    'title',
+    'pic',
+    'desc',
+    'status'
+]
+
+let userStock = [
+    'id',
+    'uid',
+    'cid',
+    'gamegold',
+    'amount',
+    'quantity',
+    'pay_at',
+    'order_sn',
+    'status'
+]
+
 exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
     userBase, userProfile, userWallet, userBaseWechat, redpack, redpackAct,
     cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify,
-    userRedpack, userRedpackAct, blockGameComment, mobileVerify
+    userRedpack, userRedpackAct, blockGameComment, mobileVerify, stock, userStock
 }
