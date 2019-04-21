@@ -300,6 +300,7 @@ let stock = [
     'gold',
     'title',
     'pic',
+    'item_pic',
     'desc',
     'status'
 ]

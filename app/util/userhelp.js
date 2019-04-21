@@ -19,6 +19,19 @@ class userhelp {
 
     }
 
+    async getAddrFromUserIdAndCid(uid, cid) {
+        let userWallets = await facade.GetMapping(tableType.userWallet).groupOf()
+            .where([
+                ['uid', '==', uid],
+                ['cid', '==', cid],
+            ])
+            .records(['addr']);
+        if(userWallets.length >0 ) {
+            return userWallets[0].addr;
+        }
+        return ''
+    }
+
     async getUserIdFromOpenId(openid, ntype) {
         let userWechats = await facade.GetMapping(tableType.userWechat).groupOf()
             .where([

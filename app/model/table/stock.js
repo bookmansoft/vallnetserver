@@ -17,6 +17,7 @@ let Stock = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         gold: Sequelize.INTEGER,
         title: Sequelize.STRING,
         pic: Sequelize.STRING,
+        item_pic: Sequelize.STRING,
         desc: Sequelize.STRING,
         status: Sequelize.INTEGER
     },
