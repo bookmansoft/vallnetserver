@@ -19,7 +19,8 @@ let Stock = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         pic: Sequelize.STRING,
         item_pic: Sequelize.STRING,
         desc: Sequelize.STRING,
-        status: Sequelize.INTEGER
+        status: Sequelize.INTEGER,
+        support: Sequelize.INTEGER,
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段

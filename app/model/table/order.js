@@ -14,6 +14,8 @@ let Order = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
         order_num: Sequelize.INTEGER,
         product_id: Sequelize.INTEGER,
         product_info: Sequelize.STRING,
+        attach: Sequelize.STRING,
+        quantity: Sequelize.INTEGER,
         order_status: Sequelize.INTEGER,
         pay_status: Sequelize.INTEGER,
         create_time: Sequelize.INTEGER,

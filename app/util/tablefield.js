@@ -174,6 +174,8 @@ let order = [
     'order_num',
     'product_id',
     'product_info',
+    'attach',
+    'quantity',
     'order_status',
     'pay_status',
     'create_time',
@@ -302,7 +304,8 @@ let stock = [
     'pic',
     'item_pic',
     'desc',
-    'status'
+    'status',
+    'support'
 ]
 
 let userStock = [
