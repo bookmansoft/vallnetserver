@@ -317,6 +317,17 @@ let userStock = [
     'quantity',
     'pay_at',
     'order_sn',
+    'status',
+    'title',
+    'src'
+]
+
+let userStockLog = [
+    'id',
+    'uid',
+    'cid',
+    'quantity',
+    'pay_at',
     'status'
 ]
 
@@ -324,5 +335,5 @@ exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
     userBase, userProfile, userWallet, userBaseWechat, redpack, redpackAct,
     cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify,
-    userRedpack, userRedpackAct, blockGameComment, mobileVerify, stock, userStock
+    userRedpack, userRedpackAct, blockGameComment, mobileVerify, stock, userStock, userStockLog
 }

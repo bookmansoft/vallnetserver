@@ -31,10 +31,51 @@ class stock extends facade.Control
         return {errcode: 'fail', data: null};
     }
 
+    //众筹详情
+    async StockSale(user, params) {
+        let uid = params.uid
+        let cid = params.cid
+        let price = params.price
+        let quantity = params.quantity
+        let current_time = parseInt(new Date().getTime() / 1000)
+
+        let userStockItems = facade.GetMapping(tableType.userStock).groupOf().where([
+            ['uid', '==', uid],
+            ['cid', '==', cid]
+        ]).records();
+        if(userStockItems.length >0 ) {
+            let userStockItem = userStockItems[0]
+            userStockItem.setAttr('quantity', userStockItem.orm.quantity - quantity)
+            userStockItem.orm.save()
+        }
+
+        let userStockLogItem = {
+            uid: uid,
+            cid: cid,
+            quantity: quantity,
+            pay_at: current_time,
+            status: 0
+        }
+        await facade.GetMapping(tableType.userStockLog).Create(userStockLogItem)
+        return {errcode: 'success', data: userStockLogItem};
+
+    }
+
+    //用户众筹记录
+    async UserStockLogs(user, params) {
+        let uid = params.uid
+        let cid = params.cid
+        let userStockLogs = await facade.GetMapping(tableType.userStockLog).groupOf()
+            .where([
+                ['uid', '==', uid],
+                ['cid', '==', cid]
+            ]).records(tableField.userStockLog)
+        return {errcode: 'success', data: userStockLogs}    
+    }
+
     //用户众筹记录
     async UserStocks(user, params) {
         let uid = params.uid
-        let cid = params.cid
         let userStockActs = await facade.GetMapping(tableType.userStock).groupOf()
             .where([
                 ['uid', '==', uid]

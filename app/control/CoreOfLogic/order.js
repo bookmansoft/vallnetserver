@@ -109,26 +109,49 @@ class order extends facade.Control
                     let quantity = order.orm.quantity
                     let uhelp = new userHelp()
                     let addr = uhelp.getAddrFromUserIdAndCid(uid, cid)
-                    await gamegoldHelp.execute('stock.send', [cid, 100*quantity, addr, 'alice']);
-                    let current_time = parseInt(new Date().getTime() / 1000)
-
-                    let userStockItem = {
-                        uid: uid,
-                        cid: cid,
-                        gamegold: 0,
-                        amount: order.orm.order_num,
-                        quantity: quantity,
-                        pay_at: current_time,
-                        order_sn: order.orm.order_sn,
-                        status: 1
-                    }
-                    await facade.GetMapping(tableType.userStock).Create(userStockItem)
+                    await gamegoldHelp.execute('stock.send', [cid, quantity, addr, 'alice']);
 
                     let stock = facade.GetObject(tableType.stock, order.orm.product_id);          
                     if(!!stock) {
                         stock.setAttr('support', stock.orm.support+1);
-                        stock.setAttr('remainder', stock.orm.remainder - 100*quantity);
+                        stock.setAttr('remainder', stock.orm.remainder - quantity);
                         stock.orm.save()
+                        
+                        let userStockLogItem = {
+                            uid: uid,
+                            cid: cid,
+                            quantity: quantity,
+                            pay_at: current_time,
+                            status: 1
+                        }
+                        await facade.GetMapping(tableType.userStockLog).Create(userStockLogItem)
+
+                        let userStockItems = facade.GetMapping(tableType.userStock).groupOf().where([
+                            ['uid', '==', uid],
+                            ['cid', '==', cid]
+                        ]).records();
+                        if(userStockItems.length >0 ) {
+                            let userStockItem = userStockItems[0]
+                            userStockItem.setAttr('amount', userStock.orm.amount + amount)
+                            userStockItem.setAttr('quantity', userStock.orm.quantity + quantity)
+                            userStockItem.setAttr('pay_at', current_time)
+                            userStockItem.orm.save()
+                        } else {
+                            let userStockItem = {
+                                uid: uid,
+                                cid: cid,
+                                gamegold: 0,
+                                amount: order.orm.order_num,
+                                quantity: quantity,
+                                pay_at: current_time,
+                                order_sn: order.orm.order_sn,
+                                status: 1,
+                                src: stock.orm.item_pic,
+                                title: stock.orm.cname
+                            }
+                            await facade.GetMapping(tableType.userStock).Create(userStockItem)
+                        }
+
                     }
                     return {code: -1};
                 }

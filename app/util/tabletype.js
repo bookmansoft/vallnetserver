@@ -26,7 +26,8 @@ let tableType ={
     'manyReceive':132,
     'mobileVerify': 133,
     'stock': 134,
-    'userStock': 135
+    'userStock': 135,
+    'userStockLog': 136
 }
 
 exports = module.exports = tableType;
