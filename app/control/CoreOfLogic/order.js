@@ -153,11 +153,11 @@ class order extends facade.Control
                         }
 
                     }
-                    return {code: -1};
                 }
 
             }
             return {errcode: 'success', errmsg: 'result:ok'}; 
+
         } else {
             return {errcode: 'error', errmsg: 'no order'};
         }
