@@ -132,7 +132,7 @@ class order extends facade.Control
                         ]).records();
                         if(userStockItems.length >0 ) {
                             let userStockItem = userStockItems[0]
-                            userStockItem.setAttr('amount', userStockItem.orm.amount + amount)
+                            userStockItem.setAttr('amount', userStockItem.orm.amount + order.orm.order_num)
                             userStockItem.setAttr('quantity', userStockItem.orm.quantity + quantity)
                             userStockItem.setAttr('pay_at', current_time)
                             userStockItem.orm.save()
