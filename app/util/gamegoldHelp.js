@@ -17,11 +17,11 @@ class gamegoldHelp {
         this.remote = new toolkit.conn();
         //兼容性设置，提供模拟浏览器环境中的 fetch 函数
         this.remote.setup(remoteSetup);
-        await this.remote.setmode(this.remote.CommMode.ws).login()
-        //this.remote.setFetch(require('node-fetch'))  
-        await this.remote.join()
+        // await this.remote.setmode(this.remote.CommMode.ws).login()
+        this.remote.setFetch(require('node-fetch'))  
+        // await this.remote.join()
         //监听
-        await this.subscribe()
+        // await this.subscribe()
     }
 
     //消息订阅

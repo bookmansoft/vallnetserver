@@ -61,9 +61,12 @@ class wallet extends facade.Control
         let ret = await gamegoldHelp.execute('balance.all', [
             uid //openid
         ]);    
-        assert(ret.result.confirmed);
+        // assert(ret.result.confirmed);
+        console.log(ret);
+        //特殊处理，原因不明
+        let result=(!!ret.result) ? result=ret.result : result=ret;
         //console.log(ret.result);
-        return {errcode: 'success', errmsg: 'balance.all:ok', balance: ret.result}; 
+        return {errcode: 'success', errmsg: 'balance.all:ok', balance: result}; 
     }
 
     /**
