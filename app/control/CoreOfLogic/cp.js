@@ -26,7 +26,7 @@ class cp extends facade.Control
         let page = params.page;
         let num = params.num;
         let ret = await gamegoldHelp.execute('cp.remoteQuery', []);
-        console.log("cp 29:",ret);
+        console.log("cp.js:",ret.result);
         if(ret.code==0) {
             ret.result.list.forEach(element => {
                 redisHelp.heset("hashkeycp", element.cid, JSON.stringify(element))
