@@ -7,6 +7,7 @@ let remoteSetup = {
     apiKey: 'bookmansoft',        //远程服务器基本校验密码
     cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
     token:  '03aee0ed00c6ad4819641c7201f4f44289564ac4e816918828703eecf49e382d08', //授权节点令牌固定量，用于访问远程钱包时的认证
+    structured: true,           //结构化参数
 }
 
 exports = module.exports = remoteSetup

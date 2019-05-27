@@ -1,5 +1,5 @@
 {
-  "name": "gamegold-mgr-server",
+  "name": "gamegold-wechat-server",
   "version": "1.1.5",
   "author": "bookmansoft <ceo@920.cc>",
   "contributors": [
@@ -30,12 +30,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bookmansoft/gamegold-mgr-server.git"
+    "url": "git+https://github.com/bookmansoft/gamegold-wechat-server.git"
   },
   "bugs": {
-    "url": "https://github.com/bookmansoft/gamegold-mgr-server/issues"
+    "url": "https://github.com/bookmansoft/gamegold-wechat-server/issues"
   },
-  "homepage": "https://github.com/bookmansoft/gamegold-mgr-server#readme",
+  "homepage": "https://github.com/bookmansoft/gamegold-wechat-server#readme",
   "devDependencies": {
     "async": "^2.3.0",
     "chai": "^3.5.0",
