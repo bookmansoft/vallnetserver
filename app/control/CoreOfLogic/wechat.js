@@ -7,7 +7,7 @@ let userHelp = require('../../util/userhelp')
 let signature = require('../../util/signature.js')
 let wechatcfg = require('../../util/wechat.cfg')
 let wxUnifiedorder = require('../../util/wxUnifiedorder')
-let {sendRedPacket, getHBinfo} = require('../../util/wxRedPack')
+let { sendRedPacket, getHBinfo } = require('../../util/wxRedPack')
 let WXBizDataCrypt = require('../../util/WXBizDataCrypt')
 const gamegoldHelp = require('../../util/gamegoldHelp');
 const WechatAPI = require('co-wechat-api')
@@ -19,8 +19,7 @@ const axios = require('axios')
  * 微信接口
  * Create by gamegold Fuzhou on 2018-11-27
  */
-class wechat extends facade.Control
-{
+class wechat extends facade.Control {
     /**
      * 中间件设置
      */
@@ -28,73 +27,92 @@ class wechat extends facade.Control
         console.log('wechat middleware');
         return ['parseParams', 'commonHandle'];
     }
-
+    /**
+     * 从 微信的 code 初始化出 User 对象，其中包括注册过程。
+     * 客户端的调用场景未知
+     * @param {*} user 
+     * @param {*} params 
+     */
     async InitUserFromCode(user, params) {
+        console.log("进入wechat.js InitUserFromCode方法")
         let code = params.code
-        
+
         var weChatEntity = new weChat();
         console.log(code, wechatcfg.appid, wechatcfg.secret)
         let ret = await weChatEntity.getMapOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
-        console.log(ret);
-        if(ret.errcode !== undefined ) {
-            return {errcode: 'fail', errmsg: ret.errmsg};
+        //console.log(ret);
+        if (ret.errcode !== undefined) {
+            return { errcode: 'fail', errmsg: ret.errmsg };
         } else {
             console.log(ret)
             let openid = ret.openid
             let access_token = ret.access_token
+            //调用用户信息获取接口，使用 openid 为参数，获取到该用户的详细信息
             let retUser = await weChatEntity.getMapUserInfo(access_token, openid)
-            if(retUser.errcode !== undefined ) {
-                return {errcode: 'fail', errmsg: retUser.errmsg};
+            if (retUser.errcode !== undefined) {
+                return { errcode: 'fail', errmsg: retUser.errmsg };
             }
+            console.log("wechat.js 55",retUser);
+            //通过opendid获取用户；如果获取不到用户，则注册用户
             let uhelp = new userHelp()
             let uid = await uhelp.getUserIdFromOpenId(openid)
-            if(uid == 0) {
-                await uhelp.regUserFromWechat(openid, retUser)
-            } 
+            if (uid == 0) {
+                console.log("53 无法获取到用户");
+                uid = await uhelp.regUserFromWechat(openid, retUser); //发现bug，此处需要赋值给 uid
+                console.log("54 注册了新用户",uid);
+            }
             let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
-            if(userProfile.length >0 ) {
+            if (userProfile.length > 0) {
                 userProfile = userProfile[0].orm
-                return {errcode: 'success', errmsg:'getopenid:ok', uid: userProfile.uid, openid: openid, userProfile: userProfile}
+                return { errcode: 'success', errmsg: 'getopenid:ok', uid: userProfile.uid, openid: openid, userProfile: userProfile }
             } else {
-                return {errcode: 'fail', errmsg:'user not exist', userProfile: null}
+                return { errcode: 'fail', errmsg: 'user not exist', userProfile: null }
             }
         }
     }
-
+    /**
+     * 从 微信的 openid 初始化出 User 对象，其中包括注册过程。
+     * 客户端的调用场景未知
+     * @param {*} user 
+     * @param {*} params 
+     */
     async InitUserFromOpenId(user, params) {
         let openid = params.openid
         let uhelp = new userHelp()
         let uid = await uhelp.getUserIdFromOpenId(openid, 2)
-        if(uid == 0) {
+        if (uid == 0) {
             uid = await uhelp.regUserFromWechat(openid, null)
-        } 
-        let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
-        if(userProfile.length >0 ) {
-            userProfile = userProfile[0].orm
-            return {errcode: 'success', errmsg:'getopenid:ok', uid: uid, openid: openid, userProfile: userProfile}
-        } else {
-            return {errcode: 'fail', errmsg:'user not exist', userProfile: null}
         }
-        
-    }
+        let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        if (userProfile.length > 0) {
+            userProfile = userProfile[0].orm
+            return { errcode: 'success', errmsg: 'getopenid:ok', uid: uid, openid: openid, userProfile: userProfile }
+        } else {
+            return { errcode: 'fail', errmsg: 'user not exist', userProfile: null }
+        }
 
+    }
+    /**
+     * 获取用户但是不会自动注册。原来的程序入口
+     * @param {*} user 
+     * @param {*} params 
+     */
     async GetUserFromMapCode(user, params) {
         try {
-            console.log(83);
-            console.log(params);
+            console.log("wechat.js 96",params);
             let code = params.code
             var weChatEntity = new weChat();
             console.log(code, wechatcfg.appid, wechatcfg.secret)
             let ret = await weChatEntity.getMapOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
-            console.log(ret);
-            if(ret.errcode !== undefined ) {
-                return {errcode: 'fail', errmsg: ret.errmsg};
+            console.log("wechat.js 101",ret.errcode);
+            if (ret.errcode !== undefined) {
+                return { errcode: 'fail', errmsg: ret.errmsg };
             } else {
-                console.log(ret)
                 let openid = ret.openid
                 let userhelp = new userHelp()
-                let user = await userhelp.getUserFromOpenId(openid, 2)
-                return {errcode: 'success', openid: openid, user: user}
+                let user = await userhelp.getUserFromOpenId(openid, 2);
+                console.log("wechat.js 98",user);
+                return { errcode: 'success', openid: openid, user: user }
             }
         }
         catch (ex) {
@@ -102,7 +120,7 @@ class wechat extends facade.Control
         }
 
     }
-    
+
     /**
      * 获取openid
      * 【用法还不明确】
@@ -110,16 +128,16 @@ class wechat extends facade.Control
      * @param {*} params
      */
     async GetOpenId(user, params) {
-       var weChatEntity = new weChat();
-       try {
+        var weChatEntity = new weChat();
+        try {
             let ret = await weChatEntity.getOpenIdByCode(params.code, wechatcfg.miniAppId, wechatcfg.miniAppSecret);
             console.log(ret);
-            if(ret.errcode !== undefined ) {
-                return {errcode: 'fail', errmsg: ret.errmsg};
+            if (ret.errcode !== undefined) {
+                return { errcode: 'fail', errmsg: ret.errmsg };
             } else {
                 let openid = ret.openid;
                 let userBase = facade.GetMapping(tableType.userBase).groupOf().where([['openid', '==', openid]]).records();
-                if(userBase.length==0) {            
+                if (userBase.length == 0) {
                     //注册新用户
                     console.log('now create new user');
                     let random = new randomHelp();
@@ -137,7 +155,7 @@ class wechat extends facade.Control
                         created_at: created_at
                     };
                     let newUserBase = await facade.GetMapping(tableType.userBase).Create(userBaseItem);
-                    if(!!newUserBase) {
+                    if (!!newUserBase) {
                         //微信openid与用户对应表
                         let userWechatItem = {
                             openid: openid,
@@ -149,20 +167,20 @@ class wechat extends facade.Control
                         facade.GetMapping(tableType.userWechat).Create(userWechatItem);
                     }
                 }
-                return {errcode: 'success', errmsg:'getopenid:ok', detail:{openid: ret.openid, sessionKey: ret.session_key}};
+                return { errcode: 'success', errmsg: 'getopenid:ok', detail: { openid: ret.openid, sessionKey: ret.session_key } };
             }
-       } catch(err) {
+        } catch (err) {
             console.log('get openid fail:' + err.message);
-            return {errcode: 'fail', errmsg: err.message};
-       }
+            return { errcode: 'fail', errmsg: err.message };
+        }
     }
 
-   /**
-     * 注册用户个人信息
-     * 【用法还不明确】
-     * @param {*} user 
-     * @param {*} params
-     */
+    /**
+      * 注册用户个人信息
+      * 【用法还不明确】
+      * @param {*} user 
+      * @param {*} params
+      */
     async RegUserProfile(user, params) {
         let openid = params.openid;
         let sessionKey = params.sessionKey;
@@ -170,23 +188,23 @@ class wechat extends facade.Control
         let encryptedData = params.encryptedData;
         let userBase = facade.GetMapping(tableType.userBase).groupOf().where([['openid', '==', openid]]).records(['id']);
         let errmsg = '';
-        if(userBase.length > 0) {       //
+        if (userBase.length > 0) {       //
             let uid = userBase[0].id;
             let userProfile = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
-            if(userProfile.length == 0) {
+            if (userProfile.length == 0) {
                 //创建账户
                 let play_uid = openid;
                 let ret = await gamegoldHelp.execute('token.user', ['first-acc-01', play_uid, null, openid]);
                 let block_addr = (!!ret && ret.result.hasOwnProperty("data")) ? ret.result.data.addr : '';
                 //let ret = await remote.execute('address.create', [openid]);   
                 //let block_addr = (!!ret && ret.hasOwnProperty("address")) ? ret.address : '';
-                encryptedData = encryptedData.replace(/ /g,'+');
-                iv = iv.replace(/ /g,'+');
+                encryptedData = encryptedData.replace(/ /g, '+');
+                iv = iv.replace(/ /g, '+');
                 let pc = new WXBizDataCrypt(wechatcfg.miniAppId, sessionKey)
-                let data = pc.decryptData(encryptedData , iv)
+                let data = pc.decryptData(encryptedData, iv)
                 console.log('解密后 data: ', data)
                 let unionId = ''
-                if(data != null && data.hasOwnProperty('unionId')) {
+                if (data != null && data.hasOwnProperty('unionId')) {
                     unionId = data.unionId
                 }
                 //添加用户个人信息
@@ -203,7 +221,7 @@ class wechat extends facade.Control
                 };
                 facade.GetMapping(tableType.userProfile).Create(userProfileItem);
                 let userWechats = facade.GetMapping(tableType.userWechat).groupOf().where([['openid', '==', openid]]).records();
-                if(userWechats.length >0 ) {
+                if (userWechats.length > 0) {
                     userWechats[0].setAttr('unionid', unionId)
                     userWechats[0].orm.save()
                 }
@@ -215,21 +233,21 @@ class wechat extends facade.Control
         } else {
             errmsg = 'regUserProfile:not ready';
         }
-        return {errcode: 'success', errmsg: errmsg};
+        return { errcode: 'success', errmsg: errmsg };
     }
 
-   /**
-     * 获取签名
-     * 【用法还不明确】
-     * @param {*} user 
-     * @param {*} params
-     */
+    /**
+      * 获取签名
+      * 【用法还不明确】
+      * @param {*} user 
+      * @param {*} params
+      */
     async WechatConfig(user, params) {
         let url = params.url;
         console.log("signature url " + url);
         let res = await new Promise(function (resolve, reject) {
-            signature.sign(url, function(data) {
-                console.log({signature: data});
+            signature.sign(url, function (data) {
+                console.log({ signature: data });
                 let wxconfig = {
                     //debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
                     appId: wechatcfg.appid, // 必填，公众号的唯一标识
@@ -243,8 +261,8 @@ class wechat extends facade.Control
                 resolve(wxconfig);
             });
         })
-        console.log({errcode: 'success', wxconfig: res})
-        return {errcode: 'success', wxconfig: res}
+        console.log({ errcode: 'success', wxconfig: res })
+        return { errcode: 'success', wxconfig: res }
     }
 
     /**
@@ -263,10 +281,10 @@ class wechat extends facade.Control
         //const appId = 'wx4b3efb80ac5de780'
         try {
             let res = await wxUnifiedorder.unifiedOrder(appId, openid, ip, price, productInfo, tradeId);
-            return {errcode: 'success', unifiedOrder: res}
-        }catch(e) {
+            return { errcode: 'success', unifiedOrder: res }
+        } catch (e) {
             console.log(e);
-            return {errcode: 'error', errmsg: e}
+            return { errcode: 'error', errmsg: e }
         }
     }
 
@@ -277,12 +295,12 @@ class wechat extends facade.Control
         const url = `https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${token.accessToken}`
         // 发送POST请求
         const response = await axios.post(url, {
-        page: 'pages/index/index',
-        scene: 'abc123'
+            page: 'pages/index/index',
+            scene: 'abc123'
         }, { responseType: 'stream' })
         // 将请求结果中的二进制流写入到本地文件qrcode.png
         response.data.pipe(fs.createWriteStream('qrcode.png'))
-        return {errcode: 'success', token: token}
+        return { errcode: 'success', token: token }
     }
 
     async SendRecPack(user, params) {
@@ -320,14 +338,14 @@ class wechat extends facade.Control
             order_status: 0,
         }
         facade.GetMapping(tableType.redpack).Create(redpackItem);
-        
-        return {errcode: 'success', ret: ret.return_msg}
+
+        return { errcode: 'success', ret: ret.return_msg }
     }
 
     async GetRecPackInfo(user, params) {
         let mch_billno = params.mch_billno
         let ret = await getHBinfo(mch_billno)
-        return {errcode: 'success', ret: ret}
+        return { errcode: 'success', ret: ret }
     }
 }
 

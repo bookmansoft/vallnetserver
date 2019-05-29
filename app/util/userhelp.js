@@ -45,6 +45,10 @@ class userhelp {
         return 0
     }
 
+    /**
+     * 从微信服务器提供的openid，获取该用户的信息；如果该openid没有对应的信息，则返回 {id:0}
+     * 判断用户存在必须 user_wechat 和 user_base 
+     */
     async getUserFromOpenId(openid, ntype) {
         let userWechats = await facade.GetMapping(tableType.userWechat).groupOf()
             .where([
@@ -62,8 +66,12 @@ class userhelp {
         return {id:0, user_name:''}
     }
 
+    /**
+     * 注册新用户。从wechat.js的code或openid进入并注册。
+     * @param {*} openid 
+     * @param {*} userInfo 
+     */
     async regUserFromWechat(openid, userInfo) {
-        //注册新用户
         console.log('now create new user');
         let random = new randomHelp();
         let user_name = random.randomString(4) + "_" + random.randomNum(4);

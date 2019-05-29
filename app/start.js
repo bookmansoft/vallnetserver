@@ -27,7 +27,7 @@ if(env.portal) { //如果该服务器兼任门户，则启动索引服务
 
 //启动gamegold 连接器
 gamegoldWork()
-redisWork()
+//redisWork()   //原来的启动会出错，因此先关闭redis，看看是否需要。
 
 facade.boot({
     env: env,

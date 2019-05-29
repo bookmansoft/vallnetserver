@@ -5,7 +5,7 @@ class weChat {
      * 构造函数
      * @param {*}  监控对象ID
      */
-    constructor($id){
+    constructor($id) {
 
     }
 
@@ -38,7 +38,7 @@ class weChat {
         return res;
     }
 
-        /**
+    /**
      * 获取公众号openid
      * @param {*} code 
      * @param {*} callback 
@@ -66,10 +66,10 @@ class weChat {
         return res;
     }
 
-        /**
-     * 获取公众号openid
-     * @param {*} code 
-     * @param {*} callback 
+    /**
+     * 使用 openid 及 access_token 参数获取用户详细信息。
+     * @param {*} access_token 
+     * @param {*} openid 
      */
     async getMapUserInfo(access_token, openid) {
         let options = {
