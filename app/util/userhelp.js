@@ -68,6 +68,7 @@ class userhelp {
 
     /**
      * 注册新用户。从wechat.js的code或openid进入并注册。
+     * 此处的注册，是自动产生了一个随机的 user_name。正确的做法，应该从服务端的sns用户信息中获取。
      * @param {*} openid 
      * @param {*} userInfo 
      */
