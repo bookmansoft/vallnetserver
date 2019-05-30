@@ -69,11 +69,12 @@ class userhelp {
     /**
      * 注册新用户。从wechat.js的code或openid进入并注册。
      * 此处的注册，是自动产生了一个随机的 user_name。正确的做法，应该从服务端的sns用户信息中获取。
+     * 随机 user_name 和默认头像的原因是：传入的 userInfo 为null
      * @param {*} openid 
      * @param {*} userInfo 
      */
     async regUserFromWechat(openid, userInfo) {
-        console.log('now create new user');
+        console.log('userhelp.js 77 创建新用户',userInfo);
         let random = new randomHelp();
         let user_name = random.randomString(4) + "_" + random.randomNum(4);
         let auth_key = md5(user_name + "_" + random.randomNum(4));
@@ -100,6 +101,7 @@ class userhelp {
                 last_time: created_at
             };
             facade.GetMapping(tableType.userWechat).Create(userWechatItem);
+            console.log("userhelp.js 104 保存user_wechat表完成");
 
             let ret = await remote.execute('token.user', ['first-acc-01', uid, null, uid]);
             let block_addr = (!!ret && ret.hasOwnProperty("data")) ? ret.data.addr : '';
@@ -117,6 +119,7 @@ class userhelp {
                 };
             } else {
                 userProfileItem = {
+                    id: uid,
                     uid: uid,
                     nick: userInfo.nickname,
                     gender: userInfo.sex,
@@ -129,8 +132,10 @@ class userhelp {
                     current_prop_count: 0,
                 };
             }
+            console.log("userhelp.js 135 保存user_profile表开始",userProfileItem);
             await facade.GetMapping(tableType.userProfile).Create(userProfileItem);
-            return uid
+            console.log("userhelp.js 135 保存user_profile表完成");
+            return uid;
         }
         return 0
     }

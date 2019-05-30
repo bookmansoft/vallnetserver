@@ -34,17 +34,17 @@ class wechat extends facade.Control {
      * @param {*} params 
      */
     async InitUserFromCode(user, params) {
-        console.log("进入wechat.js InitUserFromCode方法")
+        console.log("【此方法不应该被调用！！！】进入wechat.js InitUserFromCode方法",params.code,params.openid);
         let code = params.code
 
         var weChatEntity = new weChat();
-        console.log(code, wechatcfg.appid, wechatcfg.secret)
+        console.log(code, wechatcfg.appid, wechatcfg.secret);
         let ret = await weChatEntity.getMapOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
         //console.log(ret);
         if (ret.errcode !== undefined) {
             return { errcode: 'fail', errmsg: ret.errmsg };
         } else {
-            console.log(ret)
+            console.log("wechat.js 47:",ret);
             let openid = ret.openid
             let access_token = ret.access_token
             //调用用户信息获取接口，使用 openid 为参数，获取到该用户的详细信息
@@ -72,16 +72,27 @@ class wechat extends facade.Control {
     }
     /**
      * 从 微信的 openid 初始化出 User 对象，其中包括注册过程。
-     * 客户端的调用场景未知
+     * 客户端的 Login.vue InitUserFromOpenId() 方法调用，由于此方法的 null 参数，导致无法记录用户资料
+     * 增补传递了 code 参数
      * @param {*} user 
      * @param {*} params 
      */
     async InitUserFromOpenId(user, params) {
-        let openid = params.openid
+        console.log("wechat.js InitUserFromOpenId:",user,params);
+        let openid = params.openid;
+        let access_token=params.access_token;
         let uhelp = new userHelp()
         let uid = await uhelp.getUserIdFromOpenId(openid, 2)
         if (uid == 0) {
-            uid = await uhelp.regUserFromWechat(openid, null)
+            console.log("uid为0");
+            //调用用户信息获取接口，使用 openid 为参数，获取到该用户的详细信息
+            let weChatEntity = new weChat();
+            let retUser = await weChatEntity.getMapUserInfo(access_token, openid);
+            if (retUser.errcode !== undefined) {
+                return { errcode: 'fail', errmsg: retUser.errmsg };
+            }
+            console.log("wechat.js 93",retUser);
+            uid = await uhelp.regUserFromWechat(openid, retUser);
         }
         let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if (userProfile.length > 0) {
@@ -93,26 +104,28 @@ class wechat extends facade.Control {
 
     }
     /**
-     * 获取用户但是不会自动注册。原来的程序入口
+     * 获取用户但是不会自动注册。
+     * 业务流程是先获取，如果获取不到的情况下，引导到授权注册。
      * @param {*} user 
      * @param {*} params 
      */
     async GetUserFromMapCode(user, params) {
         try {
-            console.log("wechat.js 96",params);
+            console.log("wechat.js 114",params);
             let code = params.code
             var weChatEntity = new weChat();
             console.log(code, wechatcfg.appid, wechatcfg.secret)
             let ret = await weChatEntity.getMapOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
-            console.log("wechat.js 101",ret.errcode);
+            console.log("wechat.js 119 获取到用户信息(看看如何保存)：",ret);
             if (ret.errcode !== undefined) {
                 return { errcode: 'fail', errmsg: ret.errmsg };
             } else {
-                let openid = ret.openid
+                let openid = ret.openid;
+                let access_token= ret.access_token;
                 let userhelp = new userHelp()
                 let user = await userhelp.getUserFromOpenId(openid, 2);
-                console.log("wechat.js 98",user);
-                return { errcode: 'success', openid: openid, user: user }
+                console.log("wechat.js 127",user);
+                return { errcode: 'success', openid: openid,access_token:access_token, user: user }
             }
         }
         catch (ex) {
@@ -122,7 +135,7 @@ class wechat extends facade.Control {
     }
 
     /**
-     * 获取openid
+     * 未被调用
      * 【用法还不明确】
      * @param {*} user 
      * @param {*} params
@@ -139,7 +152,7 @@ class wechat extends facade.Control {
                 let userBase = facade.GetMapping(tableType.userBase).groupOf().where([['openid', '==', openid]]).records();
                 if (userBase.length == 0) {
                     //注册新用户
-                    console.log('now create new user');
+                    console.log('wechat.js 142 : 创建新用户');
                     let random = new randomHelp();
                     let user_name = random.randomString(8) + "_" + random.randomNum(8);
                     let auth_key = md5(user_name + "_" + random.randomNum(4));
