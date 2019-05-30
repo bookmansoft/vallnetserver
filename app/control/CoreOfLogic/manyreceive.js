@@ -280,13 +280,14 @@ class manyreceive extends facade.Control {
                             receiveData.setAttr("modify_date",new Date().getTime()/1000);
                             receiveData.Save();
                             //todo: 区块链转账，并保证事务一致性
+                            let retAddr=await gamegoldHelp.execute('address.receive', [objData.uid]);
                             console.log([
-                                userProfile.getAttr("block_addr"),
+                                retAddr.result,
                                 receiveData.getAttr("receive_amount"),
                                 'manyagent'
                             ]);
                             let retSend = await gamegoldHelp.execute('tx.send', [
-                                userProfile.getAttr("block_addr"),
+                                retAddr.result,
                                 receiveData.getAttr("receive_amount"),
                                 'manyagent'
                             ]); 
