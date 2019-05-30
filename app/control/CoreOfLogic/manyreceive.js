@@ -271,6 +271,7 @@ class manyreceive extends facade.Control {
                             manysendData.real_amount=manyreceive.list[i].receive_amount;//设置接收金额
                             //读取用户表
                             let userProfile = facade.GetObject(tableType.userProfile, parseInt(objData.uid));
+                            console.log("manyreceive.js 274:",objData.uid,userProfile);
                             //重新单独获取收件表的记录才能更新
                             let receiveData = facade.GetObject(tableType.manyReceive, parseInt(manyreceive.list[i].id));
                             receiveData.setAttr("receive_uid",objData.uid);

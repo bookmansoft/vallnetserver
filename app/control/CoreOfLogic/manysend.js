@@ -70,7 +70,6 @@ class manysend extends facade.Control {
      */
     async CreateRecord(user, objData) {
         try {
-
             let manysend = await facade.GetMapping(tableType.manySend).Create(
                 objData.total_amount,
                 objData.actual_amount,
@@ -103,7 +102,6 @@ class manysend extends facade.Control {
         try {
             //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
             let manysend = facade.GetObject(tableType.manySend, parseInt(objData.id));
-            console.log(manysend);
             if (!!manysend) {
                 return {
                     code: ReturnCode.Success,
@@ -245,7 +243,7 @@ class manysend extends facade.Control {
             //发送到指定账号
             //cid 用固定的manyagent创建 687a8b10-5a91-11e9-9a3f-bfc33c24ad96
             let retCp=await gamegoldHelp.execute('cp.byName', ['manyagent']);
-            console.log("248 cpid:",retCp.result.cid);
+            console.log("248 cpid:",retCp.result);
             let agent_cid=retCp.result.cid;
             let agent_uid=manysend.ormAttr("id");//对应此地址的id
             console.log("251:",agent_cid,agent_uid);

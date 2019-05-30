@@ -64,9 +64,9 @@ class wallet extends facade.Control
         // assert(ret.result.confirmed);
         console.log(ret);
         //特殊处理，原因不明
-        let result=(!!ret.result) ? result=ret.result : result=ret;
-        //console.log(ret.result);
-        return {errcode: 'success', errmsg: 'balance.all:ok', balance: result}; 
+        // let result=(!!ret.result) ? result=ret.result : ret;
+        console.log("wallet.js 68:",ret.result);
+        return {errcode: 'success', errmsg: 'balance.all:ok', balance: ret.result}; 
     }
 
     /**
