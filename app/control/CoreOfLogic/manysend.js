@@ -252,12 +252,12 @@ class manysend extends facade.Control {
             let retSend = await gamegoldHelp.execute('tx.send', [
                 ret.result.data.addr,
                 objData.total_amount,
-                objData.uid //不使用此参数，是否会导致任意账户的钱转移出来？
+                String(objData.uid), //转成字符串格式
             ]); 
             console.log([
                 ret.result.data.addr,
                 objData.total_amount,
-                objData.uid
+                String(objData.uid)
             ]);
             console.log(retSend);
             // 接收表
