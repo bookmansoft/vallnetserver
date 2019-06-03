@@ -3,7 +3,7 @@ let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
 let {sendRedPacket, getHBinfo} = require('../../util/wxRedPack')
 let wechatcfg = require('../../util/wechat.cfg')
-const gamegoldHelp = require('../../util/gamegoldHelp');
+const {gamegoldHelp} = require('../../util/gamegoldHelp');
 const stringRandom = require('string-random');
 
 /**

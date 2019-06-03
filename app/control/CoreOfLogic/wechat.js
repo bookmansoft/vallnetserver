@@ -9,7 +9,7 @@ let wechatcfg = require('../../util/wechat.cfg')
 let wxUnifiedorder = require('../../util/wxUnifiedorder')
 let { sendRedPacket, getHBinfo } = require('../../util/wxRedPack')
 let WXBizDataCrypt = require('../../util/WXBizDataCrypt')
-const gamegoldHelp = require('../../util/gamegoldHelp');
+const {gamegoldHelp} = require('../../util/gamegoldHelp');
 const WechatAPI = require('co-wechat-api')
 const fs = require('fs')
 const axios = require('axios')
@@ -54,11 +54,10 @@ class wechat extends facade.Control {
             }
             console.log("wechat.js 55",retUser);
             //通过opendid获取用户；如果获取不到用户，则注册用户
-            let uhelp = new userHelp()
-            let uid = await uhelp.getUserIdFromOpenId(openid)
+            let uid = await userHelp.getUserIdFromOpenId(openid);
             if (uid == 0) {
                 console.log("53 无法获取到用户");
-                uid = await uhelp.regUserFromWechat(openid, retUser); //发现bug，此处需要赋值给 uid
+                uid = await userHelp.regUserFromWechat(openid, retUser); //发现bug，此处需要赋值给 uid
                 console.log("54 注册了新用户",uid);
             }
             let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
@@ -81,8 +80,7 @@ class wechat extends facade.Control {
         console.log("wechat.js InitUserFromOpenId:",user,params);
         let openid = params.openid;
         let access_token=params.access_token;
-        let uhelp = new userHelp()
-        let uid = await uhelp.getUserIdFromOpenId(openid, 2)
+        let uid = await userHelp.getUserIdFromOpenId(openid, 2)
         if (uid == 0) {
             console.log("uid为0");
             //调用用户信息获取接口，使用 openid 为参数，获取到该用户的详细信息
@@ -92,7 +90,7 @@ class wechat extends facade.Control {
                 return { errcode: 'fail', errmsg: retUser.errmsg };
             }
             console.log("wechat.js 93",retUser);
-            uid = await uhelp.regUserFromWechat(openid, retUser);
+            uid = await userHelp.regUserFromWechat(openid, retUser);
         }
         let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if (userProfile.length > 0) {
@@ -122,8 +120,7 @@ class wechat extends facade.Control {
             } else {
                 let openid = ret.openid;
                 let access_token= ret.access_token;
-                let userhelp = new userHelp()
-                let user = await userhelp.getUserFromOpenId(openid, 2);
+                let user = await userHelp.getUserFromOpenId(openid, 2);
                 console.log("wechat.js 127",user);
                 return { errcode: 'success', openid: openid,access_token:access_token, user: user }
             }

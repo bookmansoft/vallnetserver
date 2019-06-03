@@ -1,7 +1,6 @@
 let facade = require('gamecloud')
 let tableType = require('../../util/tabletype');
-const gamegoldHelp = require('../../util/gamegoldHelp');
-const redisHelp = require('../../util/redisHelp');
+const {gamegoldHelp} = require('../../util/gamegoldHelp');
 
 /**
  * 节点控制器--道具
@@ -70,9 +69,15 @@ class prop extends facade.Control
         let props = Array()
         for(let i=0; i<ret.result.list.length; i++) {
             let element = ret.result.list[i]
-            let cp = await redisHelp.hget("hashkeycp", element.cid)
-            element.cp = JSON.parse(cp)
-            props.push(element)
+            //#region 从索引服务器取数
+            //element.cp = await this.parent.remoteCall("kv", {k:element.cid}, msg=>{return JSON.parse(msg);});
+            //目前先暂时从本地服务器取数，未来视情形切换
+            let cp = await this.parent.callFunc("remotecall", "kv", user, {k:element.cid});
+            if(!!cp) {
+                element.cp = JSON.parse(cp);
+            }
+            //#endregion
+            props.push(element);
         }
         return {errcode: 'success', errmsg: 'prop.list:ok', props: props, count: ret.result.count};
     }

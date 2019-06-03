@@ -1,8 +1,7 @@
 let facade = require('gamecloud')
 let tableType = require('../../util/tabletype');
 const axios = require('axios')
-const gamegoldHelp = require('../../util/gamegoldHelp');
-const redisHelp = require('../../util/redisHelp');
+const {gamegoldHelp} = require('../../util/gamegoldHelp');
 
 /**
  * 游戏的控制器
@@ -29,7 +28,8 @@ class cp extends facade.Control
         console.log("cp.js:",ret.result);
         if(ret.code==0) {
             ret.result.list.forEach(element => {
-                redisHelp.heset("hashkeycp", element.cid, JSON.stringify(element))
+                //this.parent.remoteCall("kv", {k:element.cid, v: JSON.stringify(element)});
+                this.parent.callFunc("remotecall", "kv", user, {k: element.cid, v: JSON.stringify(element)});
             });
         }
         return {errcode: 'success', cp: ret.result};

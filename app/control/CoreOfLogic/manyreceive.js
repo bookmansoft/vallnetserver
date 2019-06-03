@@ -2,8 +2,7 @@ let facade = require('gamecloud');
 let { ReturnCode, NotifyType } = facade.const;
 let tableType = require('../../util/tabletype');
 const axios = require('axios');
-const gamegoldHelp = require('../../util/gamegoldHelp');
-const redisHelp = require('../../util/redisHelp');
+const {gamegoldHelp} = require('../../util/gamegoldHelp');
 
 /**
  * 游戏的控制器

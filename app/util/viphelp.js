@@ -1,7 +1,7 @@
 let facade = require('gamecloud')
 let tableType = require('./tabletype');
 let tableField = require('./tablefield');
-const gamegoldHelp = require('./gamegoldHelp');
+const {gamegoldHelp} = require('./gamegoldHelp');
 
 class viphelp {
      /**

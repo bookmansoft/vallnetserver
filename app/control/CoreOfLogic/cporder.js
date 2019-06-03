@@ -2,7 +2,7 @@ let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
 let randomHelp = require('../../util/randomHelp');
-const gamegoldHelp = require('../../util/gamegoldHelp');
+const {gamegoldHelp} = require('../../util/gamegoldHelp');
 
 /**
  * 游戏用户

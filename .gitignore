@@ -1,7 +1,6 @@
 node_modules/
 backup/
 coverage/
-.vscode/
 .vs/
 .idea/workspace.xml
 *.zip
