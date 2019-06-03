@@ -16,41 +16,51 @@ class Helper {
     }
 
     /**
-     * 将连接器设置为长连模式，
+     * 将连接器设置为长连模式，同时完成登录、消息订阅等操作
      */
-    async login() {
-        await this.remote.setmode(this.remote.CommMode.ws).login();
+    setlongpoll() {
+        this.remote.setmode(this.remote.CommMode.ws)
+    }
+
+    /**
+     * 当重连发生时，自动调用该方法
+     */
+    async reconnect() {
+        super();
+        
+        await this.remote.login();
         await this.remote.join();
+        await this.subscribe();
     }
 
     //消息订阅
     async subscribe() {
         //prop/receive: 收到新的道具，或者已有道具发生变更
-        this.remote = await this.remote.watch(msg => {
+        this.remote.watch(msg => {
             console.log('prop/receive', msg);
             this.notfiyToClient(msg.account, 'prop/receive', msg)
         }, 'prop/receive');
 
         /*
-        this.remote = await this.remote.watch(msg => {
+        this.remote.watch(msg => {
             console.log('notify/receive', msg);
         }, 'notify/receive');
         */
 
         //子账户余额变动通知
-        this.remote = await this.remote.watch(msg => {
+        this.remote.watch(msg => {
             console.log('balance.account.client', msg.accountName);
             this.notfiyToClient(msg.accountName, 'balance.account.client', msg)
         }, 'balance.account.client')
 
         //用户发布的道具被成功拍卖后的通知
-        this.remote = await this.remote.watch(msg => {
+        this.remote.watch(msg => {
             console.log('prop/auction', msg);
             this.notfiyToClient(msg.account, 'prop/auction', msg)
         }, 'prop.auction')
 
         //用户执行 order.pay 之后，CP特约节点发起到账通知消息
-        this.remote = await this.remote.watch(msg => {
+        this.remote.watch(msg => {
             console.log('order.pay', msg);
         }, 'order.pay')
 
@@ -126,10 +136,10 @@ class Helper {
 }
 
 let conn = new Helper();
-let longpool = new Helper();
-longpool.login();
+let longpoll = new Helper();
+longpoll.setlongpoll();
 
 module.exports = {
-    longpool: sock,
+    longpoll: longpoll,
     gamegoldHelp: conn,
 };
