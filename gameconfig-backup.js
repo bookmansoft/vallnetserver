@@ -40,7 +40,7 @@ let config = {
                 },
                 "auth": {
                     "openid": "18681223392",
-                    "openkey": "18681223392",
+                    "openkey": "",
                     "domain": "tx.IOS",
                     "tokenExp": 600,
                     "sessionExp": 7200,
