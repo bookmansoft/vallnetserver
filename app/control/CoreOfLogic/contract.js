@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-const gamegoldHelp = require('../../util/gamegoldHelp');
+const {gamegoldHelp} = require('../../util/gamegoldHelp');
 /**
  * 交易对
  * Updated by thomasFuzhou on 2018-11-19.

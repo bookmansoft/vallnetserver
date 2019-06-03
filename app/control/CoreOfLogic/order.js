@@ -2,8 +2,9 @@ let facade = require('gamecloud')
 let wxUnifiedorder = require('../../util/wxUnifiedorder');
 let tableType = require('../../util/tabletype');
 let VipHelp = require('../../util/viphelp');
-const gamegoldHelp = require('../../util/gamegoldHelp');
+const {gamegoldHelp} = require('../../util/gamegoldHelp');
 let userHelp = require('../../util/userhelp')
+
 /**
  * 节点控制器--订单
  * Updated by thomasFuzhou on 2018-11-19.
@@ -107,8 +108,7 @@ class order extends facade.Control
                 } else if (!!order.orm.attach) {
                     let cid = order.orm.attach
                     let quantity = order.orm.quantity
-                    let uhelp = new userHelp()
-                    let addr = uhelp.getAddrFromUserIdAndCid(uid, cid)
+                    let addr = await userHelp.getAddrFromUserIdAndCid(uid, cid)
                     await gamegoldHelp.execute('stock.send', [cid, quantity, addr, 'alice']);
 
                     let stock = facade.GetObject(tableType.stock, order.orm.product_id);          

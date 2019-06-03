@@ -12,7 +12,7 @@ class redisHelp {
     }
 
     static async init() {
-        this.client = await redis.createClient(6379,"114.116.14.176")
+        this.client = await redis.createClient(6379, "127.0.0.1");
     }
 
     static async heset(hashkey, field, value, callback) {

@@ -3,7 +3,7 @@
  * Created by liub on 2017-06-01.
  */
 let baseTask = require('./baseTask')
-let iniInfo = require('../../game.config')
+let iniInfo = require('../../gameconfig')
 let facade = require('gamecloud')
 let User = facade.models['User']
 

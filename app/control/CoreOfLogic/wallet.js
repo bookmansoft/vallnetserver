@@ -1,6 +1,6 @@
 let facade = require('gamecloud')
 let tableType = require('../../util/tabletype');
-const gamegoldHelp = require('../../util/gamegoldHelp');
+const {gamegoldHelp} = require('../../util/gamegoldHelp');
 const assert = require('assert')
 
 /**

@@ -1,6 +1,4 @@
 const facade = require('gamecloud')
-const gamegoldHelp = require('./util/gamegoldHelp');
-const redisHelp = require('./util/redisHelp');
 
 //加载用户自定义模块
 facade.addition = true;
@@ -11,7 +9,7 @@ let env = !!process.env.sys ? JSON.parse(process.env.sys) : {
     portal: true            //兼任门户（充当索引服务器），注意索引服务器只能有一台，因此该配置信息具有排他性
 };  
 
-if(env.constructor == String){
+if(env.constructor == String) {
     env = JSON.parse(env);
 }
 
@@ -25,10 +23,6 @@ if(env.portal) { //如果该服务器兼任门户，则启动索引服务
     });
 }
 
-//启动gamegold 连接器
-gamegoldWork()
-//redisWork()   //原来的启动会出错，因此先关闭redis，看看是否需要。
-
 facade.boot({
     env: env,
     //指示加载自定义数据库表
@@ -38,14 +32,6 @@ facade.boot({
     //设置静态资源映射
     static: [['/client/', './web/client']], 
 });
-
-async function gamegoldWork() {
-    await gamegoldHelp.init()
-}
-
-async function redisWork() {
-    await redisHelp.init()
-}
 
 // 定时查询红包接口
 /*

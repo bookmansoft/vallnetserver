@@ -1,22 +1,21 @@
-let facade = require('gamecloud')
+let facade = require('gamecloud');
+let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
+const toolkit = require('gamegoldtoolkit');//引入工具包
 let tableType = require('./tabletype');
-let randomHelp = require('./randomHelp')
-let md5 = require('md5')
-//引入工具包
-const toolkit = require('gamegoldtoolkit')
-let remoteSetup = require('./gamegold')
-const remote = new toolkit.conn();
-//兼容性设置，提供模拟浏览器环境中的 fetch 函数
-remote.setFetch(require('node-fetch'))  
-remote.setup(remoteSetup);
+let randomHelp = require('./randomHelp');
+let md5 = require('md5');
 
 class userhelp {
      /**
      * 构造函数
      * @param {*}  监控对象ID
      */
-    constructor(){
-
+    constructor() {
+        //创建远程连接器
+        this.remote = new toolkit.conn();
+        //兼容性设置，提供模拟浏览器环境中的 fetch 函数
+        this.remote.setFetch(require('node-fetch'));
+        this.remote.setup(remoteSetup);
     }
 
     async getAddrFromUserIdAndCid(uid, cid) {
@@ -29,7 +28,7 @@ class userhelp {
         if(userWallets.length >0 ) {
             return userWallets[0].addr;
         }
-        return ''
+        return '';
     }
 
     async getUserIdFromOpenId(openid, ntype) {
@@ -42,7 +41,7 @@ class userhelp {
         if(userWechats.length >0 ) {
             return userWechats[0].uid;
         }
-        return 0
+        return 0;
     }
 
     /**
@@ -63,7 +62,7 @@ class userhelp {
                 return userBase[0]
             }
         }
-        return {id:0, user_name:''}
+        return {id:0, user_name:''};
     }
 
     /**
@@ -103,7 +102,7 @@ class userhelp {
             facade.GetMapping(tableType.userWechat).Create(userWechatItem);
             console.log("userhelp.js 104 保存user_wechat表完成");
 
-            let ret = await remote.execute('token.user', ['first-acc-01', uid, null, uid]);
+            let ret = await this.remote.execute('token.user', ['first-acc-01', uid, null, uid]);
             let block_addr = (!!ret && ret.hasOwnProperty("data")) ? ret.data.addr : '';
 
             //添加用户个人信息
@@ -148,7 +147,8 @@ class userhelp {
             return true;
         }
     }
-
 }
 
-module.exports = userhelp;
+let conn = new userhelp();
+
+module.exports = conn;

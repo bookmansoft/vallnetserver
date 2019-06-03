@@ -16,6 +16,22 @@ class test extends facade.Control
     }
 
     /**
+     * 路由设定
+     */
+    get router() {
+        return [
+            ['/test/hello', 'hello'],
+        ];
+    }
+
+    /**
+     * 测试路由函数
+     */
+    async hello(data) {
+        return data;
+    }
+
+    /**
      * 增
      * @param {*} user 
      * @param {*} objData 
