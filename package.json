@@ -54,7 +54,7 @@
     "co-wechat-api": "^3.8.2",
     "crc-32": "^1.0.2",
     "gamecloud": "^1.2.0",
-    "gamegoldtoolkit": "1.6.9",
+    "gamerpc": "^1.6.10",
     "memory-cache": "^0.2.0",
     "mocha": "^6.1.4",
     "node-fetch": "^2.2.1",

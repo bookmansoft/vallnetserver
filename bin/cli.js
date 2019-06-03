@@ -6,7 +6,7 @@
  */
 
 //引入远程连接器
-let {gameconn} = require('gamegoldtoolkit');
+let {gameconn} = require('gamerpc');
 
 //创建连接器对象
 let remote = new gameconn(

@@ -1,5 +1,5 @@
 //引入工具包
-const toolkit = require('gamegoldtoolkit')
+const toolkit = require('gamerpc')
 let remoteSetup = require('./gamegold')
 const _assert = require('assert');
 let facade = require('gamecloud')

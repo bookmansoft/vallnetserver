@@ -6,7 +6,7 @@
 ### 运行于 node 环境
 
 ```
-const toolkit = require('gamegoldtoolkit');
+const toolkit = require('gamerpc');
 ```
 
 ### 运行于浏览器环境
@@ -18,9 +18,9 @@ const toolkit = require('gamegoldtoolkit');
     </script>
 ```
 
-其中 toolkit-1.5.1.js 可通过 gamegoldtoolkit 打包而来
+其中 toolkit-1.5.1.js 可通过 gamerpc 打包而来
 
-1. 下载 gamegoldtoolkit 代码仓库
+1. 下载 gamerpc 代码仓库
 
 2. 执行打包程序
 ```
@@ -32,7 +32,7 @@ lib目录下生成的 bundle.js 就是所需的库文件
 
 npm package:
 ```
-npm i gamegoldtoolkit
+npm i gamerpc
 ```
 
 git 仓库:

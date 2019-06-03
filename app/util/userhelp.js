@@ -3,7 +3,7 @@ let tableType = require('./tabletype');
 let randomHelp = require('./randomHelp')
 let crypto = require('crypto')
 //引入工具包
-const toolkit = require('gamegoldtoolkit')
+const toolkit = require('gamerpc')
 let remoteSetup = require('./gamegold')
 const remote = new toolkit.conn();
 //兼容性设置，提供模拟浏览器环境中的 fetch 函数
