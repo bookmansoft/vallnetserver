@@ -103,7 +103,7 @@ npm run dbinit
 
 1. 配置数据库连接参数，用于各节点的数据库连接串
 
-修改 ./game.config.js 文件中 sa pwd host 字段
+修改 ./gameconfig.js 文件中 sa pwd host 字段
 
 ```js
 /**
@@ -185,7 +185,7 @@ facade.boot({
 
 ## 对 HTTPS 的支持
 
-1. 修改 game.config.js 中的协议配置
+1. 修改 gameconfig.js 中的协议配置
 
 ```js
 let config = {
