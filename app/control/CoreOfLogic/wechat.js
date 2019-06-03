@@ -1,7 +1,7 @@
 let facade = require('gamecloud')
 let weChat = require('../../util/wechat')
 let randomHelp = require('../../util/randomHelp')
-let md5 = require('md5')
+let crypto = require('crypto')
 let tableType = require('../../util/tabletype')
 let userHelp = require('../../util/userhelp')
 let signature = require('../../util/signature.js')
@@ -155,7 +155,8 @@ class wechat extends facade.Control {
                     console.log('wechat.js 142 : 创建新用户');
                     let random = new randomHelp();
                     let user_name = random.randomString(8) + "_" + random.randomNum(8);
-                    let auth_key = md5(user_name + "_" + random.randomNum(4));
+                    let auth_key = crypto.createHash('md5').update(user_name + "_" + random.randomNum(4)).digest("hex");
+
                     let created_at = new Date().getTime();
                     let userBaseItem = {
                         user_name: user_name,

@@ -1,7 +1,7 @@
 let facade = require('gamecloud')
 let tableType = require('./tabletype');
 let randomHelp = require('./randomHelp')
-let md5 = require('md5')
+let crypto = require('crypto')
 //引入工具包
 const toolkit = require('gamegoldtoolkit')
 let remoteSetup = require('./gamegold')
@@ -77,7 +77,8 @@ class userhelp {
         console.log('userhelp.js 77 创建新用户',userInfo);
         let random = new randomHelp();
         let user_name = random.randomString(4) + "_" + random.randomNum(4);
-        let auth_key = md5(user_name + "_" + random.randomNum(4));
+        let auth_key = crypto.createHash('md5').update(user_name + "_" + random.randomNum(4)).digest("hex");
+
         let created_at = new Date().getTime();
         let userBaseItem = {
             user_name: user_name,
