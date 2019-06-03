@@ -7,7 +7,7 @@ coverage/
 *.zip
 *.map
 package-lock.json
-
+game.config.js
 .gamegold/testnet/mempool.ldb/
 .gamegold/testnet/chain.ldb/
 .gamegold/testnet/spvchain.ldb/
