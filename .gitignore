@@ -1,6 +1,7 @@
 node_modules/
 backup/
 coverage/
+config/cert/
 .vs/
 .idea/workspace.xml
 *.zip
@@ -21,7 +22,6 @@ gameconfig.js
 .gamegold/main/debug.log
 .gamegold/main/hosts.json
 .gamegold/main/wallet.log
-
 logs/gamegold
 logs/ios1
 /.idea

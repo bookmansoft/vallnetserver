@@ -121,9 +121,10 @@ async function  redpackApi(host, path, sendData) {
             port: '443',
             method: 'POST',
             path: path,
-            key: fs.readFileSync('./cert/apiclient_key.pem'),     //将微信生成的证书放入 cert目录
-            cert: fs.readFileSync('./cert/apiclient_cert.pem')
+            key: fs.readFileSync(process.cwd() + '/config/cert/apiclient_key.pem', 'utf8'),     //将微信生成的证书放入 cert目录
+            cert: fs.readFileSync(process.cwd() + '/config/cert/apiclient_cert.pem', 'utf8')
         };
+
         let body = '';
         opt.agent = new https.Agent(opt);
  
