@@ -53,7 +53,7 @@
     "blueimp-md5": "^2.10.0",
     "co-wechat-api": "^3.8.2",
     "crc-32": "^1.0.2",
-    "gamecloud": "^1.2.0",
+    "gamecloud": "^1.2.1",
     "gamerpc": "^1.6.11",
     "memory-cache": "^0.2.0",
     "mocha": "^6.1.4",

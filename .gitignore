@@ -1,9 +1,12 @@
 node_modules/
 backup/
 coverage/
-config/cert/
 .vs/
 .idea/workspace.xml
+*.crt
+*.key
+*.p12
+*.pem
 *.zip
 *.map
 package-lock.json

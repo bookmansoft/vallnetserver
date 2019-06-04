@@ -126,21 +126,18 @@ class test extends facade.Control
 
     /**
      * 向消息发送者推送一条消息
-     * @param user
-     * @param objData
-     * @returns {Promise.<void>}
+     * @param {BaseUserEntity}  user  
+     * @param {Object}          objData
      */
     async notify(user, objData) {
         let notifyData = {type: NotifyType.test, info:objData.id}
         console.log('user', user)
         user.notify(notifyData);   //下行通知
         
-        let domain = 'tx.IOS'
-        let domainId = `${domain}.${objData.id}`
-        let user2 = facade.GetObject(EntityType.User, domainId, IndexType.Domain);
+        let friend = facade.GetObject(EntityType.User, `${user.domain}.${objData.id}`, IndexType.Domain);
         setTimeout(()=>{
-            user2.notify({type: NotifyType.test, info:'来自user2的好消息'});
-        }, 5000)
+            friend.notify({type: NotifyType.test, info:`来自${user.name}的好消息`});
+        }, 3000)
         
         return {code: ReturnCode.Success};
     }

@@ -69,8 +69,8 @@ class Helper {
     }
     
     notfiyToClient(uid, msgType, msg) {
-        let domain = 'tx.IOS'
-        let domainId = `${domain}.${uid}`
+        let domain = 'official';
+        let domainId = `${domain}.${uid}`;
         let user = facade.GetObject(EntityType.User, domainId, IndexType.Domain);
         if(!!user) {
             user.notify({type: NotifyType.test, info: {
