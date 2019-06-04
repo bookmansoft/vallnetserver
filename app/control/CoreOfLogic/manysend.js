@@ -206,9 +206,9 @@ class manysend extends facade.Control {
     async Send(user, objData) {
         try {
             //读取用户表
-            let userProfile = facade.GetObject(tableType.userProfile, parseInt(objData.uid));
+            let userProfile = facade.GetObject(tableType.userProfile, parseInt(objData.id));
             console.log(objData.uid);
-            //写发送表
+            //写发送表 - todo 20190604 liub 这里提示 Field 'send_uid' doesn't have a default value
             let manysend = await facade.GetMapping(tableType.manySend).Create(
                 objData.total_amount,
                 objData.total_amount, //actual_amount等同于输入参数total_amount
