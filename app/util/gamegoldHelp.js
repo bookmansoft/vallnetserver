@@ -1,6 +1,5 @@
 //引入工具包
 const toolkit = require('gamerpc')
-const _assert = require('assert');
 let facade = require('gamecloud')
 let {ReturnCode, EntityType, NotifyType, IndexType} = facade.const
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
@@ -57,7 +56,7 @@ class Helper {
             console.log('order.pay', msg);
         }, 'order.pay')
 
-        let ret = await this.remote.execute('subscribe', ['prop/receive', 'balance.account.client', 'prop/auction', 'order.pay']);
+        let ret = await this.remote.execute('subscribe', ['prop/receive', 'balance.account.client', 'prop/auction']);
         console.log(ret)
     }
     

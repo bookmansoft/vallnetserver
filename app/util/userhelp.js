@@ -1,9 +1,9 @@
 let facade = require('gamecloud');
-let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
-const toolkit = require('gamerpc')
 let tableType = require('./tabletype');
 let randomHelp = require('./randomHelp')
 let crypto = require('crypto')
+
+const {gamegoldHelp} = require('./gamegoldHelp');
 
 class userhelp {
      /**
@@ -11,11 +11,6 @@ class userhelp {
      * @param {*}  监控对象ID
      */
     constructor() {
-        //创建远程连接器
-        this.remote = new toolkit.conn();
-        //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-        this.remote.setFetch(require('node-fetch'));
-        this.remote.setup(remoteSetup);
     }
 
     async getAddrFromUserIdAndCid(uid, cid) {
@@ -103,7 +98,7 @@ class userhelp {
             facade.GetMapping(tableType.userWechat).Create(userWechatItem);
             console.log("userhelp.js 104 保存user_wechat表完成");
 
-            let ret = await this.remote.execute('token.user', ['first-acc-01', uid, null, uid]);
+            let ret = await gamegoldHelp.execute('token.user', ['first-acc-01', uid, null, uid]);
             let block_addr = (!!ret && ret.hasOwnProperty("data")) ? ret.data.addr : '';
 
             //添加用户个人信息
