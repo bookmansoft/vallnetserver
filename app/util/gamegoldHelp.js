@@ -21,16 +21,12 @@ class Helper {
      * 将连接器设置为长连模式，同时完成登录、消息订阅等操作
      */
     setlongpoll() {
-        this.remote.setmode(this.remote.CommMode.ws)
-    }
-
-    /**
-     * 当重连发生时，自动调用该方法
-     */
-    async reconnect() {
-        await this.remote.login();
-        await this.remote.join();
-        await this.subscribe();
+        this.remote.setmode(this.remote.CommMode.ws);
+        this.remote.watchNotify(async ()=>{
+            await this.remote.login();
+            await this.remote.join();
+            await this.subscribe();
+        }, 'onConnect');
     }
 
     //消息订阅
@@ -41,11 +37,9 @@ class Helper {
             this.notfiyToClient(msg.account, 'prop/receive', msg)
         }, 'prop/receive');
 
-        /*
         this.remote.watch(msg => {
             console.log('notify/receive', msg);
         }, 'notify/receive');
-        */
 
         //子账户余额变动通知
         this.remote.watch(msg => {
