@@ -1,4 +1,5 @@
 const facade = require('gamecloud')
+const {monitor} = require('./util/gamegoldHelp')
 
 //加载用户自定义模块
 facade.addition = true;
@@ -33,6 +34,38 @@ facade.boot({
     static: [['/client/', './web/client']], 
 });
 
+//单独维护一个到公链的长连接，进行消息监控
+monitor.setlongpoll(async (env) =>  {
+    //prop/receive: 收到新的道具，或者已有道具发生变更
+    env.remote.watch(msg => {
+        //收到消息，抛出内部事件, 处理流程定义于 app/events/user/receiveProp.js
+        facade.current.notifyEvent('user.receiveProp', {data:msg});
+    }, 'prop/receive');
+
+    env.remote.watch(msg => {
+        console.log('notify/receive', msg);
+    }, 'notify/receive');
+
+    //子账户余额变动通知
+    env.remote.watch(msg => {
+        console.log('balance.account.client', msg.accountName);
+        this.notfiyToClient(msg.accountName, 'balance.account.client', msg)
+    }, 'balance.account.client');
+
+    //用户发布的道具被成功拍卖后的通知
+    env.remote.watch(msg => {
+        console.log('prop/auction', msg);
+        this.notfiyToClient(msg.account, 'prop/auction', msg)
+    }, 'prop.auction');
+
+    //用户执行 order.pay 之后，CP特约节点发起到账通知消息
+    env.remote.watch(msg => {
+        console.log('order.pay', msg);
+    }, 'order.pay');
+})
+monitor.execute('subscribe', ['prop/receive', 'prop/auction']).then(ret=>{
+    console.log(ret);
+});
 // 定时查询红包接口
 /*
 facade.current.autoTaskMgr.addCommonMonitor(
