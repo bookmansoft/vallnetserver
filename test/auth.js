@@ -3,7 +3,7 @@
  * Creted by liub 2017.3.24
  */
 
-const remote = require('./util')
+const remote = require('./util');
 
 //一组单元测试流程
 describe('认证', function() {
@@ -27,14 +27,34 @@ describe('认证', function() {
         }
     });
 
-    it('请求服务端推送一条下行消息', async () => {
-        let msg = await remote.login({openid: 10005882});
-        console.log(remote.NotifyType.test)
+    /**
+     * 服务端需要在控制器 CoreOfLogic/test 中添加 notify 方法，并书写如下代码：
+     *   async notify(user, objData) {
+     *       let friend = facade.GetObject(EntityType.User, `${user.domain}.${objData.id}`, IndexType.Domain);
+     *       setTimeout(() => {
+     *           friend.notify({type: NotifyType.test, info:`来自${user.domainId}的好消息`}); //下行通知
+     *       }, 100)
+     *       
+     *       return {code: ReturnCode.Success};
+     *   }
+     */
+    it.only('用户A、B分别登录，A向B推送消息，B收到消息', async () => {
+        let a = 10005882, b = 10005883;
+
+        let msg = await remote.login({openid: b});
         if(remote.isSuccess(msg)) { 
             await remote.watch(msg => {
-                console.log(msg);
-                console.log('收到消息了');
-            }, remote.NotifyType.test).fetching({func: "test.notify", id: 10005882});
+                console.log('收到消息:', msg);
+            }, remote.NotifyType.test);
         }
+
+        let remoteOther = remote.new.setFetch(require('node-fetch'));
+        
+        msg = await remoteOther.login({openid: a});
+        if(remoteOther.isSuccess(msg)) { 
+            await remoteOther.fetching({func: "test.notify", id: b});
+        }
+
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(500);
     });
 });
