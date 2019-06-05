@@ -21,12 +21,11 @@ class Helper {
      * 将连接器设置为长连模式，同时完成登录、消息订阅等操作
      */
     setlongpoll() {
-        this.remote.setmode(this.remote.CommMode.ws);
-        this.remote.watchNotify(async ()=>{
+        this.remote.setmode(this.remote.CommMode.ws, async ()=>{
             await this.remote.login();
             await this.remote.join();
             await this.subscribe();
-        }, 'onConnect');
+        });
     }
 
     //消息订阅
@@ -77,10 +76,6 @@ class Helper {
     async execute(method, params) {
         let ret = await this.remote.execute(method, params)
         return ret
-    }
-
-    watchNotify(cb, etype = '0') {
-        this.remote.watchNotify(cb, etype)
     }
 
     watch(cb, etype = '0') {
