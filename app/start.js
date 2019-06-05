@@ -49,13 +49,13 @@ monitor.setlongpoll(async (env) =>  {
     //子账户余额变动通知
     env.remote.watch(msg => {
         console.log('balance.account.client', msg.accountName);
-        this.notfiyToClient(msg.accountName, 'balance.account.client', msg)
+        env.notfiyToClient(msg.accountName, 'balance.account.client', msg)
     }, 'balance.account.client');
 
     //用户发布的道具被成功拍卖后的通知
     env.remote.watch(msg => {
         console.log('prop/auction', msg);
-        this.notfiyToClient(msg.account, 'prop/auction', msg)
+        env.notfiyToClient(msg.account, 'prop/auction', msg)
     }, 'prop.auction');
 
     //用户执行 order.pay 之后，CP特约节点发起到账通知消息
@@ -63,9 +63,17 @@ monitor.setlongpoll(async (env) =>  {
         console.log('order.pay', msg);
     }, 'order.pay');
 })
-monitor.execute('subscribe', ['prop/receive', 'prop/auction']).then(ret=>{
-    console.log(ret);
+monitor.execute('block.tips', []).then( async (ret) => {
+    await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(500);
+    //以数组方式，订阅多个类型的消息
+    monitor.execute(
+        'subscribe', 
+        ['prop/receive', 'prop/auction']
+    ).then(ret => {
+        console.log(ret);
+    });
 });
+
 // 定时查询红包接口
 /*
 facade.current.autoTaskMgr.addCommonMonitor(
