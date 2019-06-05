@@ -26,6 +26,8 @@ let remote = new gameconn(
 )
 .setFetch(require('node-fetch'));      //设置node服务端环境下兼容的fetch函数，**注意只能在node服务端环境中执行，浏览器环境中系统自带 fetch 函数**
 
+remote.CommMode = gameconn.CommMode;
+remote.ReturnCode = gameconn.ReturnCode;
 remote.NotifyType = gameconn.NotifyType;
 
 //控制台输入 例如输入 save Android 1 将在Android上关闭外部连接、强制保存全部用户数据
