@@ -7,6 +7,27 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "mocha tests",
+            "program": "D:/Documents and Settings/Users/Administrator/AppData/Roaming/npm/node_modules/mocha/bin/_mocha",
+            //"program": "E:/AppData/npm/node_modules/mocha/bin/_mocha",
+            "args": [
+                "-u",
+                "tdd",
+                "--timeout",
+                "999999",
+                "--colors",
+                "--recursive",
+                "-t",
+                "600000",
+                "-s",
+                "1000",
+                "${workspaceFolder}/test"
+            ],
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}\\app\\start.js"
         }

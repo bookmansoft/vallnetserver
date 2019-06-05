@@ -3,6 +3,10 @@ backup/
 coverage/
 .vs/
 .idea/workspace.xml
+*.crt
+*.key
+*.p12
+*.pem
 *.zip
 *.map
 package-lock.json
@@ -21,7 +25,6 @@ gameconfig.js
 .gamegold/main/debug.log
 .gamegold/main/hosts.json
 .gamegold/main/wallet.log
-
 logs/gamegold
 logs/ios1
 /.idea
