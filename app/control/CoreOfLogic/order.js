@@ -1,9 +1,12 @@
 let facade = require('gamecloud')
-let wxUnifiedorder = require('../../util/wxUnifiedorder');
+
 let tableType = require('../../util/tabletype');
 let VipHelp = require('../../util/viphelp');
 const {gamegoldHelp} = require('../../util/gamegoldHelp');
 let userHelp = require('../../util/userhelp')
+
+let WeChat = require('../../util/wechat')
+let weChatEntity = new WeChat();
 
 /**
  * 节点控制器--订单
@@ -56,7 +59,7 @@ class order extends facade.Control
         let attach = params.attach
         let quantity = params.quantity
         let current_time = parseInt(new Date().getTime() / 1000)
-        let tradeId = wxUnifiedorder.getTradeId('bgw')
+        let tradeId = weChatEntity.getTradeId('bgw')
         let orderItem = {
             uid: uid,
             order_sn: tradeId,

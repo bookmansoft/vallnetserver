@@ -1,19 +1,16 @@
 let facade = require('gamecloud')
-let weChat = require('../../util/wechat')
-let randomHelp = require('../../util/randomHelp')
 let crypto = require('crypto')
-let tableType = require('../../util/tabletype')
-let userHelp = require('../../util/userhelp')
-let signature = require('../../util/signature.js')
-let wechatcfg = require('../../util/wechat.cfg')
-let wxUnifiedorder = require('../../util/wxUnifiedorder')
-let { sendRedPacket, getHBinfo } = require('../../util/wxRedPack')
-let WXBizDataCrypt = require('../../util/WXBizDataCrypt')
-const {gamegoldHelp} = require('../../util/gamegoldHelp');
-const WechatAPI = require('co-wechat-api')
 const fs = require('fs')
 const axios = require('axios')
 
+let randomHelp = require('../../util/randomHelp')
+let tableType = require('../../util/tabletype')
+let userHelp = require('../../util/userhelp')
+const {gamegoldHelp} = require('../../util/gamegoldHelp');
+
+let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
+let WeChat = require('../../util/wechat')
+let weChatEntity = new WeChat(wechatcfg.miniBgwAppId, wechatcfg.miniBgwAppSecret);
 
 /**
  * 微信接口
@@ -37,7 +34,6 @@ class wechat extends facade.Control {
         console.log("【此方法不应该被调用！！！】进入wechat.js InitUserFromCode方法",params.code,params.openid);
         let code = params.code
 
-        var weChatEntity = new weChat();
         console.log(code, wechatcfg.appid, wechatcfg.secret);
         let ret = await weChatEntity.getMapOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
         //console.log(ret);
@@ -84,7 +80,6 @@ class wechat extends facade.Control {
         if (uid == 0) {
             console.log("uid为0");
             //调用用户信息获取接口，使用 openid 为参数，获取到该用户的详细信息
-            let weChatEntity = new weChat();
             let retUser = await weChatEntity.getMapUserInfo(access_token, openid);
             if (retUser.errcode !== undefined) {
                 return { errcode: 'fail', errmsg: retUser.errmsg };
@@ -111,7 +106,6 @@ class wechat extends facade.Control {
         try {
             console.log("wechat.js 114",params);
             let code = params.code
-            var weChatEntity = new weChat();
             console.log(code, wechatcfg.appid, wechatcfg.secret)
             let ret = await weChatEntity.getMapOpenIdByCode(code, wechatcfg.appid, wechatcfg.secret);
             console.log("wechat.js 119 获取到用户信息(看看如何保存)：",ret);
@@ -138,7 +132,6 @@ class wechat extends facade.Control {
      * @param {*} params
      */
     async GetOpenId(user, params) {
-        var weChatEntity = new weChat();
         try {
             let ret = await weChatEntity.getOpenIdByCode(params.code, wechatcfg.miniAppId, wechatcfg.miniAppSecret);
             console.log(ret);
@@ -211,8 +204,7 @@ class wechat extends facade.Control {
                 //let block_addr = (!!ret && ret.hasOwnProperty("address")) ? ret.address : '';
                 encryptedData = encryptedData.replace(/ /g, '+');
                 iv = iv.replace(/ /g, '+');
-                let pc = new WXBizDataCrypt(wechatcfg.miniAppId, sessionKey)
-                let data = pc.decryptData(encryptedData, iv)
+                let data = weChatEntity.decryptData(wechatcfg.miniAppId, sessionKey, encryptedData, iv)
                 console.log('解密后 data: ', data)
                 let unionId = ''
                 if (data != null && data.hasOwnProperty('unionId')) {
@@ -291,7 +283,7 @@ class wechat extends facade.Control {
         let appId = params.appId
         //const appId = 'wx4b3efb80ac5de780'
         try {
-            let res = await wxUnifiedorder.unifiedOrder(appId, openid, ip, price, productInfo, tradeId);
+            let res = await weChatEntity.unifiedOrder(appId, openid, ip, price, productInfo, tradeId);
             return { errcode: 'success', unifiedOrder: res }
         } catch (e) {
             console.log(e);
@@ -300,18 +292,17 @@ class wechat extends facade.Control {
     }
 
     async GetToken(user, params) {
-        const wxAppAPI = new WechatAPI(wechatcfg.miniBgwAppId, wechatcfg.miniBgwAppSecret)
-        const token = await wxAppAPI.ensureAccessToken()
+        const token = await weChatEntity.ensureAccessToken();
         // 拼接url
-        const url = `https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${token.accessToken}`
+        const url = `https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${token.accessToken}`;
         // 发送POST请求
         const response = await axios.post(url, {
             page: 'pages/index/index',
             scene: 'abc123'
-        }, { responseType: 'stream' })
+        }, { responseType: 'stream' });
         // 将请求结果中的二进制流写入到本地文件qrcode.png
-        response.data.pipe(fs.createWriteStream('qrcode.png'))
-        return { errcode: 'success', token: token }
+        response.data.pipe(fs.createWriteStream('qrcode.png'));
+        return { errcode: 'success', token: token };
     }
 
     async SendRecPack(user, params) {
@@ -334,7 +325,7 @@ class wechat extends facade.Control {
         }
         let total_amount = 100
         let total_num = 1
-        let ret = await sendRedPacket(total_amount, total_num, openid, redPackConfig)
+        let ret = await weChatEntity.sendRedPacket(total_amount, total_num, openid, redPackConfig)
         let redpackItem = {
             act_name: redPackConfig.showName,
             mch_billno: redPackConfig.mch_billno,
@@ -355,7 +346,7 @@ class wechat extends facade.Control {
 
     async GetRecPackInfo(user, params) {
         let mch_billno = params.mch_billno
-        let ret = await getHBinfo(mch_billno)
+        let ret = await weChatEntity.getHBinfo(mch_billno)
         return { errcode: 'success', ret: ret }
     }
 }
