@@ -1,7 +1,6 @@
 let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
-const {gamegoldHelp} = require('../../util/gamegoldHelp');
 
 /**
  * 游戏用户
@@ -27,7 +26,7 @@ class cpprop extends facade.Control
     async QueryProps(user, params) {
         let cid = params.cid;
         let user_addr = params.user_addr;
-        let ret = await gamegoldHelp.execute('queryProps', [
+        let ret = await facade.current.service.gamegoldHelper.execute('queryProps', [
             cid, //游戏编号
             user_addr //游戏内玩家的有效地址
         ]);

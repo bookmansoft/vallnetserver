@@ -4,7 +4,6 @@ let tableField = require('../../util/tablefield');
 let WeChat = require('../../util/wechat')
 let weChatEntity = new WeChat();
 let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
-const {gamegoldHelp} = require('../../util/gamegoldHelp');
 const stringRandom = require('string-random');
 
 /**
@@ -176,7 +175,7 @@ class manage extends facade.Control
             userRedPact.orm.save()
 
             //发送游戏金
-            await gamegoldHelp.orderPay(cid, uid, sn, userRedPact.orm.gamegold, uid)
+            await facade.current.service.gamegoldHelper.orderPay(cid, uid, sn, userRedPact.orm.gamegold, uid)
 
             return {errcode: 'success'}
 

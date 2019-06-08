@@ -1,7 +1,6 @@
 let facade = require('gamecloud')
 let tableType = require('../../util/tabletype');
 const axios = require('axios')
-const {gamegoldHelp} = require('../../util/gamegoldHelp');
 
 /**
  * 游戏的控制器
@@ -24,7 +23,7 @@ class cp extends facade.Control
     async List(user, params) {
         let page = params.page;
         let num = params.num;
-        let ret = await gamegoldHelp.execute('cp.remoteQuery', []);
+        let ret = await facade.current.service.gamegoldHelper.execute('cp.remoteQuery', []);
         console.log("cp.js:",ret.result);
         if(ret.code==0) {
             ret.result.list.forEach(element => {
@@ -57,7 +56,7 @@ class cp extends facade.Control
     async CpCount(user, params) {
         let page = 1;
         let num = 100000;
-        let ret = await gamegoldHelp.execute('cp.list', [
+        let ret = await facade.current.service.gamegoldHelper.execute('cp.list', [
             page,
             num
         ]);
@@ -71,7 +70,7 @@ class cp extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async Create(user, params) {
-        let ret = await gamegoldHelp.execute('cp.create', params.items);
+        let ret = await facade.current.service.gamegoldHelper.execute('cp.create', params.items);
         return {errcode: 'success',result: ret.result};
     }
 
@@ -82,7 +81,7 @@ class cp extends facade.Control
      */
     async Change(user, params) {
         console.log(params.items);
-        let ret = await gamegoldHelp.execute('cp.change', params.items);
+        let ret = await facade.current.service.gamegoldHelper.execute('cp.change', params.items);
         return {errcode: 'success',result: ret.result};
     }
 
@@ -94,7 +93,7 @@ class cp extends facade.Control
     async ById(user, params) {
         console.log(params.items);
         let cid = params.cid
-        let ret = await gamegoldHelp.execute('cp.byId', [cid]);
+        let ret = await facade.current.service.gamegoldHelper.execute('cp.byId', [cid]);
         console.log(ret.result)
         return {errcode: 'success',result: ret.result};
     }
@@ -105,13 +104,13 @@ class cp extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async ByName(user, params) {
-        let ret = await gamegoldHelp.execute('cp.ByName', params.items);
+        let ret = await facade.current.service.gamegoldHelper.execute('cp.ByName', params.items);
         return {errcode: 'success',result: ret.result};
     }
 
     //申请令牌
     async UserToken(user, params) {
-        let ret = await gamegoldHelp.execute('token.user', [
+        let ret = await facade.current.service.gamegoldHelper.execute('token.user', [
             params.cid,
             params.user_id,
             null,

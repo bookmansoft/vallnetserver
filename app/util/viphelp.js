@@ -1,7 +1,6 @@
 let facade = require('gamecloud')
 let tableType = require('./tabletype');
 let tableField = require('./tablefield');
-const {gamegoldHelp} = require('./gamegoldHelp');
 
 class viphelp {
      /**
@@ -121,7 +120,7 @@ class viphelp {
             if(draw_count > vip_usable_count) {
                 return {result: false, errmsg: 'draw beyond'};
             }
-            let ret = await gamegoldHelp.execute('tx.send', [
+            let ret = await facade.current.service.gamegoldHelper.execute('tx.send', [
                 addr, 
                 draw_count
             ]);   

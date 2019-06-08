@@ -1,8 +1,6 @@
 let facade = require('gamecloud');
 let { ReturnCode, NotifyType } = facade.const;
 let tableType = require('../../util/tabletype');
-const axios = require('axios');
-const {gamegoldHelp} = require('../../util/gamegoldHelp');
 
 /**
  * 游戏的控制器
@@ -279,14 +277,14 @@ class manyreceive extends facade.Control {
                             receiveData.setAttr("modify_date",new Date().getTime()/1000);
                             receiveData.Save();
                             //todo: 区块链转账，并保证事务一致性
-                            let retAddr=await gamegoldHelp.execute('address.receive', [objData.uid]);
+                            let retAddr=await facade.current.service.gamegoldHelper.execute('address.receive', [objData.uid]);
                             console.log("manyreceive 283:",objData.uid,retAddr)
                             console.log([
                                 retAddr.result,
                                 parseInt(receiveData.getAttr("receive_amount")),
                                 'manyagent'
                             ]);
-                            let retSend = await gamegoldHelp.execute('tx.send', [
+                            let retSend = await facade.current.service.gamegoldHelper.execute('tx.send', [
                                 retAddr.result,
                                 parseInt(receiveData.getAttr("receive_amount")),
                                 'manyagent'

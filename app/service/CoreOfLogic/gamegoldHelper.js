@@ -1,15 +1,17 @@
-//引入工具包
 const toolkit = require('gamerpc')
 let facade = require('gamecloud')
 let {ReturnCode, EntityType, NotifyType, IndexType} = facade.const
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
-class Helper {
+class gamegoldHelper extends facade.Service
+{
      /**
      * 构造函数
      * @param {*}  监控对象ID
      */
-    constructor(){
+    constructor(parent) {
+        super(parent);
+
         this.remote = new toolkit.conn();
         //兼容性设置，提供模拟浏览器环境中的 fetch 函数
         this.remote.setup(remoteSetup);
@@ -90,10 +92,4 @@ class Helper {
     }
 }
 
-let conn = new Helper();
-let monitor = new Helper();
-
-module.exports = {
-    monitor: monitor,
-    gamegoldHelp: conn,
-};
+module.exports = gamegoldHelper;

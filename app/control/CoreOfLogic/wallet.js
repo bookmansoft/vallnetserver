@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
 let tableType = require('../../util/tabletype');
-const {gamegoldHelp} = require('../../util/gamegoldHelp');
 const assert = require('assert')
 
 /**
@@ -25,7 +24,7 @@ class wallet extends facade.Control
      */
     async AddressCreate(user, paramGold) {
         console.log(paramGold.items);
-        let ret = await gamegoldHelp.execute('address.create', paramGold.items);
+        let ret = await facade.current.service.gamegoldHelper.execute('address.create', paramGold.items);
         console.log(ret.result);
         return {errcode: 'success', errmsg: 'address.create:ok', ret: ret.result};
     }
@@ -41,7 +40,7 @@ class wallet extends facade.Control
         let addr = params.addr;
         let amount = params.amount;
         let uid = params.uid;
-        let ret = await gamegoldHelp.execute('tx.send', [
+        let ret = await facade.current.service.gamegoldHelper.execute('tx.send', [
             addr,
             amount,
             uid
@@ -58,7 +57,7 @@ class wallet extends facade.Control
      */
      async BalanceAll(user, params) {
         let uid = params.uid;
-        let ret = await gamegoldHelp.execute('balance.all', [
+        let ret = await facade.current.service.gamegoldHelper.execute('balance.all', [
             uid //openid
         ]);    
         // assert(ret.result.confirmed);
@@ -78,7 +77,7 @@ class wallet extends facade.Control
     async TxLogs(user, params) {                      
         let uid = params.uid;
         //let number = 10000;                          
-        let ret = await gamegoldHelp.execute('tx.list', [
+        let ret = await facade.current.service.gamegoldHelper.execute('tx.list', [
             uid, 
             //number
         ]);    
@@ -94,7 +93,7 @@ class wallet extends facade.Control
      */
     async GetNotify(user, params) {
         let uid = params.uid
-        let ret = await gamegoldHelp.execute('sys.listNotify', [
+        let ret = await facade.current.service.gamegoldHelper.execute('sys.listNotify', [
             1 
         ]);
         if(!!ret && ret.result.length > 0) {
@@ -179,7 +178,7 @@ class wallet extends facade.Control
                 let uid = openid;
                 let sn = obj.sn;
                 let price = obj.price;
-                let ret = await gamegoldHelp.execute('order.pay', [
+                let ret = await facade.current.service.gamegoldHelper.execute('order.pay', [
                     cid, //game_id
                     uid, //user_id
                     sn, //order_sn订单编号

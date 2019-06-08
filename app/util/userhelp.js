@@ -3,8 +3,6 @@ let tableType = require('./tabletype');
 let randomHelp = require('./randomHelp')
 let crypto = require('crypto')
 
-const {gamegoldHelp} = require('./gamegoldHelp');
-
 class userhelp {
      /**
      * 构造函数
@@ -98,7 +96,7 @@ class userhelp {
             facade.GetMapping(tableType.userWechat).Create(userWechatItem);
             console.log("userhelp.js 104 保存user_wechat表完成");
 
-            let ret = await gamegoldHelp.execute('token.user', ['first-acc-01', uid, null, uid]);
+            let ret = await facade.current.service.gamegoldHelper.execute('token.user', ['first-acc-01', uid, null, uid]);
             let block_addr = (!!ret && ret.hasOwnProperty("data")) ? ret.data.addr : '';
 
             //添加用户个人信息

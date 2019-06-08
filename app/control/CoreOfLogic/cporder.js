@@ -2,7 +2,6 @@ let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
 let randomHelp = require('../../util/randomHelp');
-const {gamegoldHelp} = require('../../util/gamegoldHelp');
 
 /**
  * 游戏用户
@@ -76,7 +75,7 @@ class cporder extends facade.Control
                 let prop_value = cporder_orm.prop_value;
                 //发送道具
                 //npm run cli rpc prop.order {game_id} {prop_ori_id} {prop_value} {user_addr}
-                let ret = await gamegoldHelp.execute('prop.order', [
+                let ret = await facade.current.service.gamegoldHelper.execute('prop.order', [
                     cid,        //游戏编号
                     prop_oid,   //道具原始
                     prop_value, //道具含金量

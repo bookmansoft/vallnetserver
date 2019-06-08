@@ -2,7 +2,6 @@ let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
 let VipHelp = require('../../util/viphelp');
-const {gamegoldHelp} = require('../../util/gamegoldHelp');
 
 /**
  * 个人中心
@@ -24,7 +23,7 @@ class profile extends facade.Control
         let userProfile = await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
         if(userProfile.length >0 ) {
             let profile = userProfile[0].orm;
-            let ret = await gamegoldHelp.execute('prop.list', [1, uid]);
+            let ret = await facade.current.service.gamegoldHelper.execute('prop.list', [1, uid]);
             if(!!ret) {
                 profile.current_prop_count = ret.result.count;
                 userProfile[0].setAttr('current_prop_count', profile.current_prop_count);
@@ -95,7 +94,7 @@ class profile extends facade.Control
         if(userProfiles.length >0 ) {
             let userProfile = userProfiles[0];
             let current_prop_count = 0
-            let ret = await gamegoldHelp.execute('prop.list', [1, uid])
+            let ret = await facade.current.service.gamegoldHelper.execute('prop.list', [1, uid])
             console.log(ret)
             if(!!ret) {
                 current_prop_count = ret.result.count;

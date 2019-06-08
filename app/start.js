@@ -1,5 +1,4 @@
 const facade = require('gamecloud')
-const {monitor} = require('./util/gamegoldHelp')
 
 //加载用户自定义模块
 facade.addition = true;
@@ -32,54 +31,54 @@ facade.boot({
     ],
     //设置静态资源映射
     static: [['/client/', './web/client']], 
-});
+}, core => {
+    //单独维护一个到公链的长连接，进行消息监控
+    core.service.monitor.setlongpoll(async (env) =>  {
+        env.remote.watch(msg => {
+            //收到新的道具，或者已有道具发生变更，抛出内部事件, 处理流程定义于 app/events/user/propReceive.js
+            core.notifyEvent('user.propReceive', {data:msg});
+        }, 'prop/receive');
 
-//单独维护一个到公链的长连接，进行消息监控
-monitor.setlongpoll(async (env) =>  {
-    env.remote.watch(msg => {
-        //收到新的道具，或者已有道具发生变更，抛出内部事件, 处理流程定义于 app/events/user/propReceive.js
-        facade.current.notifyEvent('user.propReceive', {data:msg});
-    }, 'prop/receive');
+        env.remote.watch(msg => {
+            //收到发布的道具被成功拍卖后的通知，抛出内部事件, 处理流程定义于 app/events/user/propAuction.js
+            core.notifyEvent('user.propAuction', {data:msg});
+        }, 'prop/auction');
 
-    env.remote.watch(msg => {
-        //收到发布的道具被成功拍卖后的通知，抛出内部事件, 处理流程定义于 app/events/user/propAuction.js
-        facade.current.notifyEvent('user.propAuction', {data:msg});
-    }, 'prop/auction');
+        env.remote.watch(msg => {
+            //收到通告，抛出内部事件, 处理流程定义于 app/events/user/receiveNotify.js
+            core.notifyEvent('user.receiveNotify', {data:msg});
+        }, 'notify/receive');
 
-    env.remote.watch(msg => {
-        //收到通告，抛出内部事件, 处理流程定义于 app/events/user/receiveNotify.js
-        facade.current.notifyEvent('user.receiveNotify', {data:msg});
-    }, 'notify/receive');
+        env.remote.watch(msg => {
+            //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/user/balanceChange.js
+            core.notifyEvent('user.balanceChange', {data:msg});
+        }, 'balance.account.client');
 
-    env.remote.watch(msg => {
-        //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/user/balanceChange.js
-        facade.current.notifyEvent('user.balanceChange', {data:msg});
-    }, 'balance.account.client');
+        env.remote.watch(msg => {
+            //用户执行 order.pay 之后，CP特约节点发起到账通知消息，抛出内部事件, 处理流程定义于 app/events/user/orderPay.js
+            core.notifyEvent('user.orderPay', {data:msg});
+        }, 'order.pay');
+    })
 
-    env.remote.watch(msg => {
-        //用户执行 order.pay 之后，CP特约节点发起到账通知消息，抛出内部事件, 处理流程定义于 app/events/user/orderPay.js
-        facade.current.notifyEvent('user.orderPay', {data:msg});
-    }, 'order.pay');
-})
-
-monitor.execute('block.tips', []).then( async (ret) => {
-    await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(500);
-    //以数组方式，订阅多个类型的消息。注意 balance.account.client 这样的消息是默认发送的，不需要订阅
-    monitor.execute('subscribe', [
-        'prop/receive',         //收到新的道具
-        'prop/auction',         //道具拍卖成交
-        'notify/receive',       //收到通告
-    ]).then(ret => {
-        console.log(ret);
+    core.service.monitor.execute('block.tips', []).then( async (ret) => {
+        await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(500);
+        //以数组方式，订阅多个类型的消息。注意 balance.account.client 这样的消息是默认发送的，不需要订阅
+        core.service.monitor.execute('subscribe', [
+            'prop/receive',         //收到新的道具
+            'prop/auction',         //道具拍卖成交
+            'notify/receive',       //收到通告
+        ]).then(ret => {
+            console.log(ret);
+        });
     });
-});
 
-// 定时查询红包接口
-/*
-facade.current.autoTaskMgr.addCommonMonitor(
-    ()=> {
-        let redpackList = facade.GetMapping(tableType.redpack).groupOf().records(tableField.redpack);
-        console.log(redpackList)
-    }, 1000
-)
-*/
+    // 定时查询红包接口
+    /*
+    core.autoTaskMgr.addCommonMonitor(
+        ()=> {
+            let redpackList = facade.GetMapping(tableType.redpack).groupOf().records(tableField.redpack);
+            console.log(redpackList)
+        }, 1000
+    )
+    */
+});

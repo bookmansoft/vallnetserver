@@ -1,7 +1,6 @@
 let facade = require('gamecloud')
 let {ReturnCode, EntityType, NotifyType, IndexType} = facade.const
 let tableType = require('../../util/tabletype');
-let {gamegoldHelp} = require('../../util/gamegoldHelp')
 
 /**
  * 部分测试流程
@@ -33,29 +32,29 @@ class test extends facade.Control
 
         let env = {name: ((Math.random()*1000000)|0).toString()};
         let oid = ((Math.random()*1000000)|0).toString();
-        await gamegoldHelp.execute('miner.setsync.admin', []);
+        await facade.current.service.gamegoldHelper.execute('miner.setsync.admin', []);
 
         //注册一个新的CP, 指定 15% 的媒体分成
-        let ret = await gamegoldHelp.execute('cp.create', [env.name, 'http://127.0.0.1', null, 'slg', 15]);
+        let ret = await facade.current.service.gamegoldHelper.execute('cp.create', [env.name, 'http://127.0.0.1', null, 'slg', 15]);
 
         //确保该CP数据上链
-        await gamegoldHelp.execute('miner.generate.admin', [1]);
+        await facade.current.service.gamegoldHelper.execute('miner.generate.admin', [1]);
         
         //查询并打印CP信息
-        ret = await gamegoldHelp.execute('cp.byName', [env.name]);
+        ret = await facade.current.service.gamegoldHelper.execute('cp.byName', [env.name]);
         env.cid = ret.result.cid;
         env.addr = ret.result.current.address;
         console.log(env);
 
         //创建一个道具
-        ret = await gamegoldHelp.execute('prop.create', [env.cid, oid, 10000]);
+        ret = await facade.current.service.gamegoldHelper.execute('prop.create', [env.cid, oid, 10000]);
         if(!!ret) {
             env.hash = ret.result.hash;
             env.pid = ret.result.pid;
         }
         await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
 
-        ret = await gamegoldHelp.execute('prop.send', [env.addr, env.pid]);
+        ret = await facade.current.service.gamegoldHelper.execute('prop.send', [env.addr, env.pid]);
         if(!!ret) {
             env.hash = ret.result.hash;
         }

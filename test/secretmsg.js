@@ -85,8 +85,11 @@ async function echo(user, packet) {
 //一组单元测试流程
 describe.only('私密信息', function() {
     it('alice和bob分别登录', async () => {
-        await alice.conn.login({openid: alice.id});
-        await bob.conn.login({openid: bob.id});
+        let ret = await alice.conn.login({openid: alice.id});
+        //从返回对象中取得加密密钥信息
+        
+        ret = await bob.conn.login({openid: bob.id});
+        //从返回对象中取得加密密钥信息
     });
 
     it('bob发起握手流程', async () => {

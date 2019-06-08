@@ -6,7 +6,6 @@ const axios = require('axios')
 let randomHelp = require('../../util/randomHelp')
 let tableType = require('../../util/tabletype')
 let userHelp = require('../../util/userhelp')
-const {gamegoldHelp} = require('../../util/gamegoldHelp');
 
 let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 let WeChat = require('../../util/wechat')
@@ -198,7 +197,7 @@ class wechat extends facade.Control {
             if (userProfile.length == 0) {
                 //创建账户
                 let play_uid = openid;
-                let ret = await gamegoldHelp.execute('token.user', ['first-acc-01', play_uid, null, openid]);
+                let ret = await facade.current.service.gamegoldHelper.execute('token.user', ['first-acc-01', play_uid, null, openid]);
                 let block_addr = (!!ret && ret.result.hasOwnProperty("data")) ? ret.result.data.addr : '';
                 //let ret = await remote.execute('address.create', [openid]);   
                 //let block_addr = (!!ret && ret.hasOwnProperty("address")) ? ret.address : '';

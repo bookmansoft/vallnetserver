@@ -1,8 +1,6 @@
 let facade = require('gamecloud');
 let { ReturnCode, NotifyType } = facade.const;
 let tableType = require('../../util/tabletype');
-const axios = require('axios');
-const {gamegoldHelp} = require('../../util/gamegoldHelp');
 
 /**
  * 游戏的控制器
@@ -241,14 +239,14 @@ class manysend extends facade.Control {
             }
             //发送到指定账号
             //cid 用固定的manyagent创建 687a8b10-5a91-11e9-9a3f-bfc33c24ad96
-            let retCp=await gamegoldHelp.execute('cp.byName', ['manyagent']);
+            let retCp=await facade.current.service.gamegoldHelper.execute('cp.byName', ['manyagent']);
             console.log("248 cpid:",retCp.result);
             let agent_cid=retCp.result.cid;
             let agent_uid=manysend.ormAttr("id");//对应此地址的id
             console.log("251:",agent_cid,agent_uid);
-            let ret = await gamegoldHelp.execute('token.user', [agent_cid,agent_uid,null,'manyagent']);
+            let ret = await facade.current.service.gamegoldHelper.execute('token.user', [agent_cid,agent_uid,null,'manyagent']);
             console.log("token.user返回的地址",ret.result.data.addr);
-            let retSend = await gamegoldHelp.execute('tx.send', [
+            let retSend = await facade.current.service.gamegoldHelper.execute('tx.send', [
                 ret.result.data.addr,
                 objData.total_amount,
                 String(objData.uid), //转成字符串格式
