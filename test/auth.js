@@ -3,7 +3,7 @@
  * Creted by liub 2017.3.24
  */
 
-const remote = require('./util');
+const {gameconn, connector} = require('./util');
 
 //一组单元测试流程
 describe('认证', function() {
@@ -13,17 +13,17 @@ describe('认证', function() {
      */
     it('注册并登录 - 自动负载均衡', /*单元测试的标题*/
         async () => { /*单元测试的函数体，书写测试流程*/
-            let msg = await remote.login({openid: `${Math.random()*1000000000 | 0}`});
-            remote.isSuccess(msg); 
+            let msg = await connector.login({openid: `${Math.random()*1000000000 | 0}`});
+            connector.isSuccess(msg); 
         }
     );
 
     it('简单应答', async () => {
-        let msg = await remote.login({openid: `${Math.random()*1000000000 | 0}`});
-        if(remote.isSuccess(msg)) {
-            //所有的控制器都拥有echo方法
-            msg = await remote.fetching({func: "test.echo"});
-            remote.isSuccess(msg, true);
+        let msg = await connector.login({openid: `${Math.random()*1000000000 | 0}`});
+        if(connector.isSuccess(msg)) {
+            //所有的控制器都拥有echo方法s
+            msg = await connector.fetching({func: "test.echo"});
+            connector.isSuccess(msg, true);
         }
     });
 
@@ -38,21 +38,21 @@ describe('认证', function() {
      *       return {code: ReturnCode.Success};
      *   }
      */
-    it.only('用户A、B分别登录，A向B推送消息，B收到消息', async () => {
+    it('用户A、B分别登录，A向B推送消息，B收到消息', async () => {
         let a = 10005882, b = 10005883;
 
-        let msg = await remote.login({openid: b});
-        if(remote.isSuccess(msg)) { 
-            await remote.watch(msg => {
+        let msg = await connector.login({openid: b});
+        if(connector.isSuccess(msg)) { 
+            await connector.watch(msg => {
                 console.log('收到消息:', msg);
-            }, remote.NotifyType.test);
+            }, gameconn.NotifyType.test);
         }
 
-        let remoteOther = remote.new.setFetch(require('node-fetch'));
+        let connectorOther = connector.new.setFetch(require('node-fetch'));
         
-        msg = await remoteOther.login({openid: a});
-        if(remoteOther.isSuccess(msg)) { 
-            await remoteOther.fetching({func: "test.notify", id: b});
+        msg = await connectorOther.login({openid: a});
+        if(connectorOther.isSuccess(msg)) { 
+            await connectorOther.fetching({func: "test.notify", id: b});
         }
 
         await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(500);

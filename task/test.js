@@ -3,14 +3,14 @@
  * Creted by liub 2017.3.24
  */
 
-const remote = require('./util')
+const {connector} = require('./util')
 
 async function beforeRemote() {
-    await remote.login({openid: `${Math.random()*1000000000 | 0}`});
+    await connector.login({openid: `${Math.random()*1000000000 | 0}`});
 }
 
 async function test() {
-    let msg = await remote.fetching({func: "wechat.GetRecPackInfo", mch_billno:'152078250120191251387982305'});
+    let msg = await connector.fetching({func: "wechat.GetRecPackInfo", mch_billno:'152078250120191251387982305'});
     return msg
 }
 

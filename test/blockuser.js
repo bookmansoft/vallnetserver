@@ -3,15 +3,15 @@
  * Creted by liub 2017.3.24
  */
 
-const remote = require('./util')
+const {connector} = require('./util')
 
 describe('wechat.GetOpenId', function() {
-    this.beforeEach(async () => {
-        await remote.login({openid: `${Math.random()*1000000000 | 0}`});
+    beforeEach(async () => {
+        await connector.login({openid: `${Math.random()*1000000000 | 0}`});
     });
 
     it('prop.UserGame', async () => {
-        let msg = await remote.fetching({func: 'profile.UserGame'});
+        let msg = await connector.fetching({func: 'profile.UserGame'});
         console.log(msg);
     });
     
