@@ -6,89 +6,118 @@
 const assert = require('./assert')
 const {connector, conn, gameconn} = require('./util');
 
-function payload() {
-    return Buffer.from('hello world', 'hex');
+class User 
+{
+    constructor(id, connector) {
+        this.id = id;
+        this.conn = connector;
+        this.conn.watch(async packet => {
+            await echo(this, packet);
+        }, gameconn.NotifyType.test);
+        this.secret = new conn.Secret();
+        this.initPac = this.secret.toEncinit();
+    }
+
+    async shakehand(sim) {
+        if(!this.shaked) {
+            this.shaked = true;
+            await this.conn.fetching({func: "test.notify", id: sim, msg : {type: 'secInit', data: this.initPac}});
+        }
+    }
+
+    async sendmsg(sim, title, content) {
+        const packet = this.secret.packet(title, Buffer.from(content, 'ascii'));
+        await this.conn.fetching({func: "test.notify", id: sim, msg : {type: 'secMsg', data: packet}});
+    }
 }
 
-let alice = {
-    id: 10005882,
-    conn: connector,
-    secret: new conn.Secret(),
-};
+class SecretPacket 
+{
+    constructor() {
+        this.src = '';
+        this.dst = '';
+        this.msg = {
+            type: '',
+            data: {},
+        }
+    }
+}
 
-let bob = {
-    id: 10005883,
-    conn : connector.new.setFetch(require('node-fetch')),
-    secret: new conn.Secret(),
-};
+let alice = new User(10005882, connector);
+let bob = new User(10005883, connector.new.setFetch(require('node-fetch')));
+
+/**
+ * 消息响应函数
+ * @param {*} user 
+ * @param {SecretPacket} packet 完整信息结构
+ */
+async function echo(user, packet) {
+    console.log(user.id, packet.msg.type);
+
+    switch(packet.msg.type) {
+        case 'secInit': { //收到握手请求
+            //利用握手请求初始化
+            user.secret.encinit(packet.msg.data.publicKey, packet.msg.data.cipher);
+
+            //生成握手应答并发送给对方
+            let acka = user.secret.toEncack();
+            await user.conn.fetching({func: "test.notify", id: packet.src, msg : {type:'secAck', data: acka}});
+
+            await user.shakehand(packet.src);
+
+            break;
+        }
+
+        case 'secAck': { //收到握手应答
+            //alice利用握手应答完成握手
+            user.secret.encack(packet.msg.data.publicKey);
+
+            break;
+        }
+
+        case 'secMsg': { //收到加密消息
+            //bob解密消息
+            user.secret.feed(packet.msg.data);
+        }
+    }
+}
 
 //一组单元测试流程
-describe('私密信息', function() {
-    it('should do init', () => {
+describe.only('私密信息', function() {
+    it('alice和bob分别登录', async () => {
+        await alice.conn.login({openid: alice.id});
+        await bob.conn.login({openid: bob.id});
+    });
+
+    it('bob发起握手流程', async () => {
         //bob生成握手请求并发送给alice
-        let init = bob.secret.toEncinit();
-        //alice利用握手请求初始化
-        alice.secret.encinit(init.publicKey, init.cipher);
-        //alice生成握手应答并发送给bob
-        let acka = alice.secret.toEncack();
-        //bob利用握手应答完成握手
-        bob.secret.encack(acka.publicKey);
-    
-        //alice生成握手请求并发送给bob
-        init = alice.secret.toEncinit();
-        //bob利用握手请求初始化
-        bob.secret.encinit(init.publicKey, init.cipher);
-        //bob生成握手应答并发送给alice
-        let ackb = bob.secret.toEncack();
-        //alice利用握手应答完成握手
-        alice.secret.encack(ackb.publicKey);
-    
+        await bob.shakehand(alice.id);
+
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+
+        //验证握手完成
         assert(alice.secret.handshake);
         assert(bob.secret.handshake);
         assert(alice.secret.isReady());
         assert(bob.secret.isReady());
     });
     
-    it('should encrypt payload from client to server', () => {
-        //alice加密消息(包含消息头和消息体)并发送给bob
-        const packet = alice.secret.packet('fake', payload());
-    
+    it('alice向bob发起加密消息', async () => {
+        //bob监听收到的秘密
         bob.secret.once('packet', (cmd, body) => {
-          //断言解密结果正确与否
-          assert.strictEqual(cmd, 'fake');
-          assert.bufferEqual(body, payload());
+            //断言解密结果正确与否
+            assert.strictEqual(cmd, sec.title);
+            assert.bufferEqual(body, Buffer.from(sec.content, 'ascii'));
         });
-    
-        //bob解密消息
-        bob.secret.feed(packet);
-    });
 
-    it('用户A、B分别登录，A向B推送消息，B收到消息', async () => {
-        /* 填充后的完整信息结构
-         *   msg {
-         *       h,                  //块高度
-         *       oper: 'notify'      //操作类型
-         *       sn,                 //消息唯一识别码
-         *       body: {
-         *           content,        //消息内容，一般为JSON字符串
-         *           src,            //发出地址
-         *           dst,            //接收地址
-         *       }
-         *   }
-         */
+        //alice构造一个秘密(包含消息头和消息体)
+        let sec = {
+            title: 'bookman',
+            content: 'hello world',
+        }
+        //加密后发送给bob
+        await alice.sendmsg(bob.id, sec.title, sec.content);
 
-        await alice.conn.login({openid: alice.id});
-        await alice.conn.watch(msg => {
-            console.log(msg);
-        }, gameconn.NotifyType.test);
-
-        await bob.conn.login({openid: bob.id});
-        await bob.conn.watch(msg => {
-            console.log(msg);
-        }, gameconn.NotifyType.test);
-
-        await bob.conn.fetching({func: "test.notify", id: alice.id});
-
-        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(500);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
     });
 });
