@@ -18,23 +18,23 @@
 let {gameconn} = require('gamerpc');
 
 //创建连接器对象
-let remote = new gameconn(
-    gameconn.CommMode.ws,               //使用 WebSocket 连接方式
-    {
+let remote = new gameconn({
         "UrlHead": "http",              //协议选择: http/https
         "webserver": {
             "host": "127.0.0.1",        //远程主机地址
             "port": 9901                //远程主机端口
         },
-        "auth": {
-            "openid": "18681223392",    //用户标识
-            "openkey": "18681223392",   //和用户标识关联的用户令牌
-            "domain": "official",         //用户所在的域，tx是提供登录验证服务的厂商类别，IOS是该厂商下的服务器组别
-        }
     }
 )
 .setFetch(require('node-fetch'));      //设置node服务端环境下的fetch函数，只在node服务端环境中执行，浏览器环境自带fetch函数
-
+//设置登录用户信息
+remote.setUserInfo({
+    domain: 'official', 
+    openid: `${Math.random()*1000000000 | 0}`,
+    openkey: '123',
+    authControl: 'UserDefine', //指定自定义的签证发放方式
+});
+remote.setmode(gameconn.CommMode.ws, ()=>{}); //使用 WebSocket 连接方式
 remote.fetching({func: "test.notify", msg: 'helloworld'}, msg => { 
     console.log(msg);
 });

@@ -8,25 +8,76 @@ const {connector, conn, gameconn} = require('./util');
 
 class User 
 {
+    /**
+     * 构造函数
+     * @param {*} id            用户编号 unionid
+     * @param {*} connector     连接器
+     */
     constructor(id, connector) {
         this.id = id;
         this.conn = connector;
         this.conn.watch(async packet => {
             await echo(this, packet);
         }, gameconn.NotifyType.test);
-        this.secret = new conn.Secret();
-        this.initPac = this.secret.toEncinit();
     }
 
+    async initComm() {
+        this.conn.setmode(gameconn.CommMode.ws, async () => {
+            //todo 登录后主动申请一套密钥, 以完成本地初始化
+        });
+        this.conn.setUserInfo({
+            domain: 'official', 
+            openid: this.id,
+            openkey: '',
+            authControl: 'UserDefine',
+        });
+        if(!(await this.conn.setLB())) {
+            throw(new Error('lbs error'));
+        }
+        await this.conn.createSocket();
+    }
+
+    /**
+     * 用私钥初始化
+     * @param {Buffer} priv  私钥
+     */
+    initKey(priv) {
+        if(typeof priv == 'string') {
+            priv = Buffer.from(priv, 'hex');
+        }
+        this.secret = new conn.Secret({privateKey: priv});
+        this.initPac = this.secret.toEncinit();
+
+        //监听收到的秘密
+        this.secret.once('packet', (title, content) => {
+            console.log(title, content.toString('utf8'));
+        });
+    }
+
+    /**
+     * 发起握手
+     * @param {*} sim 
+     */
     async shakehand(sim) {
         if(!this.shaked) {
             this.shaked = true;
             await this.conn.fetching({func: "test.notify", id: sim, msg : {type: 'secInit', data: this.initPac}});
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+
+            //验证握手完成
+            assert(this.secret.handshake);
+            assert(this.secret.isReady());
         }
     }
 
-    async sendmsg(sim, title, content) {
-        const packet = this.secret.packet(title, Buffer.from(content, 'ascii'));
+    /**
+     * 发送私密消息
+     * @param {*} sim       目标用户
+     * @param {*} title     标题
+     * @param {*} content   内容
+     */
+    async sendmsg(sim, sec) {
+        const packet = this.secret.packet(sec.title, Buffer.from(sec.content, 'utf8'));
         await this.conn.fetching({func: "test.notify", id: sim, msg : {type: 'secMsg', data: packet}});
     }
 }
@@ -82,45 +133,26 @@ async function echo(user, packet) {
     }
 }
 
-//一组单元测试流程
-describe.only('私密信息', function() {
-    it('alice和bob分别登录', async () => {
-        let ret = await alice.conn.login({openid: alice.id});
-        //从返回对象中取得加密密钥信息
-        
-        ret = await bob.conn.login({openid: bob.id});
-        //从返回对象中取得加密密钥信息
+describe('私信', function() {
+    it('alice和bob获取私钥并进行初始化', async () => {
+        await alice.initComm();
+        alice.initKey();
+
+        await bob.initComm();
+        bob.initKey();
     });
 
     it('bob发起握手流程', async () => {
         //bob生成握手请求并发送给alice
         await bob.shakehand(alice.id);
-
-        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
-
-        //验证握手完成
-        assert(alice.secret.handshake);
-        assert(bob.secret.handshake);
-        assert(alice.secret.isReady());
-        assert(bob.secret.isReady());
     });
     
     it('alice向bob发起加密消息', async () => {
-        //bob监听收到的秘密
-        bob.secret.once('packet', (cmd, body) => {
-            //断言解密结果正确与否
-            assert.strictEqual(cmd, sec.title);
-            assert.bufferEqual(body, Buffer.from(sec.content, 'ascii'));
-        });
-
-        //alice构造一个秘密(包含消息头和消息体)
-        let sec = {
+        //alice构造一个秘密(包含消息头和消息体), 加密后发送给bob
+        await alice.sendmsg(bob.id, {
             title: 'bookman',
             content: 'hello world',
-        }
-        //加密后发送给bob
-        await alice.sendmsg(bob.id, sec.title, sec.content);
-
+        });
         await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
     });
 });
