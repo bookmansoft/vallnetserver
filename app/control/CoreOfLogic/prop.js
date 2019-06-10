@@ -7,13 +7,6 @@ let tableType = require('../../util/tabletype');
  */
 class prop extends facade.Control
 {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     //道具发送
     async PropOrder(user, params)  {
         let cid = params.cid;

@@ -9,13 +9,6 @@ let VipHelp = require('../../util/viphelp');
  */
 class profile extends facade.Control
 {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     //用户信息
     async Info(user, params)  {
         let uid = params.uid;

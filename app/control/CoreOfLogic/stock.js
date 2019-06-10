@@ -8,13 +8,6 @@ let userHelp = require('../../util/userhelp')
  */
 class stock extends facade.Control
 {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     //众筹列表
     async Stocks(user, params) {
         let stockList = await facade.GetMapping(tableType.stock).groupOf().where([['status', '==', 1]]).records(tableField.stock)

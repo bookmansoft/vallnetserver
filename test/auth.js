@@ -15,15 +15,15 @@ describe.only('认证', function() {
      * 一个单元测试流程，可使用 .skip .only 修饰
      * 和负载均衡相关的单元测试，首先连接9901端口，发送config.getServerInfo请求，携带 "stype":"IOS", "oemInfo":{"openid":'helloworl'} 等参数，返回值：data.newbie:是否新注册用户 data.ip:服务器IP, data.port:服务器端口号
      */
-    it('注册登录, 简单应答 - 自动负载均衡', /*单元测试的标题*/
+    it.only('注册登录, 简单应答 - 自动负载均衡', /*单元测试的标题*/
         async () => { /*单元测试的函数体，书写测试流程*/
             connector.setUserInfo({
-                domain: 'official', 
+                domain: 'wx', 
                 openid: b,
-                authControl: 'UserDefine',
+                openkey: b,
             });
 
-            connector.setmode(gameconn.CommMode.ws, async () => {});
+            connector.setmode(gameconn.CommMode.ws);
 
             if(!(await connector.setLB())) {
                 throw(new Error('lbs error'));
@@ -52,11 +52,11 @@ describe.only('认证', function() {
 
         let connectorOther = connector.new.setFetch(require('node-fetch'));
         connectorOther.setUserInfo({
-            domain: 'official', 
+            domain: 'wx', 
             openid: a,
-            authControl: 'UserDefine',
+            openkey: a,
         });
-        connectorOther.setmode(gameconn.CommMode.ws, async () => {});
+        connectorOther.setmode(gameconn.CommMode.ws);
         if(!(await connectorOther.setLB())) {
             throw(new Error('lbs error'));
         }

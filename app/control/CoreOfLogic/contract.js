@@ -6,13 +6,6 @@ let facade = require('gamecloud')
 class contract extends facade.Control
 {
     /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
-    /**
      * 创建一个收款地址：address.create 不需要参数
      * 
      * @param {*} user 

@@ -11,13 +11,6 @@ const stringRandom = require('string-random');
  */
 class manage extends facade.Control
 {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     //活动列表
     async RedPackActCurrent(user, params) {
         let redpackActList = await facade.GetMapping(tableType.redpackAct).groupOf().where([['status', '==', 1]]).records(tableField.redpackAct)

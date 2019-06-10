@@ -5,7 +5,7 @@ let config = {
      */
     "apps" : [
         {
-            "name"      : "Chick_IOS_1",
+            "name"      : "IOS_1",
             "script"    : "app/start.js",
             "cwd"         : "./",  // pm2运行目录相对main.js的路径
             //"out_file"   : "./logs/ios1/app-out.log",  // 普通日志路径

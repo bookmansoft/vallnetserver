@@ -105,7 +105,7 @@ class authOfNew extends facade.Control
     async auth(data) {
         let auth = {
             t: now(),                         //当前时间戳，游戏方必须验证时间戳，暂定有效期为当前时间前后 5 分钟
-            userId: objData.id,               //将客户端上行的平台用户 ID
+            userId: objData.id,               //客户端上行的平台用户 ID
         };
         auth.sign = sign(auth, facade.current.options[DomainType.D360].game_secret);
         return auth;
@@ -129,7 +129,11 @@ class authOfNew extends facade.Control
 
 ```js
 it('验证自定义验签流程', async () => {
-    let msg = await remote.login({authControl: 'UserDefine'});
-    console.log(msg);
+    remote.setUserInfo({
+        domain:         'wx',               //归属域，决定了验证方式
+        openid:         '111',              //用户唯一标识
+        openkey:        '111'               //和 openid 配套的用于验证目的的字段
+        auth:           {},
+    });
 });
 ```

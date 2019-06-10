@@ -9,13 +9,6 @@ let randomHelp = require('../../util/randomHelp');
  */
 class cpuser extends facade.Control
 {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     //用户信息
     async CheckOpenId(user, params)  {
         let openid = params.openid;

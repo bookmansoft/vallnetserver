@@ -9,13 +9,6 @@ let randomHelp = require('../../util/randomHelp');
  */
 class cporder extends facade.Control
 {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     //用户信息
     async PropBuy(user, params)  {
         let prop_id = params.prop_id;

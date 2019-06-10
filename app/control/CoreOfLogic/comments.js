@@ -8,13 +8,6 @@ let tableField = require('../../util/tablefield');
  */
 class comments extends facade.Control
 {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     //评论列表
     async GameCommentList(user, params)  {
         let cid = params.cid

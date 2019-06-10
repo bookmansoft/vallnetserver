@@ -29,12 +29,11 @@ let remote = new gameconn({
 .setFetch(require('node-fetch'));      //设置node服务端环境下的fetch函数，只在node服务端环境中执行，浏览器环境自带fetch函数
 //设置登录用户信息
 remote.setUserInfo({
-    domain: 'official', 
+    domain: 'wx', 
     openid: `${Math.random()*1000000000 | 0}`,
     openkey: '123',
-    authControl: 'UserDefine', //指定自定义的签证发放方式
 });
-remote.setmode(gameconn.CommMode.ws, ()=>{}); //使用 WebSocket 连接方式
+remote.setmode(gameconn.CommMode.ws); //使用 WebSocket 连接方式
 remote.fetching({func: "test.notify", msg: 'helloworld'}, msg => { 
     console.log(msg);
 });

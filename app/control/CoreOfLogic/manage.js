@@ -7,13 +7,6 @@ let tableField = require('../../util/tablefield');
  */
 class manage extends facade.Control
 {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     //活动列表
     async RedPackActList(user, params) {
         let redpackActList = facade.GetMapping(tableType.redpackAct).groupOf().records(tableField.redpackAct)

@@ -9,13 +9,6 @@ const axios = require('axios')
 class cp extends facade.Control
 {
     /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
-    /**
      * 查询系统中现有的所有CP列表：cp.list
      * @param {*} user 
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组

@@ -22,14 +22,12 @@ class User
     }
 
     async initComm() {
-        this.conn.setmode(gameconn.CommMode.ws, async () => {
-            //todo 登录后主动申请一套密钥, 以完成本地初始化
-        });
+        this.conn.events.on('onConnect', status => {});
+        this.conn.setmode(gameconn.CommMode.ws);
         this.conn.setUserInfo({
-            domain: 'official', 
+            domain: 'wx', 
             openid: this.id,
             openkey: '',
-            authControl: 'UserDefine',
         });
         if(!(await this.conn.setLB())) {
             throw(new Error('lbs error'));

@@ -14,13 +14,6 @@ let weChatEntity = new WeChat();
 class order extends facade.Control
 {
     /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
-    /**
      * 订单支付
      * @param {*} user 
      * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组

@@ -9,13 +9,6 @@ let tableType = require('../../util/tabletype');
 class test extends facade.Control
 {
     /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
-    /**
      * 路由设定
      */
     get router() {

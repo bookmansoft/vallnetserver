@@ -8,14 +8,6 @@ let tableField = require('../../util/tablefield');
  */
 class cpprop extends facade.Control
 {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        console.log('cpprop middleware');
-        return ['parseParams', 'commonHandle'];
-    }
-
     //用户信息
     async PropList(user, params)  {
         let props = facade.GetMapping(tableType.cpProp).groupOf().records(tableField.cpProp);

@@ -21,12 +21,8 @@ class gamegoldHelper extends facade.Service
     /**
      * 将连接器设置为长连模式，同时完成登录、消息订阅等操作
      */
-    setlongpoll(subscribe) {
-        this.remote.setmode(this.remote.CommMode.ws, async ()=>{
-            if(typeof subscribe == 'function') {
-                await subscribe(this);
-            }
-        });
+    setlongpoll() {
+        this.remote.setmode(this.remote.CommMode.ws);
         return this;
     }
 
@@ -47,7 +43,8 @@ class gamegoldHelper extends facade.Service
     }
 
     watch(cb, etype = '0') {
-        this.remote.watch(cb, etype)
+        this.remote.watch(cb, etype);
+        return this;
     }
 
     async orderPay(cid, user_id, sn, price, account) {

@@ -17,13 +17,6 @@ let weChatEntity = new WeChat(wechatcfg.miniBgwAppId, wechatcfg.miniBgwAppSecret
  */
 class wechat extends facade.Control {
     /**
-     * 中间件设置
-     */
-    get middleware() {
-        console.log('wechat middleware');
-        return ['parseParams', 'commonHandle'];
-    }
-    /**
      * 从 微信的 code 初始化出 User 对象，其中包括注册过程。
      * 客户端的调用场景未知
      * @param {*} user 

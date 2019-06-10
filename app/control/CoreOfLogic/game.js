@@ -8,13 +8,6 @@ let tableField = require('../../util/tablefield');
  */
 class game extends facade.Control
 {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     //游戏类别
     async GameCateList(user, params)  {
         //res.json({errcode: 'success', length: rows.length, data: rows});

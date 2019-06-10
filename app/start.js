@@ -32,33 +32,36 @@ facade.boot({
     //设置静态资源映射
     static: [['/client/', './web/client']], 
 }, core => {
-    //单独维护一个到公链的长连接，进行消息监控
-    core.service.monitor.setlongpoll(async (env) =>  {
-        env.remote.watch(msg => {
-            //收到新的道具，或者已有道具发生变更，抛出内部事件, 处理流程定义于 app/events/user/propReceive.js
-            core.notifyEvent('user.propReceive', {data:msg});
-        }, 'prop/receive');
+    if(core.service.monitor.events) {
+        //单独维护一个到公链的长连接，进行消息监控
+        core.service.monitor.events.on('onConnect', async (env) =>  {
+            env.remote.watch(msg => {
+                //收到新的道具，或者已有道具发生变更，抛出内部事件, 处理流程定义于 app/events/user/propReceive.js
+                core.notifyEvent('user.propReceive', {data:msg});
+            }, 'prop/receive');
 
-        env.remote.watch(msg => {
-            //收到发布的道具被成功拍卖后的通知，抛出内部事件, 处理流程定义于 app/events/user/propAuction.js
-            core.notifyEvent('user.propAuction', {data:msg});
-        }, 'prop/auction');
+            env.remote.watch(msg => {
+                //收到发布的道具被成功拍卖后的通知，抛出内部事件, 处理流程定义于 app/events/user/propAuction.js
+                core.notifyEvent('user.propAuction', {data:msg});
+            }, 'prop/auction');
 
-        env.remote.watch(msg => {
-            //收到通告，抛出内部事件, 处理流程定义于 app/events/user/receiveNotify.js
-            core.notifyEvent('user.receiveNotify', {data:msg});
-        }, 'notify/receive');
+            env.remote.watch(msg => {
+                //收到通告，抛出内部事件, 处理流程定义于 app/events/user/receiveNotify.js
+                core.notifyEvent('user.receiveNotify', {data:msg});
+            }, 'notify/receive');
 
-        env.remote.watch(msg => {
-            //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/user/balanceChange.js
-            core.notifyEvent('user.balanceChange', {data:msg});
-        }, 'balance.account.client');
+            env.remote.watch(msg => {
+                //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/user/balanceChange.js
+                core.notifyEvent('user.balanceChange', {data:msg});
+            }, 'balance.account.client');
 
-        env.remote.watch(msg => {
-            //用户执行 order.pay 之后，CP特约节点发起到账通知消息，抛出内部事件, 处理流程定义于 app/events/user/orderPay.js
-            core.notifyEvent('user.orderPay', {data:msg});
-        }, 'order.pay');
-    })
+            env.remote.watch(msg => {
+                //用户执行 order.pay 之后，CP特约节点发起到账通知消息，抛出内部事件, 处理流程定义于 app/events/user/orderPay.js
+                core.notifyEvent('user.orderPay', {data:msg});
+            }, 'order.pay');
+        })
+    }
+    core.service.monitor.setlongpoll();
 
     core.service.monitor.execute('block.tips', []).then( async (ret) => {
         await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(500);

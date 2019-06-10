@@ -9,13 +9,6 @@ let tableType = require('../../util/tabletype');
 class userbase extends facade.Control
 {
     /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
-    /**
      * 列表
      * @param {*} user 
      * @param {*} objData 
