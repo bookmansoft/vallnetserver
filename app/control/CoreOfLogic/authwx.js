@@ -1,17 +1,20 @@
 let facade = require('gamecloud')
-let {DomainType, ReturnCode} = facade.const
-let {now, ms, sign} = facade.util
+let {now, sign} = facade.util
 
 //为短信、邮箱验证提供签名缓存
 let signMap = new Map();
 //提供一个短信验证码模拟查询地址
 let keyMap = new Map();
-
 /**
  * 自定义认证接口
  */
-class auth extends facade.Control
+class authwx extends facade.Control
 {
+    constructor(parent) {
+        super(parent);
+        this.domain = 'authwx';
+    }
+
     /**
      * 自定义路由
      */
@@ -24,7 +27,7 @@ class auth extends facade.Control
      */
     get router() {
         return [
-            ['/authwx', 'auth'],        //定义发放签名功能的路由、函数名
+            [`/${this.domain}`, 'auth'],        //定义发放签名功能的路由、函数名
         ];
     }
 
@@ -43,9 +46,9 @@ class auth extends facade.Control
             is_tourist: 1,                          //是否为游客
         };
         //生成签名字段        
-        let $sign = sign(ret, this.parent.options[DomainType.D360].game_secret);
+        let $sign = sign(ret, this.parent.options[this.domain].game_secret);
         //用签名字段生成6位数字键
-        $sign = facade.current.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000;
+        $sign = this.parent.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000;
         //放入缓存表
         signMap.set($sign, ret);
         keyMap.set(objData.id, $sign);
@@ -61,7 +64,7 @@ class auth extends facade.Control
      * @param {*} objData 
      */
     async getKey(user, objData) {
-        if(!facade.current.options.debug) {
+        if(!this.parent.options.debug) {
             throw new Error('authThirdPartFailed');
         }
 
@@ -94,4 +97,4 @@ class auth extends facade.Control
     }
 }
 
-exports = module.exports = auth;
+exports = module.exports = authwx;

@@ -120,14 +120,6 @@ let config = {
                     "host": "127.0.0.1",
                     "port": 9901
                 },
-                "auth": {
-                    "openid": "18681223392",
-                    "openkey": "",
-                    "domain": "official",
-                    "tokenExp": 600,
-                    "sessionExp": 7200,
-                    "pf": "wanba_ts"
-                },
                 "admin":{
                     "role":{
                         "default": "chick.server",
@@ -144,7 +136,7 @@ let config = {
                     "openApiUrl": "https://api.urlshare.cn",
                     "openApiUrlWithPay":"https://api.urlshare.cn"
                 },
-                "360":{
+                "authwx":{
                     "appid":"203500811",
                     "game_key": "",
                     "game_secret": ""

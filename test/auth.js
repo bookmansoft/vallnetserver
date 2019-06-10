@@ -1,67 +1,78 @@
 /**
- * 单元测试：注册登录、简单应答、推送
- * Creted by liub 2017.3.24
+ * 联机单元测试：本地全节点提供运行时环境
  */
 
-const {gameconn, connector} = require('./util')
-const assert = require('assert')
+//引入连接游戏云的远程连接器
+const {gameconn} = require('gamerpc')
 
-let a = `${Math.random()*1000000000 | 0}`;
-let b = `${Math.random()*1000000000 | 0}`;
+//创建连接器对象
+let remote = new gameconn({
+    "UrlHead": "http",              //协议选择: http/https
+    "webserver": { 
+        //注意：如果需要负载均衡，这里一般指定负载均衡服务器地址，否则直接填写业务主机地址
+        "host": "127.0.0.1",        //远程主机地址
+        "port": 9901                //远程主机端口
+    },
+}).setFetch(require('node-fetch')); //设置node环境下兼容的fetch函数
 
-//一组单元测试流程
-describe.only('认证', function() {
-    /**
-     * 一个单元测试流程，可使用 .skip .only 修饰
-     * 和负载均衡相关的单元测试，首先连接9901端口，发送config.getServerInfo请求，携带 "stype":"IOS", "oemInfo":{"openid":'helloworl'} 等参数，返回值：data.newbie:是否新注册用户 data.ip:服务器IP, data.port:服务器端口号
-     */
-    it.only('注册登录, 简单应答 - 自动负载均衡', /*单元测试的标题*/
-        async () => { /*单元测试的函数体，书写测试流程*/
-            connector.setUserInfo({
-                domain: 'wx', 
-                openid: b,
-                openkey: b,
-            });
+async function execute(params) {
+    if(!remote.status.check(remote.CommStatus.logined)) {
+        await remote.login();
+    }
 
-            connector.setmode(gameconn.CommMode.ws);
+    //此处只是模拟用户输入验证码的流程，实际运用中，当用户提交验证码时应立即触发 authcode 事件
+    while (remote.loginMode.check(remote.CommStatus.reqSign) && !remote.status.check(remote.CommStatus.signCode)) {
+        //查询短信验证码，该接口仅供测试
+        let msg = await remote.fetching({func:`${remote.userInfo.domain}.getKey`, id: remote.userInfo.openid});
 
-            if(!(await connector.setLB())) {
-                throw(new Error('lbs error'));
-            }
+        //使用事件驱动登录
+        remote.events.emit('authcode', msg.code);
+        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+    }
 
-            let msg = await connector.fetching({func: "test.echo"}); //所有的控制器都拥有echo方法
-            assert(connector.isSuccess(msg, true));
+    //执行业务流程
+    let msg = await remote.fetching(params);
+    remote.isSuccess(msg, true);
+}
+
+describe.only('游戏云基本连接测试', () => {
+    it('event', async () => {
+        async function onConnect() {
+            await remote.login();
         }
-    );
 
-    /**
-     * 服务端需要在控制器 CoreOfLogic/test 中添加 notify 方法，并书写如下代码：
-     *   async notify(user, objData) {
-     *       let friend = facade.GetObject(EntityType.User, `${user.domain}.${objData.id}`, IndexType.Domain);
-     *       setTimeout(() => {
-     *           friend.notify({type: NotifyType.test, info:`来自${user.domainId}的好消息`}); //下行通知
-     *       }, 100)
-     *       
-     *       return {code: ReturnCode.Success};
-     *   }
-     */
-    it('用户A、B分别登录，A向B推送消息，B收到消息', async () => {
-        connector.watch(msg => {
-            console.log('收到消息:', msg);
-        }, gameconn.NotifyType.test);
-
-        let connectorOther = connector.new.setFetch(require('node-fetch'));
-        connectorOther.setUserInfo({
-            domain: 'wx', 
-            openid: a,
-            openkey: a,
-        });
-        connectorOther.setmode(gameconn.CommMode.ws);
-        if(!(await connectorOther.setLB())) {
-            throw(new Error('lbs error'));
+        for(let i = 0; i < 1000; i++) {
+            remote.events.on('onConnect', onConnect);
+            remote.events.removeListener('onConnect', onConnect);
         }
-        await connectorOther.fetching({func: "test.notify", id: b});
+    });
 
-        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(500);
+    it('短连接注册并登录 - 自动负载均衡', async () => {
+        //设置用户基本信息
+        remote.setUserInfo({
+            domain: 'authwx',
+            openid: `${Math.random()*1000000000 | 0}`,
+            openkey: '',
+        }, remote.CommStatus.reqLb | remote.CommStatus.reqSign);
+
+        for(let i = 0; i < 10; i++) {
+            await execute({func: "test.echo"});
+        }
+    });
+
+    it('长连接注册并登录 - 自动负载均衡', async () => {
+        //设置用户基本信息
+        remote.setUserInfo({
+            domain: 'authwx',
+            openid: `${Math.random()*1000000000 | 0}`,
+            openkey: '',
+        }, remote.CommStatus.reqLb | remote.CommStatus.reqSign);
+
+        //设置为长连模式
+        remote.setmode(remote.CommMode.ws);
+
+        for(let i = 0; i < 10; i++) {
+            await execute({func: "test.echo"});
+        }
     });
 });

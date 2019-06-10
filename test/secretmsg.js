@@ -4,7 +4,7 @@
  */
 
 const assert = require('./assert')
-const {connector, conn, gameconn} = require('./util');
+const {connector} = require('./util');
 
 class User 
 {
@@ -18,12 +18,12 @@ class User
         this.conn = connector;
         this.conn.watch(async packet => {
             await echo(this, packet);
-        }, gameconn.NotifyType.test);
+        }, connector.NotifyType.test);
     }
 
     async initComm() {
         this.conn.events.on('onConnect', status => {});
-        this.conn.setmode(gameconn.CommMode.ws);
+        this.conn.setmode(connector.CommMode.ws);
         this.conn.setUserInfo({
             domain: 'wx', 
             openid: this.id,
@@ -43,7 +43,7 @@ class User
         if(typeof priv == 'string') {
             priv = Buffer.from(priv, 'hex');
         }
-        this.secret = new conn.Secret({privateKey: priv});
+        this.secret = new connector.Secret({privateKey: priv});
         this.initPac = this.secret.toEncinit();
 
         //监听收到的秘密
