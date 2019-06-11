@@ -17,7 +17,7 @@ async function handle(sofar) {
             sofar.socket.user = await facade.GetObject(EntityType.User, sofar.msg.oemInfo.token, IndexType.Token);
         }
         
-        if (!sofar.socket.user || sofar.msg.func == "login"/*如果是login则强制重新验证*/) {
+        if (!sofar.socket.user || sofar.msg.func == "login" || sofar.msg.func == "1000"/*如果是login则强制重新验证*/) {
             //针对各类第三方平台，执行一些必要的验证流程：
             switch(GetDomainType(sofar.msg.oemInfo.domain)) {
                 default: {
