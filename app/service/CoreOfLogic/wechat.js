@@ -378,9 +378,11 @@ class weChat {
      */
     async ensureAccessToken() {
         var token = await this.getToken();
-        var accessToken;
-        if (token && (accessToken = new AccessToken(token.accessToken, token.expireTime)).isValid()) {
-            return accessToken;
+        if (token) {
+            let accessToken = new AccessToken(token.accessToken, token.expireTime)
+            if(accessToken.isValid()) {
+                return accessToken;
+            }
         } else if (this.tokenFromCustom) {
             let err = new Error('accessToken Error');
             err.name = 'WeChatAPIError';
@@ -598,4 +600,6 @@ class weChat {
     }
 }
 
-module.exports = weChat;
+let wechatObj = new weChat(wechatcfg.miniBgwAppId, wechatcfg.miniBgwAppSecret);
+
+module.exports = wechatObj;

@@ -1,9 +1,6 @@
 let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
-let WeChat = require('../../util/wechat')
-let weChatEntity = new WeChat();
-let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 const stringRandom = require('string-random');
 
 /**
@@ -139,7 +136,7 @@ class manage extends facade.Control
 
             let total_amount = amount
             let total_num = 1
-            let ret = await weChatEntity.sendRedPacket(total_amount, total_num, openid, redPackConfig)
+            let ret = await this.parent.service.wechat.sendRedPacket(total_amount, total_num, openid, redPackConfig)
             let redpackItem = {
                 user_redpack_id
                 uid
