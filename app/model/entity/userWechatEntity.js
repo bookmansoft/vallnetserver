@@ -13,7 +13,7 @@ class userWechatEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.userWechat,                     //表类型
+            etype: tableType.userWechat,     //表类型
             model: UserWechat,               //表映射类
             entity: userWechatEntity,        //ORM映射类
         };

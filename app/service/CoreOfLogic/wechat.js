@@ -514,14 +514,12 @@ class weChat {
     }
 
     /**
-     * {旧的注释： 获取公众号}
      * 通过code换取网页授权 access_token
-     * { access_token: '22_SP-1b2RjMK-AOjc8vMYoXBq0My52i
-            Yr6g-1Oc9y9uFkfI6AEQ_eiJSh5Oo-HKX_XJ7hgr7P4CVBxXSPVhWWrQg',
+     * { access_token: '22_SP-1b2RjMK-AOjc8vMYoXBq0My52iYr6g-1Oc9y9uFkfI6AEQ_eiJSh5Oo-HKX_XJ7hgr7P4CVBxXSPVhWWrQg' }
      * @param {*} code 
      * @param {*} callback 
      */
-    async getMapOpenIdByCode(code, appId, AppSecret) {
+    async getOpenidByCode(code, appId, AppSecret) {
         console.log("wechat.js 47:",code,appId,AppSecret);
         let options = {
             uri: `https://api.weixin.qq.com/sns/oauth2/access_token`,

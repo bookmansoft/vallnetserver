@@ -1,12 +1,9 @@
 let facade = require('gamecloud')
-let {now, sign} = facade.util
 
-//为短信、邮箱验证提供签名缓存
-let signMap = new Map();
-//提供一个短信验证码模拟查询地址
-let keyMap = new Map();
+let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
+
 /**
- * 自定义认证接口
+ * 自定义认证接口 - 微信专用
  */
 class authwx extends facade.Control
 {
@@ -32,69 +29,85 @@ class authwx extends facade.Control
     }
 
     /**
-     * 生成签名，放入哈希表，将哈希键通过短信或者邮箱发送给用户，用户填入openkey字段，连同openid一并提交验证
-     * @param {*} objData 
-     */
-    async auth(objData) {
-        //objData.id 就是 openid
-        let ret = {
-            t: now(),                               //当前时间戳，游戏方必须验证时间戳，暂定有效 期为当前时间前后 5 分钟
-            nonce: Math.random()*1000 | 0,          //随机数
-            plat_user_id: objData.id,               //平台用户 ID
-            nickname: objData.id,                   //用户昵称
-            avatar: objData.id,                     //头像
-            is_tourist: 1,                          //是否为游客
-        };
-        //生成签名字段        
-        let $sign = sign(ret, this.parent.options[this.domain].game_secret);
-        //用签名字段生成6位数字键
-        $sign = this.parent.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000;
-        //放入缓存表
-        signMap.set($sign, ret);
-        keyMap.set(objData.id, $sign);
-
-        //todo 通过短信发送，暂时屏显代替
-        console.log($sign);
-
-        return ret;
-    }
-
-    /**
-     * 查询短信验证码，注意只是测试阶段开放
-     * @param {*} objData 
-     */
-    async getKey(user, objData) {
-        if(!this.parent.options.debug) {
-            throw new Error('authThirdPartFailed');
-        }
-
-        if(keyMap.has(objData.id)) {
-            return {code:keyMap.get(objData.id)};
-        } else {
-            return {code:0};
-        }
-    }
-
-    /**
      * 验签函数，约定函数名为 check
      * @param {*} user 
      * @param {*} oemInfo 
      */
     async check(oemInfo) {
-        if(!signMap.has(oemInfo.openkey)) {
-            throw new Error('authThirdPartFailed');
-        }
+        let ret = await this.parent.service.wechat.getOpenidByCode(oemInfo.openkey, wechatcfg.appid, wechatcfg.secret);
+        let usr = await this.parent.service.wechat.getMapUserInfo(ret.access_token, ret.openid);
 
-        let item = signMap.get(oemInfo.openkey);
-
-        let _sign = (item.plat_user_id == oemInfo.openid);
-        let _exp = (Math.abs(oemInfo.auth.t - now()) <= 300);
-        if (!_sign || !_exp) {
-            throw new Error('authThirdPartFailed');
-        }
-
-        return oemInfo.auth.plat_user_id; //通过验证后，返回平台用户ID
+        await facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
+        return ret.openid; //通过验证后，返回平台用户ID
     }
+
+    async regUserFromWechat(openid, userProfile) {
+        console.log('userhelp.js 77 创建新用户',userProfile);
+        let random = new randomHelp();
+        let user_name = random.randomString(4) + "_" + random.randomNum(4);
+        let auth_key = crypto.createHash('md5').update(user_name + "_" + random.randomNum(4)).digest("hex");
+
+        let created_at = new Date().getTime();
+        let userBaseItem = {
+            user_name: user_name,
+            auth_key: auth_key,
+            password_hash: auth_key,
+            remember_token: random.randomString(32),
+            openid: openid,
+            flags: 1,
+            user_type: 2,
+            created_at: created_at
+        };
+        let newUserBase = await facade.GetMapping(tableType.userBase).Create(userBaseItem);
+        if(!!newUserBase) {
+            //微信openid与用户对应表
+            let uid = newUserBase.orm.id 
+            let userWechatItem = {
+                uid: uid,
+                openid: openid,
+                ntype: newUserBase.orm.user_type,
+                first_time: created_at,
+                last_time: created_at
+            };
+            facade.GetMapping(tableType.userWechat).Create(userWechatItem);
+            console.log("userhelp.js 104 保存user_wechat表完成");
+
+            let ret = await facade.current.service.gamegoldHelper.execute('token.user', ['first-acc-01', uid, null, uid]);
+            let block_addr = (!!ret && ret.hasOwnProperty("data")) ? ret.data.addr : '';
+
+            //添加用户个人信息
+            let userProfileItem = null
+            if(userProfile == null) {
+                userProfileItem = {
+                    id: uid,
+                    uid: uid,
+                    nick: user_name,
+                    gender: '1',
+                    block_addr: block_addr,
+                    avatar_uri: './static/img/icon/mine_no.png'
+                };
+            } else {
+                userProfileItem = {
+                    id: uid,
+                    uid: uid,
+                    nick: userProfile.nickname,
+                    gender: userProfile.sex,
+                    country: userProfile.country,
+                    province: userProfile.province,
+                    city: userProfile.city,
+                    avatar_uri: userProfile.headimgurl,
+                    block_addr: block_addr,
+                    prop_count: 0,
+                    current_prop_count: 0,
+                };
+            }
+            console.log("userhelp.js 135 保存user_profile表开始",userProfileItem);
+            await facade.GetMapping(tableType.userProfile).Create(userProfileItem);
+            console.log("userhelp.js 135 保存user_profile表完成");
+            return uid;
+        }
+        return 0
+    }    
 }
 
 exports = module.exports = authwx;
