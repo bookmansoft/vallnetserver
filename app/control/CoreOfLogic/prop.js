@@ -38,21 +38,16 @@ class prop extends facade.Control
 
     //道具数量
     async PropCount(user, params) {
-        let uid = params.uid;
+        let uid = user.id;
         let ret = await facade.current.service.gamegoldHelper.execute('prop.list', [1, uid]);
-        let userProfiles = facade.GetMapping(tableType.userProfile).groupOf().where([['uid', '==', uid]]).records();
-        if(userProfiles.length >0 ) {
-            let userProfile = userProfiles[0];
-            userProfile.setAttr('prop_count', userProfile.orm.current_prop_count);
-            userProfile.orm.save();
-        }
+        user.baseMgr.info.setAttr('prop_count', ret.result.count);
         return {errcode: 'success', errmsg: 'prop.count:ok', count: ret.result.count};
     }
 
     //我的道具
     async PropList(user, params) {
         let page = params.page;
-        let uid = params.uid;
+        let uid = user.id;
         let ret = await facade.current.service.gamegoldHelper.execute('prop.list', [
             page, //游戏编号
             uid //openid
@@ -90,7 +85,7 @@ class prop extends facade.Control
         let txid = facade.current.service.gamegoldHelper.revHex(params.txid);
         let pid = params.pid;
         let index = params.index;
-        let uid = params.uid;
+        let uid = user.id;
         /*
         let ret = await facade.current.service.gamegoldHelper.execute('prop.donate', [
             txid,
@@ -114,7 +109,7 @@ class prop extends facade.Control
     //prop.receive raw [openid]
     async PropReceive(user, params) {
         let raw = params.raw;
-        let uid = params.uid;
+        let uid = user.id;
         let ret = await facade.current.service.gamegoldHelper.execute('prop.receive', [
             raw, 
             uid,
@@ -128,7 +123,7 @@ class prop extends facade.Control
     async PropSend(user, params) {
         let addr = params.addr;
         let pid = params.pid;
-        let uid = params.uid;
+        let uid = user.id;
         let ret = await facade.current.service.gamegoldHelper.execute('prop.send', [
             addr, 
             pid,
@@ -143,7 +138,7 @@ class prop extends facade.Control
     async PropSale(user, params) {
         let pid = params.pid;
         let fixedPrice = params.fixedPrice;
-        let uid = params.uid;
+        let uid = user.id;
         let ret = await facade.current.service.gamegoldHelper.execute('prop.sale', [
             pid,
             fixedPrice,
@@ -165,7 +160,7 @@ class prop extends facade.Control
     async PropBuy(user, params) {
         let pid = params.pid;
         let price = params.price;
-        let uid = params.uid;
+        let uid = user.id;
         let ret = await facade.current.service.gamegoldHelper.execute('prop.buy', [
             pid,
             price,

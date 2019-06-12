@@ -1,6 +1,7 @@
 let facade = require('gamecloud')
 let {MiddlewareParam, ReturnCode, EntityType, IndexType, UserStatus, DomainType, GetDomainType,RecordType} = facade.const
 let CommonFunc = facade.util
+let {extendObj} = require('../util/util')
 
 /**
  * 用户认证鉴权中间件
@@ -9,8 +10,6 @@ let CommonFunc = facade.util
  * @description  注意: 该中间件覆盖了系统同名中间件
  */
 async function handle(sofar) {
-    let ret = { ret: 0 };
-
     try {
         //根据令牌进行鉴权
         if(!sofar.socket.user){
@@ -22,7 +21,8 @@ async function handle(sofar) {
             switch(GetDomainType(sofar.msg.oemInfo.domain)) {
                 default: {
                     try {
-                        sofar.msg.oemInfo.openid = await facade.current.control[sofar.msg.oemInfo.domain].check(sofar.msg.oemInfo);
+                        let data = await facade.current.control[sofar.msg.oemInfo.domain].check(sofar.msg.oemInfo);
+                        extendObj(sofar.msg.oemInfo, data);
                         sofar.msg.domainId = `${sofar.msg.oemInfo.domain}.${sofar.msg.oemInfo.openid}`;
                     } catch(e) {
                         sofar.fn({ code: ReturnCode.authThirdPartFailed });
@@ -47,21 +47,11 @@ async function handle(sofar) {
                     sofar.facade.notifyEvent('socket.userKick', {sid:usr.socket});
                 }
             }
-            else if (!!sofar.msg.oemInfo.openid) {//	新玩家注册
-                //sofar.msg.func = 'login'; //强制登录
-                let name;
-                if(!!sofar.msg.userinfo){
-                    name = sofar.msg.userinfo.nick;
-                }else{
-                    name = '猴子' + facade.util.rand(10000, 99999);	  //随机名称
-                }
+            else {//新玩家注册
                 let appId = '';												    //应用ID    
                 let serverId = '';												//服务器ID
 
                 let oemInfo = sofar.msg.oemInfo;
-                // if (oemInfo.userName) {
-                //     name = oemInfo.userName;
-                // }
                 if (oemInfo.appId) {
                     appId = oemInfo.appId;
                 }
@@ -69,27 +59,26 @@ async function handle(sofar) {
                     serverId = oemInfo.serverId;
                 }
 
-                usr = await facade.GetMapping(EntityType.User).Create(name, oemInfo.domain, oemInfo.openid);
+                let profile = await facade.current.control[sofar.msg.oemInfo.domain].getProfile(oemInfo);
+                usr = await facade.GetMapping(EntityType.User).Create(profile.nickname, oemInfo.domain, oemInfo.openid);
                 if (!!usr) {
                     usr.socket = sofar.socket; //更新通讯句柄
                     usr.userip = sofar.msg.userip;
                     sofar.socket.user = usr;
 
                     //写入账号信息
-                    usr.WriteUserInfo(appId, serverId, CommonFunc.now(), sofar.msg.oemInfo.token);
+                    usr.WriteUserInfo(appId, serverId, CommonFunc.now(), oemInfo.token);
+                    
+                    Object.keys(profile).map(key=>{
+                        usr.baseMgr.info.setAttr(key, profile[key]);
+                    });
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
                     sofar.facade.notifyEvent('user.afterRegister', {user:usr});
                 }
             }
 
             if (!!usr) {
-                if(sofar.facade.options.debug){//模拟填充测试数据/用户头像信息
-                    ret.figureurl = facade.config.fileMap.DataConst.user.icon;
-                }
                 sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});//发送"登录后"事件
-                if(usr.domainType == DomainType.TX) { //设置腾讯会员属性
-                    await usr.SetTxInfo(ret); //异步执行，因为涉及到了QQ头像的CDN地址转换
-                }
                 usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌
                 usr.time = CommonFunc.now();                //记录标识令牌有效期的时间戳
                 facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token); //添加一定有效期的令牌类型的反向索引
@@ -108,7 +97,7 @@ async function handle(sofar) {
     }
     catch (e) {
         console.log(e);
-        sofar.fn({ code: ReturnCode.illegalData, data: ret });
+        sofar.fn({ code: ReturnCode.illegalData });
         sofar.recy = false;
     }
 }

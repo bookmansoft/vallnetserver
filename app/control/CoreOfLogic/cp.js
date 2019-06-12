@@ -118,7 +118,7 @@ class cp extends facade.Control
             ]).records();
             if(userWallet.length == 0) {
                 let userWalletItem = {
-                    uid: params.uid,
+                    uid: user.id,
                     cid: params.cid,
                     addr: addr,
                     user_id: params.user_id,

@@ -4,8 +4,8 @@ const axios = require('axios')
 const xml2js = require('xml2js')
 const xmlParser = new xml2js.Parser()
 
-let cache = require('./memcache')
-let {md5, sha1} = require('./encrtyto')
+let cache = require('../../util/memcache')
+let {md5, sha1} = require('../../util/encrtyto')
 
 let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 
@@ -281,7 +281,8 @@ class AccessToken {
     }
 }
   
-class weChat {
+class weChat extends facade.Service
+{
     /**
      * 根据 appid 和 appsecret 创建API的构造函数
      * 如需跨进程跨机器进行操作Wechat API（依赖access token），access token需要进行全局维护
@@ -308,14 +309,14 @@ class weChat {
      *   await fs.writeFile('access_token.txt', JSON.stringify(token));
      * });
      * ```
-     * @param {String} appid 在公众平台上申请得到的appid
-     * @param {String} appsecret 在公众平台上申请得到的app secret
      * @param {AsyncFunction} getToken 可选的。获取全局token对象的方法，多进程模式部署时需在意
      * @param {AsyncFunction} saveToken 可选的。保存全局token对象的方法，多进程模式部署时需在意
      */
-    constructor(appid, appsecret, getToken, saveToken, tokenFromCustom) {
-        this.appid = appid;
-        this.appsecret = appsecret;
+    constructor(parent, getToken, saveToken, tokenFromCustom) {
+        super(parent);
+
+        this.appid = wechatcfg.miniBgwAppId;
+        this.appsecret = wechatcfg.miniBgwAppSecret;
         this.getToken = getToken || async function () {
             return this.store;
         };
@@ -390,32 +391,6 @@ class weChat {
             throw err;
         }
         return this.getAccessToken();
-    }
-
-    decryptData(appId, sessionKey, encryptedData, iv) {
-        // base64 decode
-        let _sessionKey = new Buffer(sessionKey, 'base64');
-        encryptedData = new Buffer(encryptedData, 'base64');
-        iv = new Buffer(iv, 'base64');
-      
-        try {
-           // 解密
-          var decipher = crypto.createDecipheriv('aes-128-cbc', _sessionKey, iv)
-          // 设置自动 padding 为 true，删除填充补位
-          decipher.setAutoPadding(true)
-          var decoded = decipher.update(encryptedData, 'binary', 'utf8')
-          decoded += decipher.final('utf8')
-          
-          decoded = JSON.parse(decoded)
-        } catch (err) {
-          throw new Error('Illegal Buffer')
-        }
-      
-        if (decoded.watermark.appid !== appId) {
-          throw new Error('Illegal Buffer')
-        }
-      
-        return decoded;
     }
 
     async unifiedOrder(appId, openId, ip, price, productIntro, tradeId) {
@@ -550,6 +525,11 @@ class weChat {
      * @param {*} openid 
      */
     async getMapUserInfo(access_token, openid) {
+        //如下地址中，ACCESS_TOKEN为服务端令牌
+        //https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
+        //如下地址中，ACCESS_TOKEN为客户端用户令牌
+        //https://api.weixin.qq.com/sns/userinfo
+
         let options = {
             uri: `https://api.weixin.qq.com/sns/userinfo`,
             json: true,
@@ -598,6 +578,4 @@ class weChat {
     }
 }
 
-let wechatObj = new weChat(wechatcfg.miniBgwAppId, wechatcfg.miniBgwAppSecret);
-
-module.exports = wechatObj;
+module.exports = weChat;

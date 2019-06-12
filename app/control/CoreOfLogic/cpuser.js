@@ -34,7 +34,7 @@ class cpuser extends facade.Control
     //用户登录授权
     async UserTokenNotify(user, params) {
         //let cid = params.cid;
-        let uid = params.uid;
+        let uid = user.id;
         let token = params.token;
         let cpusers = facade.GetMapping(tableType.cpUser).groupOf().where([['id','==',uid]]).records();
         if(cpusers.length >0 ) {

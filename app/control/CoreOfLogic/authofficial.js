@@ -89,7 +89,7 @@ class authofficial extends facade.Control
         if(oemInfo.openkey != User[oemInfo.openid]) {
             throw new Error('authThirdPartFailed');
         }
-        return oemInfo.openid; //通过验证后，返回平台用户ID
+        return {openid: oemInfo.openid}; //通过验证后，返回平台用户ID
     }
 }
 

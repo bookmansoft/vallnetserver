@@ -21,7 +21,7 @@ class comments extends facade.Control
     async GameCommentAdd(user, params)  {
         let current_time = parseInt(new Date().getTime() / 1000)
         let commentItem = {
-            uid: params.uid,
+            uid: user.id,
             cid: params.cid,
             reply_id: params.reply_id,
             nick: params.nick,

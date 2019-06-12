@@ -20,7 +20,7 @@ class manage extends facade.Control
 
     //用户红包汇中
     async UserRedPackAct(user, params) {
-        let uid = params.uid
+        let uid = user.id
         let act_id = params.act_id
         let userRedPactActs = await facade.GetMapping(tableType.userRedPackAct).groupOf()
             .where([
@@ -36,7 +36,7 @@ class manage extends facade.Control
 
     //用户红包记录
     async UserRedPack(user, params) {
-        let uid = params.uid
+        let uid = user.id
         let act_id = params.act_id
         let userRedPacts = await facade.GetMapping(tableType.userRedPack).groupOf()
             .where([
@@ -51,7 +51,7 @@ class manage extends facade.Control
 
     //用户抽中红包
     async UserRedPackAdd(user, params)  {
-        let uid = params.uid
+        let uid = user.id
         let act_id = params.act_id
         let act_name = params.act_name
         let gamegold = params.gamegold
@@ -106,7 +106,7 @@ class manage extends facade.Control
     //用户红包发送
     async UserRedPackSend(user, params)  {
         let id = params.id
-        let uid = params.uid
+        let uid = user.id
         let act_id = params.act_id
         let openid = params.openid
         let userRedPact = facade.GetObject(tableType.userRedPack, id);     //根据上行id查找userRedPact表中记录

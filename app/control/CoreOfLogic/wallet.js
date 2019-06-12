@@ -31,7 +31,7 @@ class wallet extends facade.Control
     async TxSend(user, params) {
         let addr = params.addr;
         let amount = params.amount;
-        let uid = params.uid;
+        let uid = user.id;
         let ret = await facade.current.service.gamegoldHelper.execute('tx.send', [
             addr,
             amount,
@@ -48,7 +48,7 @@ class wallet extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
      async BalanceAll(user, params) {
-        let uid = params.uid;
+        let uid = user.id;
         let ret = await facade.current.service.gamegoldHelper.execute('balance.all', [
             uid //openid
         ]);    
@@ -67,7 +67,7 @@ class wallet extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async TxLogs(user, params) {                      
-        let uid = params.uid;
+        let uid = user.id;
         //let number = 10000;                          
         let ret = await facade.current.service.gamegoldHelper.execute('tx.list', [
             uid, 
@@ -84,7 +84,7 @@ class wallet extends facade.Control
      * @param {*} params 
      */
     async GetNotify(user, params) {
-        let uid = params.uid
+        let uid = user.id
         let ret = await facade.current.service.gamegoldHelper.execute('sys.listNotify', [
             1 
         ]);

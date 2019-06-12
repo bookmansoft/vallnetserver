@@ -35,49 +35,6 @@ let blockGameProvider = [
     'comprehensive_grade'
 ];
 
-let userBase = [
-    'id',
-    'user_name',
-    'password_hash',
-    'auth_key',
-    'registration_ip',
-    'remember_token',
-    'created_at',
-    'updated_at',
-    'blocked_at',
-    'flags',
-    'user_type'
-];
-
-let userProfile = [
-    'id',
-    'uid',
-    'nick',
-    'phone',
-    'email',
-    'gender',
-    'birth',
-    'country',
-    'province',
-    'city',
-    'prop_count',
-    'current_prop_count',
-    'block_addr',
-    'nlevel',
-    'avatar',
-    'ranking',
-    'star_level',
-    'down_count',
-    'game_count',
-    'follow_count',
-    'no_reading_msg_count',
-    'comment_count',
-    'buy_count',
-    'games',
-    'avatar_uri',
-    'desc'
-];
-
 let userWallet = [
     'id',
     'uid',
@@ -333,7 +290,7 @@ let userStockLog = [
 
 exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
-    userBase, userProfile, userWallet, userBaseWechat, redpack, redpackAct,
+    userWallet, userBaseWechat, redpack, redpackAct,
     cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify,
     userRedpack, userRedpackAct, blockGameComment, mobileVerify, stock, userStock, userStockLog
 }

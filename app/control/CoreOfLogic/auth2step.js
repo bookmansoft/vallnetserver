@@ -93,7 +93,7 @@ class authwx extends facade.Control
             throw new Error('authThirdPartFailed');
         }
 
-        return oemInfo.auth.plat_user_id; //通过验证后，返回平台用户ID
+        return {openid: oemInfo.auth.plat_user_id}; //通过验证后，返回平台用户ID
     }
 }
 

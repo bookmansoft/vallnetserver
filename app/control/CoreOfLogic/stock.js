@@ -25,7 +25,7 @@ class stock extends facade.Control
 
     //众筹详情
     async StockSale(user, params) {
-        let uid = params.uid
+        let uid = user.id
         let cid = params.cid
         let price = params.price
         let quantity = params.quantity
@@ -55,7 +55,7 @@ class stock extends facade.Control
 
     //用户众筹记录
     async UserStockLogs(user, params) {
-        let uid = params.uid
+        let uid = user.id
         let cid = params.cid
         let userStockLogs = await facade.GetMapping(tableType.userStockLog).groupOf()
             .where([
@@ -67,7 +67,7 @@ class stock extends facade.Control
 
     //用户众筹记录
     async UserStocks(user, params) {
-        let uid = params.uid
+        let uid = user.id
         let userStockActs = await facade.GetMapping(tableType.userStock).groupOf()
             .where([
                 ['uid', '==', uid]
@@ -85,7 +85,7 @@ class stock extends facade.Control
     }
 
     async StockSend(user, params) {
-        let uid = params.uid
+        let uid = user.id
         let cid = params.cid
         let addr = await userHelp.getAddrFromUserIdAndCid(uid, cid)
         let ret = await facade.current.service.gamegoldHelper.execute('stock.send', [cid, 100, addr, 'alice']);

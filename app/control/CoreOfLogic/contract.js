@@ -23,7 +23,7 @@ class contract extends facade.Control
         let num = params.num;
         let btc = params.btc;
         let addr = params.addr;
-        let uid = params.uid;
+        let uid = user.id;
         let ret = await facade.current.service.gamegoldHelper.execute('contract.create', [
             ntype, num, btc, addr, uid
         ]);
@@ -33,7 +33,7 @@ class contract extends facade.Control
     //签署交易对
     async ContractPromise(user, params) {
         let txid = params.txid;
-        let uid = params.uid;
+        let uid = user.id;
         let ret = await facade.current.service.gamegoldHelper.execute('contract.promise', [
             txid, uid
         ]);

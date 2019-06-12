@@ -197,17 +197,14 @@ class manysend extends facade.Control {
      */
     async Send(user, objData) {
         try {
-            //读取用户表 - todo 20190605 liub 此处原先引用 objData.uid，会导致取到的 userProfile 为空，建议其余地方普查下(疑为 objData.id)
-            let userProfile = facade.GetObject(tableType.userProfile, parseInt(objData.uid));
-            console.log(objData.uid);
             //写发送表 - todo 20190604 liub 这里提示 Field 'send_uid' doesn't have a default value
             let manysend = await facade.GetMapping(tableType.manySend).Create(
                 objData.total_amount,
                 objData.total_amount, //actual_amount等同于输入参数total_amount
                 objData.total_num,
-                objData.uid,
-                userProfile.getAttr("nick"),
-                userProfile.getAttr("avatar_uri"),
+                user.id,
+                user.baseMgr.info.getAttr('nickname'),
+                user.baseMgr.info.getAttr("avatar_uri"),
                 objData.wishing,
                 new Date().getTime()/1000,
                 1,//状态：正常
@@ -243,12 +240,12 @@ class manysend extends facade.Control {
             let retSend = await facade.current.service.gamegoldHelper.execute('tx.send', [
                 ret.result.data.addr,
                 objData.total_amount,
-                String(objData.uid), //转成字符串格式
+                String(user.id), //转成字符串格式
             ]); 
             console.log([
                 ret.result.data.addr,
                 objData.total_amount,
-                String(objData.uid)
+                String(user.id)
             ]);
             console.log(retSend);
             // 接收表
@@ -256,9 +253,9 @@ class manysend extends facade.Control {
                 let manyreceive = await facade.GetMapping(tableType.manyReceive).Create(
                     manysend.ormAttr("id"),
                     receive_amount[i],
-                    objData.uid,
-                    userProfile.getAttr("nick"),
-                    userProfile.getAttr("avatar_uri"),
+                    user.id,
+                    user.baseMgr.info.getAttr("nick"),
+                    user.baseMgr.info.getAttr("avatar_uri"),
                     null,
                     null,
                     null,

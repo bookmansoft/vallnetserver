@@ -12,7 +12,7 @@ class cporder extends facade.Control
     //用户信息
     async PropBuy(user, params)  {
         let prop_id = params.prop_id;
-        let uid = params.uid;
+        let uid = user.id;
         let addr = params.addr;
         let openid = params.openid;
         let cpprops = facade.GetMapping(tableType.cpProp).groupOf().where([['id','==',prop_id]]).records(tableField.cpProp);
@@ -45,7 +45,7 @@ class cporder extends facade.Control
     
     //用户订单
     async OrderList(user, params)  {
-        let uid = params.uid;
+        let uid = user.id;
         let orders = facade.GetMapping(tableType.cpOrder).groupOf().where([['uid','==',uid]]).orderby('create_time', 'desc').records(tableField.cpOrder);
         return {errcode: 'success', errmsg:'orderlist:ok', orders: orders};
     };

@@ -41,7 +41,7 @@ class order extends facade.Control
      * 普通订单下单
      */
     async CommonOrderRepay(user, params) {
-        let uid = params.uid
+        let uid = user.id
         let price = params.price
         let productId = params.productId
         let productIntro = params.productIntro
@@ -68,7 +68,7 @@ class order extends facade.Control
     }
 
     async OrderStatus(user, params) {
-        let uid = params.uid
+        let uid = user.id
         let tradeId = params.tradeId
         let userOrders = facade.GetMapping(tableType.order).groupOf().where([['order_sn', '==', tradeId]]).records();
         if(userOrders.length >0 ) {
@@ -80,7 +80,7 @@ class order extends facade.Control
     }
 
     async OrderPayResutl(user, params) {
-        let uid = params.uid
+        let uid = user.id
         let tradeId = params.tradeId
         let status = params.status
 
