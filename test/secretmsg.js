@@ -10,7 +10,7 @@ class User
 {
     /**
      * 构造函数
-     * @param {*} id            用户编号 unionid
+     * @param {*} id            用户编号
      * @param {*} connector     连接器
      */
     constructor(id, connector) {

@@ -264,7 +264,7 @@ class manyreceive extends facade.Control {
                             //重新单独获取收件表的记录才能更新
                             let receiveData = facade.GetObject(tableType.manyReceive, parseInt(manyreceive.list[i].id));
                             receiveData.setAttr("receive_uid",user.id);
-                            receiveData.setAttr("receive_nickname",user.baseMgr.info.getAttr("nick"));
+                            receiveData.setAttr("receive_nickname",user.baseMgr.info.getAttr("nickname"));
                             receiveData.setAttr("receive_headimg",user.baseMgr.info.getAttr("avatar_uri"));
                             receiveData.setAttr("modify_date",new Date().getTime()/1000);
                             receiveData.Save();

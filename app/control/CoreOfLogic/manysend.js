@@ -254,7 +254,7 @@ class manysend extends facade.Control {
                     manysend.ormAttr("id"),
                     receive_amount[i],
                     user.id,
-                    user.baseMgr.info.getAttr("nick"),
+                    user.baseMgr.info.getAttr("nickname"),
                     user.baseMgr.info.getAttr("avatar_uri"),
                     null,
                     null,

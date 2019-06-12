@@ -76,16 +76,6 @@ let userProp = [
     'cp_ip'
 ];
 
-let userBaseWechat = [
-    'id',
-    'openid',
-    'ntype',
-    'uid',
-    'unionid',
-    'first_time',
-    'last_time'
-];
-
 let cpUser = [
     'id',
     'openid',
@@ -290,7 +280,7 @@ let userStockLog = [
 
 exports = module.exports = tableField = {
     blockGame, blockGameCate, blockGameProp, blockGameProvider,
-    userWallet, userBaseWechat, redpack, redpackAct,
+    userWallet, redpack, redpackAct,
     cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify,
     userRedpack, userRedpackAct, blockGameComment, mobileVerify, stock, userStock, userStockLog
 }

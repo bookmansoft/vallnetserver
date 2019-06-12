@@ -13,22 +13,38 @@ class info extends baseMgr
         //	数据
         this.v 				= {
             name: "",
-            //	邀请码
-            invCode		: '',
             //	头像
-            headIcon	: 0,
-            //	文化值 (公司等级)
+            avatar_uri	: 0,
+            //	等级
             level		: 0,
             //	体力
-            ap 			: 15,
+            ap 			: facade.config.fileMap.DataConst.action.init,
             //	金钱
             money		: facade.config.fileMap.DataConst.threshold.moneyOfInit,
+            //  钻石
             diamond		: 0,
-
-            date: '',     //刷新日期，用于每日任务
+            //刷新日期，用于每日任务
+            date: '',     
 			//用户复合状态字段
-			status						: 0,
+			status		: 0,
         };
+    }
+
+    /**
+     * 设置属性
+     * @param {*} key 
+     * @param {*} value 
+     */
+    setAttr(key, value) {
+        this.v[key] = value;
+        this.dirty = true;
+    }
+
+    /**
+     * 查询属性
+     */
+    getAttr(key) {
+        return this.v[key];
     }
 
     /**
@@ -38,15 +54,10 @@ class info extends baseMgr
         return JSON.stringify(this.v);
     }
 
-    setAttr(key, value) {
-        this.v[key] = value;
-        this.dirty = true;
-    }
-
-    getAttr(key) {
-        return this.v[key];
-    }
-
+    /**
+     * 从数据库载入数据
+     * @param {*} val 
+     */
     LoadData(val){
         try{
             this.v = (!val||val == "" ) ? {} : JSON.parse(val);
@@ -64,8 +75,7 @@ class info extends baseMgr
                 "id": this.parent.id,
                 "domain": this.parent.domain,
                 "uuid": this.parent.uuid,
-                "invCode": "",
-                "headIcon": "",
+                "avatar_uri": "",
                 "level": 0,
                 "ap": facade.config.fileMap.DataConst.action.init,
                 "money": facade.config.fileMap.DataConst.threshold.moneyOfInit,
@@ -116,6 +126,7 @@ class info extends baseMgr
             }
         }
     }
+
 	UnsetStatus(val, send=true){
         let ns = facade.tools.Indicator.inst(this.v.status).unSet(val).value;
         if(this.v.status != ns){
@@ -144,73 +155,14 @@ class info extends baseMgr
             }
         }
     }
+
     CheckStatus(val){
     	return facade.tools.Indicator.inst(this.v.status).check(val);
     }
+
     GetStatus(){
         return this.v.status;
     }
-
-    get role(){
-        return this.GetRecord(RecordType.Role);
-    }
-    set role(val){
-        this.SetRecord(RecordType.Role, parseInt(val));
-
-        //角色形象发生变化
-        this.parent.router.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'role', value:this.GetRecord(RecordType.Role)}});
-    }
-    get scene(){
-        return this.GetRecord(RecordType.Scene);
-    }
-    set scene(val){
-        this.SetRecord(RecordType.Scene, parseInt(val))
-    }
-    get road(){
-        return this.GetRecord(RecordType.Road);
-    }
-    set road(val){
-        this.SetRecord(RecordType.Road, parseInt(val))
-    }
-    get address(){
-        return this.GetRecord(RecordType.address);
-    }
-    set address(val){
-        this.SetRecord(RecordType.address,val);
-    }
-
-    /**
-     * 是否机器人
-     * @returns {boolean}
-     */
-    getRobot(){
-        return (this.v.robot == null) ? false : this.v.robot;
-    }
-    /**
-     * 设置为机器人
-     */
-    setRobot(){
-        this.v.robot = true;
-        this.dirty = true;
-    }
-
-    //	设置邀请码
-    SetInvCode (invCode) {
-		this.v.invCode = invCode;
-	};
-    //	获取邀请码
-    GetInvCode () {
-		return this.v.invCode;
-	};
-    //	设置头像
-    SetHeadIcon (headIcon) {
-		this.v.headIcon = headIcon;
-		this.dirty = true;
-	};
-    //	获取头像
-    GetHeadIcon() {
-		return this.v.headIcon;
-	};
 }
 
 exports = module.exports = info;

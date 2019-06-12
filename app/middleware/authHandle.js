@@ -18,12 +18,18 @@ async function handle(sofar) {
         
         if (!sofar.socket.user || sofar.msg.func == "login" || sofar.msg.func == "1000"/*如果是login则强制重新验证*/) {
             //针对各类第三方平台，执行一些必要的验证流程：
+            let unionid = '';
             switch(GetDomainType(sofar.msg.oemInfo.domain)) {
                 default: {
                     try {
                         let data = await facade.current.control[sofar.msg.oemInfo.domain].check(sofar.msg.oemInfo);
+
                         extendObj(sofar.msg.oemInfo, data);
-                        sofar.msg.domainId = `${sofar.msg.oemInfo.domain}.${sofar.msg.oemInfo.openid}`;
+                        
+                        //对于共享公众号，要判断是否存在 unionid
+                        unionid = !!sofar.msg.oemInfo.unionid ? sofar.msg.oemInfo.unionid : sofar.msg.oemInfo.openid;
+
+                        sofar.msg.domainId = `${sofar.msg.oemInfo.domain}.${unionid}`;
                     } catch(e) {
                         sofar.fn({ code: ReturnCode.authThirdPartFailed });
                         sofar.recy = false;
@@ -47,28 +53,14 @@ async function handle(sofar) {
                     sofar.facade.notifyEvent('socket.userKick', {sid:usr.socket});
                 }
             }
-            else {//新玩家注册
-                let appId = '';												    //应用ID    
-                let serverId = '';												//服务器ID
-
-                let oemInfo = sofar.msg.oemInfo;
-                if (oemInfo.appId) {
-                    appId = oemInfo.appId;
-                }
-                if (oemInfo.serverId) {
-                    serverId = oemInfo.serverId;
-                }
-
-                let profile = await facade.current.control[sofar.msg.oemInfo.domain].getProfile(oemInfo);
-                usr = await facade.GetMapping(EntityType.User).Create(profile.nickname, oemInfo.domain, oemInfo.openid);
+            else if(!!unionid) {//新玩家注册
+                let profile = await facade.current.control[sofar.msg.oemInfo.domain].getProfile(sofar.msg.oemInfo);
+                usr = await facade.GetMapping(EntityType.User).Create(profile.nickname, sofar.msg.oemInfo.domain, unionid);
                 if (!!usr) {
                     usr.socket = sofar.socket; //更新通讯句柄
                     usr.userip = sofar.msg.userip;
                     sofar.socket.user = usr;
 
-                    //写入账号信息
-                    usr.WriteUserInfo(appId, serverId, CommonFunc.now(), oemInfo.token);
-                    
                     Object.keys(profile).map(key=>{
                         usr.baseMgr.info.setAttr(key, profile[key]);
                     });
@@ -90,7 +82,7 @@ async function handle(sofar) {
             sofar.recy = false;
         }
         else {
-            //console.log(`鉴权成功, OpenId/Token: ${sofar.msg.oemInfo.openid}/${sofar.msg.oemInfo.token}`);
+            console.log(`鉴权成功: ${sofar.msg.domainId}`);
             //分发用户上行报文的消息，可以借此执行一些刷新操作
             sofar.facade.notifyEvent('user.packetIn', {user: sofar.socket.user});
         }

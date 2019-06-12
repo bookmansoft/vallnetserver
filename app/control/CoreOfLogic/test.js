@@ -149,7 +149,7 @@ class test extends facade.Control
 
     /**
      * 向消息发送者推送一条消息
-     * @param {BaseUserEntity}  user  
+     * @param {UserEntity}  user  
      * @param {Object}          objData
      */
     async notify(user, objData) {

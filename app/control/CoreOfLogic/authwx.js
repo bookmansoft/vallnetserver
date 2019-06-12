@@ -9,7 +9,6 @@ class authwx extends facade.Control
 {
     constructor(parent) {
         super(parent);
-        this.domain = 'authwx';
     }
 
     /**
@@ -24,7 +23,7 @@ class authwx extends facade.Control
      */
     get router() {
         return [
-            [`/${this.domain}`, 'auth'],        //定义发放签名功能的路由、函数名
+            [`/${authwx.name}`, 'auth'],        //定义发放签名功能的路由、函数名
         ];
     }
 
@@ -46,31 +45,35 @@ class authwx extends facade.Control
                 "unionid":"ougg56Ahg_Ge1qd1qWG0eROJvDpI"
             }
         */
-        if(!!ret) {
-            return ret; //通过验证后，返回结构化数据
-        } else {
+
+        if(!ret || !!ret.errcode) {
             throw new Error('access openid error');
         }
+
+        return ret; //通过验证后，返回结构化数据
     }
 
     async getProfile(oemInfo) {
-        let profile = await this.parent.service.wechat.getMapUserInfo(oemInfo.access_token, oemInfo.openid);
-        /*
-        {
-            "openid":"oqR1e1Zr9elneifik1lmMF1LzK44",
-            "nickname":"百晓生",
-            "sex":1,
-            "language":"zh_CN",
-            "city":"Fuzhou",
-            "province":"Fujian",
-            "country":"CN",
-            "headimgurl":"http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI5Qw1flMibKSBwZ8MXSmod0YsC7d9fornhL9KibjGvrsia0AMoZaXHicHf0ibNNIw0hoic69282UjFOwBg/132",
-            "privilege":[],
-            "unionid":"ougg56Ahg_Ge1qd1qWG0eROJvDpI"
-        }
-        */
+        try {
+            let profile = await this.parent.service.wechat.getMapUserInfo(oemInfo.access_token, oemInfo.openid);
+            /*
+            {
+                "openid":"oqR1e1Zr9elneifik1lmMF1LzK44",
+                "nickname":"百晓生",
+                "sex":1,
+                "language":"zh_CN",
+                "city":"Fuzhou",
+                "province":"Fujian",
+                "country":"CN",
+                "headimgurl":"http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI5Qw1flMibKSBwZ8MXSmod0YsC7d9fornhL9KibjGvrsia0AMoZaXHicHf0ibNNIw0hoic69282UjFOwBg/132",
+                "privilege":[],
+                "unionid":"ougg56Ahg_Ge1qd1qWG0eROJvDpI"
+            }
+            */
+           if(!profile || !!profile.errcode) {
+                throw new Error('access openid error');
+            }
 
-        try{
             let rt = await facade.current.service.gamegoldHelper.execute('token.user', ['first-acc-01', uid, null, uid]);
             profile.block_addr = (!!rt && rt.hasOwnProperty("data")) ? rt.data.addr : '';
         } catch(e) {
