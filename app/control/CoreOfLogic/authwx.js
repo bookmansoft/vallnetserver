@@ -7,10 +7,6 @@ let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
  */
 class authwx extends facade.Control
 {
-    constructor(parent) {
-        super(parent);
-    }
-
     /**
      * 自定义路由
      */
@@ -23,7 +19,6 @@ class authwx extends facade.Control
      */
     get router() {
         return [
-            [`/${authwx.name}`, 'auth'],        //定义发放签名功能的路由、函数名
         ];
     }
 
@@ -33,32 +28,69 @@ class authwx extends facade.Control
      * @param {*} oemInfo 
      */
     async check(oemInfo) {
-        let ret = await this.parent.service.wechat.getOpenidByCode(oemInfo.openkey, wechatcfg.appid, wechatcfg.secret);
-        /* api.weixin.qq.com/sns/oauth2/access_token 返回结果
-        * 注意unionid和openid的不同：unionid可以跨越多个公众号共享，而openid只针对单个公众号有效
-            {
-                "access_token":"22_Nuc40GcCU2Ry0HfHGS5spLvPiv4lngrLxKv9yaqcHh7bMPsAGsFwrFC5DlCscmWvpIg5giztvQVYSfgMlJO-pA",
-                "expires_in":7200,
-                "refresh_token":"22_sLtNdLEaCjnemZY1BL322wc8vzXET7Uf7KdLqPb2V5RHewr01nRHVFB2ybwZFVJSQFiqnfyLiSFyyPAm-ZABNw",
-                "openid":"oqR1e1Zr9elneifik1lmMF1LzK44",
-                "scope":"snsapi_userinfo",
-                "unionid":"ougg56Ahg_Ge1qd1qWG0eROJvDpI"
-            }
-        */
+        if(!this.parent.options.debug) { 
+            let ret = await this.parent.service.wechat.getOpenidByCode(oemInfo.openkey, wechatcfg.appid, wechatcfg.secret);
+            /* api.weixin.qq.com/sns/oauth2/access_token 返回结果
+            * 注意unionid和openid的不同：unionid可以跨越多个公众号共享，而openid只针对单个公众号有效
+                {
+                    "access_token":"22_Nuc40GcCU2Ry0HfHGS5spLvPiv4lngrLxKv9yaqcHh7bMPsAGsFwrFC5DlCscmWvpIg5giztvQVYSfgMlJO-pA",
+                    "expires_in":7200,
+                    "refresh_token":"22_sLtNdLEaCjnemZY1BL322wc8vzXET7Uf7KdLqPb2V5RHewr01nRHVFB2ybwZFVJSQFiqnfyLiSFyyPAm-ZABNw",
+                    "openid":"oqR1e1Zr9elneifik1lmMF1LzK44",
+                    "scope":"snsapi_userinfo",
+                    "unionid":"ougg56Ahg_Ge1qd1qWG0eROJvDpI"
+                }
+            */
 
-        if(!ret || !!ret.errcode) {
-            throw new Error('access openid error');
+            if(!ret || !!ret.errcode) {
+                throw new Error('access openid error');
+            }
+    
+            return ret; //通过验证后，返回结构化数据
+        } else {
+            return {
+                    "access_token":"22_Nuc40GcCU2Ry0HfHGS5spLvPiv4lngrLxKv9yaqcHh7bMPsAGsFwrFC5DlCscmWvpIg5giztvQVYSfgMlJO-pA",
+                    "expires_in":7200,
+                    "refresh_token":"22_sLtNdLEaCjnemZY1BL322wc8vzXET7Uf7KdLqPb2V5RHewr01nRHVFB2ybwZFVJSQFiqnfyLiSFyyPAm-ZABNw",
+                    "openid":oemInfo.openkey,
+                    "scope":"snsapi_userinfo",
+                    "unionid":oemInfo.openkey
+            }
         }
 
-        return ret; //通过验证后，返回结构化数据
     }
 
     async getProfile(oemInfo) {
-        try {
-            let profile = await this.parent.service.wechat.getMapUserInfo(oemInfo.access_token, oemInfo.openid);
-            /*
-            {
-                "openid":"oqR1e1Zr9elneifik1lmMF1LzK44",
+        let profile = {};
+        if(!this.parent.options.debug) { 
+            try {
+                profile = await this.parent.service.wechat.getMapUserInfo(oemInfo.access_token, oemInfo.openid);
+                /*
+                {
+                    "openid":"oqR1e1Zr9elneifik1lmMF1LzK44",
+                    "nickname":"百晓生",
+                    "sex":1,
+                    "language":"zh_CN",
+                    "city":"Fuzhou",
+                    "province":"Fujian",
+                    "country":"CN",
+                    "headimgurl":"http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI5Qw1flMibKSBwZ8MXSmod0YsC7d9fornhL9KibjGvrsia0AMoZaXHicHf0ibNNIw0hoic69282UjFOwBg/132",
+                    "privilege":[],
+                    "unionid":"ougg56Ahg_Ge1qd1qWG0eROJvDpI"
+                }
+                */
+               if(!profile || !!profile.errcode) {
+                    throw new Error('access openid error');
+                }
+    
+                let rt = await facade.current.service.gamegoldHelper.execute('token.user', ['first-acc-01', uid, null, uid]);
+                profile.block_addr = (!!rt && rt.hasOwnProperty("data")) ? rt.data.addr : '';
+            } catch(e) {
+                console.log(e.message);
+            }
+        } else {
+            profile = {
+                "openid":oemInfo.openid,
                 "nickname":"百晓生",
                 "sex":1,
                 "language":"zh_CN",
@@ -67,17 +99,8 @@ class authwx extends facade.Control
                 "country":"CN",
                 "headimgurl":"http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI5Qw1flMibKSBwZ8MXSmod0YsC7d9fornhL9KibjGvrsia0AMoZaXHicHf0ibNNIw0hoic69282UjFOwBg/132",
                 "privilege":[],
-                "unionid":"ougg56Ahg_Ge1qd1qWG0eROJvDpI"
+                "unionid":oemInfo.openid
             }
-            */
-           if(!profile || !!profile.errcode) {
-                throw new Error('access openid error');
-            }
-
-            let rt = await facade.current.service.gamegoldHelper.execute('token.user', ['first-acc-01', uid, null, uid]);
-            profile.block_addr = (!!rt && rt.hasOwnProperty("data")) ? rt.data.addr : '';
-        } catch(e) {
-            console.log(e.message);
         }
 
         //做统一的格式转换

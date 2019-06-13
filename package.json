@@ -1,6 +1,6 @@
 {
   "name": "vallnet_wallet_server",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "author": "bookmansoft <ceo@920.cc>",
   "contributors": [
     "bookmansoft <ceo@920.cc>"
@@ -8,6 +8,11 @@
   "license": "ISC",
   "description": "game logic server over cloud",
   "keywords": [
+    "vallnet",
+    "bitcoin",
+    "cryptcurrency",
+    "vallnet",
+    "gamegold",
     "gameserver",
     "gamecloud",
     "gamelogic",

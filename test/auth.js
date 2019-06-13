@@ -40,23 +40,6 @@ async function funcCall() {
 }
 
 describe.only('游戏云基本连接测试', () => {
-    it('官网用户名密码登录，使用负载均衡', async () => {
-        //设置用户基本信息
-        remote.setUserInfo({
-            domain: 'authofficial',
-            openid: `bookman`,
-            openkey: remote.hash256('hello').toString('base64'),
-        }, remote.CommStatus.reqLb);
-
-        await remote.login();
-
-        await funcCall(); //在登录成功后，尝试执行业务指令
-    });
-
-    it('登录成功后，依靠token通过用户认证，并执行业务指令', async () => {
-        await funcCall();
-    });
-
     it('两阶段认证登录，使用负载均衡', async () => {
         remote.close();
 
@@ -97,7 +80,7 @@ describe.only('游戏云基本连接测试', () => {
         await funcCall();
     });
 
-    it('第三方授权登录，使用负载均衡', async () => {
+    it('微信授权认证登录，使用负载均衡', async () => {
         remote.close();
 
         //设置用户基本信息
@@ -134,6 +117,14 @@ describe.only('游戏云基本连接测试', () => {
     });
 
     it('登录成功后，依靠token通过用户认证，并执行业务指令', async () => {
+        await funcCall();
+    });
+
+    it('登录成功后，输入手机号码进行后期绑定', async () => {
+        await funcCall();
+    });
+
+    it('后期绑定成功后，使用手机号码进行两阶段登录，登录同一个账户', async () => {
         await funcCall();
     });
 });

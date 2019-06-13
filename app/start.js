@@ -1,4 +1,8 @@
 const facade = require('gamecloud')
+let {IndexType} = facade.const
+
+//新增一种索引类型，需要在 UserEntity.prototype.IndexOf 函数中增加字段映射
+IndexType.Phone = 1001;
 
 //加载用户自定义模块
 facade.addition = true;
