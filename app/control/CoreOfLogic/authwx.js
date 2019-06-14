@@ -23,7 +23,7 @@ class authwx extends facade.Control
     }
 
     /**
-     * 验签函数，约定函数名为 check
+     * 验签函数，注意这不是一个控制器方法，而是由 authHandle 中间件自动调用的内部接口，并不面向客户端
      * @param {*} user 
      * @param {*} oemInfo 
      */
@@ -60,6 +60,10 @@ class authwx extends facade.Control
 
     }
 
+    /**
+     * 获取用户档案文件，注意这不是一个控制器方法，而是由 authHandle 中间件自动调用的内部接口，并不面向客户端
+     * @param {*} oemInfo 
+     */
     async getProfile(oemInfo) {
         let profile = {};
         if(!this.parent.options.debug) { 

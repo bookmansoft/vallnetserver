@@ -22,8 +22,9 @@ async function handle(sofar) {
             switch(GetDomainType(sofar.msg.oemInfo.domain)) {
                 default: {
                     try {
+                        //调用登录域相关的认证过程，生成用户证书
                         let data = await facade.current.control[sofar.msg.oemInfo.domain].check(sofar.msg.oemInfo);
-
+                        //将证书内容复制到用户原始信息中，如果条目有重复则直接覆盖
                         extendObj(sofar.msg.oemInfo, data);
                         
                         //对于共享公众号，要判断是否存在 unionid
@@ -66,6 +67,11 @@ async function handle(sofar) {
                     });
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
                     sofar.facade.notifyEvent('user.afterRegister', {user:usr});
+
+                    //在用户创建成功后，再绑定手机号码
+                    if(!!sofar.msg.oemInfo.address && !!sofar.msg.oemInfo.addrType) {
+                        sofar.facade.notifyEvent('user.bind', {user: usr, params:{addrType: sofar.msg.oemInfo.addrType, address: sofar.msg.oemInfo.address}});
+                    }
                 }
             }
 

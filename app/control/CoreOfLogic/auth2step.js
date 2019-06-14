@@ -31,6 +31,8 @@ class auth2step extends facade.Control
     /**
      * 生成签名，放入哈希表，将哈希键通过短信发送给用户
      * 后续用户收到短信验证码后，填入openkey字段，连同openid一并提交验证
+     * 
+     * 注意：这不是控制器方法，而是一个路由调用，可以在未登录状态下调用
      * @param {*} objData 
      */
     async auth(objData) {
@@ -49,13 +51,8 @@ class auth2step extends facade.Control
         signMap.set($sign, ret);
         keyMap.set(objData.address, $sign);
 
-        //todo 通过短信或邮箱发送，暂时屏显代替
-        switch(objData.addrType) {
-            default: {
-                console.log($sign);
-                break;
-            }
-        }
+        //向用户发送短信或邮件
+        this.parent.notifyEvent('sys.sendsms', {params:{addrType: objData.addrType, address: objData.address, content: $sign}});
 
         return ret;
     }
@@ -77,7 +74,7 @@ class auth2step extends facade.Control
     }
 
     /**
-     * 验签函数，约定函数名为 check
+     * 验签函数，注意这不是一个控制器方法，而是由 authHandle 中间件自动调用的内部接口，并不面向客户端
      * @param {*} user 
      * @param {Object} objData {auth: {openid, openkey, addrType, address}}
      */
@@ -94,21 +91,27 @@ class auth2step extends facade.Control
             throw new Error('authThirdPartFailed');
         }
 
-        let unionid = item.openkey;
+        let ret = {openid: item.openkey, domain: auth2step.name, addrType: item.addrType, address: item.address}
         switch(item.addrType) {
             default: {
                 //查询历史用户信息
                 let history = facade.GetObject(EntityType.User, item.address, IndexType.Phone);
-                if(!!history) { //手机号码已经先期注册过了，返回已注册用户标识
-                    unionid = history.openid;
+                if(!!history) { //手机号码已经先期注册过了，返回已注册用户证书
+                    ret.openid = history.openid; //覆盖用户标识
+                    ret.domain = history.domain; //覆盖登录域
                 }
                 break;
             }
         }
 
-        return {openid: unionid}; //通过验证后，返回平台用户ID
+        //通过验证后，返回用户证书
+        return ret;
     }
 
+    /**
+     * 获取用户档案文件，注意这不是一个控制器方法，而是由 authHandle 中间件自动调用的内部接口，并不面向客户端
+     * @param {*} oemInfo 
+     */
     async getProfile(oemInfo) {
         return {
             phone: oemInfo.address,

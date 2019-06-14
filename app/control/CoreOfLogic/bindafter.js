@@ -16,15 +16,20 @@ let keyMap = new Map();
 class bindafter extends facade.Control
 {
     /**
-     * 获取手机验证码：
+     * 获取手机验证码，这是一个控制器方法，必须在登录状态下调用
      * @param {*} objData 
      */
     async auth(user, objData) {
-        //查询历史用户信息
-        let history = facade.GetObject(EntityType.User, objData.address, IndexType.Phone);
-        if(!!history) {
-            if(history.openid != user.openid) {
-                return {code: ReturnCode.userIllegal}; 
+        switch(objData.addrType) {
+            default: {
+                //查询历史用户信息
+                let history = facade.GetObject(EntityType.User, objData.address, IndexType.Phone);
+                if(!!history) {
+                    if(history.openid != user.openid) {
+                        return {code: ReturnCode.userIllegal}; 
+                    }
+                }
+                break;
             }
         }
 
@@ -43,15 +48,10 @@ class bindafter extends facade.Control
         signMap.set($sign, ret);
         keyMap.set(user.openid, $sign);
 
-        //todo 通过短信或邮箱发送，暂时屏显代替
-        switch(objData.addrType) {
-            default: {
-                console.log($sign);
-                break;
-            }
-        }
+        //向用户发送短信或邮件
+        this.parent.notifyEvent('sys.sendsms', {params:{addrType: objData.addrType, address: objData.address, content: $sign}});
 
-        return {code: ReturnCode.Success};
+        return {code: ReturnCode.Success, data: ret};
     }
 
     /**
@@ -71,7 +71,7 @@ class bindafter extends facade.Control
     }
 
     /**
-     * 验签函数，约定函数名为 check
+     * 验签函数，调用结果直接返回客户端
      * @param {*} user 
      * @param {*} objData 
      */
@@ -82,8 +82,9 @@ class bindafter extends facade.Control
 
         let item = signMap.get(objData.openkey);
 
+        let _sign = (item.nonce == objData.auth.nonce);
         let _exp = (Math.abs(item.t - now()) <= 300);
-        if (!_exp) {
+        if (!_sign || !_exp) {
             return {code: ReturnCode.userIllegal};
         }
 
@@ -91,8 +92,7 @@ class bindafter extends facade.Control
         if(!history) {
             switch(item.addrType) {
                 default: {
-                    user.baseMgr.info.setAttr('phone', item.address);
-                    facade.GetMapping(EntityType.User).addId([user.baseMgr.info.getAttr('phone'), user.id], IndexType.Phone);
+                    this.parent.notifyEvent('user.bind', {user:user, params:{addrType: item.addrType, address: item.address}});
                     break;
                 }
             }
@@ -102,7 +102,7 @@ class bindafter extends facade.Control
             }
         }
 
-        return {code: ReturnCode.Success}; //通过验证后，返回平台用户ID
+        return {code: ReturnCode.Success};
     }
 }
 
