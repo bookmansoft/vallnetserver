@@ -13,7 +13,7 @@ let keyMap = new Map();
 class auth2step extends facade.Control
 {
     /**
-     * 自定义路由，跳过默认用户认证中间件 authHandle
+     * 自定义中间件，跳过默认用户认证中间件 authHandle
      */
     get middleware(){
         return ['parseParams', 'commonHandle'];
@@ -41,7 +41,7 @@ class auth2step extends facade.Control
             nonce: Math.random()*1000 | 0,          //随机数
             addrType: objData.addrType || 'phone',  //地址类型，'phone'
             address: objData.address,               //地址内容，如手机号码
-            openkey: objData.openkey,               //用户自行上行的认证标识
+            openid: objData.openid,                 //用户自行上行的认证标识
         };
         //生成签名字段        
         let $sign = sign(ret, this.parent.options[auth2step.name].game_secret);
@@ -91,7 +91,7 @@ class auth2step extends facade.Control
             throw new Error('authThirdPartFailed');
         }
 
-        let ret = {openid: item.openkey, domain: auth2step.name, addrType: item.addrType, address: item.address}
+        let ret = {openid: item.openid, domain: auth2step.name, addrType: item.addrType, address: item.address}
         switch(item.addrType) {
             default: {
                 //查询历史用户信息
@@ -115,7 +115,7 @@ class auth2step extends facade.Control
     async getProfile(oemInfo) {
         return {
             phone: oemInfo.address,
-            openid : oemInfo.openkey,
+            openid : oemInfo.openid,
             nickname: oemInfo.nickname || `vallnet${(Math.random()*1000000)|0}`,
             sex: 1,
             country: 'cn',
@@ -125,7 +125,7 @@ class auth2step extends facade.Control
             block_addr: oemInfo.block_addr || '',
             prop_count: 0,
             current_prop_count: 0,
-            unionid: oemInfo.openkey,
+            unionid: oemInfo.openid,
         }
     }
 }

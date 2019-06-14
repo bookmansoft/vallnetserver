@@ -90,3 +90,11 @@ facade.boot({
     )
     */
 });
+
+//新增Auth服务器，请参照 gameconfig-backup 对 gameconfig 文件进行相应配置
+facade.boot({
+    env:{
+        serverType: "Auth",
+        serverId: 1
+    }
+});

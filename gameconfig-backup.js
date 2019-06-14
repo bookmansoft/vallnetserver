@@ -130,7 +130,16 @@ let config = {
                 "webserver": {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",
-                    "port": 9401
+                    "port": 9501
+                }
+            }
+        },
+        "Auth":{ //新增验证服务器
+            "1":{
+                "webserver": {
+                    "mapping": "127.0.0.1",
+                    "host": "127.0.0.1",
+                    "port": 9601
                 }
             }
         },
