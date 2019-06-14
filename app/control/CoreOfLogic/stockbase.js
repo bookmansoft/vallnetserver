@@ -1,11 +1,6 @@
 let facade = require('gamecloud')
 let { ReturnCode, NotifyType } = facade.const
 
-//引入自定义的远程节点类
-let tableType = require('../../util/tabletype');
-const gamegoldHelp = require('../../util/gamegoldHelp');
-
-
 /**
  * 游戏的控制器
  * Updated by thomasFuzhou on 2018-11-19.
