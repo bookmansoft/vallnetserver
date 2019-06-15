@@ -24,7 +24,9 @@ let tableType ={
     'mobileVerify': 133,
     'stock': 134,
     'userStock': 135,
-    'userStockLog': 136
+    'userStockLog': 136,
+    'stockbulletin': 302,
+    'stockBase': 303,
 }
 
 exports = module.exports = tableType;

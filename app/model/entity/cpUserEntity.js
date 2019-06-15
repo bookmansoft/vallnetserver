@@ -39,8 +39,8 @@ class cpUserEntity extends BaseEntity
      * 进行字典映射时的钩子函数
      * @param {*} record 
      */
-    static onMapping(record){
-        return new cpUserEntity(record, facade.current);
+    static onMapping(record, core) {
+        return new cpUserEntity(record, core);
     }
 
     /**
@@ -51,10 +51,6 @@ class cpUserEntity extends BaseEntity
      * @param {*} callback 
      */
     static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
         try {
             let ret = await CpUser(db, sa, pwd).findAll();
             ret.map(it=>{
@@ -72,7 +68,7 @@ class cpUserEntity extends BaseEntity
      */
     onUpdate() {
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        facade.current.notifyEvent('cpuser.update', {cpuser: this})
+        this.core.notifyEvent('cpuser.update', {cpuser: this})
     }
 }
 

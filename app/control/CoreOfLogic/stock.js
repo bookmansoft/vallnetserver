@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
-let userHelp = require('../../util/userhelp')
+let userHelp = require('../../service/CoreOfLogic/userhelp')
 
 /**
  * 管理后台
@@ -10,13 +10,13 @@ class stock extends facade.Control
 {
     //众筹列表
     async Stocks(user, params) {
-        let stockList = await facade.GetMapping(tableType.stock).groupOf().where([['status', '==', 1]]).records(tableField.stock)
+        let stockList = await this.core.GetMapping(tableType.stock).groupOf().where([['status', '==', 1]]).records(tableField.stock)
         return {errcode: 'success', data: stockList} 
     }
 
     //众筹详情
     async StockInfo(user, params) {
-        let stockInfo = facade.GetObject(tableType.stock, params.id);          
+        let stockInfo = this.core.GetObject(tableType.stock, params.id);          
         if(!!userStock) {
             return {errcode: 'success', data: stockInfo};
         }
@@ -31,7 +31,7 @@ class stock extends facade.Control
         let quantity = params.quantity
         let current_time = parseInt(new Date().getTime() / 1000)
 
-        let userStockItems = facade.GetMapping(tableType.userStock).groupOf().where([
+        let userStockItems = this.core.GetMapping(tableType.userStock).groupOf().where([
             ['uid', '==', uid],
             ['cid', '==', cid]
         ]).records();
@@ -48,7 +48,7 @@ class stock extends facade.Control
             pay_at: current_time,
             status: 0
         }
-        await facade.GetMapping(tableType.userStockLog).Create(userStockLogItem)
+        await this.core.GetMapping(tableType.userStockLog).Create(userStockLogItem)
         return {errcode: 'success', data: userStockLogItem};
 
     }
@@ -57,7 +57,7 @@ class stock extends facade.Control
     async UserStockLogs(user, params) {
         let uid = user.id
         let cid = params.cid
-        let userStockLogs = await facade.GetMapping(tableType.userStockLog).groupOf()
+        let userStockLogs = await this.core.GetMapping(tableType.userStockLog).groupOf()
             .where([
                 ['uid', '==', uid],
                 ['cid', '==', cid]
@@ -68,7 +68,7 @@ class stock extends facade.Control
     //用户众筹记录
     async UserStocks(user, params) {
         let uid = user.id
-        let userStockActs = await facade.GetMapping(tableType.userStock).groupOf()
+        let userStockActs = await this.core.GetMapping(tableType.userStock).groupOf()
             .where([
                 ['uid', '==', uid]
             ]).records(tableField.userStock)
@@ -77,7 +77,7 @@ class stock extends facade.Control
 
     //用户众筹记录详情
     async UserStockInfo(user, params) {
-        let userStock = facade.GetObject(tableType.userStock, params.id);          
+        let userStock = this.core.GetObject(tableType.userStock, params.id);          
         if(!!userStock) {
             return {errcode: 'success', data: userStock};
         }
@@ -88,7 +88,7 @@ class stock extends facade.Control
         let uid = user.id
         let cid = params.cid
         let addr = await userHelp.getAddrFromUserIdAndCid(uid, cid)
-        let ret = await facade.current.service.gamegoldHelper.execute('stock.send', [cid, 100, addr, 'alice']);
+        let ret = await this.core.service.gamegoldHelper.execute('stock.send', [cid, 100, addr, 'alice']);
         return {errcode: 'success', data: ret} 
     }
 

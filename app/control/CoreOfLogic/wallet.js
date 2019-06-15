@@ -16,7 +16,7 @@ class wallet extends facade.Control
      */
     async AddressCreate(user, paramGold) {
         console.log(paramGold.items);
-        let ret = await facade.current.service.gamegoldHelper.execute('address.create', paramGold.items);
+        let ret = await this.core.service.gamegoldHelper.execute('address.create', paramGold.items);
         console.log(ret.result);
         return {errcode: 'success', errmsg: 'address.create:ok', ret: ret.result};
     }
@@ -32,7 +32,7 @@ class wallet extends facade.Control
         let addr = params.addr;
         let amount = params.amount;
         let uid = user.id;
-        let ret = await facade.current.service.gamegoldHelper.execute('tx.send', [
+        let ret = await this.core.service.gamegoldHelper.execute('tx.send', [
             addr,
             amount,
             uid
@@ -49,7 +49,7 @@ class wallet extends facade.Control
      */
      async BalanceAll(user, params) {
         let uid = user.id;
-        let ret = await facade.current.service.gamegoldHelper.execute('balance.all', [
+        let ret = await this.core.service.gamegoldHelper.execute('balance.all', [
             uid //openid
         ]);    
         // assert(ret.result.confirmed);
@@ -69,7 +69,7 @@ class wallet extends facade.Control
     async TxLogs(user, params) {                      
         let uid = user.id;
         //let number = 10000;                          
-        let ret = await facade.current.service.gamegoldHelper.execute('tx.list', [
+        let ret = await this.core.service.gamegoldHelper.execute('tx.list', [
             uid, 
             //number
         ]);    
@@ -85,12 +85,12 @@ class wallet extends facade.Control
      */
     async GetNotify(user, params) {
         let uid = user.id
-        let ret = await facade.current.service.gamegoldHelper.execute('sys.listNotify', [
+        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [
             1 
         ]);
         if(!!ret && ret.result.length > 0) {
             ret.result.forEach(element => {
-                let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([['sn', '==', element.sn]]).records();
+                let blockNotifys = this.core.GetMapping(tableType.blockNotify).groupOf().where([['sn', '==', element.sn]]).records();
                 if(blockNotifys.length==0) {
                     let current_time = parseInt(new Date().getTime() / 1000)
                     let notifyUid = ''
@@ -98,7 +98,7 @@ class wallet extends facade.Control
                         let obj = eval('(' + (element.body.content) + ')')
                         if(!!obj && obj.hasOwnProperty('address')) {
                             let addr = obj.address
-                            let userWallets = facade.GetMapping(tableType.userWallet).groupOf().where([['addr', '==', addr]]).records();
+                            let userWallets = this.core.GetMapping(tableType.userWallet).groupOf().where([['addr', '==', addr]]).records();
                             if(userWallets.length >0) {
                                 notifyUid = userWallets[0].orm.uid
                             }
@@ -116,11 +116,11 @@ class wallet extends facade.Control
                         create_time: current_time,
                         update_time: 0
                     }
-                    facade.GetMapping(tableType.blockNotify).Create(notifyItem);
+                    this.core.GetMapping(tableType.blockNotify).Create(notifyItem);
                 }
             });
         }
-        let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([
+        let blockNotifys = this.core.GetMapping(tableType.blockNotify).groupOf().where([
             ['uid', '==', uid],
             ['status', '==', 1]
         ]).records();
@@ -134,7 +134,7 @@ class wallet extends facade.Control
      */
     async NotifyList(user, params) {
         let openid = params.openid
-        let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([
+        let blockNotifys = this.core.GetMapping(tableType.blockNotify).groupOf().where([
             ['openid', '==', openid]
         ]).records();
         let data = new Array()
@@ -158,7 +158,7 @@ class wallet extends facade.Control
     async NotifyOrderPay(user, params) {
         let openid = params.openid
         let sn = params.sn
-        let blockNotifys = facade.GetMapping(tableType.blockNotify).groupOf().where([
+        let blockNotifys = this.core.GetMapping(tableType.blockNotify).groupOf().where([
             ['openid', '==', openid],
             ['sn', '==', sn]
         ]).records();
@@ -170,7 +170,7 @@ class wallet extends facade.Control
                 let uid = openid;
                 let sn = obj.sn;
                 let price = obj.price;
-                let ret = await facade.current.service.gamegoldHelper.execute('order.pay', [
+                let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
                     cid, //game_id
                     uid, //user_id
                     sn, //order_sn订单编号

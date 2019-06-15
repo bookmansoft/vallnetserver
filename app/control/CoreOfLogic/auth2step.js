@@ -44,15 +44,15 @@ class auth2step extends facade.Control
             openid: objData.openid,                 //用户自行上行的认证标识
         };
         //生成签名字段        
-        let $sign = sign(ret, this.parent.options[auth2step.name].game_secret);
+        let $sign = sign(ret, this.core.options[auth2step.name].game_secret);
         //用签名字段生成6位数字键
-        $sign = this.parent.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000;
+        $sign = this.core.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000;
         //放入缓存表
         signMap.set($sign, ret);
         keyMap.set(objData.address, $sign);
 
         //向用户发送短信或邮件
-        this.parent.notifyEvent('sys.sendsms', {params:{addrType: objData.addrType, address: objData.address, content: $sign}});
+        this.core.notifyEvent('sys.sendsms', {params:{addrType: objData.addrType, address: objData.address, content: $sign}});
 
         return ret;
     }
@@ -62,7 +62,7 @@ class auth2step extends facade.Control
      * @param {*} objData 
      */
     async getKey(user, objData) {
-        if(!this.parent.options.debug) {
+        if(!this.core.options.debug) {
             throw new Error('authThirdPartFailed');
         }
 
@@ -95,7 +95,7 @@ class auth2step extends facade.Control
         switch(item.addrType) {
             default: {
                 //查询历史用户信息
-                let history = facade.GetObject(EntityType.User, item.address, IndexType.Phone);
+                let history = this.core.GetObject(EntityType.User, item.address, IndexType.Phone);
                 if(!!history) { //手机号码已经先期注册过了，返回已注册用户证书
                     ret.openid = history.openid; //覆盖用户标识
                     ret.domain = history.domain; //覆盖登录域

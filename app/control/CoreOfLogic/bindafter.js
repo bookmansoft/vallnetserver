@@ -23,7 +23,7 @@ class bindafter extends facade.Control
         switch(objData.addrType) {
             default: {
                 //查询历史用户信息
-                let history = facade.GetObject(EntityType.User, objData.address, IndexType.Phone);
+                let history = this.core.GetObject(EntityType.User, objData.address, IndexType.Phone);
                 if(!!history) {
                     if(history.openid != user.openid) {
                         return {code: ReturnCode.userIllegal}; 
@@ -41,15 +41,15 @@ class bindafter extends facade.Control
             openid: user.openid,                    //用户登录时使用的认证信息
         };
         //生成签名字段        
-        let $sign = sign(ret, this.parent.options[user.domain].game_secret);
+        let $sign = sign(ret, this.core.options[user.domain].game_secret);
         //用签名字段生成6位数字键
-        $sign = this.parent.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000;
+        $sign = this.core.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000;
         //放入缓存表
         signMap.set($sign, ret);
         keyMap.set(user.openid, $sign);
 
         //向用户发送短信或邮件
-        this.parent.notifyEvent('sys.sendsms', {params:{addrType: objData.addrType, address: objData.address, content: $sign}});
+        this.core.notifyEvent('sys.sendsms', {params:{addrType: objData.addrType, address: objData.address, content: $sign}});
 
         return {code: ReturnCode.Success, data: ret};
     }
@@ -59,7 +59,7 @@ class bindafter extends facade.Control
      * @param {*} user 
      */
     async getKey(user) {
-        if(!this.parent.options.debug) {
+        if(!this.core.options.debug) {
             throw new Error('authThirdPartFailed');
         }
 
@@ -88,11 +88,11 @@ class bindafter extends facade.Control
             return {code: ReturnCode.userIllegal};
         }
 
-        let history = facade.GetObject(EntityType.User, item.address, IndexType.Phone);
+        let history = this.core.GetObject(EntityType.User, item.address, IndexType.Phone);
         if(!history) {
             switch(item.addrType) {
                 default: {
-                    this.parent.notifyEvent('user.bind', {user:user, params:{addrType: item.addrType, address: item.address}});
+                    this.core.notifyEvent('user.bind', {user:user, params:{addrType: item.addrType, address: item.address}});
                     break;
                 }
             }

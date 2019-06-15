@@ -93,7 +93,7 @@ let config = {
     "servers":{
         "Index":{
             "1":{
-                "debug": true,              //本地测试模式
+                "debug": true,              //！！！上线时一定要修改为false！！！ 本地测试模式
                 "UrlHead": "http",          //协议选择: http/https
                 "MaxConnection": 3000,      //最大并发连接
                 "MaxRegister": 12000,       //单服最大注册用户数

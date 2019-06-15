@@ -19,15 +19,16 @@ class allyAutoSave
 
     /**
      * 执行逻辑。
+     * @param {CoreOfBase} core
      * @return {Boolean} 
      *      true    ：状态失效，监控任务将被移出队列，不再接受检测
      *      false   ：状态有效，监控任务继续停留在队列中，接受后续检测
      */
-    execute(fo){
+    execute(core){
         /**
          * @type {AllyObject}
          */
-        let ao = facade.GetObject(EntityType.Ally, this.aid);
+        let ao = core.GetObject(EntityType.Ally, this.aid);
         if (!!ao) {
             if(ao.dirty){
                 ao.Save();

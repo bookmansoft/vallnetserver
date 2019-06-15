@@ -36,10 +36,10 @@ function handle(event){ //用户资源发生变化
             this.notifyEvent('user.slave.avenge', {user:event.user, msg:event.data});
             break;
         case NotifyType.mail: //发送邮件
-            facade.GetMapping(EntityType.Mail).Create(event.user, event.data.info.con, event.data.info.src, event.data.info.dst);
+            this.GetMapping(EntityType.Mail).Create(event.user, event.data.info.con, event.data.info.src, event.data.info.dst);
             break;
         case NotifyType.DailyActivityBonus://下发活动奖励
-            facade.GetMapping(EntityType.Mail).Create(event.user, event.data, 'system', event.user.openid);//发邮件
+            this.GetMapping(EntityType.Mail).Create(event.user, event.data, 'system', event.user.openid);//发邮件
             event.user.notify(event.data);//发通知
             break;
         case NotifyType.DailyActivityInstantBonus:
@@ -51,7 +51,7 @@ function handle(event){ //用户资源发生变化
         case NotifyType.socialSendAction:   //赠送体力
             event.user.notify(event.data);
             event.data.info.bonus = {type:ResType.Action, num:1};
-            facade.GetMapping(EntityType.Mail).Create(event.user, event.data, "system", event.user.openid);
+            this.GetMapping(EntityType.Mail).Create(event.user, event.data, "system", event.user.openid);
             break;
     
         case NotifyType.socialSendHello://点赞

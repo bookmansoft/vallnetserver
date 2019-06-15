@@ -11,7 +11,7 @@ class authwx extends facade.Control
      */
     async check(oemInfo) {
         let ret = {};
-        if(this.parent.options.debug) { 
+        if(this.core.options.debug) { 
             ret =  {
                 "access_token":"22_Nuc40GcCU2Ry0HfHGS5spLvPiv4lngrLxKv9yaqcHh7bMPsAGsFwrFC5DlCscmWvpIg5giztvQVYSfgMlJO-pA",
                 "expires_in":7200,
@@ -21,7 +21,7 @@ class authwx extends facade.Control
                 "unionid":oemInfo.openid
             }
         } else {
-            ret = await this.parent.service.wechat.getOpenidByCode(oemInfo.openkey, wechatcfg.appid, wechatcfg.secret);
+            ret = await this.core.service.wechat.getOpenidByCode(oemInfo.openkey, wechatcfg.appid, wechatcfg.secret);
             /* api.weixin.qq.com/sns/oauth2/access_token 返回结果
             * 注意unionid和openid的不同：unionid可以跨越多个公众号共享，而openid只针对单个公众号有效
                 {
@@ -52,9 +52,9 @@ class authwx extends facade.Control
      */
     async getProfile(oemInfo) {
         let profile = {};
-        if(!this.parent.options.debug) { 
+        if(!this.core.options.debug) { 
             try {
-                profile = await this.parent.service.wechat.getMapUserInfo(oemInfo.access_token, oemInfo.openid);
+                profile = await this.core.service.wechat.getMapUserInfo(oemInfo.access_token, oemInfo.openid);
                 /*
                 {
                     "openid":"oqR1e1Zr9elneifik1lmMF1LzK44",
@@ -73,7 +73,7 @@ class authwx extends facade.Control
                     throw new Error('access openid error');
                 }
     
-                let rt = await facade.current.service.gamegoldHelper.execute('token.user', ['first-acc-01', uid, null, uid]);
+                let rt = await this.core.service.gamegoldHelper.execute('token.user', ['first-acc-01', uid, null, uid]);
                 profile.block_addr = (!!rt && rt.hasOwnProperty("data")) ? rt.data.addr : '';
             } catch(e) {
                 console.log(e.message);

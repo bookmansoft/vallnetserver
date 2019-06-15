@@ -13,7 +13,7 @@ class manysend extends facade.Control {
      */
     DeleteRecord(user, objData) {
         try {
-            facade.GetMapping(tableType.manySend).Delete(objData.id, true);
+            this.core.GetMapping(tableType.manySend).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -30,7 +30,7 @@ class manysend extends facade.Control {
         try {
             console.log(JSON.stringify(objData));
             console.log(objData.id);
-            let manysend = facade.GetObject(tableType.manySend, parseInt(objData.id));
+            let manysend = this.core.GetObject(tableType.manySend, parseInt(objData.id));
             if (!!manysend) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 manysend.setAttr('total_amount', objData.total_amount);
@@ -61,7 +61,7 @@ class manysend extends facade.Control {
      */
     async CreateRecord(user, objData) {
         try {
-            let manysend = await facade.GetMapping(tableType.manySend).Create(
+            let manysend = await this.core.GetMapping(tableType.manySend).Create(
                 objData.total_amount,
                 objData.actual_amount,
                 objData.total_num,
@@ -92,7 +92,7 @@ class manysend extends facade.Control {
     Retrieve(user, objData) {
         try {
             //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-            let manysend = facade.GetObject(tableType.manySend, parseInt(objData.id));
+            let manysend = this.core.GetObject(tableType.manySend, parseInt(objData.id));
             if (!!manysend) {
                 return {
                     code: ReturnCode.Success,
@@ -145,7 +145,7 @@ class manysend extends facade.Control {
 
             console.log(paramArray);
             //得到 Mapping 对象
-            let muster = facade.GetMapping(tableType.manySend)
+            let muster = this.core.GetMapping(tableType.manySend)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
@@ -198,7 +198,7 @@ class manysend extends facade.Control {
     async Send(user, objData) {
         try {
             //写发送表 - todo 20190604 liub 这里提示 Field 'send_uid' doesn't have a default value
-            let manysend = await facade.GetMapping(tableType.manySend).Create(
+            let manysend = await this.core.GetMapping(tableType.manySend).Create(
                 objData.total_amount,
                 objData.total_amount, //actual_amount等同于输入参数total_amount
                 objData.total_num,
@@ -230,14 +230,14 @@ class manysend extends facade.Control {
             }
             //发送到指定账号
             //cid 用固定的manyagent创建 687a8b10-5a91-11e9-9a3f-bfc33c24ad96
-            let retCp=await facade.current.service.gamegoldHelper.execute('cp.byName', ['manyagent']);
+            let retCp=await this.core.service.gamegoldHelper.execute('cp.byName', ['manyagent']);
             console.log("248 cpid:",retCp.result);
             let agent_cid=retCp.result.cid;
             let agent_uid=manysend.ormAttr("id");//对应此地址的id
             console.log("251:",agent_cid,agent_uid);
-            let ret = await facade.current.service.gamegoldHelper.execute('token.user', [agent_cid,agent_uid,null,'manyagent']);
+            let ret = await this.core.service.gamegoldHelper.execute('token.user', [agent_cid,agent_uid,null,'manyagent']);
             console.log("token.user返回的地址",ret.result.data.addr);
-            let retSend = await facade.current.service.gamegoldHelper.execute('tx.send', [
+            let retSend = await this.core.service.gamegoldHelper.execute('tx.send', [
                 ret.result.data.addr,
                 objData.total_amount,
                 String(user.id), //转成字符串格式
@@ -250,7 +250,7 @@ class manysend extends facade.Control {
             console.log(retSend);
             // 接收表
             for (var i=0;i<receive_amount.length;i++) {
-                let manyreceive = await facade.GetMapping(tableType.manyReceive).Create(
+                await this.core.GetMapping(tableType.manyReceive).Create(
                     manysend.ormAttr("id"),
                     receive_amount[i],
                     user.id,

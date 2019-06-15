@@ -8,7 +8,7 @@ function handle(data){
     switch(data.params.addrType) {
         default: {
             data.user.baseMgr.info.setAttr('phone', data.params.address);
-            facade.GetMapping(EntityType.User).addId([data.params.address, data.user.id], IndexType.Phone);
+            this.GetMapping(EntityType.User).addId([data.params.address, data.user.id], IndexType.Phone);
             break;
         }
     }

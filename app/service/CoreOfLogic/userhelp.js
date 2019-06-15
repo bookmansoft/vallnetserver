@@ -1,18 +1,10 @@
 let facade = require('gamecloud');
-let tableType = require('./tabletype');
-let randomHelp = require('./randomHelp')
-let crypto = require('crypto')
+let tableType = require('../../util/tabletype');
 
-class userhelp {
-     /**
-     * 构造函数
-     * @param {*}  监控对象ID
-     */
-    constructor() {
-    }
-
+class userhelp  extends facade.Service 
+{
     async getAddrFromUserIdAndCid(uid, cid) {
-        let userWallets = await facade.GetMapping(tableType.userWallet).groupOf()
+        let userWallets = await this.core.GetMapping(tableType.userWallet).groupOf()
             .where([
                 ['uid', '==', uid],
                 ['cid', '==', cid],
@@ -34,6 +26,4 @@ class userhelp {
     }
 }
 
-let conn = new userhelp();
-
-module.exports = conn;
+module.exports = userhelp;

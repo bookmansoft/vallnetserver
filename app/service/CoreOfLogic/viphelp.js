@@ -1,23 +1,15 @@
 let facade = require('gamecloud')
-let tableType = require('./tabletype');
-let tableField = require('./tablefield');
+let tableType = require('../../util/tabletype');
 
-class viphelp {
-     /**
-     * 构造函数
-     * @param {*}  监控对象ID
-     */
-    constructor(){
-
-    }
-
+class viphelp extends facade.Service
+{
     /**
      * 充值
      * @param {*} uid 
      * @param {*} vip_level 
      */
     async recharge(uid, vip_level) {
-        let userVips = facade.GetMapping(tableType.vip).groupOf().where([['uid', '==', uid]]).records();
+        let userVips = this.core.GetMapping(tableType.vip).groupOf().where([['uid', '==', uid]]).records();
         let current_time = parseInt(new Date().getTime() / 1000)
         let month_time =  3600 * 24 * 30
         if(userVips.length == 0 ) {
@@ -33,7 +25,7 @@ class viphelp {
                 create_at: current_time,
                 update_at: current_time,
             }
-            facade.GetMapping(tableType.vip).Create(vipItem);
+            this.core.GetMapping(tableType.vip).Create(vipItem);
         } else {
             let userVip = userVips[0]
             if(userVip.orm.is_expired == 1) {   //过期，重新开卡
@@ -57,7 +49,7 @@ class viphelp {
      * 领币
      */
     async getVip(uid) {
-        let userVips = facade.GetMapping(tableType.vip).groupOf().where([['uid', '==', uid]]).records()
+        let userVips = this.core.GetMapping(tableType.vip).groupOf().where([['uid', '==', uid]]).records()
         if(userVips.length == 0 ) {
             return {vip_level: 0}
         } else {
@@ -109,7 +101,7 @@ class viphelp {
      * @param {*} uid 
      */
     async vipDraw(uid, draw_count, addr) {
-        let userVips = facade.GetMapping(tableType.vip).groupOf().where([['uid', '==', uid]]).records()
+        let userVips = this.core.GetMapping(tableType.vip).groupOf().where([['uid', '==', uid]]).records()
         if(userVips.length >0 ) {
             let userVip = userVips[0]
             let vip_usable_count = userVip.orm.vip_usable_count
@@ -120,7 +112,7 @@ class viphelp {
             if(draw_count > vip_usable_count) {
                 return {result: false, errmsg: 'draw beyond'};
             }
-            let ret = await facade.current.service.gamegoldHelper.execute('tx.send', [
+            let ret = await this.core.service.gamegoldHelper.execute('tx.send', [
                 addr, 
                 draw_count
             ]);   
@@ -135,7 +127,7 @@ class viphelp {
                     remainder: remainder,
                     draw_at: current_time,
                 }
-                facade.GetMapping(tableType.vipdraw).Create(drawItem);
+                this.core.GetMapping(tableType.vipdraw).Create(drawItem);
                 userVip.setAttr('vip_usable_count', remainder);
                 userVip.orm.save();
                 return {result: true, errmsg: 'vipdraw:ok', drawItem: drawItem};

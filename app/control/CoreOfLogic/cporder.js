@@ -15,8 +15,8 @@ class cporder extends facade.Control
         let uid = user.id;
         let addr = params.addr;
         let openid = params.openid;
-        let cpprops = facade.GetMapping(tableType.cpProp).groupOf().where([['id','==',prop_id]]).records(tableField.cpProp);
-        let cpusers = facade.GetMapping(tableType.cpUser).groupOf().where([['id','==',uid]]).records(tableField.cpUser);
+        let cpprops = this.core.GetMapping(tableType.cpProp).groupOf().where([['id','==',prop_id]]).records(tableField.cpProp);
+        let cpusers = this.core.GetMapping(tableType.cpUser).groupOf().where([['id','==',uid]]).records(tableField.cpUser);
         if(cpprops.length> 0 && cpusers.length > 0 ) {
             let cpprop = cpprops[0];
             let created_at = new Date().getTime();
@@ -38,7 +38,7 @@ class cporder extends facade.Control
                 create_time: created_at,
                 update_time: 0
             }
-            facade.GetMapping(tableType.cpOrder).Create(cpOrderItem);
+            this.core.GetMapping(tableType.cpOrder).Create(cpOrderItem);
         }
         return {errcode: 'success', errmsg:'propbuy:ok'};
     };
@@ -46,7 +46,7 @@ class cporder extends facade.Control
     //用户订单
     async OrderList(user, params)  {
         let uid = user.id;
-        let orders = facade.GetMapping(tableType.cpOrder).groupOf().where([['uid','==',uid]]).orderby('create_time', 'desc').records(tableField.cpOrder);
+        let orders = this.core.GetMapping(tableType.cpOrder).groupOf().where([['uid','==',uid]]).orderby('create_time', 'desc').records(tableField.cpOrder);
         return {errcode: 'success', errmsg:'orderlist:ok', orders: orders};
     };
 
@@ -56,7 +56,7 @@ class cporder extends facade.Control
         let cid = params.cid;
         let status = params.status;
         //let msg = params.msg;
-        let cpOrders = facade.GetMapping(tableType.cpOrder).groupOf().where([['order_sn','==',sn]]).records();
+        let cpOrders = this.core.GetMapping(tableType.cpOrder).groupOf().where([['order_sn','==',sn]]).records();
         if(cpOrders.length >0 ) {
             let cporder = cpOrders[0];
             cporder.setAttr('pay_status', status);                    //修改所得记录的pay_status字段，下次查询时将得到新值，同时会自动存入数据库
@@ -68,7 +68,7 @@ class cporder extends facade.Control
                 let prop_value = cporder_orm.prop_value;
                 //发送道具
                 //npm run cli rpc prop.order {game_id} {prop_ori_id} {prop_value} {user_addr}
-                let ret = await facade.current.service.gamegoldHelper.execute('prop.order', [
+                let ret = await this.core.service.gamegoldHelper.execute('prop.order', [
                     cid,        //游戏编号
                     prop_oid,   //道具原始
                     prop_value, //道具含金量

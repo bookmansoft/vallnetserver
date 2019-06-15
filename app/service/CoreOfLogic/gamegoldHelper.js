@@ -2,15 +2,16 @@ const toolkit = require('gamerpc')
 let facade = require('gamecloud')
 let {ReturnCode, EntityType, NotifyType, IndexType} = facade.const
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
+let CoreOfBase = facade.CoreOfBase
 
 class gamegoldHelper extends facade.Service
 {
      /**
      * 构造函数
-     * @param {*}  监控对象ID
+     * @param {CoreOfBase} core
      */
-    constructor(parent) {
-        super(parent);
+    constructor(core) {
+        super(core);
 
         this.remote = new toolkit.conn();
         //兼容性设置，提供模拟浏览器环境中的 fetch 函数
@@ -29,7 +30,7 @@ class gamegoldHelper extends facade.Service
     notfiyToClient(uid, msgType, msg) {
         let domain = 'official';
         let domainId = `${domain}.${uid}`;
-        let user = facade.GetObject(EntityType.User, domainId, IndexType.Domain);
+        let user = this.core.GetObject(EntityType.User, domainId, IndexType.Domain);
         if(!!user) {
             user.notify({type: NotifyType.test, info: {
                 msgType: msgType,

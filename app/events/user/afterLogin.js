@@ -51,10 +51,10 @@ function handle(data){
     //记录用户登录行为
     if(data.user.getActionMgr().Execute(ActionExecuteType.AE_Login, 1, true)){
         //记录累计登录
-        facade.current.notifyEvent('user.task', {user:data.user, data:{type:em_Condition_Type.totalLogin, value:1}});
+        this.notifyEvent('user.task', {user:data.user, data:{type:em_Condition_Type.totalLogin, value:1}});
         if(Date.parse(data.curTime)/1000 - Date.parse(d2)/1000 < 3600*48){
             //记录连续登录
-            facade.current.notifyEvent('user.task', {user:data.user, data:{type:em_Condition_Type.loginContinue, value:1}});
+            this.notifyEvent('user.task', {user:data.user, data:{type:em_Condition_Type.loginContinue, value:1}});
         }
     }
 

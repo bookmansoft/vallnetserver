@@ -12,7 +12,7 @@ class cpuser extends facade.Control
     //用户信息
     async CheckOpenId(user, params)  {
         let openid = params.openid;
-        let cpUser = facade.GetMapping(tableType.cpUser).groupOf().where([['openid', '==', openid]]).records(tableField.cpUser);
+        let cpUser = this.core.GetMapping(tableType.cpUser).groupOf().where([['openid', '==', openid]]).records(tableField.cpUser);
         var data = null;
         if(cpUser.length >0 ) {
             data = cpUser[0];
@@ -25,7 +25,7 @@ class cpuser extends facade.Control
                 nick: nick,
                 created_at: created_at
             };
-            let newCpUser = await facade.GetMapping(tableType.cpUser).Create(cpUserItem);
+            let newCpUser = await this.core.GetMapping(tableType.cpUser).Create(cpUserItem);
             data = newCpUser.orm;
         }
         return {errcode: 'success', errmsg:'checkopenid:ok', data: data};
@@ -36,7 +36,7 @@ class cpuser extends facade.Control
         //let cid = params.cid;
         let uid = user.id;
         let token = params.token;
-        let cpusers = facade.GetMapping(tableType.cpUser).groupOf().where([['id','==',uid]]).records();
+        let cpusers = this.core.GetMapping(tableType.cpUser).groupOf().where([['id','==',uid]]).records();
         if(cpusers.length >0 ) {
             let cpuser = cpusers[0];
             cpuser.setAttr('addr', token.data.addr);     //修改所得记录的item字段，下次查询时将得到新值，同时会自动存入数据库

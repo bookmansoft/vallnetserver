@@ -10,7 +10,7 @@ class cpprop extends facade.Control
 {
     //用户信息
     async PropList(user, params)  {
-        let props = facade.GetMapping(tableType.cpProp).groupOf().records(tableField.cpProp);
+        let props = this.core.GetMapping(tableType.cpProp).groupOf().records(tableField.cpProp);
         return {errcode: 'success', errmsg:'proplist:ok', props: props};
     };
 
@@ -18,13 +18,13 @@ class cpprop extends facade.Control
     async QueryProps(user, params) {
         let cid = params.cid;
         let user_addr = params.user_addr;
-        let ret = await facade.current.service.gamegoldHelper.execute('queryProps', [
+        let ret = await this.core.service.gamegoldHelper.execute('queryProps', [
             cid, //游戏编号
             user_addr //游戏内玩家的有效地址
         ]);
         var queryprops = [];
         await ret.result.forEach(element => {
-            let prop = facade.GetMapping(tableType.cpProp).groupOf().where([
+            let prop = this.core.GetMapping(tableType.cpProp).groupOf().where([
                 ['oid', '==', element.oid]
             ]).records(tableField.cpProp)[0];
             if(!!prop) {
@@ -37,7 +37,7 @@ class cpprop extends facade.Control
     //道具详情查询
     async GetPropByOid(user, params) { 
         let oid = params.oid;
-        let prop = facade.GetMapping(tableType.cpProp).groupOf().where([
+        let prop = this.core.GetMapping(tableType.cpProp).groupOf().where([
             ['oid', '==', oid]
         ]).records(tableField.cpProp)[0];
         return {errcode: 'success', errmsg:'queryprops:ok', prop: !!prop ? prop : null};
@@ -46,7 +46,7 @@ class cpprop extends facade.Control
     //批量查询道具
     async GetPropByOids(user, params) { 
         let oids = params.oids;
-        let props = facade.GetMapping(tableType.cpProp).groupOf().where([
+        let props = this.core.GetMapping(tableType.cpProp).groupOf().where([
             ['oid', 'include', oids]
         ]).records(tableField.cpProp);
         return {errcode: 'success', errmsg:'getpropbyoids:ok', props: !!props ? props : null};

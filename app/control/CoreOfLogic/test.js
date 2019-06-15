@@ -25,29 +25,29 @@ class test extends facade.Control
 
         let env = {name: ((Math.random()*1000000)|0).toString()};
         let oid = ((Math.random()*1000000)|0).toString();
-        await facade.current.service.gamegoldHelper.execute('miner.setsync.admin', []);
+        await this.core.service.gamegoldHelper.execute('miner.setsync.admin', []);
 
         //注册一个新的CP, 指定 15% 的媒体分成
-        let ret = await facade.current.service.gamegoldHelper.execute('cp.create', [env.name, 'http://127.0.0.1', null, 'slg', 15]);
+        let ret = await this.core.service.gamegoldHelper.execute('cp.create', [env.name, 'http://127.0.0.1', null, 'slg', 15]);
 
         //确保该CP数据上链
-        await facade.current.service.gamegoldHelper.execute('miner.generate.admin', [1]);
+        await this.core.service.gamegoldHelper.execute('miner.generate.admin', [1]);
         
         //查询并打印CP信息
-        ret = await facade.current.service.gamegoldHelper.execute('cp.byName', [env.name]);
+        ret = await this.core.service.gamegoldHelper.execute('cp.byName', [env.name]);
         env.cid = ret.result.cid;
         env.addr = ret.result.current.address;
         console.log(env);
 
         //创建一个道具
-        ret = await facade.current.service.gamegoldHelper.execute('prop.create', [env.cid, oid, 10000]);
+        ret = await this.core.service.gamegoldHelper.execute('prop.create', [env.cid, oid, 10000]);
         if(!!ret) {
             env.hash = ret.result.hash;
             env.pid = ret.result.pid;
         }
         await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(1000);
 
-        ret = await facade.current.service.gamegoldHelper.execute('prop.send', [env.addr, env.pid]);
+        ret = await this.core.service.gamegoldHelper.execute('prop.send', [env.addr, env.pid]);
         if(!!ret) {
             env.hash = ret.result.hash;
         }
@@ -70,12 +70,12 @@ class test extends facade.Control
      * @param {*} objData 
      */
     async Create(user, objData) {
-        let test = await facade.GetMapping(tableType.test).Create(Math.random().toString());
+        let test = await this.core.GetMapping(tableType.test).Create(Math.random().toString());
         return {code: ReturnCode.Success, data: test.item};
     }
 
     async Creates(user, objData) {
-        facade.GetMapping(tableType.test).Creates(objData.items, true);
+        this.core.GetMapping(tableType.test).Creates(objData.items, true);
         return {code: ReturnCode.Success};
     }
 
@@ -85,7 +85,7 @@ class test extends facade.Control
      * @param {*} objData 
      */
     Update(user, objData) {
-        let test = facade.GetObject(tableType.test, objData.id);           //根据上行id查找test表中记录
+        let test = this.core.GetObject(tableType.test, objData.id);           //根据上行id查找test表中记录
         if(!!test) {
             test.setAttr('item', Math.random().toString());     //修改所得记录的item字段，下次查询时将得到新值，同时会自动存入数据库
             return {code: ReturnCode.Success, data: test.getAttr('item')};
@@ -102,7 +102,7 @@ class test extends facade.Control
         console.log("控制器添加日志：");
         console.log(objData.id);
         //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-        let test = facade.GetObject(tableType.test, parseInt(objData.id));
+        let test = this.core.GetObject(tableType.test, parseInt(objData.id));
         if(!!test) {
             return {code: ReturnCode.Success, data: test.getAttr('item')};
         }
@@ -115,12 +115,12 @@ class test extends facade.Control
      * @param {*} objData 
      */
     Delete(user, objData) {
-        facade.GetMapping(tableType.test).Delete(objData.id, true);
+        this.core.GetMapping(tableType.test).Delete(objData.id, true);
         return {code: ReturnCode.Success};
     }
 
     Deletes(user, objData) {
-        facade.GetMapping(tableType.test).Deletes(objData.ids, true);
+        this.core.GetMapping(tableType.test).Deletes(objData.ids, true);
         return {code: ReturnCode.Success};
     }
 
@@ -130,7 +130,7 @@ class test extends facade.Control
      * @param {*} objData 
      */
     List(user, objData) {
-        let muster = facade.GetMapping(tableType.test) //得到 Mapping 对象
+        let muster = this.core.GetMapping(tableType.test) //得到 Mapping 对象
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .orderby('id', 'desc') //根据id字段倒叙排列
             .paginate(5, objData.id, ['id', 'item']); //每页5条，显示第${objData.id}页，只选取'id'和'item'字段
@@ -153,7 +153,7 @@ class test extends facade.Control
      * @param {Object}          objData
      */
     async notify(user, objData) {
-        let friend = facade.GetObject(EntityType.User, `${user.domain}.${objData.id}`, IndexType.Domain);
+        let friend = this.core.GetObject(EntityType.User, `${user.domain}.${objData.id}`, IndexType.Domain);
         if(!!friend) {
             setTimeout(() => {
                 friend.notify({type: NotifyType.test, info: {src: user.openid, dst: objData.openid, msg: objData.msg}}); //下行通知

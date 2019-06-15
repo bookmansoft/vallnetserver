@@ -10,7 +10,7 @@ class manage extends facade.Control
 {
     //活动列表
     async RedPackActCurrent(user, params) {
-        let redpackActList = await facade.GetMapping(tableType.redpackAct).groupOf().where([['status', '==', 1]]).records(tableField.redpackAct)
+        let redpackActList = await this.core.GetMapping(tableType.redpackAct).groupOf().where([['status', '==', 1]]).records(tableField.redpackAct)
         if(redpackActList.length >0 ) {
             let redPacetAct = redpackActList[0]
             return {errcode: 'success', data: redPacetAct}    
@@ -22,7 +22,7 @@ class manage extends facade.Control
     async UserRedPackAct(user, params) {
         let uid = user.id
         let act_id = params.act_id
-        let userRedPactActs = await facade.GetMapping(tableType.userRedPackAct).groupOf()
+        let userRedPactActs = await this.core.GetMapping(tableType.userRedPackAct).groupOf()
             .where([
                 ['uid', '==', uid],
                 ['act_id', '==', act_id]
@@ -38,7 +38,7 @@ class manage extends facade.Control
     async UserRedPack(user, params) {
         let uid = user.id
         let act_id = params.act_id
-        let userRedPacts = await facade.GetMapping(tableType.userRedPack).groupOf()
+        let userRedPacts = await this.core.GetMapping(tableType.userRedPack).groupOf()
             .where([
                 ['uid', '==', uid],
                 ['act_id', '==', act_id]
@@ -57,7 +57,7 @@ class manage extends facade.Control
         let gamegold = params.gamegold
         let amount = params.amount
 
-        let redpackAct = facade.GetObject(tableType.redpackAct, act_id); 
+        let redpackAct = this.core.GetObject(tableType.redpackAct, act_id); 
         if(!!!redpackAct ) {
             return {errcode: 'fail', errmsg: '无红包活动'}    
         }
@@ -74,9 +74,9 @@ class manage extends facade.Control
             cid: redpackAct.orm.cid,
             status: 0
         }
-        await facade.GetMapping(tableType.userRedPack).Create(userRedpackItem)
+        await this.core.GetMapping(tableType.userRedPack).Create(userRedpackItem)
 
-        let userRedPactActs = await facade.GetMapping(tableType.userRedPackAct).groupOf()
+        let userRedPactActs = await this.core.GetMapping(tableType.userRedPackAct).groupOf()
         .where([
             ['uid', '==', uid],
             ['act_id', '==', act_id]
@@ -97,7 +97,7 @@ class manage extends facade.Control
                 amount_all: amount,
                 last_act_at: current_time
             }
-            await facade.GetMapping(tableType.userRedPackAct).Create(userRedpackActItem)
+            await this.core.GetMapping(tableType.userRedPackAct).Create(userRedpackActItem)
         }
         return {errcode: 'success'}
         
@@ -109,7 +109,7 @@ class manage extends facade.Control
         let uid = user.id
         let act_id = params.act_id
         let openid = params.openid
-        let userRedPact = facade.GetObject(tableType.userRedPack, id);     //根据上行id查找userRedPact表中记录
+        let userRedPact = this.core.GetObject(tableType.userRedPack, id);     //根据上行id查找userRedPact表中记录
         if( !!userRedPact ) {
             
             if(userRedPact.orm.status != 0) {
@@ -136,7 +136,7 @@ class manage extends facade.Control
 
             let total_amount = amount
             let total_num = 1
-            let ret = await this.parent.service.wechat.sendRedPacket(total_amount, total_num, openid, redPackConfig)
+            let ret = await this.core.service.wechat.sendRedPacket(total_amount, total_num, openid, redPackConfig)
             let redpackItem = {
                 user_redpack_id
                 uid
@@ -154,7 +154,7 @@ class manage extends facade.Control
                 order_status: 0,
             }
             
-            facade.GetMapping(tableType.redpack).Create(redpackItem);
+            this.core.GetMapping(tableType.redpack).Create(redpackItem);
             */
            let cid = userRedPact.orm.cid
            let sn = stringRandom(32)
@@ -165,7 +165,7 @@ class manage extends facade.Control
             userRedPact.orm.save()
 
             //发送游戏金
-            await facade.current.service.gamegoldHelper.orderPay(cid, uid, sn, userRedPact.orm.gamegold, uid)
+            await this.core.service.gamegoldHelper.orderPay(cid, uid, sn, userRedPact.orm.gamegold, uid)
 
             return {errcode: 'success'}
 

@@ -1,6 +1,7 @@
 let facade = require('gamecloud');
 let BaseEntity = facade.BaseEntity
 let {StockBase} = require('../table/StockBase.js')
+let tableType = require('../../util/tabletype');
 
 class StockBaseEntity extends BaseEntity
 {
@@ -11,7 +12,7 @@ class StockBaseEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: 303,                     //表类型
+            etype: tableType.stockBase,          //表类型
             model: StockBase,                    //表映射类
             entity: StockBaseEntity,             //ORM映射类
         };
@@ -63,8 +64,8 @@ class StockBaseEntity extends BaseEntity
      * 进行字典映射时的钩子函数
      * @param {*} record 
      */
-    static onMapping(record){
-        return new StockBaseEntity(record, facade.current);
+    static onMapping(record, core) {
+        return new StockBaseEntity(record, core);
     }
 
     /**
@@ -75,10 +76,6 @@ class StockBaseEntity extends BaseEntity
      * @param {*} callback 
      */
     static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
         try {
             let ret = await StockBase(db, sa, pwd).findAll();
             ret.map(it=>{
@@ -95,7 +92,7 @@ class StockBaseEntity extends BaseEntity
     onUpdate() {
         this.Save();
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        // facade.current.notifyEvent('Cp.update', {Cp:this})
+        //this.core.notifyEvent('Cp.update', {Cp:this})
     }
 }
 

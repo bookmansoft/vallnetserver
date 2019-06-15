@@ -13,7 +13,7 @@ class contract extends facade.Control
      */
     async AddressCreate(user, params) {
         console.log(params.items);
-        let ret = await facade.current.service.gamegoldHelper.execute('address.create', params.items);
+        let ret = await this.core.service.gamegoldHelper.execute('address.create', params.items);
         console.log(ret.result);
         return {errcode: 'success', errmsg: 'address.create:ok', ret: ret.result};
     }
@@ -24,7 +24,7 @@ class contract extends facade.Control
         let btc = params.btc;
         let addr = params.addr;
         let uid = user.id;
-        let ret = await facade.current.service.gamegoldHelper.execute('contract.create', [
+        let ret = await this.core.service.gamegoldHelper.execute('contract.create', [
             ntype, num, btc, addr, uid
         ]);
         return {errcode: 'success', errmsg: 'contract.create:ok', ret: ret.result};
@@ -34,7 +34,7 @@ class contract extends facade.Control
     async ContractPromise(user, params) {
         let txid = params.txid;
         let uid = user.id;
-        let ret = await facade.current.service.gamegoldHelper.execute('contract.promise', [
+        let ret = await this.core.service.gamegoldHelper.execute('contract.promise', [
             txid, uid
         ]);
         return {errcode: 'success', errmsg: 'contract.promise', ret: ret.result};
@@ -44,14 +44,14 @@ class contract extends facade.Control
     async ContractExcute(user, params) {
         let txid = params.txid;
         let addr = params.addr;
-        let ret = await facade.current.service.gamegoldHelper.execute('contract.excute', [
+        let ret = await this.core.service.gamegoldHelper.execute('contract.excute', [
             txid, addr
         ]);
         return {errcode: 'success', errmsg: 'contract.excute:ok', ret: ret.result};
     }
 
     async ContractList(user, params) {
-        let ret = await facade.current.service.gamegoldHelper.execute('contract.list', [1, 1]);
+        let ret = await this.core.service.gamegoldHelper.execute('contract.list', [1, 1]);
         return {errcode: 'success', errmsg: 'contract.list:ok', ret: ret.result};
     }
 

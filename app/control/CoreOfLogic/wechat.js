@@ -5,7 +5,7 @@ const axios = require('axios')
 
 let randomHelp = require('../../util/randomHelp')
 let tableType = require('../../util/tabletype')
-let userHelp = require('../../util/userhelp')
+let userHelp = require('../../service/CoreOfLogic/userhelp')
 
 let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 
@@ -58,7 +58,7 @@ class wechat extends facade.Control {
         let appId = params.appId
         //const appId = 'wx4b3efb80ac5de780'
         try {
-            let res = await this.parent.service.wechat.unifiedOrder(appId, openid, ip, price, productInfo, tradeId);
+            let res = await this.core.service.wechat.unifiedOrder(appId, openid, ip, price, productInfo, tradeId);
             return { errcode: 'success', unifiedOrder: res }
         } catch (e) {
             console.log(e);
@@ -67,7 +67,7 @@ class wechat extends facade.Control {
     }
 
     async GetToken(user, params) {
-        const token = await this.parent.service.wechat.ensureAccessToken();
+        const token = await this.core.service.wechat.ensureAccessToken();
         
         //#region 获取微信二维码
         const response = await axios.post(`https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${token.accessToken}`, {
@@ -101,7 +101,7 @@ class wechat extends facade.Control {
         }
         let total_amount = 100
         let total_num = 1
-        let ret = await this.parent.service.wechat.sendRedPacket(total_amount, total_num, openid, redPackConfig)
+        let ret = await this.core.service.wechat.sendRedPacket(total_amount, total_num, openid, redPackConfig)
         let redpackItem = {
             act_name: redPackConfig.showName,
             mch_billno: redPackConfig.mch_billno,
@@ -115,14 +115,14 @@ class wechat extends facade.Control {
             return_msg: ret.return_msg,
             order_status: 0,
         }
-        facade.GetMapping(tableType.redpack).Create(redpackItem);
+        this.core.GetMapping(tableType.redpack).Create(redpackItem);
 
         return { errcode: 'success', ret: ret.return_msg }
     }
 
     async GetRecPackInfo(user, params) {
         let mch_billno = params.mch_billno
-        let ret = await this.parent.service.wechat.getHBinfo(mch_billno)
+        let ret = await this.core.service.wechat.getHBinfo(mch_billno)
         return { errcode: 'success', ret: ret }
     }
 }

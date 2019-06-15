@@ -1,8 +1,7 @@
 let facade = require('gamecloud')
 
 let tableType = require('../../util/tabletype');
-let VipHelp = require('../../util/viphelp');
-let userHelp = require('../../util/userhelp')
+let userHelp = require('../../service/CoreOfLogic/userhelp')
 
 /**
  * 节点控制器--订单
@@ -22,7 +21,7 @@ class order extends facade.Control
         let sn = params.sn;
         let price = params.price;
         console.log(params);
-        let ret = await facade.current.service.gamegoldHelper.execute('order.pay', [
+        let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
             cid, //game_id
             user_id, //user_id
             sn, //order_sn订单编号
@@ -48,7 +47,7 @@ class order extends facade.Control
         let attach = params.attach
         let quantity = params.quantity
         let current_time = parseInt(new Date().getTime() / 1000)
-        let tradeId = this.parent.service.wechat.getTradeId('bgw')
+        let tradeId = this.core.service.wechat.getTradeId('bgw')
         let orderItem = {
             uid: uid,
             order_sn: tradeId,
@@ -62,7 +61,7 @@ class order extends facade.Control
             create_time: current_time,
             update_time: 0,
         };
-        await facade.GetMapping(tableType.order).Create(orderItem);
+        await this.core.GetMapping(tableType.order).Create(orderItem);
         //return {errcode: 'success', errmsg: 'order:ok', tradeId: tradeId};
         return {errcode: 'success', errmsg: 'order:ok', tradeId: tradeId, order:orderItem};
     }
@@ -70,7 +69,7 @@ class order extends facade.Control
     async OrderStatus(user, params) {
         let uid = user.id
         let tradeId = params.tradeId
-        let userOrders = facade.GetMapping(tableType.order).groupOf().where([['order_sn', '==', tradeId]]).records();
+        let userOrders = this.core.GetMapping(tableType.order).groupOf().where([['order_sn', '==', tradeId]]).records();
         if(userOrders.length >0 ) {
             let order = userOrders[0];
             return {errcode: 'success', errmsg: 'order:ok', order: order.orm};
@@ -84,7 +83,7 @@ class order extends facade.Control
         let tradeId = params.tradeId
         let status = params.status
 
-        let userOrders = facade.GetMapping(tableType.order).groupOf().where([['order_sn', '==', tradeId]]).records();
+        let userOrders = this.core.GetMapping(tableType.order).groupOf().where([['order_sn', '==', tradeId]]).records();
         if(userOrders.length >0 ) {
             let order = userOrders[0]
             let current_time = parseInt(new Date().getTime() / 1000)
@@ -95,15 +94,14 @@ class order extends facade.Control
                 if (order.orm.product_id < 10) {
                     let vip_level =  order.orm.product_id
                     uid = order.orm.uid
-                    let vipHelp = new VipHelp()
-                    vipHelp.recharge(uid, vip_level)
+                    await this.core.service.viphelp.recharge(uid, vip_level)
                 } else if (!!order.orm.attach) {
                     let cid = order.orm.attach
                     let quantity = order.orm.quantity
                     let addr = await userHelp.getAddrFromUserIdAndCid(uid, cid)
-                    await facade.current.service.gamegoldHelper.execute('stock.send', [cid, quantity, addr, 'alice']);
+                    await this.core.service.gamegoldHelper.execute('stock.send', [cid, quantity, addr, 'alice']);
 
-                    let stock = facade.GetObject(tableType.stock, order.orm.product_id);          
+                    let stock = this.core.GetObject(tableType.stock, order.orm.product_id);          
                     if(!!stock) {
                         stock.setAttr('support', stock.orm.support+1);
                         stock.setAttr('remainder', stock.orm.remainder - quantity);
@@ -116,9 +114,9 @@ class order extends facade.Control
                             pay_at: current_time,
                             status: 1
                         }
-                        await facade.GetMapping(tableType.userStockLog).Create(userStockLogItem)
+                        await this.core.GetMapping(tableType.userStockLog).Create(userStockLogItem)
 
-                        let userStockItems = facade.GetMapping(tableType.userStock).groupOf().where([
+                        let userStockItems = this.core.GetMapping(tableType.userStock).groupOf().where([
                             ['uid', '==', uid],
                             ['cid', '==', cid]
                         ]).records();
@@ -141,7 +139,7 @@ class order extends facade.Control
                                 src: stock.orm.item_pic,
                                 title: stock.orm.cname
                             }
-                            await facade.GetMapping(tableType.userStock).Create(userStockItem)
+                            await this.core.GetMapping(tableType.userStock).Create(userStockItem)
                         }
 
                     }

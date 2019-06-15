@@ -47,8 +47,8 @@ class ManyReceiveEntity extends BaseEntity
      * 进行字典映射时的钩子函数
      * @param {*} record 
      */
-    static onMapping(record){
-        return new ManyReceiveEntity(record, facade.current);
+    static onMapping(record, core) {
+        return new ManyReceiveEntity(record, core);
     }
 
     /**
@@ -59,10 +59,6 @@ class ManyReceiveEntity extends BaseEntity
      * @param {*} callback 
      */
     static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
         try {
             let ret = await ManyReceive(db, sa, pwd).findAll();
             ret.map(it=>{
@@ -80,7 +76,7 @@ class ManyReceiveEntity extends BaseEntity
      */
     onUpdate() {
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        //facade.current.notifyEvent('blockuser.update', {test:this})
+        //this.core.notifyEvent('blockuser.update', {test:this})
     }
 }
 

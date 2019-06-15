@@ -18,21 +18,6 @@ let config = {
                     "portal": true //指示该服务器兼任门户
                 }
             }
-        },
-        {
-            "name"      : "Auth_1",
-            "script"    : "app/start.js",
-            "cwd"         : "./",  // pm2运行目录相对main.js的路径
-            //"out_file"   : "./logs/ios1/app-out.log",  // 普通日志路径
-            "error_file" : "./logs/auth1/app-err.log",  // 错误日志路径
-            "env": {
-                "NODE_ENV": "production",
-                "sys":{
-                    "serverType": "Auth",
-                    "serverId": 1,
-                    "portal": false
-                }
-            }
         }
         // ,{ //gamegold全节点配置
         //     "name"      : "gamegold",
