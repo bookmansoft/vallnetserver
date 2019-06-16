@@ -326,7 +326,6 @@ class weChat extends facade.Service
                 console.warn('Don\'t save token in memory, when cluster or multi-computer!');
             }
         };
-        this.prefix = 'https://api.weixin.qq.com/cgi-bin/';
         this.mpPrefix = 'https://mp.weixin.qq.com/cgi-bin/';
         this.fileServerPrefix = 'http://file.api.weixin.qq.com/cgi-bin/';
         this.payPrefix = 'https://api.weixin.qq.com/pay/';
@@ -340,7 +339,9 @@ class weChat extends facade.Service
     /*!
     * 根据创建API时传入的appid和appsecret获取access token
     * 进行后续所有API调用时，需要先获取access token
-    * 详细请看：<http://mp.weixin.qq.com/wiki/index.php?title=获取access_token> * 应用开发者无需直接调用本API。 * Examples:
+    * 详细请看：<http://mp.weixin.qq.com/wiki/index.php?title=获取access_token> * 应用开发者无需直接调用本API。 
+    * 
+    * Examples:
     * ```
     * var token = await api.getAccessToken();
     * ```
@@ -351,10 +352,8 @@ class weChat extends facade.Service
     * ```
     */
     async getAccessToken() {
-        var url = this.prefix + 'token?grant_type=client_credential&appid=' + this.appid + '&secret=' + this.appsecret;
-
         let data = await new Promise(function(resolve, reject){
-            axios.get(url).then(res => {
+            axios.get(`${wechatcfg.accessTokenUrl}?grant_type=client_credential&appid=${this.appid}&secret=${this.appsecret}`).then(res => {
                 // 微信返回的数据也是 xml, 使用 xmlParser 将它转换成 js 的对象
                 resolve(res.data);
             }).catch(err => {

@@ -11,7 +11,8 @@ let {extendObj} = require('../util/util')
  */
 async function handle(sofar) {
     try {
-        //根据令牌进行鉴权
+        //根据访问令牌(oemInfo.token)进行鉴权, 直接获得用于业务操作的用户对象
+        //令牌在签发后两个小时内有效，如果失效，将重新进行身份认证
         if(!sofar.socket.user){
             sofar.socket.user = await sofar.facade.GetObject(EntityType.User, sofar.msg.oemInfo.token, IndexType.Token);
         }
