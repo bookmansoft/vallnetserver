@@ -36,36 +36,36 @@ if(env.portal) { //如果该服务器兼任门户，则启动索引服务
     });
 }
 
-//加载资源管理节点
-facade.boot({
-    env:{
-        serverType: "Resource",
-        serverId: 1
-    }
-});
+// //加载资源管理节点
+// facade.boot({
+//     env:{
+//         serverType: "Resource",
+//         serverId: 1
+//     }
+// });
 
-//加载CRM管理节点
-facade.boot({
-    env: {
-        serverType: "CRM",
-        serverId: 1
-    },
-    //指示加载自定义数据库表
-    loading: [
-        tableType.test, 
-        tableType.cp,
-        tableType.propEntity,
-        tableType.operator,
-        tableType.cpType,
-        tableType.RedpacketEntity,
-        tableType.PrizeEntity,
-        tableType.cpfunding,
-        tableType.CpStockEntity,
-        tableType.CpStockBaseEntity,         
-    ],
-    //设置静态资源映射
-    static: [['/crm/', './web/crm']], 
-});
+// //加载CRM管理节点
+// facade.boot({
+//     env: {
+//         serverType: "CRM",
+//         serverId: 1
+//     },
+//     //指示加载自定义数据库表
+//     loading: [
+//         tableType.test, 
+//         tableType.cp,
+//         tableType.propEntity,
+//         tableType.operator,
+//         tableType.cpType,
+//         tableType.RedpacketEntity,
+//         tableType.PrizeEntity,
+//         tableType.cpfunding,
+//         tableType.CpStockEntity,
+//         tableType.CpStockBaseEntity,         
+//     ],
+//     //设置静态资源映射
+//     static: [['/crm/', './web/crm']], 
+// });
 
 //加载Wallet管理节点
 facade.boot({
