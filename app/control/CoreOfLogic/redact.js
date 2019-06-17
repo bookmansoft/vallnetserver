@@ -2,6 +2,7 @@ let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
 const stringRandom = require('string-random');
+let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 
 /**
  * 管理后台
