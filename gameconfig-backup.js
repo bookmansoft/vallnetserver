@@ -2,6 +2,15 @@
  * Created by liub on 2017-04-03.
  */
 
+let crmsql = {
+    "logging" : false,                  //记录日志
+    "db": "gamecloud",                  //数据库名称    
+    "sa": "root",                       //数据库用户名
+    "pwd": "",                          //数据库用户密码
+    "host": "127.0.0.1",                //数据库服务器IP地址
+    "port": 3306                        //数据库服务器端口号
+};
+
 /**
  * 统一的数据库连接串，如果不同服务器连接不同数据库，需要改写 config 中各个 mysql 字段
  */
@@ -18,6 +27,16 @@ let redis = {
     "host": "127.0.0.1",
     "port": 6379,
     "opts": {}
+};
+
+let resourceGamegoldnodeConfig= {
+    type: 'testnet',
+    ip:     '114.116.148.48',     //连接远程服务器（本地调试适用）
+    head: 'http',               //远程服务器通讯协议，分为 http 和 https
+    id: 'primary',            //默认访问的钱包编号
+    apiKey: 'bookmansoft',        //远程服务器基本校验密码
+    cid: 'operator',           //使用操作员的cid和token，此处直接指定为operator
+    token: '02c6754571e0cf8949fb71906a501ba520b8e960c7eb35cb3931e362e5d25d2bc5',
 };
 
 let node = {
@@ -90,6 +109,8 @@ let wechat = {
 };
 
 let config = {
+    "mysql": crmsql,
+    "resourceGamegoldnodeConfig":resourceGamegoldnodeConfig,
     "servers":{
         "Index":{
             "1":{
@@ -150,6 +171,25 @@ let config = {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",
                     "port": 9101
+                }
+            }
+        },
+        "Resource":{ //新增资源管理服务器
+            "1":{
+                "mysql": mysql,
+                "webserver": {
+                    "mapping": "127.0.0.1",
+                    "host": "127.0.0.1",
+                    "port": 9701
+                }
+            }
+        },
+        "CRM":{ //新增CRM管理服务器
+            "1":{
+                "webserver": {
+                    "mapping": "127.0.0.1",
+                    "host": "127.0.0.1",
+                    "port": 9801
                 }
             }
         }

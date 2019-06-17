@@ -1,5 +1,6 @@
 const facade = require('gamecloud')
 let {IndexType} = facade.const
+let tableType = require('./util/tabletype');
 
 //新增一种索引类型，需要在 UserEntity.prototype.IndexOf 函数中增加字段映射
 IndexType.Phone = 1001;
@@ -35,12 +36,70 @@ if(env.portal) { //如果该服务器兼任门户，则启动索引服务
     });
 }
 
+//加载资源管理节点
+facade.boot({
+    env:{
+        serverType: "Resource",
+        serverId: 1
+    }
+});
+
+//加载CRM管理节点
+facade.boot({
+    env: {
+        serverType: "CRM",
+        serverId: 1
+    },
+    //指示加载自定义数据库表
+    loading: [
+        tableType.test, 
+        tableType.cp,
+        tableType.propEntity,
+        tableType.operator,
+        tableType.cpType,
+        tableType.RedpacketEntity,
+        tableType.PrizeEntity,
+        tableType.cpfunding,
+        tableType.CpStockEntity,
+        tableType.CpStockBaseEntity,         
+    ],
+    //设置静态资源映射
+    static: [['/crm/', './web/crm']], 
+});
+
+//加载Wallet管理节点
 facade.boot({
     env: env,
     //指示加载自定义数据库表
     loading: [
-        101, 104, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 131, 132, 133, 134, 135, 136,
-        302, 303,
+        tableType.test, 
+        tableType.userWallet, 
+        tableType.blockGameCate,
+        tableType.blockGame, 
+        tableType.blockGameProp, 
+        tableType.blockGameProvider, 
+        tableType.cpUser, 
+        tableType.cpProp, 
+        tableType.cpOrder, 
+        tableType.userGame, 
+        tableType.userProp, 
+        tableType.order, 
+        tableType.vipdraw, 
+        tableType.vip, 
+        tableType.blockNotify, 
+        tableType.redpack, 
+        tableType.redpackAct, 
+        tableType.userRedPack, 
+        tableType.userRedPackAct, 
+        tableType.blockGameComment, 
+        tableType.manySend, 
+        tableType.manyReceive, 
+        tableType.mobileVerify, 
+        tableType.stock, 
+        tableType.userStock, 
+        tableType.userStockLog,
+        tableType.stockbulletin, 
+        tableType.stockBase,
     ],
     //设置静态资源映射
     static: [['/client/', './web/client']], 

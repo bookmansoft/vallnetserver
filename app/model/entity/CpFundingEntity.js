@@ -1,0 +1,97 @@
+let facade = require('gamecloud');
+let BaseEntity = facade.BaseEntity
+let {CpFunding} = require('../table/CpFunding.js')
+const tableType = require('../../util/tabletype')
+
+class CpFundingEntity extends BaseEntity
+{
+    //region 集合功能
+
+    /**
+     * 为 Mapping 映射进行参数配置
+     */
+    static get mapParams() {
+        return {
+            etype: tableType.cpfunding,          //表类型
+            model: CpFunding,                    //表映射类
+            entity: CpFundingEntity,             //ORM映射类
+        };
+    }
+
+    /**
+     * 创建记录时的钩子函数
+     */
+    static async onCreate(cpid,stock_num,total_amount,stock_amount,stock_rmb,audit_state_id,audit_text,modify_date,
+        cp_name,cp_text,cp_type,cp_url,develop_name,develop_text,user_id,cid,operator_id) {
+        try{
+            // console.log(26,cp_name);
+            let it = await CpFunding().create({
+                'cpid': cpid,
+                'stock_num': stock_num,
+                'total_amount': total_amount,
+                'stock_amount': stock_amount,
+                'stock_rmb': stock_rmb,
+                'audit_state_id': audit_state_id,
+                'audit_text': audit_text,
+                'modify_date': modify_date,
+                'cp_name': cp_name,
+                'cp_text': cp_text,
+                'cp_type': cp_type,
+                'cp_url': cp_url,
+                'develop_name': develop_name,
+                'develop_text': develop_text,
+                'user_id': user_id,
+                'cid':cid,
+                'operator_id':operator_id,
+            });
+            await it.save();
+    
+            return it;
+        }
+        catch(e){
+            console.error(e);
+        }
+        return null;
+    }
+
+    /**
+     * 进行字典映射时的钩子函数
+     * @param {*} record 
+     */
+    static onMapping(record){
+        return new CpFundingEntity(record, facade.current);
+    }
+
+    /**
+     * 载入数据库记录时的钩子函数
+     * @param {*} db 
+     * @param {*} sa 
+     * @param {*} pwd 
+     * @param {*} callback 
+     */
+    static async onLoad(db, sa, pwd, callback){
+        db = db || facade.current.options.mysql.db;
+        sa = sa || facade.current.options.mysql.sa;
+        pwd = pwd || facade.current.options.mysql.pwd;
+
+        try {
+            let ret = await CpFunding(db, sa, pwd).findAll();
+            ret.map(it=>{
+                callback(it);
+            });
+        } catch(e) {}
+    }
+
+    //endregion
+
+    /**
+     * 记录更新函数，可省略而直接使用基类方法(调用 this.Save() 直接写数据库)
+     */
+    onUpdate() {
+        this.Save();
+        //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
+        // facade.current.notifyEvent('Cp.update', {Cp:this})
+    }
+}
+
+exports = module.exports = CpFundingEntity;
