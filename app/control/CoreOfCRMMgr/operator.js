@@ -1,8 +1,6 @@
 let facade = require('gamecloud')
 let { ReturnCode, NotifyType } = facade.const
 
-//引入自定义的远程节点类
-let RemoteNode = require('./RemoteNode')
 let tableType = require('../../util/tabletype')
 
 /**
@@ -11,19 +9,13 @@ let tableType = require('../../util/tabletype')
  */
 class operator extends facade.Control {
     /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-    /**
      * 删除记录
      * @param {*} user 
      * @param {*} objData 
      */
     DeleteRecord(user, objData) {
         try {
-            facade.GetMapping(tableType.operator).Delete(objData.id, true);
+            this.core.GetMapping(tableType.operator).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -38,7 +30,7 @@ class operator extends facade.Control {
      */
     UpdateRecord(user, objData) {
         try {
-            let operator = facade.GetObject(tableType.operator, objData.id);
+            let operator = this.core.GetObject(tableType.operator, objData.id);
             if (!!operator) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 operator.setAttr('login_name', objData.login_name);
@@ -64,12 +56,11 @@ class operator extends facade.Control {
      */
     async CreateRecord(user, objData) {
         try {
-            let remote = new RemoteNode().conn(objData.userinfo);//特殊，此处用objData作为参数名
             let paramArray = new Array();
             paramArray.push(objData.login_name);
             console.log("创建操作员参数串：");
             console.log(paramArray);
-            let retAuthOld = await remote.execute('sys.createAuthToken', paramArray);
+            let retAuthOld = await this.core.service.RemoteNode.conn(user.id).execute('sys.createAuthToken', paramArray);
             console.log(retAuthOld);
             let retAuth=retAuthOld.result;
 
@@ -80,7 +71,7 @@ class operator extends facade.Control {
             let cid = retAuth[0] == null ? retAuth.cid : retAuth[0].cid;
             let token = retAuth[0] == null ? retAuth.token : retAuth[0].token;
 
-            let operator = await facade.GetMapping(tableType.operator).Create(
+            let operator = await this.core.GetMapping(tableType.operator).Create(
                 objData.login_name,
                 objData.password,
                 cid,
@@ -108,12 +99,11 @@ class operator extends facade.Control {
      */
     async ChangePassword(user, objData) {
         try {
-            let remote = new RemoteNode().conn(objData.userinfo);//特殊，此处用objData作为参数名
             console.log("创建操作员参数串：");
             console.log(objData.userinfo);//获取其id属性使用
             console.log(objData.oldpassword,objData.newpassword);
             //从userinfo中获取到可信的id
-            let operator = facade.GetObject(tableType.operator, parseInt(objData.userinfo.id));
+            let operator = this.core.GetObject(tableType.operator, parseInt(objData.userinfo.id));
             // console.log(operator);
             if (!!operator) {
                 //记录有效
@@ -148,11 +138,10 @@ class operator extends facade.Control {
      */
     async ChangeState(user, objData) {
         try {
-            let remote = new RemoteNode().conn(objData.userinfo);//特殊，此处用objData作为参数名
             console.log("创建操作员参数串：");
             console.log(objData.userinfo);//获取其id属性使用
             //从userinfo中获取到可信的id
-            let operator = facade.GetObject(tableType.operator, parseInt(objData.id));
+            let operator = this.core.GetObject(tableType.operator, parseInt(objData.id));
             if (!!operator) {
                 //原密码正确的情况下，执行更新操作
                 console.log("开始更新状态……");
@@ -183,7 +172,7 @@ class operator extends facade.Control {
     Retrieve(user, objData) {
         try {
             //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-            let operator = facade.GetObject(tableType.operator, parseInt(objData.id));
+            let operator = this.core.GetObject(tableType.operator, parseInt(objData.id));
             //console.log(operator);
             if (!!operator) {
                 return {
@@ -224,7 +213,7 @@ class operator extends facade.Control {
             paramArray.push(tmp2);
             console.log(paramArray);
             //得到 Mapping 对象
-            let muster = facade.GetMapping(tableType.operator)
+            let muster = this.core.GetMapping(tableType.operator)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
@@ -295,7 +284,7 @@ class operator extends facade.Control {
             }
             console.log(paramArray);
             //得到 Mapping 对象
-            let muster = facade.GetMapping(tableType.operator)
+            let muster = this.core.GetMapping(tableType.operator)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列

@@ -1,21 +1,11 @@
 let facade = require('gamecloud')
 let { ReturnCode, NotifyType } = facade.const
 
-//引入自定义的远程节点类
-let RemoteNode = require('./RemoteNode');
-
 /**
  * 收款地址的控制器
  * Updated by thomasFuzhou on 2018-11-20.
  */
 class address extends facade.Control {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     /**
      * 创建收款地址
      * @param {*} user 
@@ -23,14 +13,13 @@ class address extends facade.Control {
      */
     async Create(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("address.Create参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('address.create', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('address.create', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -47,14 +36,13 @@ class address extends facade.Control {
      */
     async Receive(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("address.Receive参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('address.receive', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('address.receive', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -73,14 +61,13 @@ class address extends facade.Control {
      */
     async Filter(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("address.Filter参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let retOld = await remote.execute('address.filter', paramArray);
+            let retOld = await this.core.service.RemoteNode.conn(user.id).execute('address.filter', paramArray);
             console.log(retOld);
             let ret=retOld.result;
 

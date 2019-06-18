@@ -10,22 +10,12 @@ let facade = require('gamecloud')
 let { ReturnCode, NotifyType } = facade.const
 let tableType = require('../../util/tabletype');
 
-//引入自定义的远程节点类
-let RemoteNode = require('./RemoteNode');
-
 /**
  * 道具管理类
  * @class prop
  * @extends {facade.Control}
  */
 class prop extends facade.Control {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     /**
      *
      * 道具列表
@@ -35,12 +25,11 @@ class prop extends facade.Control {
      * @memberof prop
      */
     async List(user, paramGold) {
-        let remote = new RemoteNode().conn(paramGold.userinfo);
         let paramArray = paramGold.items;
         if (typeof (paramArray) == "string") {
             paramArray = eval(paramArray);
         }
-        let ret = await remote.execute('prop.list', paramArray);
+        let ret = await this.core.service.RemoteNode.conn(user.id).execute('prop.list', paramArray);
         console.log(ret);
         //return { code: ReturnCode.Success, data: ret };
         return { code: ret.code, data: ret.result };
@@ -73,7 +62,7 @@ class prop extends facade.Control {
         cpIdText = cpIdText.data || {};
 
         //得到 Mapping 对象
-        let muster = facade.GetMapping(tableType.propEntity)
+        let muster = this.core.GetMapping(tableType.propEntity)
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .where(paramArray)
             .orderby('id', 'desc') //根据id字段倒叙排列
@@ -115,7 +104,7 @@ class prop extends facade.Control {
         if (typeof (objData.cid) != "undefined" && (objData.cid != "")) {
             paramArray.push(['cid', '==', objData.cid]);
         }
-        let resList = facade.GetMapping(tableType.propEntity) //得到 Mapping 对象
+        let resList = this.core.GetMapping(tableType.propEntity) //得到 Mapping 对象
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .where(paramArray)
             .orderby('id', 'desc') //根据id字段倒叙排列
@@ -150,7 +139,7 @@ class prop extends facade.Control {
         cpIdText = cpIdText.data || {};
         cpIdUrl = cpIdUrl.data || {};
         //根据上行id查找表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-        let prop = facade.GetObject(tableType.propEntity, parseInt(objData.id));
+        let prop = this.core.GetObject(tableType.propEntity, parseInt(objData.id));
         if (!!prop) {
             return {
                 code: ReturnCode.Success,
@@ -227,7 +216,7 @@ class prop extends facade.Control {
         //查找是否有props_id存在的记录
         let paramArray = new Array();
         paramArray.push(['props_id','==', paramGold.props_id]);
-        let isExists = facade.GetMapping(tableType.propEntity)
+        let isExists = this.core.GetMapping(tableType.propEntity)
             .groupOf()
             .where(paramArray)
             .records(['id']);
@@ -235,7 +224,7 @@ class prop extends facade.Control {
             return { code: 3, msg: "props is exists" };
         }
         try{
-             res = await facade.GetMapping(tableType.propEntity).Create(
+             res = await this.core.GetMapping(tableType.propEntity).Create(
                 paramGold.props_id,
                 paramGold.props_name,
                 paramGold.props_type,
@@ -278,7 +267,7 @@ class prop extends facade.Control {
         if (id == '') {
             return { code: -1 };
         }
-        let prop = facade.GetObject(tableType.propEntity, id);
+        let prop = this.core.GetObject(tableType.propEntity, id);
         if (!!prop) {
             if (props_id != '') {
                 prop.setAttr('props_id', props_id);
@@ -337,7 +326,7 @@ class prop extends facade.Control {
         }
         let id = parseInt(paramGold.id);
         //查找该道具本地详情
-        let propDetail = facade.GetObject(tableType.propEntity, id);
+        let propDetail = this.core.GetObject(tableType.propEntity, id);
         if (propDetail == '') {
             return { code: -2, msg: '道具信息错误' };
         }
@@ -371,14 +360,13 @@ class prop extends facade.Control {
         if (oid == '') {
             return { code: -1, msg: '道具id不正确' };
         }
-        let remote = new RemoteNode().conn(paramGold.userinfo);
         //prop.order [cid oid gold addr]
         let ret = new Array();
         let k = 0;
         let retOrder = '';
         for (let i = 0; i < proNum; i++) {
             console.log([cid, oid, props_price, addr[i]]);
-            let retOrderOld = await remote.execute('prop.order',[cid, oid, props_price, addr[i]]);
+            let retOrderOld = await this.core.service.RemoteNode.conn(user.id).execute('prop.order',[cid, oid, props_price, addr[i]]);
             let retOrder=retOrderOld.result;
             console.log(retOrder);
             if (retOrder != null) {
@@ -399,7 +387,7 @@ class prop extends facade.Control {
     cpIdText() {
         let paramArray = new Array();
         //paramArray.push(['cp_state','==',2]);//读取已上架
-        let resList = facade.GetMapping(tableType.cp)
+        let resList = this.core.GetMapping(tableType.cp)
             .groupOf()
             .where(paramArray)
             .orderby('id', 'desc')
@@ -417,7 +405,7 @@ class prop extends facade.Control {
     cpIdUrl() {
         let paramArray = new Array();
         //paramArray.push(['cp_state','==',2]);//读取已上架
-        let resList = facade.GetMapping(tableType.cp)
+        let resList = this.core.GetMapping(tableType.cp)
             .groupOf()
             .where(paramArray)
             .orderby('id', 'desc')
@@ -444,7 +432,7 @@ class prop extends facade.Control {
         if (id == '') {
             return { code: -1 };
         }
-        let prop = facade.GetObject(tableType.propEntity, id);
+        let prop = this.core.GetObject(tableType.propEntity, id);
         if (!!prop) {
             if (status != '') {
                 prop.setAttr('status', status);
@@ -500,7 +488,7 @@ class prop extends facade.Control {
      */
     getCpUrl(user, objData) {
         try {
-            let cp = facade.GetObject(tableType.cp, parseInt(objData.id));
+            let cp = this.core.GetObject(tableType.cp, parseInt(objData.id));
             if (!!cp) {
                 return {
                     code: ReturnCode.Success,
@@ -526,10 +514,8 @@ class prop extends facade.Control {
      * jinghh 用做创建道具获取所有游戏
      */
     async ListAllCpRecord() {
-
-
         let paramArray = new Array();
-        let resList = facade.GetMapping(tableType.cp)
+        let resList = this.core.GetMapping(tableType.cp)
             .groupOf()
             .where(paramArray)
             .orderby('id', 'desc')
@@ -546,10 +532,6 @@ class prop extends facade.Control {
         }
         return { code: ReturnCode.Success, data: $data };
     }
-
-
-
-
 }
 
 exports = module.exports = prop;

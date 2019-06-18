@@ -16,7 +16,7 @@ class CoreOfCRMMgr extends CoreOfBase
 
         //中间件设定
         this.middlewareSetting = {
-            default: ['parseParams', 'commonHandle', 'afterHandle']
+            default: ['parseParams', 'authCRMMgr', 'commonHandle', 'afterHandle']
         };
         
         //载入控制器

@@ -2,20 +2,11 @@ let facade = require('gamecloud')
 let { ReturnCode, NotifyType } = facade.const
 let tableType = require('../../util/tabletype');
 
-//引入自定义的远程节点类
-let RemoteNode = require('./RemoteNode');
-
 /**
  * 游戏的控制器
  * Updated by thomasFuzhou on 2018-11-19.
  */
 class cpfunding extends facade.Control {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
     /**
      * 删除记录
      * @param {*} user 
@@ -23,7 +14,7 @@ class cpfunding extends facade.Control {
      */
     async DeleteRecord(user, objData) {
         try {
-            facade.GetMapping(tableType.cpfunding).Delete(objData.id, true);
+            this.core.GetMapping(tableType.cpfunding).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -38,7 +29,7 @@ class cpfunding extends facade.Control {
     async UpdateRecord(user, objData) {
         try {
             console.log("46:更新数据",objData.id);
-            let cpfunding = facade.GetObject(tableType.cpfunding, parseInt(objData.id));
+            let cpfunding = this.core.GetObject(tableType.cpfunding, parseInt(objData.id));
             if (!!cpfunding) {
                 console.log(49);
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
@@ -75,14 +66,13 @@ class cpfunding extends facade.Control {
      */
     async StockRecord(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("cpfunding.StockRecord参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log("paramArray:",paramArray);
-            let ret = await remote.execute('stock.record', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('stock.record', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -98,20 +88,19 @@ class cpfunding extends facade.Control {
      */
     async Create(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("cpfunding.Create参数串：");
             let cid=paramGold.cid;
             let stock_num=parseInt(paramGold.stock_num);
             let stock_amount=parseInt(paramGold.stock_amount);
             let operator_id=parseInt(paramGold.operator_id);
             //获取operator
-            let operator = facade.GetObject(tableType.operator, parseInt(operator_id));
+            let operator = this.core.GetObject(tableType.operator, parseInt(operator_id));
             console.log("获得的操作员信息为: ",operator.getAttr('cid'));
 
 
             let paramArray = [cid,stock_num,stock_amount,operator.getAttr('cid')];
             console.log(paramArray);
-            let ret = await remote.execute('stock.offer', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('stock.offer', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -128,7 +117,7 @@ class cpfunding extends facade.Control {
     async CreateRecord(user, objData) {
         try {
            
-            let cpfunding = await facade.GetMapping(tableType.cpfunding).Create(
+            let cpfunding = await this.core.GetMapping(tableType.cpfunding).Create(
                 objData.cpid,
                 objData.stock_num,
                 objData.total_amount,
@@ -165,7 +154,7 @@ class cpfunding extends facade.Control {
     async Retrieve(user, objData) {
         console.log(158,objData.id);
         try {
-            let cpfunding = facade.GetObject(tableType.cpfunding, parseInt(objData.id));
+            let cpfunding = this.core.GetObject(tableType.cpfunding, parseInt(objData.id));
             if (!!cpfunding) {
                 // console.log(162,"有数据啊");
                 // console.log(cpfunding.getAttr('cpid'));
@@ -238,7 +227,7 @@ class cpfunding extends facade.Control {
             console.log('cpfunding列表参数：',paramArray);
 
             //得到 Mapping 对象
-            let muster = facade.GetMapping(tableType.cpfunding)
+            let muster = this.core.GetMapping(tableType.cpfunding)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
@@ -287,7 +276,7 @@ class cpfunding extends facade.Control {
     ListCp(user, objData) {
         try {
             //得到 Mapping 对象
-            let muster = facade.GetMapping(tableType.cp)
+            let muster = this.core.GetMapping(tableType.cp)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .orderby('id', 'asc') //根据id字段倒叙排列
                 .paginate(10, 1, ['id', 'cp_id', 'cp_text']); 

@@ -1,28 +1,11 @@
 let facade = require('gamecloud')
 let { ReturnCode, NotifyType } = facade.const
 
-//引入自定义的远程节点类
-let RemoteNode = require('./RemoteNode');
-
-//引入工具包
-const toolkit = require('gamerpc')
-//创建授权式连接器实例
-const remote = new toolkit.conn();
-//兼容性设置，提供模拟浏览器环境中的 fetch 函数
-remote.setFetch(require('node-fetch'))
-
 /**
  * 交易的控制器
  * Updated by thomasFuzhou on 2018-11-19.
  */
 class tx extends facade.Control {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     /**
      * 查询交易记录(钱包)
      * tx.get.wallet
@@ -31,14 +14,13 @@ class tx extends facade.Control {
      */
     async GetWallet(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("tx.GetWallet参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('tx.get.wallet', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('tx.get.wallet', paramArray);
             //console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -57,14 +39,13 @@ class tx extends facade.Control {
      */
     async List(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("tx.List参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray, "::", paramGold.currentPage);
-            let orignData = await remote.execute('tx.list', paramArray);
+            let orignData = await this.core.service.RemoteNode.conn(user.id).execute('tx.list', paramArray);
             let srcData=orignData.result.reverse();//倒排序
 
             //扩展分页器对象
@@ -130,14 +111,13 @@ class tx extends facade.Control {
      */
     async Sign(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("tx.sign参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('tx.sign', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('tx.sign', paramArray);
             console.log(ret);
              //return { code: ReturnCode.Success, data: ret };
              return { code: ret.code, data: ret.result };
@@ -156,14 +136,13 @@ class tx extends facade.Control {
      */
     async Create(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("tx.Create参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('tx.create', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('tx.create', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -184,14 +163,13 @@ class tx extends facade.Control {
      */
     async Send(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("tx.Send参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('tx.send', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('tx.send', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };

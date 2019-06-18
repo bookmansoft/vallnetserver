@@ -2,20 +2,11 @@ let facade = require('gamecloud')
 let { ReturnCode, NotifyType } = facade.const
 let tableType = require('../../util/tabletype');
 
-//引入自定义的远程节点类
-let RemoteNode = require('./RemoteNode');
-
 /**
  * 游戏的控制器
  * Updated by thomasFuzhou on 2018-11-19.
  */
 class cp extends facade.Control {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
     /**
      * 删除记录
      * @param {*} user 
@@ -23,7 +14,7 @@ class cp extends facade.Control {
      */
     DeleteRecord(user, objData) {
         try {
-            facade.GetMapping(tableType.cp).Delete(objData.id, true);
+            this.core.GetMapping(tableType.cp).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -37,7 +28,7 @@ class cp extends facade.Control {
      */
     UpdateRecord(user, objData) {
         try {
-            let cp = facade.GetObject(tableType.cp, objData.id);
+            let cp = this.core.GetObject(tableType.cp, objData.id);
             if (!!cp) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 cp.setAttr('cp_id', objData.cp_id);
@@ -72,7 +63,7 @@ class cp extends facade.Control {
      */
     async CreateRecord(user, objData) {
         try {
-            let cp = await facade.GetMapping(tableType.cp).Create(
+            let cp = await this.core.GetMapping(tableType.cp).Create(
                 objData.cp_id,
                 objData.cp_name,
                 objData.cp_text,
@@ -107,14 +98,13 @@ class cp extends facade.Control {
      */
     async Create(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("cp.Create参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('cp.create', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('cp.create', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -130,14 +120,13 @@ class cp extends facade.Control {
      */
     async Change(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("cp.Change参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('cp.change', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('cp.change', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -153,14 +142,13 @@ class cp extends facade.Control {
      */
     async ById(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("cp.ById参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('cp.byId', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('cp.byId', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -176,14 +164,13 @@ class cp extends facade.Control {
      */
     async ByName(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("cp.ByName参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('cp.byName', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('cp.byName', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -199,7 +186,7 @@ class cp extends facade.Control {
      */
     Retrieve(user, objData) {
         try {
-            let cp = facade.GetObject(tableType.cp, parseInt(objData.id));
+            let cp = this.core.GetObject(tableType.cp, parseInt(objData.id));
             if (!!cp) {
                 return {
                     code: ReturnCode.Success,
@@ -243,14 +230,13 @@ class cp extends facade.Control {
      */
     async List(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("cp.list参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('cp.list', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('cp.list', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -299,7 +285,7 @@ class cp extends facade.Control {
             }
 
             //得到 Mapping 对象
-            let muster = facade.GetMapping(tableType.cp)
+            let muster = this.core.GetMapping(tableType.cp)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
@@ -339,7 +325,7 @@ class cp extends facade.Control {
     ListCpType(user, objData) {
         try {
             //得到 Mapping 对象
-            let muster = facade.GetMapping(tableType.cpType)
+            let muster = this.core.GetMapping(tableType.cpType)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .orderby('id', 'asc') //根据id字段倒叙排列
                 .paginate(10, 1, ['id', 'cp_type_id', 'cp_type_name']); 

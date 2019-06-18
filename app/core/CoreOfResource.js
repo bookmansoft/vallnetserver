@@ -228,7 +228,7 @@ class CoreOfResource extends CoreOfBase {
         console.log("stockJob触发:", req.params.id);
         try {
             //0、获取对象及cid
-            let cpstockbase = facade.GetObject(tableType.CpStockBaseEntity, parseInt(req.params.id));
+            let cpstockbase = this.core.GetObject(tableType.CpStockBaseEntity, parseInt(req.params.id));
             if (!!!cpstockbase) {
                 console.log("cpstockbase不存在!", req.params.id);
                 return;
@@ -286,7 +286,7 @@ class CoreOfResource extends CoreOfBase {
                     total_amount,
                 );
 
-                let cpstock = await facade.GetMapping(tableType.CpStockEntity).Create(
+                let cpstock = await this.core.GetMapping(tableType.CpStockEntity).Create(
                     cpstockbase.getAttr("cid"),
                     cpstockbase.getAttr("cp_name"),
                     cpstockbase.getAttr("cp_text"),
@@ -311,7 +311,7 @@ class CoreOfResource extends CoreOfBase {
         console.log("stockJobBase触发:", req.params.id);
         try {
             //0、获取对象及cid
-            let cpstockbase = facade.GetObject(tableType.CpStockBaseEntity, parseInt(req.params.id));
+            let cpstockbase = this.core.GetObject(tableType.CpStockBaseEntity, parseInt(req.params.id));
             if (!!!cpstockbase) {
                 console.log("cpstockbase不存在!", req.params.id);
                 return;

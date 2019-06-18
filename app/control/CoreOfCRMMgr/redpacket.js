@@ -8,19 +8,13 @@ const tableType = require('../../util/tabletype')
  */
 class redpacket extends facade.Control {
     /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-    /**
      * 删除记录
      * @param {*} user 
      * @param {*} objData 
      */
     DeleteRecord(user, objData) {
         try {
-            facade.GetMapping(tableType.RedpacketEntity).Delete(objData.id, true);
+            this.core.GetMapping(tableType.RedpacketEntity).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -37,7 +31,7 @@ class redpacket extends facade.Control {
         try {
             console.log(JSON.stringify(objData));
             console.log(objData.id);
-            let redpacket = facade.GetObject(tableType.RedpacketEntity, parseInt(objData.id));
+            let redpacket = this.core.GetObject(tableType.RedpacketEntity, parseInt(objData.id));
             if (!!redpacket) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 redpacket.setAttr('act_name', objData.act_name);
@@ -70,7 +64,7 @@ class redpacket extends facade.Control {
     async CreateRecord(user, objData) {
         try {
 
-            let redpacket = await facade.GetMapping(tableType.RedpacketEntity).Create(
+            let redpacket = await this.core.GetMapping(tableType.RedpacketEntity).Create(
                 objData.act_name,
                 objData.act_sequence,
                 objData.total_gamegold,
@@ -102,7 +96,7 @@ class redpacket extends facade.Control {
     Retrieve(user, objData) {
         try {
             //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-            let redpacket = facade.GetObject(tableType.RedpacketEntity, parseInt(objData.id));
+            let redpacket = this.core.GetObject(tableType.RedpacketEntity, parseInt(objData.id));
             console.log(redpacket);
             if (!!redpacket) {
                 return {
@@ -158,7 +152,7 @@ class redpacket extends facade.Control {
 
             console.log(paramArray);
             //得到 Mapping 对象
-            let muster = facade.GetMapping(tableType.RedpacketEntity)
+            let muster = this.core.GetMapping(tableType.RedpacketEntity)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列

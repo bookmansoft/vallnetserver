@@ -25,19 +25,12 @@ try {
 class test extends facade.Control
 {
     /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
-    /**
      * 增
      * @param {*} user 
      * @param {*} objData 
      */
     async Create(user, objData) {
-        let test = await facade.GetMapping(tableType.test).Create(Math.random().toString());
+        let test = await this.core.GetMapping(tableType.test).Create(Math.random().toString());
         return {code: ReturnCode.Success, data: test.item};
     }
 
@@ -47,7 +40,7 @@ class test extends facade.Control
      * @param {*} objData 
      */
     Update(user, objData) {
-        let test = facade.GetObject(tableType.test, objData.id);           //根据上行id查找test表中记录
+        let test = this.core.GetObject(tableType.test, objData.id);           //根据上行id查找test表中记录
         if(!!test) {
             test.setAttr('item', Math.random().toString());     //修改所得记录的item字段，下次查询时将得到新值，同时会自动存入数据库
             return {code: ReturnCode.Success, data: test.getAttr('item')};
@@ -64,7 +57,7 @@ class test extends facade.Control
         console.log("控制器添加日志：");
         console.log(objData.id);
         //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-        let test = facade.GetObject(tableType.test, parseInt(objData.id));
+        let test = this.core.GetObject(tableType.test, parseInt(objData.id));
         if(!!test) {
             return {code: ReturnCode.Success, data: test.getAttr('item')};
         }
@@ -77,7 +70,7 @@ class test extends facade.Control
      * @param {*} objData 
      */
     Delete(user, objData) {
-        facade.GetMapping(tableType.test).Delete(objData.id, true);
+        await this.core.GetMapping(tableType.test).Delete(objData.id, true);
         return {code: ReturnCode.Success};
     }
 
@@ -87,7 +80,7 @@ class test extends facade.Control
      * @param {*} objData 
      */
     List(user, objData) {
-        let muster = facade.GetMapping(tableType.test) //得到 Mapping 对象
+        let muster = await this.core.GetMapping(tableType.test) //得到 Mapping 对象
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .orderby('item', 'desc') //根据id字段倒叙排列
             .paginate(5, objData.id, ['id', 'item']); //每页5条，显示第${objData.id}页，只选取'id'和'item'字段

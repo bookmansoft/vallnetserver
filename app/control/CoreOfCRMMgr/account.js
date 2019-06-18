@@ -1,21 +1,11 @@
 let facade = require('gamecloud')
 let { ReturnCode, NotifyType } = facade.const
 
-//引入自定义的远程节点类
-let RemoteNode = require('./RemoteNode');
-
 /**
  * 账户的控制器
  * Updated by thomasFuzhou on 2018-11-20.
  */
 class account extends facade.Control {
-    /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-
     /**
      * 列表账户
      * @param {*} user 
@@ -23,14 +13,13 @@ class account extends facade.Control {
      */
     async List(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("account.List参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('account.list', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('account.list', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -38,7 +27,6 @@ class account extends facade.Control {
             console.log(error);
             return { code: -1, data: null, message: "account.List方法出错" };
         }
-
     }
 
     /**
@@ -48,14 +36,13 @@ class account extends facade.Control {
      */
     async Get(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("account.Get参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('account.get', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('account.get', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -73,14 +60,13 @@ class account extends facade.Control {
      */
     async Create(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("account.Create参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('account.create', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('account.create', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -98,14 +84,13 @@ class account extends facade.Control {
      */
     async Amount(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("account.Amount参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('account.amount', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('account.amount', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -123,14 +108,13 @@ class account extends facade.Control {
      */
     async Received(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("account.Receive参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('account.received', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('account.received', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -148,14 +132,13 @@ class account extends facade.Control {
      */
     async ListReceived(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("account.ListReceived参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('account.listreceived', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('account.listreceived', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -173,14 +156,13 @@ class account extends facade.Control {
      */
     async BalanceConfirmed(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("account.BalanceConfirmed参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('balance.confirmed', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('balance.confirmed', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -198,14 +180,13 @@ class account extends facade.Control {
      */
     async BalanceAll(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("account.BalanceAll参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('balance.all', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('balance.all', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -223,14 +204,13 @@ class account extends facade.Control {
      */
     async BalanceUnconfirmed(user, paramGold) {
         try {
-            let remote = new RemoteNode().conn(paramGold.userinfo);
             console.log("account.BalanceUnconfirmed参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await remote.execute('balance.unconfirmed', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.id).execute('balance.unconfirmed', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
