@@ -196,63 +196,6 @@ class operator extends facade.Control {
     }
 
     /**
-     * 验证密码
-     * @param {*} user 
-     * @param {*} objData userName password type 
-     */
-    Login(user, objData) {
-        try {
-            //构造查询条件
-            let paramArray = new Array();
-            if (typeof (objData.userName) != "undefined" && (objData.userName != "")) {
-                console.log(`login_name 参数: ${objData.userName}`);
-                let tmp = ['login_name', '==', objData.userName];
-                paramArray.push(tmp);
-            }
-            let tmp2 = ['state', '==', 1];
-            paramArray.push(tmp2);
-            console.log(paramArray);
-            //得到 Mapping 对象
-            let muster = this.core.GetMapping(tableType.operator)
-                .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
-                .where(paramArray)
-                .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(1, 1, ['id', 'login_name', 'password', 'cid', 'token']); //每页1条，显示第${objData.id}页，只选取'id'和'item'字段
-
-            //获取值
-            let $data = null;
-            for (let $value of muster.records()) {
-                $data = { id: $value['id'], login_name: $value['login_name'], password: $value['password'], cid: $value['cid'], token: $value['token'], rank: 0 };
-                console.log($data);
-            }
-            //判断是否有值并处理
-            if ($data == null) {
-                console.log("登录失败，无此用户或用户已注销！");
-                return { status: "error", type: "account", currentAuthority: "guest" };
-            }
-            //有值的情况下，判断密码是否正确
-            if (objData.password == $data.password) {
-                //密码正确
-                console.log("登录成功");
-                if (objData.userName == "admin") {
-                    return { status: "ok", type: "account", currentAuthority: "admin", userinfo: { id: $data.id } };
-                }
-                else {
-                    return { status: "ok", type: "account", currentAuthority: "user", userinfo: { id: $data.id } };
-                }
-            }
-            else {
-                //密码错误
-                console.log("登录失败，密码错误！");
-                return { status: "error", type: "account", currentAuthority: "guest" };
-            }
-        } catch (error) {
-            console.log(error);
-            return { status: "error", type: "account", currentAuthority: "guest" };
-        }
-    }
-
-    /**
      * 从数据库中获取列表
      * 客户端直接调用此方法
      * @param {*} user 
