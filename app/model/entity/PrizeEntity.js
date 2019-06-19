@@ -21,9 +21,9 @@ class PrizeEntity extends BaseEntity
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(act_name,mch_billno,nick_name,re_openid,remark,send_name,total_amount,total_num,wishing,return_msg,order_status) {
+    static async onCreate(db, act_name,mch_billno,nick_name,re_openid,remark,send_name,total_amount,total_num,wishing,return_msg,order_status) {
         try{
-            let it = await Prize().create({
+            let it = await Prize(db).create({
                 'act_name': act_name,
                 'mch_billno': mch_billno,
                 'nick_name': nick_name,
@@ -50,24 +50,18 @@ class PrizeEntity extends BaseEntity
      * 进行字典映射时的钩子函数
      * @param {*} record 
      */
-    static onMapping(record){
-        return new PrizeEntity(record, facade.current);
+    static onMapping(record, core) {
+        return new PrizeEntity(record, core);
     }
 
     /**
      * 载入数据库记录时的钩子函数
      * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
+    static async onLoad(db, callback){
         try {
-            let ret = await Prize(db, sa, pwd).findAll();
+            let ret = await Prize(db).findAll();
             ret.map(it=>{
                 callback(it);
             });
@@ -81,7 +75,7 @@ class PrizeEntity extends BaseEntity
      */
     onUpdate() {
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        facade.current.notifyEvent('Prize.update', {Prize:this})
+        this.core.notifyEvent('Prize.update', {Prize:this})
     }
 }
 

@@ -16,7 +16,7 @@ class task extends baseTask {
                     //填充Promise
                     pl.push(new Promise((resolve, reject) => {
                         let sysCur = iniInfo.servers[idx][x];
-                        User(sysCur.mysql.db, sysCur.mysql.sa, sysCur.mysql.pwd, sysCur.mysql.host, sysCur.mysql.port).findAll().then(ret=>{
+                        User(sysCur.mysql).findAll().then(ret=>{
                             ret.map(it=>{
                                 it.status = 1;
                                 process.nextTick(()=>{

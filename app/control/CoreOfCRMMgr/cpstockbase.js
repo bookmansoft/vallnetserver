@@ -40,7 +40,7 @@ class cpstockbase extends facade.Control {
                 cpstockbase.setAttr('sell_stock_amount', objData.sell_stock_amount);
                 cpstockbase.setAttr('sell_stock_num', objData.sell_stock_num);
                 cpstockbase.setAttr('base_amount', objData.base_amount);
-                cpstockbase.setAttr('operator_id',objData.operator_id);
+                cpstockbase.setAttr('operator_id', user.id);
                 cpstockbase.Save();
 
                 return { code: ReturnCode.Success };
@@ -69,7 +69,7 @@ class cpstockbase extends facade.Control {
                 objData.sell_stock_amount,
                 objData.sell_stock_num,
                 objData.base_amount,
-                objData.operator_id,
+                user.id,
             );
             let ret = { code: ReturnCode.Success, data: null, message: "cpstockbase.CreateRecord成功" };
             console.log(ret);
@@ -130,7 +130,6 @@ class cpstockbase extends facade.Control {
                 objData = {};
             }
             let currentPage = objData.currentPage;
-            // console.log(Number.isNaN(parseInt(currentPage)));
             if (Number.isNaN(parseInt(currentPage))) {
                 currentPage = 1;
             }

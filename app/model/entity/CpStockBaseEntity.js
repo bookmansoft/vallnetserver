@@ -21,9 +21,9 @@ class CpStockBaseEntity extends BaseEntity
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(cpid,cid,cp_name,cp_text,total_num,sell_stock_amount,sell_stock_num,base_amount,operator_id) {
+    static async onCreate(db, cpid,cid,cp_name,cp_text,total_num,sell_stock_amount,sell_stock_num,base_amount,operator_id) {
         try{
-            let it = await CpStockBase().create({
+            let it = await CpStockBase(db).create({
                 'cid':cid,
                 'cpid': cpid,
                 'cp_name': cp_name,
@@ -48,24 +48,18 @@ class CpStockBaseEntity extends BaseEntity
      * 进行字典映射时的钩子函数
      * @param {*} record 
      */
-    static onMapping(record){
-        return new CpStockBaseEntity(record, facade.current);
+    static onMapping(record, core){
+        return new CpStockBaseEntity(record, core);
     }
 
     /**
      * 载入数据库记录时的钩子函数
      * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
+    static async onLoad(db, callback){
         try {
-            let ret = await CpStockBase(db, sa, pwd).findAll();
+            let ret = await CpStockBase(db).findAll();
             ret.map(it=>{
                 callback(it);
             });
@@ -80,7 +74,7 @@ class CpStockBaseEntity extends BaseEntity
     onUpdate() {
         this.Save();
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        // facade.current.notifyEvent('Cp.update', {Cp:this})
+        // this.core.notifyEvent('Cp.update', {Cp:this})
     }
 }
 

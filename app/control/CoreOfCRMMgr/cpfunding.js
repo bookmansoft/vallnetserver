@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType } = facade.const
+let { EntityType, ReturnCode, NotifyType } = facade.const
 let tableType = require('../../util/tabletype');
 
 /**
@@ -49,7 +49,7 @@ class cpfunding extends facade.Control {
                 cpfunding.setAttr('develop_text', objData.develop_text);
                 cpfunding.setAttr('user_id', objData.user_id);
                 cpfunding.setAttr('cid', objData.cid);
-                cpfunding.setAttr('operator_id',objData.operator_id);
+                cpfunding.setAttr('operator_id', user.id);
                 cpfunding.Save();
                 return { code: ReturnCode.Success };
             }
@@ -92,14 +92,10 @@ class cpfunding extends facade.Control {
             let cid=paramGold.cid;
             let stock_num=parseInt(paramGold.stock_num);
             let stock_amount=parseInt(paramGold.stock_amount);
-            let operator_id=parseInt(paramGold.operator_id);
             //获取operator
-            let operator = this.core.GetObject(tableType.operator, parseInt(operator_id));
-            console.log("获得的操作员信息为: ",operator.getAttr('cid'));
-
-
-            let paramArray = [cid,stock_num,stock_amount,operator.getAttr('cid')];
-            console.log(paramArray);
+            let operator = this.core.GetObject(EntityType.User, user.id);
+            
+            let paramArray = [cid,stock_num,stock_amount, operator.baseMgr.info.getAttr('cid')];
             let ret = await this.core.service.RemoteNode.conn(user.id).execute('stock.offer', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
@@ -134,7 +130,7 @@ class cpfunding extends facade.Control {
                 objData.develop_text,
                 objData.userinfo.id,
                 objData.cid,
-                objData.operator_id,
+                user.id,
             );
             let ret = { code: ReturnCode.Success, data: null, message: "cpfunding.CreateRecord成功" };
             console.log(ret);

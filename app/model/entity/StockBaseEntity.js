@@ -21,10 +21,10 @@ class StockBaseEntity extends BaseEntity
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(cid,cp_name,cp_text,total_num,sell_stock_amount,sell_stock_num,base_amount,
+    static async onCreate(db, cid,cp_name,cp_text,total_num,sell_stock_amount,sell_stock_num,base_amount,
         provider,history_text,now_sale) {
         try{
-            let it = await StockBase().create({
+            let it = await StockBase(db).create({
                 'cid':cid,
                 'cp_name': cp_name,
                 'cp_text': cp_text,
@@ -71,13 +71,11 @@ class StockBaseEntity extends BaseEntity
     /**
      * 载入数据库记录时的钩子函数
      * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
+    static async onLoad(db, callback){
         try {
-            let ret = await StockBase(db, sa, pwd).findAll();
+            let ret = await StockBase(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

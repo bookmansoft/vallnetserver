@@ -22,9 +22,9 @@ class ManySendEntity extends BaseEntity
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(total_amount,actual_amount,total_num,send_uid,send_nickname,send_headimg,wishing,modify_date,state_id) {
+    static async onCreate(db, total_amount,actual_amount,total_num,send_uid,send_nickname,send_headimg,wishing,modify_date,state_id) {
         try{
-            let it = await ManySend().create({
+            let it = await ManySend(db).create({
                 'total_amount': total_amount,
                 'actual_amount': actual_amount,
                 'total_num': total_num,
@@ -56,13 +56,11 @@ class ManySendEntity extends BaseEntity
     /**
      * 载入数据库记录时的钩子函数
      * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
+    static async onLoad(db, callback){
         try {
-            let ret = await ManySend(db, sa, pwd).findAll();
+            let ret = await ManySend(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

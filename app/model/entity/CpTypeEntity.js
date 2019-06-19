@@ -21,9 +21,9 @@ class CpTypeEntity extends BaseEntity
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(cp_type_id,cp_type_name) {
+    static async onCreate(db, cp_type_id,cp_type_name) {
         try{
-            let it = await CpType().create({
+            let it = await CpType(db).create({
                 'cp_type_id': cp_type_id,
                 'cp_type_name': cp_type_name,
             });
@@ -41,24 +41,18 @@ class CpTypeEntity extends BaseEntity
      * 进行字典映射时的钩子函数
      * @param {*} record 
      */
-    static onMapping(record){
-        return new CpTypeEntity(record, facade.current);
+    static onMapping(record, core) {
+        return new CpTypeEntity(record, core);
     }
 
     /**
      * 载入数据库记录时的钩子函数
      * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
+    static async onLoad(db, callback){
         try {
-            let ret = await CpType(db, sa, pwd).findAll();
+            let ret = await CpType(db).findAll();
             ret.map(it=>{
                 callback(it);
             });
@@ -72,7 +66,7 @@ class CpTypeEntity extends BaseEntity
      */
     onUpdate() {
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        facade.current.notifyEvent('CpType.update', {CpType:this})
+        this.core.notifyEvent('CpType.update', {CpType:this})
     }
 }
 

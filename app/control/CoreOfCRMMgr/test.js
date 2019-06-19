@@ -69,7 +69,7 @@ class test extends facade.Control
      * @param {*} user 
      * @param {*} objData 
      */
-    Delete(user, objData) {
+    async Delete(user, objData) {
         await this.core.GetMapping(tableType.test).Delete(objData.id, true);
         return {code: ReturnCode.Success};
     }
@@ -79,7 +79,7 @@ class test extends facade.Control
      * @param {*} user 
      * @param {*} objData 
      */
-    List(user, objData) {
+    async List(user, objData) {
         let muster = await this.core.GetMapping(tableType.test) //得到 Mapping 对象
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .orderby('item', 'desc') //根据id字段倒叙排列

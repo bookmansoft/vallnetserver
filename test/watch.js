@@ -35,9 +35,9 @@ describe('认证', function() {
     );
 
     /**
-     * 服务端需要在控制器 CoreOfLogic/test 中添加 notify 方法，并书写如下代码：
+     * 服务端需要在控制器 CoreOfLogic/control/test 中添加 notify 方法，并书写如下代码：
      *   async notify(user, objData) {
-     *       let friend = facade.current.GetObject(EntityType.User, `${user.domain}.${objData.id}`, IndexType.Domain);
+     *       let friend = this.core.GetObject(EntityType.User, `${user.domain}.${objData.id}`, IndexType.Domain);
      *       setTimeout(() => {
      *           friend.notify({type: NotifyType.test, info:`来自${user.domainId}的好消息`}); //下行通知
      *       }, 100)

@@ -57,7 +57,12 @@ async function handle(sofar) {
             }
             else if(!!unionid) {//新玩家注册
                 let profile = await sofar.facade.control[sofar.msg.oemInfo.domain].getProfile(sofar.msg.oemInfo);
-                usr = await sofar.facade.GetMapping(EntityType.User).Create(profile.nickname, sofar.msg.oemInfo.domain, unionid, sofar.msg.oemInfo.openkey);
+                usr = await sofar.facade.GetMapping(EntityType.User).Create(
+                    profile.nickname, 
+                    sofar.msg.oemInfo.domain, 
+                    unionid, 
+                    true,/*指示跳过负载均衡相关的预注册检测*/
+                );
                 if (!!usr) {
                     usr.socket = sofar.socket; //更新通讯句柄
                     usr.userip = sofar.msg.userip;
@@ -66,18 +71,15 @@ async function handle(sofar) {
                     Object.keys(profile).map(key=>{
                         usr.baseMgr.info.setAttr(key, profile[key]);
                     });
+
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
-                    sofar.facade.notifyEvent('user.afterRegister', {user:usr});
 
                     //在用户创建成功后，再绑定手机号码
-                    if(!!sofar.msg.oemInfo.address && !!sofar.msg.oemInfo.addrType) {
-                        sofar.facade.notifyEvent('user.bind', {user: usr, params:{addrType: sofar.msg.oemInfo.addrType, address: sofar.msg.oemInfo.address}});
-                    }
+                    sofar.facade.notifyEvent('user.bind', {user: usr, params:{addrType: sofar.msg.oemInfo.addrType, address: sofar.msg.oemInfo.address}});
                 }
             }
 
             if (!!usr) {
-                sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});//发送"登录后"事件
                 usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌
                 usr.time = CommonFunc.now();                //记录标识令牌有效期的时间戳
                 sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token);   //添加一定有效期的令牌类型的反向索引
@@ -93,8 +95,6 @@ async function handle(sofar) {
         }
         else {
             console.log(`鉴权成功: ${sofar.msg.domainId}`);
-            //分发用户上行报文的消息，可以借此执行一些刷新操作
-            sofar.facade.notifyEvent('user.packetIn', {user: sofar.socket.user});
         }
     }
     catch (e) {

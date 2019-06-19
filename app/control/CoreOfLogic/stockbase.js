@@ -69,7 +69,7 @@ class stockbase extends facade.Control {
                 stockbase.setAttr('sell_stock_amount', objData.sell_stock_amount);
                 stockbase.setAttr('sell_stock_num', objData.sell_stock_num);
                 stockbase.setAttr('base_amount', objData.base_amount);
-                stockbase.setAttr('operator_id', objData.operator_id);
+                stockbase.setAttr('operator_id', user.id);
 
                 stockbase.setAttr('large_img_url', objData.large_img_url);
                 stockbase.setAttr('small_img_url', objData.small_img_url);
@@ -107,7 +107,7 @@ class stockbase extends facade.Control {
      */
     async CreateRecord(user, objData) {
         try {
-            let stockbase = await this.core.GetMapping(tableType.stockBase).Create(
+            await this.core.GetMapping(tableType.stockBase).Create(
                 objData.cid,
                 objData.cp_name,
                 objData.cp_text,

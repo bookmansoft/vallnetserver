@@ -395,11 +395,11 @@ class CoreOfResource extends CoreOfBase {
                 let dtData = new Array();
                 let stockData = new Array();
                 connection = require('mysql').createConnection({
-                    host: config.mysql.host,
-                    user: config.mysql.sa,
-                    password: config.mysql.pwd,
-                    port: config.mysql.port,
-                    database: config.mysql.db,
+                    host: this.options.mysql.host,
+                    user: this.options.mysql.sa,
+                    password: this.options.mysql.pwd,
+                    port: this.options.mysql.port,
+                    database: this.options.mysql.db,
                 });
                 console.log(311);
                 connection.connect();

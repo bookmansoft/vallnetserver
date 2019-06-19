@@ -20,10 +20,10 @@ class PropEntity extends BaseEntity {
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(props_id, propsName, propsType, cid, propsDesc, iconUrl,
+    static async onCreate(db, props_id, propsName, propsType, cid, propsDesc, iconUrl,
         iconPreview, status, props_price, props_rank, propsAt, createdAt, updatedAt) {
         try {
-            let it = await Prop().create({
+            let it = await Prop(db).create({
                 'props_id': props_id,
                 'props_name': propsName,
                 'props_type': propsType,
@@ -52,24 +52,18 @@ class PropEntity extends BaseEntity {
      * 进行字典映射时的钩子函数
      * @param {*} record 
      */
-    static onMapping(record) {
-        return new PropEntity(record, facade.current);
+    static onMapping(record, core) {
+        return new PropEntity(record, core);
     }
 
     /**
      * 载入数据库记录时的钩子函数
      * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback) {
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
+    static async onLoad(db, callback) {
         try {
-            let ret = await Prop(db, sa, pwd).findAll();
+            let ret = await Prop(db).findAll();
             ret.map(it => {
                 callback(it);
             });
@@ -83,7 +77,7 @@ class PropEntity extends BaseEntity {
      */
     onUpdate() {
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        //facade.current.notifyEvent('Prop.update', { Prop: this })
+        //this.core.notifyEvent('Prop.update', { Prop: this })
         this.Save();
     }
 }

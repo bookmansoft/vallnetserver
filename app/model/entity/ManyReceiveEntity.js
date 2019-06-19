@@ -19,10 +19,10 @@ class ManyReceiveEntity extends BaseEntity
         };
     }
 
-    static async onCreate(send_id,receive_amount,send_uid,send_nickname,send_headimg,receive_uid,receive_nickname,receive_headimg,modify_date) {
+    static async onCreate(db, send_id,receive_amount,send_uid,send_nickname,send_headimg,receive_uid,receive_nickname,receive_headimg,modify_date) {
         try{
             console.log(24);
-            let it = await ManyReceive().create({
+            let it = await ManyReceive(db).create({
                 'send_id': send_id,
                 'receive_amount': receive_amount,
                 'send_uid': send_uid,
@@ -54,13 +54,11 @@ class ManyReceiveEntity extends BaseEntity
     /**
      * 载入数据库记录时的钩子函数
      * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
+    static async onLoad(db, callback){
         try {
-            let ret = await ManyReceive(db, sa, pwd).findAll();
+            let ret = await ManyReceive(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

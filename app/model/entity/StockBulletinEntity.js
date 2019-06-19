@@ -21,9 +21,9 @@ class StockBulletinEntity extends BaseEntity
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(cid,cp_name,cp_text,stock_day,stock_open,stock_close,stock_high,stock_low,total_num,total_amount) {
+    static async onCreate(db, cid,cp_name,cp_text,stock_day,stock_open,stock_close,stock_high,stock_low,total_num,total_amount) {
         try{
-            let it = await StockBulletin().create({
+            let it = await StockBulletin(db).create({
                 'cid': cid,
                 'cp_name': cp_name,
                 'cp_text': cp_text,
@@ -56,13 +56,11 @@ class StockBulletinEntity extends BaseEntity
     /**
      * 载入数据库记录时的钩子函数
      * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback) {
+    static async onLoad(db, callback) {
         try {
-            let ret = await StockBulletin(db, sa, pwd).findAll();
+            let ret = await StockBulletin(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

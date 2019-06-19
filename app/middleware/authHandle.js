@@ -57,7 +57,7 @@ async function handle(sofar) {
             }
             else if(!!unionid) {//新玩家注册
                 let profile = await sofar.facade.control[sofar.msg.oemInfo.domain].getProfile(sofar.msg.oemInfo);
-                usr = await sofar.facade.GetMapping(EntityType.User).Create(profile.nickname, sofar.msg.oemInfo.domain, unionid, sofar.msg.oemInfo.openkey);
+                usr = await sofar.facade.GetMapping(EntityType.User).Create(profile.nickname, sofar.msg.oemInfo.domain, unionid);
                 if (!!usr) {
                     usr.socket = sofar.socket; //更新通讯句柄
                     usr.userip = sofar.msg.userip;

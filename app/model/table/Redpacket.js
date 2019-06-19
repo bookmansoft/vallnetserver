@@ -6,7 +6,7 @@ const facade = require('gamecloud');
 let {Sequelize, seqconn} = facade.tools;
 
 //建立数据库ORM模型
-let Redpacket = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
+let Redpacket = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
     'Redpacket',
     {
         act_name: Sequelize.STRING,

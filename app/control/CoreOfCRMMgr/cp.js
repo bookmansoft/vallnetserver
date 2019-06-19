@@ -46,7 +46,7 @@ class cp extends facade.Control {
                 cp.setAttr('update_time', objData.update_time);
                 cp.setAttr('update_content', objData.update_content);
                 cp.setAttr('invite_share',objData.invite_share);
-                cp.setAttr('operator_id',objData.operator_id);
+                cp.setAttr('operator_id', user.id);
                 return { code: ReturnCode.Success };
             }
             return { code: -2, data: null };

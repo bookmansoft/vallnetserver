@@ -1,8 +1,7 @@
-//引入查看权限必备的包
 let facade = require('gamecloud');
-//引入工具包
+let {EntityType, IndexType, ReturnCode} = facade.const
 const toolkit = require('gamerpc')
-const tableType = require('../../util/tabletype')
+let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 class RemoteNode extends facade.Service
 {
@@ -26,23 +25,17 @@ class RemoteNode extends facade.Service
         }
 
         //获取cid和token
-        let operator = this.core.GetObject(tableType.operator, id);
+        let operator = this.core.GetObject(EntityType.User, id);
         if(!!operator) {
-            console.log("登录信息: "+operator.getAttr('cid')+" "+operator.getAttr('token'));
-
             //创建授权式连接器实例
             let remote = new toolkit.conn();
+
             //设置连接器的值
-            remote.setup({
-                type:   'testnet',
-                ip:     '114.116.148.48',     //连接远程服务器（本地调试适用）
-                head:   'http',               //远程服务器通讯协议，分为 http 和 https
-                id:     'primary',            //默认访问的钱包编号
-                apiKey: 'bookmansoft',        //远程服务器基本校验密码
-                cid:    operator.getAttr('cid'),
-                token:  operator.getAttr('token'),
-                structured: true,           //结构化参数
-            }).setFetch(require('node-fetch'));
+            remote.setup(
+                Object.assign({}, 
+                    remoteSetup, 
+                    { cid: operator.baseMgr.info.getAttr('cid'), token: operator.baseMgr.info.getAttr('token')}
+                )).setFetch(require('node-fetch'));
 
             this.connmap.set(id, remote);
             return remote;

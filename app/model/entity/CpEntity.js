@@ -21,10 +21,10 @@ class CpEntity extends BaseEntity
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(cp_id,cp_name,cp_text,cp_url,wallet_addr,cp_type,develop_name,
+    static async onCreate(db, cp_id,cp_name,cp_text,cp_url,wallet_addr,cp_type,develop_name,
         cp_desc,cp_version,picture_url,cp_state,publish_time,update_time,update_content,invite_share,operator_id) {
         try{
-            let it = await Cp().create({
+            let it = await Cp(db).create({
                 'cp_id': cp_id,
                 'cp_name': cp_name,
                 'cp_text': cp_text,
@@ -56,24 +56,18 @@ class CpEntity extends BaseEntity
      * 进行字典映射时的钩子函数
      * @param {*} record 
      */
-    static onMapping(record){
-        return new CpEntity(record, facade.current);
+    static onMapping(record, core){
+        return new CpEntity(record, core);
     }
 
     /**
      * 载入数据库记录时的钩子函数
-     * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
+     * @param {*} db
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
+    static async onLoad(db, callback){
         try {
-            let ret = await Cp(db, sa, pwd).findAll();
+            let ret = await Cp(db).findAll();
             ret.map(it=>{
                 callback(it);
             });
@@ -87,7 +81,7 @@ class CpEntity extends BaseEntity
      */
     onUpdate() {
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        facade.current.notifyEvent('Cp.update', {Cp:this})
+        this.core.notifyEvent('Cp.update', {Cp:this})
     }
 }
 

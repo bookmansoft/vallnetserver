@@ -122,7 +122,7 @@ class CoreOfCRMMgr extends CoreOfBase
         //加载持久化层的数据
         console.time('Load CRM Db');
 
-        Promise.all(this.loadingList.map(it=>this.GetMapping(it).loadAll(this.options.mysql.db, this.options.mysql.sa, this.options.mysql.pwd))).then(()=>{
+        Promise.all(this.loadingList.map(it=>this.GetMapping(it).loadAll(this.options.mysql))).then(()=>{
             console.timeEnd('Load CRM Db');
             console.log(`${this.options.serverType}.${this.options.serverId}: 数据载入完成，准备启动网络服务...`);
 

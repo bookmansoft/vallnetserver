@@ -29,16 +29,6 @@ let redis = {
     "opts": {}
 };
 
-let resourceGamegoldnodeConfig= {
-    type: 'testnet',
-    ip:     '114.116.148.48',     //连接远程服务器（本地调试适用）
-    head: 'http',               //远程服务器通讯协议，分为 http 和 https
-    id: 'primary',            //默认访问的钱包编号
-    apiKey: 'bookmansoft',        //远程服务器基本校验密码
-    cid: 'operator',           //使用操作员的cid和token，此处直接指定为operator
-    token: '02c6754571e0cf8949fb71906a501ba520b8e960c7eb35cb3931e362e5d25d2bc5',
-};
-
 let node = {
     type:   'testnet',
     ip:     '127.0.0.1',          //管理后台服务器的gamegoldnode地址
@@ -109,8 +99,6 @@ let wechat = {
 };
 
 let config = {
-    "mysql": crmsql,
-    "resourceGamegoldnodeConfig":resourceGamegoldnodeConfig,
     "servers":{
         "Index":{
             "1":{
@@ -186,6 +174,7 @@ let config = {
         },
         "CRM":{ //新增CRM管理服务器
             "1":{
+                "mysql": mysql,
                 "webserver": {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",

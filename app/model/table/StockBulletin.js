@@ -3,7 +3,7 @@ const facade = require('gamecloud');
 let {Sequelize, seqconn} = facade.tools;
 
 //建立数据库ORM模型
-let StockBulletin = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
+let StockBulletin = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
     'StockBulletin',
     {
         cid: Sequelize.STRING,

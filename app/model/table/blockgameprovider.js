@@ -6,7 +6,7 @@ const facade = require('gamecloud');
 let {Sequelize, seqconn} = facade.tools;
 
 //建立数据库ORM模型
-let BlockGameProvider = (db, sa, pwd) => seqconn.seqConnector(db, sa, pwd).define(
+let BlockGameProvider = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
     'BlockGameProvider',
     {
         provider_id: Sequelize.INTEGER,

@@ -21,11 +21,11 @@ class CpFundingEntity extends BaseEntity
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(cpid,stock_num,total_amount,stock_amount,stock_rmb,audit_state_id,audit_text,modify_date,
+    static async onCreate(db, cpid,stock_num,total_amount,stock_amount,stock_rmb,audit_state_id,audit_text,modify_date,
         cp_name,cp_text,cp_type,cp_url,develop_name,develop_text,user_id,cid,operator_id) {
         try{
             // console.log(26,cp_name);
-            let it = await CpFunding().create({
+            let it = await CpFunding(db).create({
                 'cpid': cpid,
                 'stock_num': stock_num,
                 'total_amount': total_amount,
@@ -58,24 +58,18 @@ class CpFundingEntity extends BaseEntity
      * 进行字典映射时的钩子函数
      * @param {*} record 
      */
-    static onMapping(record){
-        return new CpFundingEntity(record, facade.current);
+    static onMapping(record, core){
+        return new CpFundingEntity(record, core);
     }
 
     /**
      * 载入数据库记录时的钩子函数
      * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
-        db = db || facade.current.options.mysql.db;
-        sa = sa || facade.current.options.mysql.sa;
-        pwd = pwd || facade.current.options.mysql.pwd;
-
+    static async onLoad(db, pwd, callback){
         try {
-            let ret = await CpFunding(db, sa, pwd).findAll();
+            let ret = await CpFunding(db).findAll();
             ret.map(it=>{
                 callback(it);
             });
@@ -90,7 +84,7 @@ class CpFundingEntity extends BaseEntity
     onUpdate() {
         this.Save();
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        // facade.current.notifyEvent('Cp.update', {Cp:this})
+        // this.core.notifyEvent('Cp.update', {Cp:this})
     }
 }
 

@@ -22,9 +22,9 @@ class blockGameCateEntity extends BaseEntity
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(item) {
+    static async onCreate(db, item) {
         try{
-            let it = await BlockGameCate().create(item);
+            let it = await BlockGameCate(db).create(item);
             await it.save();
     
             return it;
@@ -46,13 +46,11 @@ class blockGameCateEntity extends BaseEntity
     /**
      * 载入数据库记录时的钩子函数
      * @param {*} db 
-     * @param {*} sa 
-     * @param {*} pwd 
      * @param {*} callback 
      */
-    static async onLoad(db, sa, pwd, callback){
+    static async onLoad(db, callback){
         try {
-            let ret = await BlockGameCate(db, sa, pwd).findAll();
+            let ret = await BlockGameCate(db).findAll();
             ret.map(it=>{
                 callback(it);
             });
