@@ -1,0 +1,513 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" href="css/amazeui.css"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+	<title>CP例子</title>
+	<style>
+		.card {
+			/*height:200px;*/
+			border-radius:12px;
+			background-color:blanchedalmond;
+			-moz-border-radius: 12px; 
+			-webkit-border-radius: 12px; 
+			margin-top: 8px;
+            margin-left: 4px;
+            margin-right: 4px;
+			padding:8px 12px 12px 12px;
+			font-size:14px;
+		}
+        .game {
+            /*background-image:url(images/background.jpg);*/
+            background-repeat:no-repeat; 
+            background-size:100% 100%;-moz-background-size:100% 100%;
+            height:512px;
+            width:384;
+            background-color:beige;
+        }
+        body {
+            background-color:beige;
+        }
+        .card-background {
+            background-color:beige;
+        }
+        span {font-size:18px}
+	</style>
+</head>
+<body>
+<div class="container" id="mainVue">
+        <div data-am-widget="tabs" class="am-tabs am-tabs-d2">
+            <ul class="am-tabs-nav am-cf" style="background-color:beige;">
+                  <li v-for="item in tabsNavs" v-bind:class="item.cls"><a v-bind:href="item.href" v-text="item.label" @click="onSwitchTab(item)"></a></li>
+            </ul>
+        </div>        
+        <div class="gray-panel" v-if="tabIndex==0" style="background-color:beige;">
+            <div id="divHome" class="card">
+                
+            </div>
+            <p style="padding:8px 0px 0px 8px;"><button type="button" @click="onBackTowallet()" class="am-btn am-btn-warning am-radius">返回钱包</button></p>
+            <p></p>
+        </div>
+        <div id="divProp" class="gray-panel" v-if="tabIndex==1" style="background-color:beige;">
+            <!-道具商城在这里-->
+        </div>
+        <div id="divMyPropList" v-if="tabIndex==3">
+            <div class="gray-panel" style="background-color:beige;">
+                    <div class="card" v-for="item in myProps">
+                        <p><img v-bind:src="item.prop_icon" style="width:60px;height:60px;" /></p>
+                        <p>道具名称：<span v-text="item.prop_name"></span></p>
+                    </div>
+            </div>
+            <p></p>
+        </div>
+</div>
+<div id="alert"></div>
+<script src="js/common.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/amazeui.min.js"></script>
+<script src="js/vue.min.js"></script>
+<script src="js/md5.js"></script>
+<script src="js/gamegold.cp.js"></script>
+<script>
+    var mainVue = new Vue({
+        el: '#mainVue',
+        data:{ 
+                tabIndex: 0,        //导航索引
+                msg: "",            //信息
+                isVerify: false,    //是否验证
+                //导航按钮
+                tabsNavs: [
+                    {label:"主界面",href:"#", cls:"am-active", id:0},
+                    {label:"道具商城",href:"#", cls:"", id:1},
+                    //{label:"我的订单",href:"#", cls:"", id:2},
+                    {label:"我的道具",href:"#", cls:"", id:3},
+                ],
+                //用户信息
+                user: {openid:"", nick:"", addr:"", avatar:"", isget:0},
+                //cp信息
+                cp: {cid: "", gameName:"猴王归来"},
+                prop:{
+                    cid:"", prop_ori_id:"", ret:"", user_addr:"",
+                    prop_id: 1, order_num: 5000000, prop_price: 5000000, prop_value: 30000,
+                    prop_name:"屠龙刀", prop_icon: "images/tulongdao.png",
+                    prop_info: {
+                        battle: {title:"战斗力", value: 500},
+                        effect: {title:"影响", value: 1500},
+                        defense: {title:"防御值", value: 8500},
+                    }
+                },
+                //道具商城
+                propStore:[
+                    {
+                        cid:"", prop_ori_id:"", ret:"", user_addr:"",
+                        prop_id: 1, order_num: 5000000, prop_price: 5000000, prop_value: 50000,
+                        prop_name:"屠龙刀", prop_icon: "images/prop/tulongdao.png",
+                        prop_info: {
+                            battle: {title:"战斗力", value: 500},
+                            effect: {title:"影响", value: 1500},
+                            defense: {title:"防御值", value: 8500},
+                        }
+                    },
+                    {
+                        cid:"", prop_ori_id:"", ret:"", user_addr:"",
+                        prop_id: 1, order_num: 6000000, prop_price: 5000000, prop_value: 60000,
+                        prop_name:"倚天剑", prop_icon: "images/prop/tlj.png",
+                        prop_info: {
+                            battle: {title:"战斗力", value: 500},
+                            effect: {title:"影响", value: 1500},
+                            defense: {title:"防御值", value: 8500},
+                        }
+                    },
+                    {
+                        cid:"", prop_ori_id:"", ret:"", user_addr:"",
+                        prop_id: 1, order_num: 7000000, prop_price: 5000000, prop_value: 70000,
+                        prop_name:"葵花宝典", prop_icon: "images/prop/khbd.png",
+                        prop_info: {
+                            battle: {title:"战斗力", value: 500},
+                            effect: {title:"影响", value: 1500},
+                            defense: {title:"防御值", value: 8500},
+                        }
+                    },
+                ],
+                //订单
+                order:{cid:"", uid:"", sn:"", price:5000000, openid:"", ret:""},
+                orders: [],     //订单列表
+                myProps: [],    //道具列表
+                gameInfo:{},    //游戏详情
+            },
+            computed: {
+
+            },
+            methods: {
+                //切换导航
+                onSwitchTab: function(item) {
+                    var that = this;
+                    var _item = item;
+                    that.tabIndex = _item.id;
+                    for(var i=0; i<this.tabsNavs.length; i++) {
+                        this.tabsNavs[i].cls = "";
+                        if(this.tabsNavs[i].id == _item.id) {
+                            this.tabsNavs[i].cls = "am-active";
+                        }
+                    }
+                    if(that.tabIndex == 0) {        //游戏主界面
+                        homeInfo();
+                    } else if(that.tabIndex == 1) { //游戏道具界面
+                        propInfo();
+                    } else if(that.tabIndex == 3) { //我的订单
+                        myPropList();
+                    }
+                },
+                
+                //创建订单
+                onOrderCreate: function() {
+                    orderCreate();
+                },
+                
+                //订单支付
+                onOrderPay: function(item) {
+                    console.log(item);
+                    var order = {
+                        cid: mainVue.cp.cid,
+                        prop_name: item.prop_name,
+                        sn: item.order_sn,
+                        price: item.order_num,
+                        openid: mainVue.user.openid
+                    };
+                    ggcp.orderPay(order, function(ret, msg) {
+                        if(ret==0) {
+                            myAlert(msg);
+                        }
+                    })
+                },
+                
+                //制作发送道具
+                onPropOrder: function(prop) {
+                    propOrder(prop);
+                },
+
+                // 返回钱包
+                onBackTowallet: function() {
+                    var url = "https://mini.gamegold.xin/gg-wechat-client";
+                    console.log(url);
+                    window.location.href = url;
+                }
+            }
+    });
+</script>
+<script>
+jQuery(function($) {
+    //页面加载完成
+	$(document).ready(function(e) {
+	    //alert(document.getElementById("divProp").innerHTML);
+        homeInfo();
+    });
+});
+</script>
+<script>
+  
+    
+    //验证令牌
+	function verifyToken(token, userInfo) {
+        let tokenObj = encodeURIComponent(JSON.stringify(token));
+        let userInfoObj = encodeURIComponent(JSON.stringify(userInfo));
+        //console.log(tokenObj);
+		$.ajax({type: 'POST', url: 'user/verify', data:{token:tokenObj, userInfo:userInfoObj}, 
+			success:function(rep){
+                console.log(rep.verify);
+                mainVue.msg = "令牌验证成功";
+                mainVue.isVerify = true;
+                getUserInfo(mainVue.user.openid);
+			}
+		});	
+    }
+    
+    //获取用户信息
+    function getUserInfo(openid) {
+		$.ajax({type: 'POST', url: 'userinfo', data:{openid: openid}, 
+			success:function(rep){
+                console.log(rep);
+                if(rep.ret == 0) {
+                    mainVue.user.nick = rep.data.nick;
+                    mainVue.user.addr = rep.data.block_addr;
+                    mainVue.user.avatar = rep.data.avatar_uri;
+                    mainVue.user.isget = 1;
+                    console.log("nick " + mainVue.user.nick);
+                    console.log("addr " + mainVue.user.addr);
+                    console.log("avatar " + mainVue.user.avatar);
+                } else {
+                    myAlert("登录失败");
+                }
+			}
+		});	
+    }
+
+    //获取游戏信息
+    function getGameInfo(cid) {
+		$.ajax({url: 'gameinfo/'+cid, success:function(rep){
+                console.log(rep);
+                if(rep.ret == 0) {
+                    mainVue.gameInfo = rep.data;
+                    var game_ico_uri = mainVue.gameInfo.game_ico_uri;
+                    game_ico_uri = game_ico_uri.substring(1);
+                    mainVue.gameInfo.gameIcon = 'https://mini.gamegold.xin/wallet/' + game_ico_uri;
+                    console.log(mainVue.gameInfo.gameIcon);
+                    //$("title").html(mainVue.gameInfo.game_title);
+                    document.title = mainVue.gameInfo.game_title;
+                }
+			}
+		});	
+    }
+
+    //创建订单
+	function orderCreate() {
+        let data = {
+            openid: mainVue.user.openid, 
+            user_addr: mainVue.user.addr, 
+            order_num: mainVue.prop.prop_price, 
+            prop_id: mainVue.prop.prop_id, 
+            prop_name: mainVue.prop.prop_name
+        };
+		$.ajax({type: 'POST', url: 'order/create', data: data, 
+			success:function(rep){
+                console.log(rep);
+                mainVue.order.ret = rep;
+			}
+		});	
+    }
+
+    //区块链查询玩家道具
+    function propQuery() {
+        //alert("查询玩家道具");
+        $("#divProp").empty();
+        $("#divHome").empty();        
+        
+        var data = {
+            cid: mainVue.cp.cid,
+            user_addr: mainVue.user.addr
+        };
+		$.ajax({type: 'POST', url: 'block/prop/query', data:data, 
+			success:function(rep){
+                console.log(rep);
+                //mainVue.myProps = rep;
+                mainVue.myProps.splice(0, mainVue.myProps.length); 
+                for(var i=0; i<rep.length; i++) {
+                    var item = rep[i]; 
+                    console.log(item);
+                    var cpurl = 'prop/' + item.pid;
+					$.get(cpurl, function(data){
+                        console.log(data);
+                        mainVue.myProps.push(data);
+                    }); 
+                }
+			}
+		});	
+    }
+    
+    //区块链查询订单
+	function orderQuery() {
+		$.ajax({type: 'POST', url: 'order/query', data:mainVue.order, 
+			success:function(rep){
+                console.log(rep);
+                mainVue.orders = rep;
+			}
+		});	
+    }
+
+    //区块链发送道具
+    function propOrder(prop) {
+        if(mainVue.user.addr=="" || mainVue.cp.cid=="") {
+            alert("未验证令牌");
+            return;
+        }
+        prop.user_addr = mainVue.user.addr;
+        prop.cid = mainVue.cp.cid;
+        prop.prop_ori_id = RndNum(12);
+		$.ajax({type: 'POST', url: 'block/prop/order', data:prop, 
+			success:function(rep){
+                console.log(rep);
+                myAlert("道具已发送");
+			}
+		});	
+    }
+    //-------------------------------------------------------------------------------
+    //----------------------------重点修改以下三个方法-------------------------------
+    //                if(that.tabIndex == 0) {        //游戏主界面
+    //                    homeInfo();
+    //                } else if(that.tabIndex == 1) { //游戏道具界面
+    //                    propInfo();
+    //                } else if(that.tabIndex == 3) { //我的道具（考虑改成我的订单，似乎更为合理）
+    //                    orderList();
+    //              }
+    //游戏信息，首页，动态获取并填充
+    function homeInfo() {
+        $("#divProp").empty();
+        $("#divHome").empty();
+        $("#divMyPropList").empty();
+        var params=location.search.substring(1).split("/");
+	    var url=location.protocol+"//"+location.host+"/mock/"+params[0];
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function(result){
+                try {
+                    console.log(JSON.stringify(result));
+                    //获取其中一个url
+                    var sDiv="<div class='card'><table><tr><td><img src='"+result.game.icon_url+"' style='width:320px;height:240px;' /></td>"
+                        +"<td style='width:25px'></td></tr>"
+                        +"<tr><td><p>游戏名称：<span >"+result.game.game_title+"</span></p>"
+                        +"<p>游戏类型：<span >"+result.game.cp_type+"</span></p>"
+                        +"<p>道具含金量：<span >"+result.game.desc+"</span></p></td></tr></table>"
+                        +"</div>";
+                    $("#divHome").append($(sDiv));
+                }catch(ex) {
+                    alert("JS异常:" + ex.message);
+                }
+            }
+        });
+    }
+
+    //游戏道具 //alert(location.search);//格式：cp0104/address
+    function propInfo() {
+        //alert(location.search);
+        $("#divProp").empty();
+        $("#divHome").empty();
+        $("#divMyPropList").empty();
+        var params=location.search.substring(1).split("/");
+	    var url=location.protocol+"//"+location.host+"/mock/"+params[0];
+        //alert(url);
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function(result){
+                try {
+                    console.log(JSON.stringify(result));
+                    for (var i=0;i<result.proplist.length;i++) {
+                        console.log(result.proplist[i]);
+                        //获取其中一个url
+                        var sDiv="<div class='card'><table><tr><td><img src='"+result.proplist[i].icon+"' style='width:120px;height:120px;' /></td>"
+                            +"<td style='width:25px'></td>"
+                            +"<td><p>名称：<span >"+result.proplist[i].props_name+"</span></p>"
+                            +"<p>价格：<span >"+result.proplist[i].props_price/100000+"Kg</span></p>"
+                            +"<p>道具含金量：<span >20%</span></p></td>"
+                            +"<tr><td style='height:15px'></td></tr>"
+                            +"<tr><td><button type='button' class='am-btn am-btn-warning am-radius' onclick='buy(\""
+                                +result.proplist[i].id+"\","+result.proplist[i].props_price
+                                +",\""+result.proplist[i].icon+"\""
+                                +",\""+result.proplist[i].props_name+"\""
+                                +")'>购买道具</button></td></tr></table>"
+                            +"</div>";
+                        $("#divProp").append($(sDiv));
+                    }
+                }catch(ex) {
+                    alert("JS异常:" + ex.message);
+                }
+            }
+        });
+    }
+    function buy(id,price,icon,props_name) {
+        console.log("进入点击buy方法");
+        console.log(price);
+        var params=location.search.substring(1).split("/");
+	    var url=location.protocol+"//"+location.host+"/mock/"+params[0]+"/order";
+	    var address=params[1];
+	    //alert(icon);
+	    //alert(props_name);
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                "oid":id,
+                "price":price,
+                "address":address,
+                "url":icon,
+                "props_name":props_name
+            },
+            success: function(result){
+                try {
+                    //alert(JSON.stringify(result));
+                    alert("道具已经在路上，稍后请到“我的道具”查看！");
+
+                }catch(ex) {
+                    alert("JS异常:" + ex.message);
+                }
+            }
+        });
+            
+    }
+    //我的道具
+    //https://mini.gamegold.xin/mock/cp0104/myProps/tb1qrs5u2gzzfzud4at2xf6q8ka8ajsl4cyxnn6wrz
+	function myPropList() {;
+        $("#divProp").empty();
+        $("#divHome").empty();
+        $("#divMyPropList").empty();
+        var params=location.search.substring(1).split("/");
+	    var url=location.protocol+"//"+location.host+"/mock/"+params[0]+"/myProps/"+params[1];
+        //alert(url);
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function(result){
+                try {
+                    console.log(JSON.stringify(result));
+                    for (var i=0;i<result.data.length;i++) {
+                        console.log(result.data[i]);
+                        //获取其中一个url
+                        var sDiv="<div class='card'><table><tr><td><img src='"+result.data[i].icon+"' style='width:120px;height:120px;' /></td>"
+                            +"<td style='width:25px'></td>"
+                            +"<td><p>名称：<span >"+result.data[i].props_name+"</span></p>"
+                            +"<p>价格：<span >"+result.data[i].props_price/100000+"Kg</span></p>"
+                            +"<p>道具含金量：<span >"+result.data[i].gold/100000+"Kg</span></p></td>"
+                            +"<tr><td style='height:15px'></td></tr>"
+                            +"</table>"
+                            +"</div>";
+                        $("#divMyPropList").append($(sDiv));
+                    }
+                }catch(ex) {
+                    alert("JS异常:" + ex.message);
+                }
+            }
+        });
+    }
+    function buy(id,price,icon,props_name) {
+        console.log("进入点击buy方法");
+        console.log(price);
+        var params=location.search.substring(1).split("/");
+	    var url=location.protocol+"//"+location.host+"/mock/"+params[0]+"/order";
+	    var address=params[1];
+	    alert(icon);
+	    alert(props_name);
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                "oid":id,
+                "price":price,
+                "address":address,
+                "url":icon,
+                "props_name":props_name
+            },
+            success: function(result){
+                try {
+                    alert(JSON.stringify(result));
+                    alert("道具已经在路上，稍后请到“我的道具”查看！");
+
+                }catch(ex) {
+                    alert("JS异常:" + ex.message);
+                }
+            }
+        });
+    }
+
+  
+</script>
+
+</body>
+</html>
