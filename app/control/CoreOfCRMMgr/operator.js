@@ -15,7 +15,7 @@ class operator extends facade.Control {
      * @param {*} objData 
      */
     async CreateRecord(user, objData) {
-        let remote = this.core.service.RemoteNode.conn(user.id);
+        let remote = this.core.service.RemoteNode.conn('admin');
         let retAuth = await remote.execute('sys.createAuthToken', [oemInfo.openid]);
         if (!retAuth) {
             return { code: -1 };
@@ -37,7 +37,7 @@ class operator extends facade.Control {
             return { code: -1, message: "违反唯一性约束" }
         }
 
-        return { code: 0, data: null };
+        return { code: 0 };
     }
 
     /**

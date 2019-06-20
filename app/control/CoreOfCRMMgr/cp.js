@@ -104,7 +104,7 @@ class cp extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('cp.create', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('cp.create', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -126,7 +126,7 @@ class cp extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('cp.change', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('cp.change', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -148,7 +148,7 @@ class cp extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('cp.byId', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('cp.byId', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -170,7 +170,7 @@ class cp extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('cp.byName', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('cp.byName', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -236,7 +236,7 @@ class cp extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('cp.list', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('cp.list', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);

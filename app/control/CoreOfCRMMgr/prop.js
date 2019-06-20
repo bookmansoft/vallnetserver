@@ -29,7 +29,7 @@ class prop extends facade.Control {
         if (typeof (paramArray) == "string") {
             paramArray = eval(paramArray);
         }
-        let ret = await this.core.service.RemoteNode.conn(user.id).execute('prop.list', paramArray);
+        let ret = await this.core.service.RemoteNode.conn(user.openid).execute('prop.list', paramArray);
         console.log(ret);
         //return { code: ReturnCode.Success, data: ret };
         return { code: ret.code, data: ret.result };
@@ -366,7 +366,7 @@ class prop extends facade.Control {
         let retOrder = '';
         for (let i = 0; i < proNum; i++) {
             console.log([cid, oid, props_price, addr[i]]);
-            let retOrderOld = await this.core.service.RemoteNode.conn(user.id).execute('prop.order',[cid, oid, props_price, addr[i]]);
+            let retOrderOld = await this.core.service.RemoteNode.conn(user.openid).execute('prop.order',[cid, oid, props_price, addr[i]]);
             let retOrder=retOrderOld.result;
             console.log(retOrder);
             if (retOrder != null) {

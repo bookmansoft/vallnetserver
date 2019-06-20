@@ -2,7 +2,10 @@
  * Created by liub on 2017-04-03.
  */
 
-let crmsql = {
+/**
+ * 数据库连接信息：用于 gamegold-mgr-server
+ */
+let sqlOfCRM = {
     "logging" : false,                  //记录日志
     "db": "gamecloud",                  //数据库名称    
     "sa": "root",                       //数据库用户名
@@ -12,9 +15,9 @@ let crmsql = {
 };
 
 /**
- * 统一的数据库连接串，如果不同服务器连接不同数据库，需要改写 config 中各个 mysql 字段
+ * 数据库连接信息：用于 gamegold-wechat-server
  */
-let mysql = {
+let sqlOfWallet = {
     "logging" : false,                  //记录日志
     "db": "wechat-wallet",              //数据库名称    
     "sa": "root",                       //数据库用户名
@@ -23,13 +26,19 @@ let mysql = {
     "port": 3306                        //数据库服务器端口号
 };
 
+/**
+ * 缓存服务器连接信息
+ */
 let redis = {
     "host": "127.0.0.1",
     "port": 6379,
     "opts": {}
 };
 
-let node = {
+/**
+ * 特约核心节点连接信息
+ */
+let vallnet = {
     type:   'testnet',
     ip:     '127.0.0.1',          //管理后台服务器的gamegoldnode地址
     head:   'http',               //远程服务器通讯协议，分为 http 和 https
@@ -40,6 +49,9 @@ let node = {
     structured: true,             //返回结构化的参数
 };
 
+/**
+ * 微信社交网络连接信息
+ */
 let wechat = {
     notifyUrl: '',
     grant_type: '',
@@ -98,6 +110,9 @@ let wechat = {
     ],
 };
 
+/**
+ * 所有可用节点配置列表
+ */
 let config = {
     "servers":{
         "Index":{
@@ -110,8 +125,8 @@ let config = {
                 "game_secret": "",
                 "game_name": "游戏云",
                 "redis": redis,
-                "mysql": mysql,
-                "node": node,
+                "mysql": sqlOfWallet,
+                "node": vallnet,
                 "wechat": wechat,
                 "webserver": {
                     "mapping": "127.0.0.1",
@@ -135,7 +150,7 @@ let config = {
         },
         "Image":{ //新增图片服务器
             "1":{
-                "mysql": mysql,
+                "mysql": sqlOfWallet,
                 "webserver": {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",
@@ -154,7 +169,7 @@ let config = {
         },
         "IOS":{
             "1":{
-                "mysql": mysql,
+                "mysql": sqlOfWallet,
                 "webserver": {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",
@@ -164,7 +179,7 @@ let config = {
         },
         "Resource":{ //新增资源管理服务器
             "1":{
-                "mysql": mysql,
+                "mysql": sqlOfCRM,
                 "webserver": {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",
@@ -174,7 +189,7 @@ let config = {
         },
         "CRM":{ //新增CRM管理服务器
             "1":{
-                "mysql": mysql,
+                "mysql": sqlOfCRM,
                 "webserver": {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",

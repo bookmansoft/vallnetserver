@@ -19,7 +19,7 @@ class wallet extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('wallet.create', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('wallet.create', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, list: ret };
             return { code: ret.code, list: ret.result };
@@ -43,7 +43,7 @@ class wallet extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('wallet.list', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('wallet.list', paramArray);
             //console.log(ret);
             //return { code: ReturnCode.Success, list: ret };
             return { code: ret.code, list: ret.result };
@@ -68,7 +68,7 @@ class wallet extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('wallet.info', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('wallet.info', paramArray);
             //console.log(ret);
             //return { code: ReturnCode.Success, list: ret };
             return { code: ret.code, list: ret.result };
@@ -92,7 +92,7 @@ class wallet extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('wallet.dump', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('wallet.dump', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, list: ret };
             return { code: ret.code, list: ret.result };
@@ -116,7 +116,7 @@ class wallet extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('wallet.import', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('wallet.import', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, list: ret };
             return { code: ret.code, list: ret.result };
@@ -140,7 +140,7 @@ class wallet extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('wallet.backup', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('wallet.backup', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, list: ret };
             return { code: ret.code, list: ret.result };
@@ -164,7 +164,7 @@ class wallet extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.id).execute('key.master', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('key.master', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, list: ret };
             return { code: ret.code, data: ret.result };
