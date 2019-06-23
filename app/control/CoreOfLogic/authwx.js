@@ -33,7 +33,7 @@ class authwx extends facade.Control
                     throw new Error('access openid error');
                 }
     
-                let rt = await this.core.service.gamegoldHelper.execute('token.user', ['first-acc-01', uid, null, uid]);
+                let rt = await this.core.service.gamegoldHelper.execute('token.user', ['first-acc-01', profile.unionid, null, profile.unionid]);
                 profile.block_addr = (!!rt && rt.hasOwnProperty("data")) ? rt.data.addr : '';
             } catch(e) {
                 console.log(e.message);
@@ -66,7 +66,7 @@ class authwx extends facade.Control
             block_addr: profile.block_addr || '',
             prop_count: 0,
             current_prop_count: 0,
-            unionid: profile.unionId,
+            unionid: profile.unionid,
         }
     }
 
@@ -129,7 +129,7 @@ class authwx extends facade.Control
             block_addr: profile.block_addr || '',
             prop_count: 0,
             current_prop_count: 0,
-            unionid: profile.unionId,
+            unionid: profile.unionid,
         }
     }
 }
