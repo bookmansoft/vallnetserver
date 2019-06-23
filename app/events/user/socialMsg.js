@@ -43,7 +43,7 @@ function handle(event){ //用户资源发生变化
             event.user.notify(event.data);//发通知
             break;
         case NotifyType.DailyActivityInstantBonus:
-            event.user.getPocket().AddRes(702, -event.data.info.num); //扣取活动道具
+            event.user.getPocket().AddRes(-event.data.info.num, true, 40702); //扣取活动道具
             event.user.getBonus(event.data.info.bonus);
             event.user.notify(event.data);//发通知
             break;

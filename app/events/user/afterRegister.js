@@ -13,12 +13,12 @@ function handle(data) {
     data.user.getBonus({type: ResType.Scene, id:18, num:1});
     data.user.getBonus({type: ResType.Road, id:3001, num:1});
 
-    data.user.getInfoMgr().SetRecord(RecordType.Role, 1001);     //默认角色
-    data.user.getInfoMgr().SetRecord(RecordType.Scene, 18);      //默认场景
-    data.user.getInfoMgr().SetRecord(RecordType.Road, 3001);     //默认道路
+    data.user.getInfoMgr().SetRecord(RecordType.Role, 21001);     //默认角色
+    data.user.getInfoMgr().SetRecord(RecordType.Scene, 30018);    //默认场景
+    data.user.getInfoMgr().SetRecord(RecordType.Road, 13001);     //默认道路
     //endregion
 
-    if(!this.options.debug){
+    if(!this.options.debug) {
         switch(data.user.domainType) {
             case DomainType.TX: //腾讯平台数据上报接口
                 this.service.txApi.Report_Regaccount(data.user.openid).then(apiRet=>{

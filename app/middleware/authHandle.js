@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {MiddlewareParam, ReturnCode, EntityType, IndexType, UserStatus, DomainType, GetDomainType,RecordType} = facade.const
+let {MiddlewareParam, ReturnCode, EntityType, IndexType, UserStatus} = facade.const
 let CommonFunc = facade.util
 let {extendObj} = require('../util/util')
 
@@ -20,11 +20,12 @@ async function handle(sofar) {
         if (!sofar.socket.user || sofar.msg.func == "login" || sofar.msg.func == "1000"/*如果是login则强制重新验证*/) {
             //针对各类第三方平台，执行一些必要的验证流程：
             let unionid = '';
-            switch(GetDomainType(sofar.msg.oemInfo.domain)) {
+            let domainType = sofar.msg.oemInfo.domain.split('.')[0];
+            switch(domainType) {
                 default: {
                     try {
                         //调用登录域相关的认证过程，生成用户证书
-                        let data = await sofar.facade.control[sofar.msg.oemInfo.domain].check(sofar.msg.oemInfo);
+                        let data = await sofar.facade.control[domainType].check(sofar.msg.oemInfo);
                         //将证书内容复制到用户原始信息中，如果条目有重复则直接覆盖
                         extendObj(sofar.msg.oemInfo, data);
                         
@@ -56,7 +57,7 @@ async function handle(sofar) {
                 }
             }
             else if(!!unionid) {//新玩家注册
-                let profile = await sofar.facade.control[sofar.msg.oemInfo.domain].getProfile(sofar.msg.oemInfo);
+                let profile = await sofar.facade.control[domainType].getProfile(sofar.msg.oemInfo);
                 usr = await sofar.facade.GetMapping(EntityType.User).Create(profile.nickname, sofar.msg.oemInfo.domain, unionid);
                 if (!!usr) {
                     usr.socket = sofar.socket; //更新通讯句柄

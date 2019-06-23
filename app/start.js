@@ -1,12 +1,12 @@
 const facade = require('gamecloud')
+//加载用户自定义模块 - 这句必须紧跟在模块引入语句之后
+facade.addition = true;
+
 let {IndexType} = facade.const
 let tableType = require('./util/tabletype');
 
 //新增一种索引类型，需要在 UserEntity.prototype.IndexOf 函数中增加字段映射
 IndexType.Phone = 1001;
-
-//加载用户自定义模块
-facade.addition = true;
 
 let env = !!process.env.sys ? JSON.parse(process.env.sys) : {
     serverType: "IOS",      //待调测的服务器类型

@@ -15,6 +15,11 @@ class info extends baseMgr
             name: "",
             //	头像
             avatar_uri	: 0,
+            //	邀请码
+            invCode		: '',
+            //	头像
+            headIcon	: 0,
+            //	文化值 (公司等级)
             //	等级
             level		: 0,
             //	体力
@@ -76,6 +81,8 @@ class info extends baseMgr
                 "domain": this.parent.domain,
                 "uuid": this.parent.uuid,
                 "avatar_uri": "",
+                "invCode": "",
+                "headIcon": "",
                 "level": 0,
                 "ap": facade.config.fileMap.DataConst.action.init,
                 "money": facade.config.fileMap.DataConst.threshold.moneyOfInit,
@@ -159,10 +166,71 @@ class info extends baseMgr
     CheckStatus(val){
     	return facade.tools.Indicator.inst(this.v.status).check(val);
     }
-
+    
     GetStatus(){
         return this.v.status;
     }
+
+    get role(){
+        return this.GetRecord(RecordType.Role);
+    }
+    set role(val){
+        this.SetRecord(RecordType.Role, parseInt(val));
+
+        //角色形象发生变化
+        this.parent.core.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'role', value:this.GetRecord(RecordType.Role)}});
+    }
+    get scene(){
+        return this.GetRecord(RecordType.Scene);
+    }
+    set scene(val){
+        this.SetRecord(RecordType.Scene, parseInt(val))
+    }
+    get road(){
+        return this.GetRecord(RecordType.Road);
+    }
+    set road(val){
+        this.SetRecord(RecordType.Road, parseInt(val))
+    }
+    get address(){
+        return this.GetRecord(RecordType.address);
+    }
+    set address(val){
+        this.SetRecord(RecordType.address,val);
+    }
+
+    /**
+     * 是否机器人
+     * @returns {boolean}
+     */
+    getRobot(){
+        return (this.v.robot == null) ? false : this.v.robot;
+    }
+    /**
+     * 设置为机器人
+     */
+    setRobot(){
+        this.v.robot = true;
+        this.dirty = true;
+    }
+
+    //	设置邀请码
+    SetInvCode (invCode) {
+		this.v.invCode = invCode;
+	};
+    //	获取邀请码
+    GetInvCode () {
+		return this.v.invCode;
+	};
+    //	设置头像
+    SetHeadIcon (headIcon) {
+		this.v.headIcon = headIcon;
+		this.dirty = true;
+	};
+    //	获取头像
+    GetHeadIcon() {
+		return this.v.headIcon;
+	};
 }
 
 exports = module.exports = info;
