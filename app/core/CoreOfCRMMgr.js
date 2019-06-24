@@ -98,13 +98,8 @@ class CoreOfCRMMgr extends CoreOfBase
      * @returns {Array}
      */
     static get mapping() {
-        if(!this.$mapping) {
-            this.$mapping = ['CRM'];
-        }
+        this.$mapping = ['CRM'];
         return this.$mapping;
-    }
-    static set mapping(val) {
-        this.$mapping = val;
     }
 
     /**

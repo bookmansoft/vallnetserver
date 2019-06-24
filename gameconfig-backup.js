@@ -14,6 +14,15 @@ let sqlOfCRM = {
     "port": 3306                        //数据库服务器端口号
 };
 
+let sqlOfChick = {
+    "logging" : false,                  //记录日志
+    "db": "chick_ios_1",                //数据库名称    
+    "sa": "root",                       //数据库用户名
+    "pwd": "",                          //数据库用户密码
+    "host": "127.0.0.1",                //数据库服务器IP地址
+    "port": 3306                        //数据库服务器端口号
+};
+
 /**
  * 数据库连接信息：用于 gamegold-wechat-server
  */
@@ -196,8 +205,18 @@ let config = {
                     "port": 9801
                 }
             }
+        },
+        "Chick":{ //新增游戏服务器
+            "1":{
+                "mysql": sqlOfChick,
+                "webserver": {
+                    "mapping": "127.0.0.1",
+                    "host": "127.0.0.1",
+                    "port": 9201
+                }
+            }
         }
-    },
+    }
 }
 
 module.exports = config;

@@ -21,9 +21,7 @@ class CoreOfImage extends CoreOfBase {
      * 映射节点类的服务器类型数组，提供给类工厂使用
      */
     static get mapping() {
-        if(!this.$mapping) {
-            this.$mapping = ['Image']; //gameconfig.js 中类型为 Image 的节点，都将用 CoreOfImage 完成实例化
-        }
+        this.$mapping = ['Image']; //gameconfig.js 中类型为 Image 的节点，都将用 CoreOfImage 完成实例化
         return this.$mapping;
     }
     /**

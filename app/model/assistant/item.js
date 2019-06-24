@@ -1,7 +1,6 @@
 let facade = require('gamecloud')
-let {GetResType, ResTypeStr, em_Effect_Comm, ResType, NotifyType,ActivityType, ReturnCode} = facade.const
+let {em_Effect_Comm, ResType, NotifyType,ActivityType, ReturnCode} = facade.const
 let LargeNumberCalculator = facade.Util.LargeNumberCalculator
-let {fileMap} = facade.config
 
 /**
  * 判断字符串是否整数
@@ -14,14 +13,16 @@ function isNumber( s ){
 }
 
 /**
- * 角色升级配置表
+ * 从复合索引推导出资源类型
+ * @param {*} val 
  */
-let upgradeChip = {1: Math.ceil(fileMap.constdata.getRoleNum.num)};
-for(let j = 2; j <= 30; j++){
-    upgradeChip[j] = upgradeChip[1];
-    for(let i = 2; i <= j; i++){
-        upgradeChip[j] = Math.ceil(upgradeChip[j] + fileMap.constdata.debrisConumRate.num * (i-1));
-    }
+function GetResType(val) {
+    return Object.keys(ResType).reduce((sofar,cur)=>{
+        if(ResType[cur] <= val) {
+            sofar = ResType[cur];
+        }
+        return sofar;
+    }, 0);
 }
 
 /**
@@ -34,7 +35,7 @@ class item extends facade.Assistants.Pocket
      */
     setSkill(cur) {
         //todo:判断技能
-        let role = facade.config.fileMap.roledata[cur];
+        let role = this.parent.core.fileMap.roledata[cur];
         if(!this.v[cur].sk && this.v[cur].sk != 0){
             this.v[cur].sk = 0;
         }
@@ -103,14 +104,14 @@ class item extends facade.Assistants.Pocket
      * 检测技能解锁
      * @param 角色id——判断该角色可解锁的技能
      */
-    checkSkill(id){
+    checkSkill(id) {
         return Object.keys(this.v).reduce((sofar, cur)=>{
             if(GetResType(cur) == ResType.Role) { //判断是否是角色
                 if(!this.v[cur].lv){
                     this.v[cur].lv = 1;
                 }
                 this.setSkill(cur);
-                let role = facade.config.fileMap.roledata[cur];
+                let role = this.parent.core.fileMap.roledata[cur];
                                 
                 for(let i = 0; i < role.unlockskill1.length; i++){
                 
@@ -204,7 +205,7 @@ class item extends facade.Assistants.Pocket
      * @param price 技能升级价格
      */
     upgradeSkill(id,skid,price){
-        let role = facade.config.fileMap.roledata[id];
+        let role = this.parent.core.fileMap.roledata[id];
         if(!role || (skid != 1 && skid != 2 && skid != 3)){
             return {code: ReturnCode.illegalData};
         }
@@ -212,7 +213,7 @@ class item extends facade.Assistants.Pocket
            this.setSkill(id);
         }
         //判断金币数值是否合法
-        let base = facade.config.fileMap.constdata.skillMoneyBase.num;
+        let base = this.parent.core.fileMap.constdata.skillMoneyBase.num;
         let current = 0;
         if(skid == 1){
             current = Math.ceil(base * Math.pow(Math.floor(this.v[id].sk/10000),1.6));
@@ -325,7 +326,7 @@ class item extends facade.Assistants.Pocket
      * @param id
      */
     upgradeRole(id){
-        let role = facade.config.fileMap.roledata[id];     
+        let role = this.parent.core.fileMap.roledata[id];     
         if(!role){
             return {code: ReturnCode.illegalData};
         }
@@ -337,11 +338,11 @@ class item extends facade.Assistants.Pocket
         }
 
         //碎片数量 = 当前等级所需数量 + 碎片成长系数 x (当前等级-1)，其中，碎片成长系数默认为0.2，配在常量表中
-        if(!upgradeChip[it.lv+1]){
+        if(!this.parent.core.upgradeChip[it.lv+1]){
             return {code: ReturnCode.roleMaxLevel};
         }
 
-        let cnum = upgradeChip[it.lv+1];
+        let cnum = this.parent.core.upgradeChip[it.lv+1];
         if(!this.v[chipId] || this.v[chipId].num < cnum){
             return {code: ReturnCode.roleChipNotEnough};
         }
@@ -408,26 +409,6 @@ class item extends facade.Assistants.Pocket
         this.actionData.money = this.GetRes(ResType.Coin);
         this.actionData.diamond = this.GetRes(ResType.Diamond);
         return this.actionData;
-    }
-    /**
-     * 使用指定道具
-     * @param {Number} xid
-     * @param {Number} num
-     */
-    useItem(xid, num=1) {
-        if(typeof num == 'string') {
-            num = parseInt(num);
-        }
-
-        if(this.GetRes(xid) >= num) {
-            this.AddRes(-num, true, xid);
-            //触发了特殊道具被使用事件
-            this.parent.core.notifyEvent('user.itemUsed', {user:this.parent, data:{type:xid, value:num}});
-            return {code: ReturnCode.Success, data:this.getList()};
-        }
-        else{
-            return {code: ReturnCode.itemNotExist};
-        }
     }
 }
 

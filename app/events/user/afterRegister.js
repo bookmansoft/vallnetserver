@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {RecordType, ResType, DomainType} = facade.const
+let {RecordType, ResType} = facade.const
 
 /**
  * 用户注册事件处理句柄
@@ -20,17 +20,7 @@ function handle(data) {
 
     if(!this.options.debug) {
         switch(data.user.domainType) {
-            case DomainType.TX: //腾讯平台数据上报接口
-                this.service.txApi.Report_Regaccount(data.user.openid).then(apiRet=>{
-                    if(apiRet.ret != 0){
-                        console.log(`Report_Regaccount Error: ${JSON.stringify(aipRet)}`);
-                    }
-                }).catch(e=>{});
-                this.service.txApi.Report_Regchar(data.user.openid).then(apiRet=>{
-                    if(apiRet.ret != 0){
-                        console.log(`Report_Regchar Error: ${JSON.stringify(aipRet)}`);
-                    }
-                }).catch(e=>{});
+            default: //腾讯平台数据上报接口
                 break;
         }
     }

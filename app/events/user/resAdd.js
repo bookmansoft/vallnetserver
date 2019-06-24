@@ -21,10 +21,6 @@ function handle(event){ //用户资源发生变化
             let coin = LargeNumberCalculator.Load(event.user.getPocket().GetRes(ResType.Gold));
             //只统计指数
             this.notifyEvent('user.task', {user:event.user, data:{type:em_Condition_Type.totalMoney, value:coin.power, mode:em_Condition_Checkmode.absolute}});
-            
-            if(event.data.value.base < 0) {
-                this.service.activity.addScore(event.user.id, ActivityType.Money, event.data.value.power);
-            }
             break;
 
         case ResType.Diamond:

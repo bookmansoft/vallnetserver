@@ -57,13 +57,8 @@ class CoreOfAuth extends CoreOfBase
      * @returns {Array}
      */
     static get mapping() {
-        if(!this.$mapping) {
-            this.$mapping = ['Auth'];
-        }
+        this.$mapping = ['Auth'];
         return this.$mapping;
-    }
-    static set mapping(val) {
-        this.$mapping = val;
     }
 
     /**

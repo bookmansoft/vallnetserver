@@ -8,17 +8,17 @@ let EventData = facade.Util.EventData
  */
 function handle(event){ 
     //region 任务检测 复活咖啡豆
-    switch(id){
-        case 22:
+    switch(event.data.type) {
+        case 40022:
             event.user.getBonus({type:ResType.Action, num:event.data.value});
             break;
-        case 23:
+        case 40023:
             //如果体力满了就不要添加了
-            if(!event.user.getPocket().isMaxRes(ResType.Action)){ 
-                event.user.getBonus({type:ResType.Action, num:event.user.getPocket().GetResMaxValue(ResType.Action)});
+            if(!event.user.getPocket().isMaxRes(ResType.Action)) { 
+                event.user.getBonus({type: ResType.Action, num: event.user.getPocket().GetResMaxValue(ResType.Action)});
             }
             break;
-        case 20:
+        case 40020:
             this.notifyEvent('user.task', {user:event.user, data:{type:facade.const.em_Condition_Type.totalRevive, value:event.data.value}});
 
             //累计分段积分

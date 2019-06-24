@@ -379,7 +379,7 @@ class CoreOfResource extends CoreOfBase {
             }
             else {
                 try {
-                    rp({ uri: decodeURIComponent(facade.config.fileMap.DataConst.user.icon), headers: { 'User-Agent': 'Request-Promise', } }).pipe(res);
+                    rp({ uri: decodeURIComponent(this.fileMap.DataConst.user.icon), headers: { 'User-Agent': 'Request-Promise', } }).pipe(res);
                 }
                 catch (e) {
                     console.error(e);
@@ -955,13 +955,8 @@ class CoreOfResource extends CoreOfBase {
      * 映射自己的服务器类型数组，提供给核心类的类工厂使用
      */
     static get mapping() {
-        if (!this.$mapping) {
-            this.$mapping = ['Resource'];
-        }
+        this.$mapping = ['Resource'];
         return this.$mapping;
-    }
-    static set mapping(val) {
-        this.$mapping = val;
     }
 }
 

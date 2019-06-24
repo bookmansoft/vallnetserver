@@ -2,7 +2,7 @@
  * Created by liub on 2017-05-26.
  */
 let facade = require('gamecloud')
-let {NotifyType, ActionExecuteType, DomainType, UserStatus,em_Condition_Type} = facade.const
+let {NotifyType, ActionExecuteType, UserStatus,em_Condition_Type} = facade.const
 
 /**
  * 用户登录后，用来执行一些后续操作，例如获取腾讯会员信息、蓝钻特权等
@@ -16,17 +16,7 @@ function handle(data){
     data.curTime = new Date();//记录当前时间，为后续流程提供统一的时间标尺
     let oem = data.objData.oemInfo;
     switch(data.user.domainType){
-        case DomainType.TX: { //腾讯大厅 如果是腾讯的用户才做这个
-            if(this.options.debug){
-                break;
-            }
-            this.service.txApi.Report_Login(data.user.openid).then(apiRet=>{
-                if(apiRet.ret != 0){
-                    console.log(`Report_Login Error: ${JSON.stringify(aipRet)}`);
-                }
-            }).catch(e=>{});
-            data.user.SetOpenKey(oem.openkey);
-            data.user.SetPf(oem.pf);
+        default: {
             break;
         }
     }
