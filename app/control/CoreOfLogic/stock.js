@@ -1,7 +1,6 @@
 let facade = require('gamecloud');
 let tableType = require('../../util/tabletype');
 let tableField = require('../../util/tablefield');
-let userHelp = require('../../service/CoreOfLogic/userhelp')
 
 /**
  * 管理后台
@@ -87,7 +86,7 @@ class stock extends facade.Control
     async StockSend(user, params) {
         let uid = user.id
         let cid = params.cid
-        let addr = await userHelp.getAddrFromUserIdAndCid(uid, cid)
+        let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(uid, cid)
         let ret = await this.core.service.gamegoldHelper.execute('stock.send', [cid, 100, addr, 'alice']);
         return {errcode: 'success', data: ret} 
     }

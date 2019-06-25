@@ -1,7 +1,6 @@
 let facade = require('gamecloud')
 
 let tableType = require('../../util/tabletype');
-let userHelp = require('../../service/CoreOfLogic/userhelp')
 
 /**
  * 节点控制器--订单
@@ -96,9 +95,9 @@ class order extends facade.Control
                     uid = order.orm.uid
                     await this.core.service.viphelp.recharge(uid, vip_level)
                 } else if (!!order.orm.attach) {
-                    let cid = order.orm.attach
-                    let quantity = order.orm.quantity
-                    let addr = await userHelp.getAddrFromUserIdAndCid(uid, cid)
+                    let cid = order.orm.attach;
+                    let quantity = order.orm.quantity;
+                    let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(uid, cid);
                     await this.core.service.gamegoldHelper.execute('stock.send', [cid, quantity, addr, 'alice']);
 
                     let stock = this.core.GetObject(tableType.stock, order.orm.product_id);          

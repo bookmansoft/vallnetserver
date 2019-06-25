@@ -5,7 +5,6 @@ const axios = require('axios')
 
 let randomHelp = require('../../util/randomHelp')
 let tableType = require('../../util/tabletype')
-let userHelp = require('../../service/CoreOfLogic/userhelp')
 
 let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 
