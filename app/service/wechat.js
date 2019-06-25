@@ -4,8 +4,8 @@ const axios = require('axios')
 const xml2js = require('xml2js')
 const xmlParser = new xml2js.Parser()
 
-let cache = require('../../util/memcache')
-let {md5, sha1} = require('../../util/encrtyto')
+let cache = require('../util/memcache')
+let {md5, sha1} = require('../util/encrtyto')
 
 let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 

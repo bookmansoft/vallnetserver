@@ -13,30 +13,23 @@ class authwx extends facade.Control
     async check(oemInfo) {
         let profile = {};
         if(!this.core.options.debug) { 
-            try {
-                profile = await this.core.service.wechat.getMapUserInfo(oemInfo.openkey, oemInfo.openid);
-                /*
-                {
-                    "openid":"oqR1e1Zr9elneifik1lmMF1LzK44",
-                    "nickname":"百晓生",
-                    "sex":1,
-                    "language":"zh_CN",
-                    "city":"Fuzhou",
-                    "province":"Fujian",
-                    "country":"CN",
-                    "headimgurl":"http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI5Qw1flMibKSBwZ8MXSmod0YsC7d9fornhL9KibjGvrsia0AMoZaXHicHf0ibNNIw0hoic69282UjFOwBg/132",
-                    "privilege":[],
-                    "unionid":"ougg56Ahg_Ge1qd1qWG0eROJvDpI"
-                }
-                */
-               if(!profile || !!profile.errcode) {
-                    throw new Error('access openid error');
-                }
-    
-                let rt = await this.core.service.gamegoldHelper.execute('token.user', ['first-acc-01', profile.unionid, null, profile.unionid]);
-                profile.block_addr = (!!rt && rt.hasOwnProperty("data")) ? rt.data.addr : '';
-            } catch(e) {
-                console.log(e.message);
+            profile = await this.core.service.wechat.getMapUserInfo(oemInfo.openkey, oemInfo.openid);
+            /*
+            {
+                "openid":"oqR1e1Zr9elneifik1lmMF1LzK44",
+                "nickname":"百晓生",
+                "sex":1,
+                "language":"zh_CN",
+                "city":"Fuzhou",
+                "province":"Fujian",
+                "country":"CN",
+                "headimgurl":"http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI5Qw1flMibKSBwZ8MXSmod0YsC7d9fornhL9KibjGvrsia0AMoZaXHicHf0ibNNIw0hoic69282UjFOwBg/132",
+                "privilege":[],
+                "unionid":"ougg56Ahg_Ge1qd1qWG0eROJvDpI"
+            }
+            */
+           if(!profile || !!profile.errcode) {
+                throw new Error('access openid error');
             }
         } else {
             profile = {
@@ -77,30 +70,23 @@ class authwx extends facade.Control
     async getProfile(oemInfo) {
         let profile = {};
         if(!this.core.options.debug) { 
-            try {
-                profile = await this.core.service.wechat.getMapUserInfo(oemInfo.openkey, oemInfo.openid);
-                /*
-                {
-                    "openid":"oqR1e1Zr9elneifik1lmMF1LzK44",
-                    "nickname":"百晓生",
-                    "sex":1,
-                    "language":"zh_CN",
-                    "city":"Fuzhou",
-                    "province":"Fujian",
-                    "country":"CN",
-                    "headimgurl":"http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI5Qw1flMibKSBwZ8MXSmod0YsC7d9fornhL9KibjGvrsia0AMoZaXHicHf0ibNNIw0hoic69282UjFOwBg/132",
-                    "privilege":[],
-                    "unionid":"ougg56Ahg_Ge1qd1qWG0eROJvDpI"
-                }
-                */
-               if(!profile || !!profile.errcode) {
-                    throw new Error('access openid error');
-                }
-    
-                let rt = await this.core.service.gamegoldHelper.execute('token.user', ['first-acc-01', uid, null, uid]);
-                profile.block_addr = (!!rt && rt.hasOwnProperty("data")) ? rt.data.addr : '';
-            } catch(e) {
-                console.log(e.message);
+            profile = await this.core.service.wechat.getMapUserInfo(oemInfo.openkey, oemInfo.openid);
+            /*
+            {
+                "openid":"oqR1e1Zr9elneifik1lmMF1LzK44",
+                "nickname":"百晓生",
+                "sex":1,
+                "language":"zh_CN",
+                "city":"Fuzhou",
+                "province":"Fujian",
+                "country":"CN",
+                "headimgurl":"http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI5Qw1flMibKSBwZ8MXSmod0YsC7d9fornhL9KibjGvrsia0AMoZaXHicHf0ibNNIw0hoic69282UjFOwBg/132",
+                "privilege":[],
+                "unionid":"ougg56Ahg_Ge1qd1qWG0eROJvDpI"
+            }
+            */
+           if(!profile || !!profile.errcode) {
+                throw new Error('access openid error');
             }
         } else {
             profile = {
