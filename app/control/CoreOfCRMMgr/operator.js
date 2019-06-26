@@ -15,8 +15,8 @@ class operator extends facade.Control {
      * @param {*} objData 
      */
     async CreateRecord(user, objData) {
-        let remote = this.core.service.RemoteNode.conn('admin');
-        let retAuth = await remote.execute('sys.createAuthToken', [user.openid]);
+        let remote = this.core.service.RemoteNode.conn('authwx.admin');
+        let retAuth = await remote.execute('sys.createAuthToken', [user.domainId]);
         if (!retAuth) {
             return { code: -1 };
         }

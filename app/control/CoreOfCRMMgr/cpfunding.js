@@ -72,7 +72,7 @@ class cpfunding extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log("paramArray:",paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('stock.record', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('stock.record', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -96,7 +96,7 @@ class cpfunding extends facade.Control {
             let operator = this.core.GetObject(EntityType.User, user.id);
             
             let paramArray = [cid,stock_num,stock_amount, operator.baseMgr.info.getAttr('cid')];
-            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('stock.offer', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('stock.offer', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);

@@ -17,15 +17,15 @@ class RemoteNode extends facade.Service
 
     /**
      * 根据用户 openid 获取特约节点连接器
-     * @param {String} openid
+     * @param {String} domainId
      */
-    conn(openid) {
-        if(this.connmap.has(openid)) { //返回缓存的连接器
-            return this.connmap.get(openid);
+    conn(domainId) {
+        if(this.connmap.has(domainId)) { //返回缓存的连接器
+            return this.connmap.get(domainId);
         }
 
         //获取cid和token
-        let operator = this.core.GetObject(EntityType.User, openid, IndexType.Foreign);
+        let operator = this.core.GetObject(EntityType.User, domainId, IndexType.Domain);
         if(!!operator) {
             //创建授权式连接器实例
             let remote = new toolkit.conn();
@@ -37,7 +37,7 @@ class RemoteNode extends facade.Service
                     { cid: operator.baseMgr.info.getAttr('cid'), token: operator.baseMgr.info.getAttr('token')}
                 )).setFetch(require('node-fetch'));
 
-            this.connmap.set(openid, remote);
+            this.connmap.set(domainId, remote);
             return remote;
         }
 

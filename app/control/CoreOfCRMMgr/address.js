@@ -19,7 +19,7 @@ class address extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('address.create', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('address.create', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -42,7 +42,7 @@ class address extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.openid).execute('address.receive', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('address.receive', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -67,7 +67,7 @@ class address extends facade.Control {
                 paramArray = eval(paramArray);
             }
             console.log(paramArray);
-            let retOld = await this.core.service.RemoteNode.conn(user.openid).execute('address.filter', paramArray);
+            let retOld = await this.core.service.RemoteNode.conn(user.domainId).execute('address.filter', paramArray);
             console.log(retOld);
             let ret=retOld.result;
 
