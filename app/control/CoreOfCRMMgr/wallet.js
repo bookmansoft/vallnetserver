@@ -16,7 +16,7 @@ class wallet extends facade.Control {
             console.log("wallet.Create参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('wallet.create', paramArray);
@@ -40,7 +40,7 @@ class wallet extends facade.Control {
             console.log("wallet.List参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('wallet.list', paramArray);
@@ -65,7 +65,7 @@ class wallet extends facade.Control {
             console.log(JSON.stringify(paramGold.userinfo));
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('wallet.info', paramArray);
@@ -89,7 +89,7 @@ class wallet extends facade.Control {
             console.log("wallet.Dump参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('wallet.dump', paramArray);
@@ -113,7 +113,7 @@ class wallet extends facade.Control {
             console.log("wallet.ImportWallet参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('wallet.import', paramArray);
@@ -137,7 +137,7 @@ class wallet extends facade.Control {
             console.log("wallet.Backup参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('wallet.backup', paramArray);
@@ -161,7 +161,7 @@ class wallet extends facade.Control {
             console.log("key.master参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('key.master', paramArray);

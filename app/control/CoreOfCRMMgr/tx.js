@@ -17,7 +17,7 @@ class tx extends facade.Control {
             console.log("tx.GetWallet参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('tx.get.wallet', paramArray);
@@ -42,7 +42,7 @@ class tx extends facade.Control {
             console.log("tx.List参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray, "::", paramGold.currentPage);
             let orignData = await this.core.service.RemoteNode.conn(user.domainId).execute('tx.list', paramArray);
@@ -74,7 +74,7 @@ class tx extends facade.Control {
             // let retArray = new Array();
             // if (paramGold.daterange != null && paramGold.daterange != 'undefined' && paramGold.daterange[0] != null) {
             //     console.log("daterange值有效，开始过滤返回结果数据");
-            //     let dateRangeParam = eval(paramGold.daterange);
+            //     let dateRangeParam = JSON.parse(paramGold.daterange);
             //     let beginDate = dateRangeParam[0].substring(0, 10)
             //         .replace(/-/g, '/') + ' 00:00:00';
             //     let endDate = dateRangeParam[1].substring(0, 19)
@@ -114,7 +114,7 @@ class tx extends facade.Control {
             console.log("tx.sign参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('tx.sign', paramArray);
@@ -139,7 +139,7 @@ class tx extends facade.Control {
             console.log("tx.Create参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('tx.create', paramArray);
@@ -166,7 +166,7 @@ class tx extends facade.Control {
             console.log("tx.Send参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('tx.send', paramArray);

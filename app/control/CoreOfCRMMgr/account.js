@@ -16,7 +16,7 @@ class account extends facade.Control {
             console.log("account.List参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.list', paramArray);
@@ -39,7 +39,7 @@ class account extends facade.Control {
             console.log("account.Get参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.get', paramArray);
@@ -63,7 +63,7 @@ class account extends facade.Control {
             console.log("account.Create参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.create', paramArray);
@@ -87,7 +87,7 @@ class account extends facade.Control {
             console.log("account.Amount参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.amount', paramArray);
@@ -111,7 +111,7 @@ class account extends facade.Control {
             console.log("account.Receive参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.received', paramArray);
@@ -135,7 +135,7 @@ class account extends facade.Control {
             console.log("account.ListReceived参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.listreceived', paramArray);
@@ -159,7 +159,7 @@ class account extends facade.Control {
             console.log("account.BalanceConfirmed参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('balance.confirmed', paramArray);
@@ -183,7 +183,7 @@ class account extends facade.Control {
             console.log("account.BalanceAll参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('balance.all', paramArray);
@@ -207,7 +207,7 @@ class account extends facade.Control {
             console.log("account.BalanceUnconfirmed参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('balance.unconfirmed', paramArray);

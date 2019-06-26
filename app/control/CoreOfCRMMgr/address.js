@@ -16,7 +16,7 @@ class address extends facade.Control {
             console.log("address.Create参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('address.create', paramArray);
@@ -39,7 +39,7 @@ class address extends facade.Control {
             console.log("address.Receive参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('address.receive', paramArray);
@@ -64,7 +64,7 @@ class address extends facade.Control {
             console.log("address.Filter参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let retOld = await this.core.service.RemoteNode.conn(user.domainId).execute('address.filter', paramArray);

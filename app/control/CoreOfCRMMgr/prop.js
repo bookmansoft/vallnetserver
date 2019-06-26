@@ -27,7 +27,7 @@ class prop extends facade.Control {
     async List(user, paramGold) {
         let paramArray = paramGold.items;
         if (typeof (paramArray) == "string") {
-            paramArray = eval(paramArray);
+            paramArray = JSON.parse(paramArray);
         }
         let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('prop.list', paramArray);
         console.log(ret);
@@ -315,7 +315,7 @@ class prop extends facade.Control {
             return { code: -1, msg: '道具ID不正确' };
         }
         if (typeof (paramGold.addr) == "string") {
-            paramGold.addr = eval(paramGold.addr);
+            paramGold.addr = JSON.parse(paramGold.addr);
         }
         let addr = paramGold.addr;
         if (typeof addr == 'undefined' || addr == '' || !Array.isArray(addr)) {

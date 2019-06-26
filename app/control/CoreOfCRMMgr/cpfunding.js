@@ -69,7 +69,7 @@ class cpfunding extends facade.Control {
             console.log("cpfunding.StockRecord参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log("paramArray:",paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('stock.record', paramArray);

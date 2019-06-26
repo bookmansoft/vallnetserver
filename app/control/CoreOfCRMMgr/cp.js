@@ -101,7 +101,7 @@ class cp extends facade.Control {
             console.log("cp.Create参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.create', paramArray);
@@ -123,7 +123,7 @@ class cp extends facade.Control {
             console.log("cp.Change参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.change', paramArray);
@@ -145,7 +145,7 @@ class cp extends facade.Control {
             console.log("cp.ById参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.byId', paramArray);
@@ -167,7 +167,7 @@ class cp extends facade.Control {
             console.log("cp.ByName参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.byName', paramArray);
@@ -233,7 +233,7 @@ class cp extends facade.Control {
             console.log("cp.list参数串：");
             let paramArray = paramGold.items;
             if (typeof (paramArray) == "string") {
-                paramArray = eval(paramArray);
+                paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.list', paramArray);
