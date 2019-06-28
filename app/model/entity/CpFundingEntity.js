@@ -67,7 +67,7 @@ class CpFundingEntity extends BaseEntity
      * @param {*} db 
      * @param {*} callback 
      */
-    static async onLoad(db, pwd, callback){
+    static async onLoad(db, callback){
         try {
             let ret = await CpFunding(db).findAll();
             ret.map(it=>{
