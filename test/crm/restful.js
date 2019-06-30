@@ -1,9 +1,9 @@
 //引入远程连接器
-let {gameconn} = require('gamerpc');
+let toolkit = require('gamerpc');
 
 //创建连接器对象
-let remote = new gameconn(
-    gameconn.CommMode.post,             //使用短连接 get / post
+let remote = new toolkit.gameconn(
+    toolkit.CommMode.post,             //使用短连接 get / post
     {
         "UrlHead": "http",              //协议选择: http/https
         "webserver": {
@@ -18,8 +18,6 @@ let remote = new gameconn(
     }
 )
 .setFetch(require('node-fetch'));      //设置node服务端环境下兼容的fetch函数，**注意只能在node服务端环境中执行，浏览器环境中系统自带 fetch 函数**
-
-remote.NotifyType = gameconn.NotifyType;
 
 describe('Restful', function() {
     it('注册并登录 - 自动负载均衡', /*单元测试的标题*/

@@ -4,7 +4,7 @@
  */
 
 const remote = require('./util')
-const moment = require('./../node_modules/moment')
+const moment = require('moment')
 
 //一组单元测试流程
 describe('道具（prop）', function () {

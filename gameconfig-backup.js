@@ -23,6 +23,27 @@ let sqlOfChick = {
     "port": 3306                        //数据库服务器端口号
 };
 
+let smsConfig = {
+    realUrl: 'https://api.rtc.huaweicloud.com:10443/sms/batchSendSms/v1', //APP接入地址+接口访问URI
+    appKey: '', //APP_Key
+    appSecret: '', //APP_Secret
+    templates: {
+        test: {
+            templateId: '',//模板ID
+            signature: "", //条件必填,国内短信关注,当templateId指定的模板类型为通用模板时生效且必填,必须是已审核通过的,与模板类型一致的签名名称 国际/港澳台短信不用关注该参数
+            sender: '', //国内短信签名通道号或国际/港澳台短信通道号
+        }
+    },
+    statusCallBack: '', //选填,短信状态报告接收地址,推荐使用域名,为空或者不填表示不接收状态报告
+};
+
+let mailConfig = {
+    user: '',
+    pass: '',
+    host: '',
+    port: 25,
+};
+
 /**
  * 数据库连接信息：用于 gamegold-wechat-server
  */
@@ -199,6 +220,8 @@ let config = {
         "CRM":{ //新增CRM管理服务器
             "1":{
                 "mysql": sqlOfCRM,
+                "sms": smsConfig,
+                "mail": mailConfig,
                 "webserver": {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",
