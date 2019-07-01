@@ -2,13 +2,14 @@ let facade = require('gamecloud')
 let {EntityType, IndexType, ReturnCode} = facade.const
 let {now, sign} = facade.util
 
-//为短信验证提供签名缓存
+//为短信验证提供签名缓存, 兼具流量控制作用
 let signMap = new Map();
-//(仅测试)提供一个短信验证码模拟查询地址
+
+//缓存短信验证码
 let keyMap = new Map();
 
 /**
- * 自定义认证接口
+ * CRM管理平台两阶段验证控制器
  */
 class auth2step extends facade.Control
 {
@@ -46,8 +47,9 @@ class auth2step extends facade.Control
             }
         }
 
+        //生成新的签名
         ret = {
-            t: now(),                               //当前时间戳，游戏方必须验证时间戳，暂定有效 期为当前时间前后 5 分钟
+            t: now(),                               //当前时间戳，游戏方必须验证时间戳，暂定有效期为当前时间前后 5 分钟
             nonce: Math.random()*1000 | 0,          //随机数
             addrType: objData.addrType || 'phone',  //地址类型，'phone'
             address: objData.address,               //地址内容，如手机号码

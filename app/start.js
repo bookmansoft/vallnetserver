@@ -18,13 +18,13 @@ if(env.constructor == String) {
     env = JSON.parse(env);
 }
 
-//新增Auth服务器，请参照 gameconfig-backup 对 gameconfig 文件进行相应配置
-facade.boot({
-    env:{
-        serverType: "Auth",
-        serverId: 1
-    }
-});
+// //新增Auth服务器，请参照 gameconfig-backup 对 gameconfig 文件进行相应配置
+// facade.boot({
+//     env:{
+//         serverType: "Auth",
+//         serverId: 1
+//     }
+// });
 
 //系统主引导流程，除了必须传递运行环境变量 env，也可以搭载任意变量，这些变量都将合并为核心类的options对象的属性，供运行时访问
 if(env.portal) { //如果该服务器兼任门户，则启动索引服务

@@ -10,7 +10,7 @@ class authpwd extends facade.Control
      * 返回自定义中间件序列
      * @description 该序列不包含鉴权中间件，意味着该控制器可以被匿名访问
      */
-    get middleware(){
+    get middleware() {
         return ['parseParams', 'commonHandle'];
     }
 
@@ -22,11 +22,12 @@ class authpwd extends facade.Control
     check(params) {
         let usr = this.core.GetObject(EntityType.User, `${params.domain}.${params.openid}`, IndexType.Domain);
 
-        //如果用户存在，则验证密码，否则返回注册资料，供后续流程自动注册新用户
-        if (!!usr && params.openkey !== usr.baseMgr.info.getAttr('pwd')) {
-            throw(new Error('登录失败，密码错误'));
+        //验证用户是否否存在，密码是否正确
+        if (!usr || params.openkey !== usr.baseMgr.info.getAttr('pwd')) {
+            throw(new Error('登录失败，用户不存在或密码错'));
         }
 
+        //验证通过，返回用户资料
         return {
             openid : params.openid,
             nickname: params.openid,

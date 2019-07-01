@@ -33,7 +33,17 @@ class bindafter extends facade.Control
             }
         }
 
-        let ret = {
+        let ret = null;
+
+        //检测是否存在原有签名，是否过期
+        if(keyMap.get(objData.address)) {
+            ret = signMap.get(keyMap.get(objData.address));
+            if(!!ret && Math.abs(ret.t - now()) <= 60) {
+                return ret; //返回现有签名，避免重复下发
+            }
+        }
+
+        ret = {
             t: now(),                               //当前时间戳，游戏方必须验证时间戳，暂定有效 期为当前时间前后 5 分钟
             nonce: Math.random()*1000 | 0,          //随机数
             addrType: objData.addrType || 'phone',  //地址类型，'phone'
