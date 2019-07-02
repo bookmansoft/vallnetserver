@@ -41,17 +41,16 @@ class operator extends facade.Control {
     }
 
     /**
-    /**
      * 修改密码
      * @param {*} user 
      * @param {*} objData 
      */
     async ChangePassword(user, objData) {
         console.log("创建操作员参数串：");
-        if (user.baseMgr.info.getAttr('pwd') != objData.oldpassword) {
+        if (user.baseMgr.info.getAttr('openkey') != objData.oldpassword) {
             return {code: -10, message:"原密码错误"};
         }
-        user.baseMgr.info.setAttr('pwd', objData.newpassword);
+        user.baseMgr.info.setAttr('openkey', objData.newpassword);
         return {code: 0};
     }
 

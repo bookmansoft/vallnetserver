@@ -52,8 +52,8 @@ class bindafter extends facade.Control
         };
         //生成签名字段        
         let $sign = sign(ret, this.core.options[user.domain].game_secret);
-        //用签名字段生成6位数字键
-        $sign = this.core.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000;
+        //用签名字段生成6位数字的字符串键值
+        $sign = (this.core.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000).toString();
         //放入缓存表
         signMap.set($sign, ret);
         keyMap.set(user.openid, $sign);
@@ -83,16 +83,16 @@ class bindafter extends facade.Control
     /**
      * 验签函数，调用结果直接返回客户端
      * @param {*} user 
-     * @param {*} objData 
+     * @param {*} params 
      */
-    async check(user, objData) {
-        if(!signMap.has(objData.openkey)) {
+    async check(user, params) {
+        if(!signMap.has(params.auth.captcha)) {
             return {code: ReturnCode.userIllegal};
         }
 
-        let item = signMap.get(objData.openkey);
+        let item = signMap.get(params.auth.captcha);
 
-        let _sign = (item.nonce == objData.auth.nonce);
+        let _sign = (item.nonce == params.auth.nonce);
         let _exp = (Math.abs(item.t - now()) <= 300);
         if (!_sign || !_exp) {
             return {code: ReturnCode.userIllegal};

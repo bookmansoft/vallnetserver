@@ -79,6 +79,12 @@ async function handle(sofar) {
                     });
 
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
+                    sofar.facade.service.mail.send({
+                        addr: usr.openid, 
+                        subject:'Congratulations', 
+                        content:'You have registered successfully', 
+                        html:'<b>Congratulations!</b>You have registered successfully, Visit <a href="www.vallnet.cn">Vallnet</a> for more info.'
+                    });
 
                     //在用户创建成功后，绑定CID
                     sofar.facade.notifyEvent('user.bindCid', {user: usr, params:{}});

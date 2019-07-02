@@ -24,26 +24,26 @@ let mobilephone = `139${((Math.random()*100000000)|0).toString()}`;
 
 describe('CRM注册登录', () => {
     it('用户注册 - 通过两阶段认证模式实现', async () => {
-    //当用户点击'获取验证码'时执行如下流程：
-    let ret = await remote.init(/*初始化连接器，只保留原始配置信息*/).login({
-        domain: 'auth2step.CRM',    //指定验证方式为两阶段认证
-        openid: username,           //用户名称
-        openkey: password,          //用户密码，经过了加密转换
-        addrType: 'phone',          //指定验证方式为手机
-        address: mobilephone,       //作为验证地址的手机号码
-    });
-    assert(ret, 'login failed');
+        //当用户点击'获取验证码'时执行如下流程：
+        let ret = await remote.init(/*初始化连接器，只保留原始配置信息*/).login({
+            domain: 'auth2step.CRM',    //指定验证方式为两阶段认证
+            openid: username,           //用户名称
+            openkey: password,          //用户密码，经过了加密转换
+            addrType: 'phone',          //指定验证方式为手机
+            address: mobilephone,       //作为验证地址的手机号码
+        });
+        assert(ret, 'login failed');
 
-    //模拟用户输入验证码的流程，实际运用中，当用户填写好手机验证码、点击'注册'时执行 emit authcode
-    if (remote.loginMode.check(remote.CommStatus.reqSign) && !remote.status.check(remote.CommStatus.signCode)) {
-        //查询短信验证码，该接口仅供测试
-        let msg = await remote.fetching({func:`${remote.userInfo.domain.split('.')[0]}.getKey`, address: remote.userInfo.address});
-        assert(msg.code == 0, 'getKey error');
+        //模拟用户输入验证码的流程，实际运用中，当用户填写好手机验证码、点击'注册'时执行 emit authcode
+        if (remote.loginMode.check(remote.CommStatus.reqSign) && !remote.status.check(remote.CommStatus.signCode)) {
+            //查询短信验证码，该接口仅供测试
+            let msg = await remote.fetching({func:`${remote.userInfo.domain.split('.')[0]}.getKey`, address: remote.userInfo.address});
+            assert(msg.code == 0, 'getKey error');
 
-        //当用户输入验证码、点击'注册'时执行该流程
-        remote.events.emit('authcode', msg.data);
-        await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
-    }
+            //当用户输入验证码、点击'注册'时执行该流程
+            remote.events.emit('authcode', msg.data);
+            await (async function(time){return new Promise(resolve =>{setTimeout(resolve, time);});})(1000);
+        }
     });
 
     it('用户登录 - 使用用户名/密码认证模式', async () => {

@@ -57,8 +57,8 @@ class auth2step extends facade.Control
         };
         //生成签名字段        
         let $sign = sign(ret, this.core.options[auth2step.name].game_secret);
-        //用签名字段生成6位数字键
-        $sign = this.core.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000;
+        //用签名字段生成6位数字的字符串键值
+        $sign = (this.core.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000).toString();
         //放入缓存表
         signMap.set($sign, ret);
         keyMap.set(uinfo.address, $sign);
@@ -88,16 +88,16 @@ class auth2step extends facade.Control
     /**
      * 验签函数，注意这不是一个控制器方法，而是由 authHandle 中间件自动调用的内部接口，并不面向客户端
      * @param {*} user 
-     * @param {Object} objData {auth: {openid, openkey, addrType, address}}
+     * @param {Object} params {auth: {openid, openkey, addrType, address}}
      */
-    async check(objData) {
-        if(!signMap.has(objData.openkey)) {
+    async check(params) {
+        if(!signMap.has(params.auth.captcha)) {
             throw new Error('authThirdPartFailed');
         }
 
-        let item = signMap.get(objData.openkey);
+        let item = signMap.get(params.auth.captcha);
 
-        let _sign = (item.address == objData.address && item.nonce == objData.auth.nonce);
+        let _sign = (item.address == params.address && item.nonce == params.auth.nonce);
         let _exp = (Math.abs(item.t - now()) <= 300);
         if (!_sign || !_exp) {
             throw new Error('authThirdPartFailed');

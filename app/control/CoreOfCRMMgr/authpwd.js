@@ -1,5 +1,7 @@
 let facade = require('gamecloud')
+let crypto = require('crypto');
 let {EntityType, IndexType, ReturnCode} = facade.const
+const salt = "038292cfb50d8361a0feb0e3697461c9";
 
 /**
  * 用户认证控制器 - 使用用户名/密码验证
@@ -15,6 +17,32 @@ class authpwd extends facade.Control
      */
     get middleware() {
         return ['parseParams', 'commonHandle'];
+    }
+
+    /**
+     * 重置密码
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async resetPassword(user, params) {
+        let uinfo = params.oemInfo;
+        if(typeof uinfo == 'string') {
+            uinfo = JSON.parse(uinfo);
+        }
+        let pUser = this.core.GetObject(EntityType.User, `auth2step.${uinfo.openid}`, IndexType.Domain);
+        if(!!pUser) {
+            let pwd = ((Math.random() * 1000000) | 0).toString();
+            pUser.baseMgr.info.setAttr('openkey', crypto.createHash("sha1").update(pwd + salt).digest("hex"));
+            this.core.service.mail.send({
+                addr: pUser.openid, 
+                subject: 'Reset Password', 
+                content: `password reset to ${pwd}`, 
+                html: `You have reset password to ${pwd}, Visit <a href="www.vallnet.cn">Vallnet</a> for more info.`
+            });
+            return {code: 0};
+        }
+
+        return {code: -1};
     }
 
     /**
