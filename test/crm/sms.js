@@ -11,7 +11,7 @@ let remote = new gameconn({
 }).setFetch(require('node-fetch')); //设置node环境下兼容的fetch函数
 
 describe('验证信息发送测试', () => {
-    it.only('发送短信', async () => {
+    it('发送短信', async () => {
         let msg = await remote.fetching({func: "sms.sendsms", addr:'+86139********', template:'test', tp: '["369751"]'});
         assert(msg.code == 0);
     });

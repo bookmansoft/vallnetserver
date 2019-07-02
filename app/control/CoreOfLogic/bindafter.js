@@ -17,13 +17,13 @@ class bindafter extends facade.Control
 {
     /**
      * 获取手机验证码，这是一个控制器方法，必须在登录状态下调用
-     * @param {*} objData 
+     * @param {*} params 
      */
-    async auth(user, objData) {
-        switch(objData.addrType) {
+    async auth(user, params) {
+        switch(params.addrType) {
             default: {
                 //查询历史用户信息
-                let history = this.core.GetObject(EntityType.User, objData.address, IndexType.Phone);
+                let history = this.core.GetObject(EntityType.User, params.address, IndexType.Phone);
                 if(!!history) {
                     if(history.openid != user.openid) {
                         return {code: ReturnCode.userIllegal}; 
@@ -36,8 +36,8 @@ class bindafter extends facade.Control
         let ret = null;
 
         //检测是否存在原有签名，是否过期
-        if(keyMap.get(objData.address)) {
-            ret = signMap.get(keyMap.get(objData.address));
+        if(keyMap.get(params.address)) {
+            ret = signMap.get(keyMap.get(params.address));
             if(!!ret && Math.abs(ret.t - now()) <= 60) {
                 return ret; //返回现有签名，避免重复下发
             }
@@ -46,8 +46,8 @@ class bindafter extends facade.Control
         ret = {
             t: now(),                               //当前时间戳，游戏方必须验证时间戳，暂定有效 期为当前时间前后 5 分钟
             nonce: Math.random()*1000 | 0,          //随机数
-            addrType: objData.addrType || 'phone',  //地址类型，'phone'
-            address: objData.address,               //地址内容，如手机号码
+            addrType: params.addrType || 'phone',  //地址类型，'phone'
+            address: params.address,               //地址内容，如手机号码
             openid: user.openid,                    //用户登录时使用的认证信息
         };
         //生成签名字段        
@@ -59,7 +59,7 @@ class bindafter extends facade.Control
         keyMap.set(user.openid, $sign);
 
         //向用户发送短信或邮件
-        this.core.notifyEvent('sys.sendsms', {params:{addrType: objData.addrType, address: objData.address, content: $sign}});
+        this.core.notifyEvent('sys.sendsms', {params:{addrType: params.addrType, address: params.address, content: $sign}});
 
         return {code: ReturnCode.Success, data: ret};
     }

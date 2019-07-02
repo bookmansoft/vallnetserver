@@ -10,6 +10,7 @@ let keyMap = new Map();
 
 /**
  * CRM管理平台两阶段验证控制器
+ * @description 和 Logic 的两阶段认证不同，它承担注册任务，因此需要上传用户密码
  */
 class auth2step extends facade.Control
 {
@@ -34,14 +35,15 @@ class auth2step extends facade.Control
      * 后续用户收到短信验证码后，填入openkey字段，连同openid一并提交验证
      * 
      * 注意：这不是控制器方法，而是一个路由调用，可以在未登录状态下调用
-     * @param {*} objData 
+     * @param {*} params 
      */
-    async auth(objData) {
+    async auth(params) {
+        let uinfo = typeof params.oemInfo == 'string' ? JSON.parse(params.oemInfo) : params.oemInfo;
         let ret = null;
 
         //检测是否存在原有签名，是否过期
-        if(keyMap.get(objData.address)) {
-            ret = signMap.get(keyMap.get(objData.address));
+        if(keyMap.get(uinfo.address)) {
+            ret = signMap.get(keyMap.get(uinfo.address));
             if(!!ret && Math.abs(ret.t - now()) <= 60) {
                 return ret; //返回现有签名，避免重复下发
             }
@@ -51,9 +53,10 @@ class auth2step extends facade.Control
         ret = {
             t: now(),                               //当前时间戳，游戏方必须验证时间戳，暂定有效期为当前时间前后 5 分钟
             nonce: Math.random()*1000 | 0,          //随机数
-            addrType: objData.addrType || 'phone',  //地址类型，'phone'
-            address: objData.address,               //地址内容，如手机号码
-            openid: objData.openid,                 //用户自行上行的认证标识
+            addrType: uinfo.addrType || 'phone',  //地址类型，'phone'
+            address: uinfo.address,               //地址内容，如手机号码
+            openid: uinfo.openid,                 //用户上行的认证标识
+            openkey: uinfo.openkey,               //用户上行的登录密码(已加密)
         };
         //生成签名字段        
         let $sign = sign(ret, this.core.options[auth2step.name].game_secret);
@@ -61,10 +64,10 @@ class auth2step extends facade.Control
         $sign = this.core.service.gamegoldHelper.remote.hash256(Buffer.from($sign, 'utf8')).readUInt32LE(0, true) % 1000000;
         //放入缓存表
         signMap.set($sign, ret);
-        keyMap.set(objData.address, $sign);
+        keyMap.set(uinfo.address, $sign);
 
         //向用户发送短信或邮件
-        this.core.notifyEvent('sys.sendsms', {params:{addrType: objData.addrType, address: objData.address, content: $sign}});
+        this.core.notifyEvent('sys.sendsms', {params:{addrType: uinfo.addrType, address: uinfo.address, content: $sign}});
 
         return ret;
     }
@@ -103,7 +106,13 @@ class auth2step extends facade.Control
             throw new Error('authThirdPartFailed');
         }
 
-        let ret = {openid: item.openid, domain: auth2step.name, addrType: item.addrType, address: item.address}
+        let ret = {
+            domain: auth2step.name, 
+            openid: item.openid, 
+            openkey: item.openkey, 
+            addrType: item.addrType, 
+            address: item.address
+        };
         switch(item.addrType) {
             default: {
                 //查询历史用户信息
@@ -126,8 +135,10 @@ class auth2step extends facade.Control
      */
     async getProfile(oemInfo) {
         return {
-            phone: oemInfo.address,
+            domain: oemInfo.domain,
             openid : oemInfo.openid,
+            openkey : oemInfo.openkey,
+            phone: oemInfo.address,
             nickname: oemInfo.nickname || `vallnet${(Math.random()*1000000)|0}`,
             sex: 1,
             country: 'cn',

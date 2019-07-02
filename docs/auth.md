@@ -105,7 +105,7 @@ class authOfNew extends facade.Control
     async auth(data) {
         let auth = {
             t: now(),                         //当前时间戳，游戏方必须验证时间戳，暂定有效期为当前时间前后 5 分钟
-            userId: objData.id,               //客户端上行的平台用户 ID
+            userId: data.id,                  //客户端上行的平台用户 ID
         };
         auth.sign = sign(auth, this.core.options[DomainType.D360].game_secret);
         return auth;

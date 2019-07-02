@@ -55,9 +55,14 @@ async function handle(sofar) {
                     //禁止多点登录
                     sofar.facade.notifyEvent('socket.userKick', {sid:usr.socket});
                 }
-            }
-            else if(!!unionid) {//新玩家注册
+            } else if(!!unionid) {//新玩家注册
                 let profile = await sofar.facade.control[domainType].getProfile(sofar.msg.oemInfo);
+                if(!profile.openid || !profile.openkey) { //用户名和用户密码是必填项
+                    sofar.fn({ code: ReturnCode.authThirdPartFailed });
+                    sofar.recy = false;
+                    return;
+                }
+
                 usr = await sofar.facade.GetMapping(EntityType.User).Create(
                     profile.nickname, 
                     sofar.msg.oemInfo.domain, 
