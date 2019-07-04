@@ -32,7 +32,11 @@ class authpwd extends facade.Control
         let pUser = this.core.GetObject(EntityType.User, `auth2step.${uinfo.openid}`, IndexType.Domain);
         if(!!pUser) {
             let pwd = ((Math.random() * 1000000) | 0).toString();
-            pUser.baseMgr.info.setAttr('openkey', crypto.createHash("sha1").update(pwd + salt).digest("hex"));
+            while(pwd.length < 6) { //补足6位
+                pwd += '0';
+            }
+            pUser.SetAttr('password', crypto.createHash("sha1").update(pwd + salt).digest("hex"));
+            pUser.Save();
             this.core.service.mail.send({
                 addr: pUser.openid, 
                 subject: 'Reset Password', 
@@ -55,15 +59,14 @@ class authpwd extends facade.Control
         let usr = this.core.GetObject(EntityType.User, `auth2step.${params.openid}`, IndexType.Domain);
 
         //验证用户是否否存在，密码是否正确
-        if (!usr || params.openkey !== usr.baseMgr.info.getAttr('openkey')) {
+        if (!usr || params.openkey !== usr.GetAttr('password')) {
             throw(new Error('登录失败，用户不存在或密码错'));
         }
-        //currentAuthority
         //验证通过，返回用户资料
         return {
             domain : 'auth2step',       //注意返回的证书类型，仍旧是两阶段认证
             openid : usr.openid,
-            openkey : usr.baseMgr.info.getAttr('openkey'),
+            openkey : usr.GetAttr('password'),
             nickname: usr.openid,
             avatar_uri: usr.baseMgr.info.getAttr("avatar_uri") || './static/img/icon/mine_no.png',
             unionid: usr.openid,

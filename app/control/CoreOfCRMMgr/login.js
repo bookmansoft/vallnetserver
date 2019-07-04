@@ -22,7 +22,7 @@ class login extends facade.Control
         ret.data.name = user.name;     //用户昵称，客户端直接获取
         ret.data.token = user.sign;    //登录令牌
         ret.data.time = user.time;     //标记令牌有效期的时间戳
-        ret.data.currentAuthority = user.baseMgr.info.getAttr('currentAuthority') || ['user']; //客户端需要的权限信息
+        ret.data.currentAuthority = user.baseMgr.info.getAttr('auth') || ['user']; //客户端需要的权限信息
 
         return ret;
     }

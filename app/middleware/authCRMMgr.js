@@ -75,14 +75,19 @@ async function handle(sofar) {
                     sofar.socket.user = usr;
 
                     Object.keys(profile).map(key=>{
-                        usr.baseMgr.info.setAttr(key, profile[key]);
+                        if(key == 'openkey') {
+                            usr.SetAttr('password', profile[key]);
+                        } else if(key == 'openid' || key == 'unionid') { //这两个属性不必存储
+                        } else {
+                            usr.baseMgr.info.setAttr(key, profile[key]);
+                        }
                     });
 
                     //第一个注册的用户自动成为超级管理员
                     if(sofar.facade.GetMapping(EntityType.User).total == 1) {
-                        usr.baseMgr.info.setAttr('currentAuthority', ['admin', 'user']);
+                        usr.baseMgr.info.setAttr('auth', ['admin', 'user']);
                     } else {
-                        usr.baseMgr.info.setAttr('currentAuthority', ['user']);
+                        usr.baseMgr.info.setAttr('auth', ['user']);
                     }
 
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
@@ -95,6 +100,8 @@ async function handle(sofar) {
 
                     //在用户创建成功后，绑定CID
                     sofar.facade.notifyEvent('user.bindCid', {user: usr, params:{}});
+
+                    usr.Save();
                 }
             }
 

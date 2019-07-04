@@ -53,7 +53,6 @@ describe('CRM注册登录', () => {
             openkey: password,      //注册时使用的 openkey
         });
         assert(ret);
-        //{ status: "ok", type: "account", currentAuthority: "admin", userinfo:{ id: 1 } }
     })
 
     it('验证登录成功 - 用户持登录成功后获得的 token 执行业务指令', async () => {

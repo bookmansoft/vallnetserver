@@ -15,8 +15,6 @@ class info extends baseMgr
             name: "",
             //	头像
             avatar_uri	: 0,
-            //	邀请码
-            invCode		: '',
             //	头像
             headIcon	: 0,
             //	文化值 (公司等级)
@@ -79,9 +77,7 @@ class info extends baseMgr
                 "name": this.parent.name,
                 "id": this.parent.id,
                 "domain": this.parent.domain,
-                "uuid": this.parent.uuid,
                 "avatar_uri": "",
-                "invCode": "",
                 "headIcon": "",
                 "level": 0,
                 "ap": this.parent.core.fileMap.DataConst.action.init,
@@ -214,14 +210,6 @@ class info extends baseMgr
         this.dirty = true;
     }
 
-    //	设置邀请码
-    SetInvCode (invCode) {
-		this.v.invCode = invCode;
-	};
-    //	获取邀请码
-    GetInvCode () {
-		return this.v.invCode;
-	};
     //	设置头像
     SetHeadIcon (headIcon) {
 		this.v.headIcon = headIcon;
