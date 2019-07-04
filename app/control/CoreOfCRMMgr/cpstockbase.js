@@ -154,7 +154,7 @@ class cpstockbase extends facade.Control {
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, currentPage, ['id','cid', 'cpid','cp_name','cp_text', 'total_num', 'sell_stock_amount', 'sell_stock_num', 'base_amount','operator_id']);
+                .paginate(10, currentPage);
 
             let $data = { items: {}, list: [], pagination: {} };
             //扩展分页器对象

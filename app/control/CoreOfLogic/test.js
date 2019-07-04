@@ -133,14 +133,14 @@ class test extends facade.Control
         let muster = this.core.GetMapping(tableType.test) //得到 Mapping 对象
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .orderby('id', 'desc') //根据id字段倒叙排列
-            .paginate(5, objData.id, ['id', 'item']); //每页5条，显示第${objData.id}页，只选取'id'和'item'字段
+            .paginate(5, objData.id); //每页5条，显示第${objData.id}页，只选取'id'和'item'字段
         
         let $data = {items:{}};
         $data.total = muster.pageNum;
         $data.page = muster.pageCur;
 
         let $idx = (muster.pageCur-1) * muster.pageSize;
-        for(let $value of muster.records()){
+        for(let $value of muster.records(['id', 'item'])){
             $idx++ ;
             $data.items[$idx] = {id: $value['id'], item: $value['item'], rank: $idx};
         }

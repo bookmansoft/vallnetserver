@@ -153,7 +153,7 @@ class manyreceive extends facade.Control {
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'asc') //根据id字段正序排列
-                .paginate(100, currentPage, ['id', 'send_id', 'receive_amount', 'send_uid', 'send_nickname', 'send_headimg', 'receive_uid', 'receive_nickname', 'receive_headimg', 'modify_date']);
+                .paginate(100, currentPage);
 
             let $data = { items: {}, list: [], pagination: {} };
             //扩展分页器对象

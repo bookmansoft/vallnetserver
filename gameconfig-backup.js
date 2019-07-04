@@ -44,6 +44,10 @@ let mailConfig = {
     port: 25,
 };
 
+//系统管理员设定 todo 如何对多个分服精准配置系统管理员
+let masterConfig = [
+];
+
 /**
  * 数据库连接信息：用于 gamegold-wechat-server
  */
@@ -222,6 +226,7 @@ let config = {
                 "mysql": sqlOfCRM,
                 "sms": smsConfig,
                 "mail": mailConfig,
+                "master": masterConfig,
                 "webserver": {
                     "mapping": "127.0.0.1",
                     "host": "127.0.0.1",

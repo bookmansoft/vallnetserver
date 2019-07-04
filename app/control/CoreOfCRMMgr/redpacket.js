@@ -156,7 +156,7 @@ class redpacket extends facade.Control {
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, currentPage, ['id', 'act_name', 'act_sequence', 'total_gamegold', 'each_gamegold', 'total_num', 'each_num', 'act_desc', 'act_start_at']); 
+                .paginate(10, currentPage); 
 
             let $data = { items: {}, list: [], pagination: {} };
             //扩展分页器对象

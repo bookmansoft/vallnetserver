@@ -289,7 +289,7 @@ class cp extends facade.Control {
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, currentPage, ['id', 'cp_id', 'cp_text', 'cp_type', 'cp_state', 'publish_time', 'operator_id']); //每页5条，显示第${objData.id}页，只选取'id'和'item'字段
+                .paginate(10, currentPage); //每页5条，显示第${objData.id}页，只选取'id'和'item'字段
 
             let $data = { items: {}, list: [], pagination: {} };
             //扩展分页器对象
@@ -328,10 +328,10 @@ class cp extends facade.Control {
             let muster = this.core.GetMapping(tableType.cpType)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .orderby('id', 'asc') //根据id字段倒叙排列
-                .paginate(10, 1, ['id', 'cp_type_id', 'cp_type_name']); 
+                .paginate(10, 1); 
 
             let $data=[];
-            for (let $value of muster.records()) {
+            for (let $value of muster.records(['id', 'cp_type_id', 'cp_type_name'])) {
                 let item = { id: $value['id'], cp_type_id: $value['cp_type_id'], cp_type_name: $value['cp_type_name']};
                 $data.push(item);
             }

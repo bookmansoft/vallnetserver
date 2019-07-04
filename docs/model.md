@@ -69,5 +69,6 @@ let page = 1;
 let result = facade.current.GetMapping(entityType)  //得到 Mapping 对象
     .groupOf()                              //将 Mapping 转化为 Collection，如果 Mapping 支持分组，可以带分组参数调用
     .orderby('id', 'desc')                  //根据id字段倒叙排列
-    .paginate(5, page, ['id', 'item']);     //每页5条，显示第1页，只选取'id'和'item'字段
+    .paginate(5, page);                     //每页5条，显示第1页
+    .records(['id', 'item'])                //只选取'id'和'item'字段
 ```

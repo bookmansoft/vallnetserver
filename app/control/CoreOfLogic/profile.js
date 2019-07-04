@@ -108,8 +108,8 @@ class profile extends facade.Control
             vipDrawLog = await this.core.GetMapping(tableType.vipdraw)
             .groupOf().where([['uid','==',uid]])
             .orderby('draw_at', 'desc')
-            .paginate(5, 1, tableField.vipdraw)
-            .records()
+            .paginate(5, 1)
+            .records(tableField.vipdraw)
         } else {
             vipDrawLog = await this.core.GetMapping(tableType.vipdraw)
             .groupOf().where([['uid','==',uid]])

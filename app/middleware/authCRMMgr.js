@@ -46,6 +46,12 @@ async function handle(sofar) {
             
             let usr = sofar.facade.GetObject(EntityType.User, sofar.msg.domainId, IndexType.Domain);
             if (!!usr) {//老用户登录
+                if(usr.baseMgr.info.getAttr('state') == 0) { //检测是否被禁用
+                    sofar.fn({ code: ReturnCode.authThirdPartFailed });
+                    sofar.recy = false;
+                    return;
+                }
+
                 usr.socket = sofar.socket; //更新通讯句柄
                 usr.userip = sofar.msg.userip;
                 sofar.socket.user = usr;
@@ -77,17 +83,18 @@ async function handle(sofar) {
                     Object.keys(profile).map(key=>{
                         if(key == 'openkey') {
                             usr.SetAttr('password', profile[key]);
-                        } else if(key == 'openid' || key == 'unionid') { //这两个属性不必存储
+                        } else if(key == 'openid' || key == 'unionid' || key == 'uuid') { //这些属性不必存储
                         } else {
                             usr.baseMgr.info.setAttr(key, profile[key]);
                         }
                     });
 
-                    //第一个注册的用户自动成为超级管理员
-                    if(sofar.facade.GetMapping(EntityType.User).total == 1) {
-                        usr.baseMgr.info.setAttr('auth', ['admin', 'user']);
+                    //判断是否是设置的超级管理员
+                    if(sofar.facade.options.master.includes(usr.openid)) {
+                        usr.SetAttr('role', 1);
+                        sofar.facade.master = usr; //设置系统管理员对象
                     } else {
-                        usr.baseMgr.info.setAttr('auth', ['user']);
+                        usr.SetAttr('role', 0);
                     }
 
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
@@ -98,20 +105,16 @@ async function handle(sofar) {
                         html:'<b>Congratulations!</b>You have registered successfully, Visit <a href="www.vallnet.cn">Vallnet</a> for more info.'
                     });
 
-                    //在用户创建成功后，绑定CID
-                    sofar.facade.notifyEvent('user.bindCid', {user: usr, params:{}});
-
                     usr.Save();
                 }
             }
 
             if (!!usr) {
-                usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌
-                usr.time = CommonFunc.now();                //记录标识令牌有效期的时间戳
-                sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token);   //添加一定有效期的令牌类型的反向索引
-                if(!!usr.baseMgr.info.getAttr('phone')) {
-                    sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.getAttr('phone'), usr.id], IndexType.Phone);
-                }
+                usr.sign = sofar.msg.oemInfo.token;     //记录登录令牌
+                usr.time = CommonFunc.now();           //记录标识令牌有效期的时间戳
+                sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id], IndexType.Token);  //添加一定有效期的令牌类型的反向索引
+        
+                sofar.facade.notifyEvent('user.afterOperatorLogin', {user:usr, msg:sofar.msg}); //发送"登录后"事件
             }
         }
 

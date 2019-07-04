@@ -1,45 +1,11 @@
 let facade = require('gamecloud')
 let { ReturnCode, EntityType, NotifyType } = facade.const
-let tableType = require('../../util/tabletype')
 
 /**
  * 游戏的控制器
  * Updated by thomasFuzhou on 2018-11-19.
  */
 class operator extends facade.Control {
-
-    /**
-     * 增加数据库记录。
-     * 此方法被从页面入口的Create方法所调用
-     * @param {*} user 
-     * @param {*} objData 
-     */
-    async CreateRecord(user, objData) {
-        let remote = this.core.service.RemoteNode.conn('authwx.admin');
-        let retAuth = await remote.execute('sys.createAuthToken', [user.domainId]);
-        if (!retAuth) {
-            return { code: -1 };
-        }
-        let cid = retAuth.result[0].cid;
-        let {aeskey, aesiv} = remote.getAes();
-        let token = remote.decrypt(aeskey, aesiv, retAuth.result[0].encry);
-
-        let sim = await this.core.GetMapping(EntityType.User).Create(
-            objData.login_name,
-            objData.password,
-            cid,
-            token,
-            1,
-            objData.remark,
-        );
-
-        if (!sim) {
-            return { code: -1, message: "违反唯一性约束" }
-        }
-
-        return { code: 0 };
-    }
-
     /**
      * 修改密码
      * @param {*} user 
@@ -63,9 +29,15 @@ class operator extends facade.Control {
      * @param {*} objData 传递进来的state就是目标状态；其他字段不变
      */
     async ChangeState(user, objData) {
-        //todo 谁可以修改操作员的状态？是否需要超级管理员身份判断？
+        if(!Number.isInteger(objData.state)) {
+            objData.state = parseInt(objData.state); 
+        }
+        if(objData.state != 1) { //限定取值范围为0/1
+            objData.state = 0;
+        }
+
         let operator = this.core.GetObject(EntityType.User, parseInt(objData.id));
-        if (!!operator) {
+        if (!!operator && !this.core.options.master.includes(operator.openid)) { //不能禁止系统管理员
             operator.baseMgr.info.setAttr('state', objData.state);
         }
 
@@ -86,9 +58,8 @@ class operator extends facade.Control {
                     data: {
                         login_name: operator.openid,
                         cid: operator.baseMgr.info.getAttr('cid'),
-                        token: operator.baseMgr.info.getAttr('token'),
-                        state: 1,
-                        remark: operator.baseMgr.info.getAttr('remark'),
+                        state: operator.baseMgr.info.getAttr('state')|| 1,
+                        remark: operator.baseMgr.info.getAttr('name'),
                     },
 
                 };
@@ -117,11 +88,12 @@ class operator extends facade.Control {
             }
 
             //构造查询条件
-            let paramArray = [
-                ['state', objData.state || 1],
-            ];
+            let paramArray = [];
             if(!!objData.login_name) {
                 paramArray.push(['openid', objData.login_name]);
+            }
+            if(!!objData.state) {
+                paramArray.push(['baseMgr.info.v.state', parseInt(objData.state||0)]);
             }
 
             //得到 Mapping 对象
@@ -140,7 +112,14 @@ class operator extends facade.Control {
             let $idx = (muster.pageCur - 1) * muster.pageSize;
             $idx = $idx + 5;
             for (let $value of muster.records()) {
-                $data.items[$idx] = { id: $value.id, login_name: $value.openid, cid: $value.baseMgr.info.getAttr('cid'), state: $value.baseMgr.info.getAttr('state'), remark: $value.baseMgr.info.getAttr('remark'), rank: $idx };
+                $data.items[$idx] = { 
+                    id: $value.id, 
+                    login_name: $value.openid, 
+                    cid: $value.baseMgr.info.getAttr('cid'), 
+                    state: $value.baseMgr.info.getAttr('state') || 0, 
+                    remark: $value.baseMgr.info.getAttr('name') || '', 
+                    rank: $idx 
+                };
                 $idx++;
             }
 

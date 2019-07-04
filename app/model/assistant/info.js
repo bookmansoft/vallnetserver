@@ -15,9 +15,6 @@ class info extends baseMgr
             name: "",
             //	头像
             avatar_uri	: 0,
-            //	头像
-            headIcon	: 0,
-            //	文化值 (公司等级)
             //	等级
             level		: 0,
             //	体力
@@ -78,7 +75,6 @@ class info extends baseMgr
                 "id": this.parent.id,
                 "domain": this.parent.domain,
                 "avatar_uri": "",
-                "headIcon": "",
                 "level": 0,
                 "ap": this.parent.core.fileMap.DataConst.action.init,
                 "money": this.parent.core.fileMap.DataConst.threshold.moneyOfInit,
@@ -212,12 +208,12 @@ class info extends baseMgr
 
     //	设置头像
     SetHeadIcon (headIcon) {
-		this.v.headIcon = headIcon;
+		this.v.avatar_uri = headIcon;
 		this.dirty = true;
 	};
     //	获取头像
     GetHeadIcon() {
-		return this.v.headIcon;
+		return this.v.avatar_uri;
 	};
 }
 

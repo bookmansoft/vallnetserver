@@ -227,8 +227,7 @@ class cpfunding extends facade.Control {
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, currentPage, ['id', 'cpid', 'stock_num', 'total_amount', 'stock_amount', 'stock_rmb', 'audit_state_id', 'audit_text', 'modify_date',
-                    'cp_name','cp_text','cp_type','cp_url','develop_name','develop_text','user_id','cid','operator_id']);
+                .paginate(10, currentPage);
 
             let $data = { items: {}, list: [], pagination: {} };
             //扩展分页器对象
@@ -275,10 +274,10 @@ class cpfunding extends facade.Control {
             let muster = this.core.GetMapping(tableType.cp)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .orderby('id', 'asc') //根据id字段倒叙排列
-                .paginate(10, 1, ['id', 'cp_id', 'cp_text']); 
+                .paginate(10, 1); 
 
             let $data=[];
-            for (let $value of muster.records()) {
+            for (let $value of muster.records(['id', 'cp_id', 'cp_text'])) {
                 let item = { id: $value['id'], cp_id: $value['cp_id'], cp_text: $value['cp_text']};
                 $data.push(item);
             }
