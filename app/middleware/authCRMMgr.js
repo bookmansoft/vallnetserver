@@ -13,11 +13,11 @@ async function handle(sofar) {
     try {
         //根据访问令牌(oemInfo.token)进行鉴权, 直接获得用于业务操作的用户对象
         //令牌在签发后两个小时内有效，如果失效，将重新进行身份认证
-        if(!sofar.socket.user){
+        if(!sofar.socket.user) {
             sofar.socket.user = await sofar.facade.GetObject(EntityType.User, sofar.msg.oemInfo.token, IndexType.Token);
         }
         
-        if (!sofar.socket.user || sofar.msg.func == "login" || sofar.msg.func == "1000"/*如果是login则强制重新验证*/) {
+        if (!sofar.socket.user) {
             //针对各类第三方平台，执行一些必要的验证流程：
             let unionid = '';
             let domainType = sofar.msg.oemInfo.domain.split('.')[0];
@@ -77,6 +77,13 @@ async function handle(sofar) {
                     Object.keys(profile).map(key=>{
                         usr.baseMgr.info.setAttr(key, profile[key]);
                     });
+
+                    //第一个注册的用户自动成为超级管理员
+                    if(sofar.facade.GetMapping(EntityType.User).total == 1) {
+                        usr.baseMgr.info.setAttr('currentAuthority', ['admin', 'user']);
+                    } else {
+                        usr.baseMgr.info.setAttr('currentAuthority', ['user']);
+                    }
 
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
                     sofar.facade.service.mail.send({

@@ -58,15 +58,15 @@ class authpwd extends facade.Control
         if (!usr || params.openkey !== usr.baseMgr.info.getAttr('openkey')) {
             throw(new Error('登录失败，用户不存在或密码错'));
         }
-
+        //currentAuthority
         //验证通过，返回用户资料
         return {
-            openid : params.openid,
-            openkey : params.openkey,
             domain : 'auth2step',       //注意返回的证书类型，仍旧是两阶段认证
-            nickname: params.openid,
-            avatar_uri: params.headimgurl || './static/img/icon/mine_no.png',
-            unionid: params.openid,
+            openid : usr.openid,
+            openkey : usr.baseMgr.info.getAttr('openkey'),
+            nickname: usr.openid,
+            avatar_uri: usr.baseMgr.info.getAttr("avatar_uri") || './static/img/icon/mine_no.png',
+            unionid: usr.openid,
         }
     }
     
@@ -77,9 +77,9 @@ class authpwd extends facade.Control
      */
     async getProfile(params) {
         return {
+            domain : 'auth2step',      //注意返回的证书类型，仍旧是两阶段认证
             openid : params.openid,
             openkey: params.openkey,
-            domain : 'auth2step',      //注意返回的证书类型，仍旧是两阶段认证
             nickname: params.nickname || `vallnet${(Math.random()*1000000)|0}`,
             avatar_uri: params.headimgurl || './static/img/icon/mine_no.png',
             unionid: params.openid,
