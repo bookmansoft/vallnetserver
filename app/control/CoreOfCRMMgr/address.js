@@ -30,7 +30,7 @@ class address extends facade.Control {
     }
 
     /**
-     * 获取最后一个收款地址
+     * 获取一个新的收款地址
      * @param {*} user 
      * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
      */
@@ -42,10 +42,10 @@ class address extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('address.receive', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('address.create', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
-            return { code: ret.code, data: ret.result };
+            return { code: ret.code, data: ret.result.address };
         } catch (error) {
             console.log(error);
             return { code: -1, data: null, message: "address.Receive方法出错" };

@@ -59,6 +59,7 @@
     "gamecloud": "^2.2.15",
     "gamerpc": "^2.1.7",
     "nodemailer": "^6.2.1",
+    "qr-image": "^3.2.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "string-random": "^0.1.3",

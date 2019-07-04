@@ -3,14 +3,13 @@
  */
 
 let facade = require('gamecloud');
-let { UserStatus, CommMode } = facade.const;
 let CoreOfBase = facade.CoreOfBase;
 let rp = require('request-promise');
 const crypto = require('crypto');
 let { stringify } = require('../util/stringUtil');
 const uuid = require('uuid');//简单使用时间戳随机即可
-let config = require('../../gameconfig.js');
 const tableType = require('../util/tabletype')
+let qr = require('qr-image');
 
 /**
  * 资源服对应的门面类
@@ -365,7 +364,6 @@ class CoreOfResource extends CoreOfBase {
 
         //QRCode处理
         app.get('/qrcode/:qrcode', (req, res) => {
-            let qr = require('qr-image');
             if (!!req.params.qrcode) {
                 try {
                     let img = qr.image(req.params.qrcode, { size: 10 });
