@@ -1,10 +1,10 @@
 let facade = require('gamecloud')
 let { ReturnCode, NotifyType } = facade.const
 let tableType = require('../../util/tabletype');
+let fetch = require("node-fetch");
 
 /**
  * 游戏的控制器
- * Updated by thomasFuzhou on 2018-11-19.
  */
 class cp extends facade.Control {
     /**
@@ -63,6 +63,9 @@ class cp extends facade.Control {
      */
     async CreateRecord(user, objData) {
         try {
+            if(typeof objData.picture_url == 'object') {
+                objData.picture_url = JSON.stringify(objData.picture_url);
+            }
             let cp = await this.core.GetMapping(tableType.cp).Create(
                 objData.cp_id,
                 objData.cp_name,
@@ -98,12 +101,10 @@ class cp extends facade.Control {
      */
     async Create(user, paramGold) {
         try {
-            console.log("cp.Create参数串：");
             let paramArray = paramGold.items;
-            if (typeof (paramArray) == "string") {
+            if (typeof paramArray == "string") {
                 paramArray = JSON.parse(paramArray);
             }
-            console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.create', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
@@ -209,7 +210,6 @@ class cp extends facade.Control {
                         invite_share: cp.getAttr('invite_share'),
                         operator_id: cp.getAttr('operator_id'),
                     },
-
                 };
             }
             else {
@@ -224,7 +224,6 @@ class cp extends facade.Control {
 
     /**
      * 查询系统中现有的所有CP列表：cp.list
-     * 20181128:此方法暂不使用。
      * @param {*} user 
      * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
      */
@@ -256,7 +255,7 @@ class cp extends facade.Control {
         //构造查询条件
         let paramArray = [];
         if (!!objData.cp_text) {
-            paramArray.push(['cp_text', objData.cp_text]);
+            paramArray.push(['cp_text', 'like', objData.cp_text]);
         }
         if (!!objData.cp_id) {
             paramArray.push(['cp_id', objData.cp_id]);
@@ -287,7 +286,7 @@ class cp extends facade.Control {
         //@warning muster.records不带属性数组调用时，返回Entiry对象列表，访问内部属性时需要使用 .GetAttr(attrName) ，带属性数组调用时，返回属性映射对象列表，可以直接访问内部属性
         for (let $value of muster.records(['id', 'cp_id', 'cp_text', 'cp_type', 'cp_state', 'publish_time', 'operator_id'])) {
             $data.items[$idx] = $value;
-            $value[rank] = $idx++;
+            $value["rank"] = $idx++;
         }
 
         //转化并设置数组属性
@@ -328,10 +327,8 @@ class cp extends facade.Control {
      * 传入的参数是cp_url，就是真实的URL路径
      */
     async getGameFromUrl(user, objData) {
-        let fetch = require("node-fetch");
         let res = await fetch(objData.cp_url, { mode: 'no-cors' });
-        let json = await res.json();//fetch正常返回后才执行
-        return json;//这样就能返回res不用担心异步的问题啦啦啦
+        return res.json();
     }
 }
 

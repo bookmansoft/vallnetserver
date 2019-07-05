@@ -41,7 +41,11 @@ facade.boot({
     env:{
         serverType: "Resource",
         serverId: 1
-    }
+    },
+    //设置静态资源映射
+    static: [
+        ['/image', './web/image']
+    ], 
 });
 
 //加载CRM管理节点
