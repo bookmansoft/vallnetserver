@@ -251,70 +251,50 @@ class cp extends facade.Control {
      * @param {*} objData 查询及翻页参数，等整体调通以后再细化。
      */
     ListRecord(user, objData) {
-        try {
-            if (objData == null) {
-                objData = {};
-            }
-            let currentPage = objData.currentPage;
-            console.log(Number.isNaN(parseInt(currentPage)));
-            if (Number.isNaN(parseInt(currentPage))) {
-                currentPage = 1;
-            }
-            //构造查询条件
-            //cp_text=3&cp_id=23&cp_type=1&cp_state=2
-            let paramArray = new Array();
-            if (typeof (objData.cp_text) != "undefined" && (objData.cp_text != "")) {
-                console.log(`cp_text 参数: ${objData.cp_text}`);
-                let tmp = ['cp_text', '==', objData.cp_text];
-                paramArray.push(tmp);
-            }
-            if (typeof (objData.cp_id) != "undefined" && (objData.cp_id != "")) {
-                console.log(`cp_id 参数: ${objData.cp_id}`);
-                let tmp = ['cp_id', '==', objData.cp_id];
-                paramArray.push(tmp);
-            }
-            if (typeof (objData.cp_type) != "undefined" && (objData.cp_type != "")) {
-                console.log(`cp_type 参数: ${objData.cp_type}`);
-                let tmp = ['cp_type', '==', objData.cp_type];
-                paramArray.push(tmp);
-            }
-            if (typeof (objData.cp_state) != "undefined" && (objData.cp_state != "")) {
-                console.log(`cp_state 参数: ${objData.cp_state}`);
-                let tmp = ['cp_state', '==', objData.cp_state];
-                paramArray.push(tmp);
-            }
+        objData = objData ||{};
 
-            //得到 Mapping 对象
-            let muster = this.core.GetMapping(tableType.cp)
-                .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
-                .where(paramArray)
-                .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, currentPage); //每页5条，显示第${objData.id}页，只选取'id'和'item'字段
-
-            let $data = { items: {}, list: [], pagination: {} };
-            //扩展分页器对象
-            $data.pagination = { "total": muster.pageNum * 10, "pageSize": 10, "current": muster.pageCur };
-            $data.total = muster.pageNum;
-            $data.page = muster.pageCur;
-
-            let $idx = (muster.pageCur - 1) * muster.pageSize;
-            for (let $value of muster.records()) {
-                $data.items[$idx] = { id: $value['id'], cp_id: $value['cp_id'], cp_text: $value['cp_text'], cp_type: $value['cp_type'], cp_state: $value['cp_state'], publish_time: $value['publish_time'],operator_id:$value['operator_id'], rank: $idx };
-                $idx++;
-            }
-
-            //转化并设置数组属性
-            $data.list = Object.keys($data.items).map(key => $data.items[key]);
-
-            // let ret=$data.list;
-            return $data;
-
-        } catch (error) {
-            console.log(error);
-            return { items: {}, list: [], pagination: {} };
+        //构造查询条件
+        let paramArray = [];
+        if (!!objData.cp_text) {
+            paramArray.push(['cp_text', objData.cp_text]);
         }
-    }
+        if (!!objData.cp_id) {
+            paramArray.push(['cp_id', objData.cp_id]);
+        }
+        if (!!objData.cp_type) {
+            paramArray.push(['cp_type', objData.cp_type]);
+        }
+        if (!!objData.cp_state) {
+            paramArray.push(['cp_state', objData.cp_state]);
+        }
 
+        //得到 Mapping 对象
+        let muster = this.core.GetMapping(tableType.cp)
+            .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
+            .where(paramArray)
+            .orderby('id', 'desc') //根据id字段倒叙排列
+            .paginate(10, objData.currentPage || 1); //每页10条，显示第 objData.currentPage 页
+
+        let $data = { 
+            items: {}, 
+            list: [], 
+            total: muster.pageNum,
+            page: muster.pageCur,
+            pagination: { "total": muster.pageNum * 10, "pageSize": 10, "current": muster.pageCur },
+        };
+
+        let $idx = (muster.pageCur - 1) * muster.pageSize;
+        //@warning muster.records不带属性数组调用时，返回Entiry对象列表，访问内部属性时需要使用 .GetAttr(attrName) ，带属性数组调用时，返回属性映射对象列表，可以直接访问内部属性
+        for (let $value of muster.records(['id', 'cp_id', 'cp_text', 'cp_type', 'cp_state', 'publish_time', 'operator_id'])) {
+            $data.items[$idx] = $value;
+            $value[rank] = $idx++;
+        }
+
+        //转化并设置数组属性
+        $data.list = Object.keys($data.items).map(key => $data.items[key]);
+
+        return $data;
+    }
 
     /**
      * 从数据库中获取CpType
