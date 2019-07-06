@@ -114,7 +114,7 @@ async function handle(sofar) {
                 usr.time = CommonFunc.now();           //记录标识令牌有效期的时间戳
                 sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id], IndexType.Token);  //添加一定有效期的令牌类型的反向索引
         
-                sofar.facade.notifyEvent('user.afterOperatorLogin', {user:usr, msg:sofar.msg}); //发送"登录后"事件
+                sofar.facade.notifyEvent('user.afterOperatorLogin', {user:usr, msg:sofar.msg}); //发送"登录后"事件. 注意使用 token 登录不会触发该事件
             }
         }
 

@@ -22,7 +22,7 @@ class CoreOfResource extends CoreOfBase {
         super($env);
         this.orderMap = new Map();
 
-        //载入框架规定的Service
+        //载入用户自定义通用Service
         facade.config.filelist.mapPackagePath(`${__dirname}/../service/${this.constructor.name}`).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);

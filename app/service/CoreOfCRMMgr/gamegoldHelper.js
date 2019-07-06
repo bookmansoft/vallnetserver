@@ -27,18 +27,6 @@ class gamegoldHelper extends facade.Service
         return this;
     }
 
-    notfiyToClient(uid, msgType, msg) {
-        let domain = 'official';
-        let domainId = `${domain}.${uid}`;
-        let user = this.core.GetObject(EntityType.User, domainId, IndexType.Domain);
-        if(!!user) {
-            user.notify({type: NotifyType.test, info: {
-                msgType: msgType,
-                msg: msg
-            }});
-        }
-    }
-
     async execute(method, params) {
         return await this.remote.execute(method, params)
     }

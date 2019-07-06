@@ -19,38 +19,10 @@ class CoreOfCRMMgr extends CoreOfBase
             default: ['parseParams', 'authCRMMgr', 'commonHandle', 'afterHandle']
         };
         
-        //载入控制器
-        this.$router = {};
-
-        //载入框架规定的Service
+        //载入用户自定义通用Service
         facade.config.filelist.mapPackagePath(`${__dirname}/../service/${this.constructor.name}`).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
-        });
-
-        //事件映射
-        this.eventHandleList = {};
-        //载入框架规范的逻辑事件
-        facade.config.filelist.mapPackagePath(`${__dirname}/../events`).map(srv=>{
-            let handle = require(srv.path).handle;
-            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
-            this.eventHandleList[handleName] = handle.bind(this);
-        });
-
-        facade.config.filelist.mapPackagePath(`${__dirname}/../control/${this.constructor.name}`).map(ctrl=>{
-            let ctrlObj = require(ctrl.path);
-            let token = ctrl.name.split('.')[0];
-            this.control[token] = new ctrlObj(this);
-
-            //读取控制器自带的中间件设置
-            if(!!this.control[token].middleware){
-                this.middlewareSetting[token] = this.control[token].middleware;
-            }
-
-            //读取控制器自带的Url路由设置
-            if(!!this.control[token].router){
-                this.$router[token] = this.control[token].router;
-            }
         });
 
         this.loadingList = [
@@ -79,17 +51,10 @@ class CoreOfCRMMgr extends CoreOfBase
             }
         });
 
-        //载入用户自定义Service
+        //载入用户自定义且当前节点专用的Service
         facade.config.filelist.mapPath(`app/service/${this.constructor.name}`).map(srv=>{
             let srvObj = require(srv.path);
             this.service[srv.name.split('.')[0]] = new srvObj(this);
-        });
-
-        //载入用户自定义的逻辑事件
-        facade.config.filelist.mapPath('app/events').map(srv=>{
-            let handle = require(srv.path).handle;
-            let handleName = !!srv.cname ? `${srv.cname}.${srv.name.split('.')[0]}` : `${srv.name.split('.')[0]}`;
-            this.eventHandleList[handleName] = handle.bind(this);
         });
     }
 

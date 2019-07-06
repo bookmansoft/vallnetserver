@@ -19,9 +19,6 @@ class CoreOfAuth extends CoreOfBase
             default: ['parseParams', 'commonHandle', 'afterHandle']
         };
         
-        //载入控制器
-        this.$router = {};
-
         this.loadingList = [
         ];
     }

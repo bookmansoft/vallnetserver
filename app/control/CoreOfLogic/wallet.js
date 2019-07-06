@@ -95,10 +95,7 @@ class wallet extends facade.Control
                     let current_time = parseInt(new Date().getTime() / 1000)
                     let notifyUid = ''
                     try {
-                        //modified by liub 20190626
-                        //let obj = eval('(' + (element.body.content) + ')')
                         let obj = JSON.parse(element.body.content);
-                        //modified end
                         if(!!obj && obj.hasOwnProperty('address')) {
                             let addr = obj.address
                             let userWallets = this.core.GetMapping(tableType.userWallet).groupOf().where([['addr', '==', addr]]).records();
@@ -167,10 +164,7 @@ class wallet extends facade.Control
         ]).records();
         if(blockNotifys.length > 0) {
             let blockNotify = blockNotifys[0]
-            //modified by liub 20190626
-            //let obj = eval('(' + (blockNotify.orm.content) + ')')
             let obj = JSON.parse(blockNotify.orm.content)
-            //modified end
             if(!!obj && obj.hasOwnProperty('cid') && obj.hasOwnProperty('price') && obj.hasOwnProperty('sn')) { 
                 let cid = obj.cid;
                 let uid = openid;

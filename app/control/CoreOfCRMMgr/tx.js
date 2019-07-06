@@ -28,7 +28,6 @@ class tx extends facade.Control {
             console.log(error);
             return { code: -1, data: null, message: "tx.GetWallet方法出错" };
         }
-
     }
 
     /**
@@ -63,7 +62,6 @@ class tx extends facade.Control {
             for (let i = (currentPage-1) * 10; i < Math.min(currentPage * 10,$data.total); i++) {
                 $data.list.push( srcData[i]);
             }
-
 
             //转化并设置数组属性
             console.log($data);

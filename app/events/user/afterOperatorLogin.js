@@ -3,7 +3,6 @@
  */
 let facade = require('gamecloud')
 let {EntityType, IndexType, NotifyType, ActionExecuteType, UserStatus,em_Condition_Type} = facade.const
-let CommonFunc = facade.util
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
@@ -54,6 +53,9 @@ function handle(data){
         if(!!data.user.baseMgr.info.getAttr('phone')) {
             this.GetMapping(EntityType.User).addId([data.user.baseMgr.info.getAttr('phone'), data.user.id], IndexType.Phone);
         }
+
+        //test only
+        data.user.notify({type: NotifyType.test, info: {content: 'hello world'}});
     }
     catch(e){
         console.error(e);
