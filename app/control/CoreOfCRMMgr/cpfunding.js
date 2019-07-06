@@ -206,21 +206,15 @@ class cpfunding extends facade.Control {
             if (Number.isNaN(parseInt(currentPage))) {
                 currentPage = 1;
             }
+
             //构造查询条件
-            //cp_text=3&audit_state_id=2
-            let paramArray = new Array();
-            if (typeof (objData.cp_text) != "undefined" && (objData.cp_text != "undefined")  && (objData.cp_text != "")) {
-                console.log(`cp_text 参数: ${objData.cp_text}`);
-                let tmp = ['cp_text', '==', objData.cp_text];
-                paramArray.push(tmp);
+            let paramArray = [];
+            if (!!objData.cp_text) {
+                paramArray.push(['cp_text', objData.cp_text]);
             }
-            console.log(`audit_state_id 参数: ${objData.audit_state_id}`);
-            if (typeof (objData.audit_state_id) != "undefined" && (objData.audit_state_id != "undefined") && (objData.audit_state_id != "")) {
-                console.log(`audit_state_id 参数: ${objData.audit_state_id}`);
-                let tmp = ['audit_state_id', '==', objData.audit_state_id];
-                paramArray.push(tmp);
+            if (!!objData.audit_state_id) {
+                paramArray.push(['audit_state_id', objData.audit_state_id]);
             }
-            console.log('cpfunding列表参数：',paramArray);
 
             //得到 Mapping 对象
             let muster = this.core.GetMapping(tableType.cpfunding)
@@ -236,31 +230,21 @@ class cpfunding extends facade.Control {
             $data.page = muster.pageCur;
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
-            for (let $value of muster.records()) {
-                $data.items[$idx] = { id: $value['id'], cpid: $value['cpid'], stock_num: $value['stock_num'],
-                    total_amount: $value['total_amount'], stock_amount: $value['stock_amount'], stock_rmb: $value['stock_rmb'],
-                    audit_state_id: $value['audit_state_id'], audit_text: $value['audit_text'], 
-                    modify_date: $value['modify_date'],
-                    cp_name:$value['cp_name'],cp_text:$value['cp_text'],cp_type:$value['cp_type'],
-                    cp_url:$value['cp_url'],develop_name:$value['develop_name'],
-                    develop_text:$value['develop_text'],user_id:$value['user_id'],cid:$value['cid'],operator_id:$value['operator_id'],
-                    sell_limit_date: $value['modify_date']+3600*24*14,//此字段计算获得
-                    rank: $idx };
-                $idx++;
+            for (let $value of muster.records(['id', 'cpid', 'stock_num', 'total_amount', 'stock_amount', 'stock_rmb', 'audit_state_id', 'audit_text', 'modify_date', 'cp_name', 'cp_text', 'cp_type', 'cp_url', 'develop_name', 'develop_text', 'user_id', 'cid', 'operator_id'])) {
+                $data.items[$idx] = $value;
+                $value['sell_limit_date'] = $value['modify_date'] + 3600*24*14;
+                $value['rank'] = $idx++;
             }
 
             //转化并设置数组属性
             $data.list = Object.keys($data.items).map(key => $data.items[key]);
 
-            // let ret=$data.list;
             return $data;
-
         } catch (error) {
             console.log(error);
             return { items: {}, list: [], pagination: {} };
         }
     }
-
 
     /**
      * 从数据库中获取Cp。用于在客户端显示所有数据库中的cp用于查询

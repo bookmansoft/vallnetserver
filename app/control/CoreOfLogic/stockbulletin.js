@@ -196,14 +196,9 @@ class stockbulletin extends facade.Control {
             $data.page = muster.pageCur;
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
-            for (let $value of muster.records()) {
-                $data.items[$idx] = { id: $value['id'], cid: $value['cid'], cp_name: $value['cp_name'], cp_text: $value['cp_text'],
-                    stock_day: $value['stock_day'],
-                    stock_open: $value['stock_open'], stock_close: $value['stock_close'], stock_high: $value['stock_high'],
-                    stock_low: $value['stock_low'], total_num: $value['total_num'], 
-                    total_amount: $value['total_amount'],
-                    rank: $idx };
-                $idx++;
+            for (let $value of muster.records(['id', 'cid', 'cp_name', 'cp_text', 'stock_day', 'stock_open', 'stock_close', 'stock_high', 'stock_low', 'total_num', 'total_amount'])) {
+                $data.items[$idx] = $value;
+                $value['rank'] = $idx++;
             }
 
             //转化并设置数组属性

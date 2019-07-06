@@ -159,20 +159,9 @@ class manysend extends facade.Control {
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
             $idx = $idx + 5;
-            for (let $value of muster.records()) {
-                $data.items[$idx] = {
-                    id: $value['id'],
-                    total_amount: $value['total_amount'],
-                    actual_amount: $value['actual_amount'],
-                    total_num: $value['total_num'],
-                    send_uid: $value['send_uid'],
-                    send_nickname: $value['send_nickname'],
-                    send_headimg: $value['send_headimg'],
-                    wishing: $value['wishing'],
-                    modify_date: $value['modify_date'],
-                    rank: $idx
-                };
-                $idx++;
+            for (let $value of muster.records(['id', 'total_amount', 'actual_amount', 'total_num', 'send_uid', 'send_nickname', 'send_headimg', 'wishing', 'modify_date'])) {
+                $data.items[$idx] = $value;
+                $value['rank'] = $idx++;
             }
 
             //转化并设置数组属性
@@ -183,7 +172,6 @@ class manysend extends facade.Control {
             console.log(error);
             return { code: -1, data: null, message: "manysend.ListRecord方法出错" };
         }
-
     }
 
     //-- 以下是业务方法 --------------------------------------------------------------------

@@ -163,28 +163,20 @@ class cpstockbase extends facade.Control {
             $data.page = muster.pageCur;
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
-            for (let $value of muster.records()) {
-                $data.items[$idx] = { id: $value['id'], cpid: $value['cpid'], cp_name:$value['cp_name'],cp_text:$value['cp_text'],
-                    total_num: $value['total_num'],
-                    sell_stock_amount: $value['sell_stock_amount'], sell_stock_num: $value['sell_stock_num'], base_amount: $value['base_amount'],operator_id:$value['operator_id'],
-                    rank: $idx };
-                $idx++;
+            for (let $value of muster.records(['id', 'cpid', 'cp_name', 'cp_text', 'total_num', 'sell_stock_amount', 'sell_stock_num', 'base_amount', 'operator_id'])) {
+                $data.items[$idx] = $value;
+                $value['rank'] = $idx++;
             }
 
             //转化并设置数组属性
             $data.list = Object.keys($data.items).map(key => $data.items[key]);
 
-            // let ret=$data.list;
             return $data;
-
         } catch (error) {
             console.log(error);
             return { items: {}, list: [], pagination: {} };
         }
     }
-
-
-
 }
 
 exports = module.exports = cpstockbase;

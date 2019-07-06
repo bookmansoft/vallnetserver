@@ -162,25 +162,12 @@ class manyreceive extends facade.Control {
             $data.page = muster.pageCur;
 
             let $idx = 0;
-            for (let $value of muster.records()) {
+            for (let $value of muster.records(['id', 'send_id', 'receive_amount', 'send_uid', 'send_nickname', 'send_headimg', 'receive_uid', 'receive_nickname', 'receive_headimg', 'modify_date'])) {
                 //如果该标志为1，则是从服务端发起的，需要获取全部记录，即恒为true
                 if (objData.server_flag==1 || $value['receive_uid']!=null) {
-                    $data.items[$idx] = {
-                        id: $value['id'],
-                        send_id: $value['send_id'],
-                        receive_amount: $value['receive_amount'],
-                        send_uid: $value['send_uid'],
-                        send_nickname: $value['send_nickname'],
-                        send_headimg: $value['send_headimg'],
-                        receive_uid: $value['receive_uid'],
-                        receive_nickname: $value['receive_nickname'],
-                        receive_headimg: $value['receive_headimg'],
-                        modify_date: $value['modify_date'],
-                        rank: $idx
-                    };
-                    $idx++;
+                    $data.items[$idx] = $value;
+                    $value['rank'] = $idx++;
                 }
-
             }
 
             //转化并设置数组属性
@@ -191,7 +178,6 @@ class manyreceive extends facade.Control {
             console.log(error);
             return { code: -1, data: null, message: "manyreceive.ListRecord方法出错" };
         }
-
     }
 
     /**

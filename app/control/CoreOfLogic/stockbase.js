@@ -242,36 +242,13 @@ class stockbase extends facade.Control {
             $data.page = muster.pageCur;
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
-            for (let $value of muster.records()) {
-                $data.items[$idx] = {
-                    id: $value['id'],
-                    cid: $value['cid'],
-                    cp_name: $value['cp_name'],
-                    cp_text: $value['cp_text'],
-                    total_num: $value['total_num'],
-                    sell_stock_amount: $value['sell_stock_amount'],
-                    sell_stock_num: $value['sell_stock_num'],
-                    base_amount: $value['base_amount'],
-
-                    large_img_url: $value['large_img_url'],
-                    small_img_url: $value['small_img_url'],
-                    icon_url: $value['icon_url'],
-                    pic_urls: $value['pic_urls'],
-                    cp_desc: $value['cp_desc'],
-                    funding_text: $value['funding_text'],
-                    funding_project_text: $value['funding_project_text'],
-                    stock_money: $value['stock_money'],
-                    supply_people_num: $value['supply_people_num'],
-                    supply_money: $value['supply_money'],
-                    funding_residue_day: $value['funding_residue_day'],
-                    funding_target_amount: $value['funding_target_amount'],
-                    funding_done_amount: $value['funding_done_amount'],
-                    provider: $value['provider'],
-                    history_text: $value['history_text'],
-                    now_sale: $value['now_sale'],
-                    rank: $idx
-                };
-                $idx++;
+            for (let $value of muster.records([
+                'id', 'cid', 'cp_name', 'cp_text', 'total_num', 'sell_stock_amount',
+                'sell_stock_num','base_amount','large_img_url','small_img_url','icon_url','pic_urls','cp_desc','funding_text','funding_project_text',
+                'stock_money','supply_people_num','supply_money','funding_residue_day','funding_target_amount','funding_done_amount','provider','history_text','now_sale'
+            ])) {
+                $data.items[$idx] = $value;
+                $value['rank'] = $idx++;
             }
 
             //转化并设置数组属性

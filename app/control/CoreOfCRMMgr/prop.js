@@ -48,16 +48,18 @@ class prop extends facade.Control {
         }
         let pageSize = objData.pageSize || 10;
         let currentPage = objData.currentPage || 1;
-        let paramArray = new Array();
-        if (typeof (objData.id) != "undefined" && (objData.id != "")) {
-            paramArray.push(['id', '==', parseInt(objData.id)]);
+
+        let paramArray = [];
+        if (!!objData.id) {
+            paramArray.push(['id', parseInt(objData.id)]);
         }
-        if (typeof (objData.props_name) != "undefined" && (objData.props_name != "")) {
-            paramArray.push(['props_name', '==', objData.props_name]);
+        if (!!objData.props_name) {
+            paramArray.push(['props_name', objData.props_name]);
         }
-        if (typeof (objData.cid) != "undefined" && (objData.cid != "")) {
-            paramArray.push(['cid', '==', objData.cid]);
+        if (!!objData.cid) {
+            paramArray.push(['cid', objData.cid]);
         }
+
         let cpIdText = this.cpIdText();
         cpIdText = cpIdText.data || {};
 
@@ -75,17 +77,13 @@ class prop extends facade.Control {
         $data.page = muster.pageCur;
 
         let $idx = (muster.pageCur - 1) * muster.pageSize;
-        for (let $value of muster.records()) {
-            $data.items[$idx] = {
-                id: $value['id'], props_name: $value['props_name'], props_type: $value['props_type'], cid: $value['cid'], props_desc: $value['props_desc'],
-                icon_url: $value['icon_url'], icon_preview: $value['icon_preview'], status: $value['status'],
-                props_price: $value['props_price'], props_rank: $value['props_rank'], propsAt: $value['propsAt'], cp_name: cpIdText[$value['cid']] || '', rank: $idx
-            };
-            $idx++;
+        for (let $value of muster.records(['id', 'props_name', 'props_type', 'cid', 'props_desc', 'icon_url', 'icon_preview', 'status', 'props_price', 'props_rank', 'propsAt', 'cid'])) {
+            $data.items[$idx] = $value;
+            $value['cp_name'] = cpIdText[$value['cid']] || '';
+            $value['rank'] = $idx++;
         }
         $data.list = Object.keys($data.items).map(key => $data.items[key]);
         return $data;
-
     }
 
     /**
@@ -174,6 +172,10 @@ class prop extends facade.Control {
     * @memberof prop
     */
     async CreateLocal(user, paramGold) {
+        if(typeof paramGold.icon_preview != 'string') {
+            paramGold.icon_preview = JSON.stringify(paramGold.icon_preview);
+        }
+
         if (paramGold == null) {
             return { code: -1, msg: '参数不能为空' };
         }
@@ -392,6 +394,7 @@ class prop extends facade.Control {
             .where(paramArray)
             .orderby('id', 'desc')
             .records(['cp_id', 'cp_text']);
+
         let $data = {};
         for (let $value of resList) {
             $data[$value['cp_id']] = $value['cp_text'];

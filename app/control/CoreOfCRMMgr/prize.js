@@ -166,22 +166,9 @@ class prize extends facade.Control {
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
             $idx = $idx + 5;
-            for (let $value of muster.records()) {
-                $data.items[$idx] = { id: $value['id'], 
-                    act_name: $value['act_name'],
-                    mch_billno: $value['mch_billno'], 
-                    nick_name: $value['nick_name'], 
-                    re_openid: $value['re_openid'],
-                    remark: $value['remark'], 
-                    send_name: $value['send_name'],
-                    total_amount: $value['total_amount'],  
-                    total_num: $value['total_num'], 
-                    wishing: $value['wishing'],
-                    return_msg: $value['return_msg'],  
-                    order_status: $value['order_status'], 
-                    rank: $idx 
-                 };
-                $idx++;
+            for (let $value of muster.records(['id', 'act_name', 'mch_billno', 'nick_name', 're_openid', 'remark', 'send_name', 'total_amount', 'total_num', 'wishing', 'return_msg', 'order_status'])) {
+                $data.items[$idx] = $value;
+                $value['rank'] = $idx++;
             }
 
             //转化并设置数组属性

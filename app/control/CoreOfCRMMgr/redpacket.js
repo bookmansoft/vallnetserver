@@ -166,34 +166,19 @@ class redpacket extends facade.Control {
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
             $idx = $idx + 5;
-            for (let $value of muster.records()) {
-                $data.items[$idx] = { id: $value['id'], 
-                    act_name: $value['act_name'],
-                    act_sequence: $value['act_sequence'], 
-                    total_gamegold: $value['total_gamegold'], 
-                    each_gamegold: $value['each_gamegold'],
-                    total_num: $value['total_num'], 
-                    each_num: $value['each_num'],
-                    act_desc: $value['act_desc'],  
-                    act_start_at: $value['act_start_at'], 
-                    rank: $idx 
-                 };
-                $idx++;
+            for (let $value of muster.records(['id', 'act_name', 'act_sequence', 'total_gamegold', 'each_gamegold', 'total_num', 'each_num', 'act_desc', 'act_start_at'])) {
+                $data.items[$idx] = $value;
+                $value['rank'] = $idx++;
             }
 
             //转化并设置数组属性
             $data.list = Object.keys($data.items).map(key => $data.items[key]);
-
-            // let ret=$data.list;
             return $data;
         } catch (error) {
             console.log(error);
             return { code: -1, data: null, message: "redpacket.ListRecord方法出错" };
         }
-
     }
-
-
 }
 
 exports = module.exports = redpacket;

@@ -164,13 +164,13 @@ class wallet extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('key.master', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('key.master.admin', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, list: ret };
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "wallet.KeyMaster方法出错" };
+            return { code: -1, data: null, message: "key.master.admin 方法出错" };
         }
 
     }
