@@ -14,7 +14,6 @@ function handle(data){
     //console.log(`${data.user.openid}进入游戏`);
 
     data.curTime = new Date();//记录当前时间，为后续流程提供统一的时间标尺
-    let oem = data.objData.oemInfo;
     switch(data.user.domainType){
         default: {
             break;

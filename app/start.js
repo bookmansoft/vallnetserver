@@ -5,8 +5,10 @@ facade.addition = true;
 let {IndexType} = facade.const
 let tableType = require('./util/tabletype');
 
-//新增一种索引类型，需要在 UserEntity.prototype.IndexOf 函数中增加字段映射
+//#region 新增索引类型，需要在 UserEntity.prototype.IndexOf 函数中增加字段映射
 IndexType.Phone = 1001;
+IndexType.Terminal = 1002;
+//#endregion
 
 let env = !!process.env.sys ? JSON.parse(process.env.sys) : {
     serverType: "IOS",      //待调测的服务器类型
@@ -75,10 +77,19 @@ facade.boot({
     core.service.monitor.setlongpoll().execute('block.tips', []).then( async (ret) => {
         await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(500);
 
+        //订阅 notify/receive 消息，登记处理句柄
         core.service.monitor.remote.watch(msg => {
-            //收到通告，抛出内部事件, 处理流程定义于 app/events/user/receiveNotify.js
             core.notifyEvent('user.receiveNotify', {data:msg});
         }, 'notify/receive').execute('subscribe', 'notify/receive');
+
+        //订阅 cp/register 消息，登记处理句柄
+        core.service.monitor.remote.watch(msg => {
+            core.notifyEvent('crm.cp.register', {msg:msg});
+        }, 'cp/register').execute('subscribe', 'cp/register');
+
+        //订阅 cp/register 消息，登记处理句柄
+        core.service.monitor.remote.watch(msg => {
+        }, 'tx.client');
     });
 });
 
@@ -92,72 +103,72 @@ facade.boot({
 //     static: [['/chick/', './web/game/chick']], 
 // });
 
-//加载Wallet管理节点
-facade.boot({
-    env: env,
-    //指示加载自定义数据库表
-    loading: [
-        tableType.test, 
-        tableType.userWallet, 
-        tableType.blockGameCate,
-        tableType.blockGame, 
-        tableType.blockGameProp, 
-        tableType.blockGameProvider, 
-        tableType.cpUser, 
-        tableType.cpProp, 
-        tableType.cpOrder, 
-        tableType.userGame, 
-        tableType.userProp, 
-        tableType.order, 
-        tableType.vipdraw, 
-        tableType.vip, 
-        tableType.blockNotify, 
-        tableType.redpack, 
-        tableType.redpackAct, 
-        tableType.userRedPack, 
-        tableType.userRedPackAct, 
-        tableType.blockGameComment, 
-        tableType.manySend, 
-        tableType.manyReceive, 
-        tableType.mobileVerify, 
-        tableType.stock, 
-        tableType.userStock, 
-        tableType.userStockLog,
-        tableType.stockbulletin, 
-        tableType.stockBase,
-    ],
-    //设置静态资源映射
-    static: [['/client/', './web/client']], 
-}, core => {
-    //单独维护一个到公链的长连接，进行消息监控
-    core.service.monitor.setlongpoll().execute('block.tips', []).then( async (ret) => {
-        await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(500);
+// //加载Wallet管理节点
+// facade.boot({
+//     env: env,
+//     //指示加载自定义数据库表
+//     loading: [
+//         tableType.test, 
+//         tableType.userWallet, 
+//         tableType.blockGameCate,
+//         tableType.blockGame, 
+//         tableType.blockGameProp, 
+//         tableType.blockGameProvider, 
+//         tableType.cpUser, 
+//         tableType.cpProp, 
+//         tableType.cpOrder, 
+//         tableType.userGame, 
+//         tableType.userProp, 
+//         tableType.order, 
+//         tableType.vipdraw, 
+//         tableType.vip, 
+//         tableType.blockNotify, 
+//         tableType.redpack, 
+//         tableType.redpackAct, 
+//         tableType.userRedPack, 
+//         tableType.userRedPackAct, 
+//         tableType.blockGameComment, 
+//         tableType.manySend, 
+//         tableType.manyReceive, 
+//         tableType.mobileVerify, 
+//         tableType.stock, 
+//         tableType.userStock, 
+//         tableType.userStockLog,
+//         tableType.stockbulletin, 
+//         tableType.stockBase,
+//     ],
+//     //设置静态资源映射
+//     static: [['/client/', './web/client']], 
+// }, core => {
+//     //单独维护一个到公链的长连接，进行消息监控
+//     core.service.monitor.setlongpoll().execute('block.tips', []).then( async (ret) => {
+//         await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(500);
 
-        //订阅消息并登记消息处理句柄
-        core.service.monitor.remote.watch(msg => {
-            //收到新的道具，或者已有道具发生变更，抛出内部事件, 处理流程定义于 app/events/user/propReceive.js
-            core.notifyEvent('user.propReceive', {data:msg});
-        }, 'prop/receive').execute('subscribe', 'prop/receive');
+//         //订阅消息并登记消息处理句柄
+//         core.service.monitor.remote.watch(msg => {
+//             //收到新的道具，或者已有道具发生变更，抛出内部事件, 处理流程定义于 app/events/user/propReceive.js
+//             core.notifyEvent('user.propReceive', {data:msg});
+//         }, 'prop/receive').execute('subscribe', 'prop/receive');
 
-        core.service.monitor.remote.watch(msg => {
-            //收到发布的道具被成功拍卖后的通知，抛出内部事件, 处理流程定义于 app/events/user/propAuction.js
-            core.notifyEvent('user.propAuction', {data:msg});
-        }, 'prop/auction').execute('subscribe', 'prop/auction');
+//         core.service.monitor.remote.watch(msg => {
+//             //收到发布的道具被成功拍卖后的通知，抛出内部事件, 处理流程定义于 app/events/user/propAuction.js
+//             core.notifyEvent('user.propAuction', {data:msg});
+//         }, 'prop/auction').execute('subscribe', 'prop/auction');
 
-        core.service.monitor.remote.watch(msg => {
-            //收到通告，抛出内部事件, 处理流程定义于 app/events/user/receiveNotify.js
-            core.notifyEvent('user.receiveNotify', {data:msg});
-        }, 'notify/receive').execute('subscribe', 'notify/receive');
+//         core.service.monitor.remote.watch(msg => {
+//             //收到通告，抛出内部事件, 处理流程定义于 app/events/user/receiveNotify.js
+//             core.notifyEvent('user.receiveNotify', {data:msg});
+//         }, 'notify/receive').execute('subscribe', 'notify/receive');
 
-        //直接登记消息处理句柄，因为类似 balance.account.client/order.pay 这样的消息是默认发送的，不需要订阅
-        core.service.monitor.remote.watch(msg => {
-            //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/user/balanceChange.js
-            core.notifyEvent('user.balanceChange', {data:msg});
-        }, 'balance.account.client');
+//         //直接登记消息处理句柄，因为类似 balance.account.client/order.pay 这样的消息是默认发送的，不需要订阅
+//         core.service.monitor.remote.watch(msg => {
+//             //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/user/balanceChange.js
+//             core.notifyEvent('user.balanceChange', {data:msg});
+//         }, 'balance.account.client');
 
-        core.service.monitor.remote.watch(msg => {
-            //用户执行 order.pay 之后，CP特约节点发起到账通知消息，抛出内部事件, 处理流程定义于 app/events/user/orderPay.js
-            core.notifyEvent('user.orderPay', {data:msg});
-        }, 'order.pay');
-    });
-});
+//         core.service.monitor.remote.watch(msg => {
+//             //用户执行 order.pay 之后，CP特约节点发起到账通知消息，抛出内部事件, 处理流程定义于 app/events/user/orderPay.js
+//             core.notifyEvent('user.orderPay', {data:msg});
+//         }, 'order.pay');
+//     });
+// });

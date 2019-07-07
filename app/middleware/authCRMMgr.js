@@ -123,7 +123,7 @@ async function handle(sofar) {
             sofar.recy = false;
         }
         else {
-            console.log(`鉴权成功: ${sofar.msg.domainId}`);
+            console.log(`鉴权成功: ${sofar.socket.user.domainId}`);
         }
     }
     catch (e) {

@@ -43,14 +43,26 @@ function handle(data){
                 
                     data.user.baseMgr.info.setAttr('cid', cid);
                     data.user.baseMgr.info.setAttr('token', token);
+
+                    //建立终端授权号反向索引
+                    this.GetMapping(EntityType.User).addId([data.user.baseMgr.info.getAttr('cid'), data.user.id], IndexType.Terminal);
+
+                    //查询操作员名下所有已注册CP
+                    remote.execute('cp.mine', []).then(result => {
+                        //todo 根据查询结果逐条插入CP表
+                    });
+
                 }).catch(e => {
                     console.log(e);
                 });
             }
+        } else {
+            //建立终端授权号反向索引
+            this.GetMapping(EntityType.User).addId([data.user.baseMgr.info.getAttr('cid'), data.user.id], IndexType.Terminal);
         }
 
-        //如果登记了手机号码，添加手机号码反向索引
         if(!!data.user.baseMgr.info.getAttr('phone')) {
+            //如果登记了手机号码，添加手机号码反向索引
             this.GetMapping(EntityType.User).addId([data.user.baseMgr.info.getAttr('phone'), data.user.id], IndexType.Phone);
         }
 

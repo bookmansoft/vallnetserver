@@ -55,63 +55,77 @@ class cp extends facade.Control {
             return { code: -1, data: null, message: "cp.UpdateRecord方法出错" };
         }
     }
-    /**
-     * 增加数据库记录。
-     * 此方法被从页面入口的Create方法所调用
-     * @param {*} user 
-     * @param {*} objData 
-     */
-    async CreateRecord(user, objData) {
-        try {
-            if(typeof objData.picture_url == 'object') {
-                objData.picture_url = JSON.stringify(objData.picture_url);
-            }
-            let cp = await this.core.GetMapping(tableType.cp).Create(
-                objData.cp_id,
-                objData.cp_name,
-                objData.cp_text,
-                objData.cp_url,
-                objData.wallet_addr,
-                objData.cp_type,
-                objData.develop_name,
-                objData.cp_desc,
-                objData.cp_version,
-                objData.picture_url,
-                objData.cp_state,
-                objData.publish_time,
-                objData.update_time,
-                objData.update_content,
-                objData.invite_share,
-                objData.operator_id,
-            );
-            let ret = { code: ReturnCode.Success, data: null, message: "创建CP成功" };
-            console.log(ret);
-            return ret;
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cp.CreateRecord方法出错" };
-        }
 
-    }
     /**
-     * 页面入口
-     * CP注册指令：cp.create "name" "url" ["addr", "cls" ,"grate媒体分成比例0-30" ,"ip"]
+     * 操作员发起CP注册请求
      * @param {*} user 
      * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async Create(user, paramGold) {
-        try {
-            let paramArray = paramGold.items;
-            if (typeof paramArray == "string") {
-                paramArray = JSON.parse(paramArray);
-            }
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.create', paramArray);
-            return { code: ret.code, data: ret.result };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cp.Create方法出错" };
+        let paramArray = paramGold.items;
+        if (typeof paramArray == "string") {
+            paramArray = JSON.parse(paramArray);
         }
 
+        //CP注册指令：cp.create "name" "url" ["addr", "cls" ,"grate 媒体分成比例" ,"ip"]
+        let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.create', paramArray);
+        return { code: ret.code, data: ret.result };
+    }
+
+    /**
+     * 主网下发CP注册通知，该通知为先前操作员发起的CP注册请求的确认应答，此时应该将CP记录插入数据库
+     * @param {*} user 
+     * @param {Object} cpinfo { cid, name, url, address, ip, cls, grate, wid, account }
+     */
+    async CreateRecord(user, cpinfo) {
+        let res = await fetch(`${cpinfo.url}/${cpinfo.name}`, { mode: 'no-cors' });
+        let qry = await res.json();
+        //patch 更改目录层次结构
+        qry = qry.game;
+
+        let data = {};
+        data.cp_name = cpinfo.name;
+        data.cp_url = cpinfo.url;
+        data.cp_type = cpinfo.cls;
+        data.invite_share = cpinfo.grate || 0;
+        data.wallet_addr = cpinfo.address;
+        data.cp_id = cpinfo.cid;
+
+        //patch 弥补协议字段差异
+        data.cp_text = qry.game_title;
+        data.develop_name = qry.provider;
+        data.cp_desc = qry.desc;
+        data.cp_version = qry.version;
+        data.picture_url = {
+            icon_url: qry.icon_url,
+            face_url: qry.large_img_url,
+            pic_urls: qry.pic_urls,
+        };
+        data.publish_time = qry.publish_time;
+        data.update_time = qry.update_time;
+        data.update_content = qry.update_content;
+        data.cp_state = qry.state;
+        data.operator_id = user.id;
+
+        await this.core.GetMapping(tableType.cp).Create(
+            data.cp_id,
+            data.cp_name,
+            data.cp_text,
+            data.cp_url,
+            data.wallet_addr,
+            data.cp_type,
+            data.develop_name,
+            data.cp_desc,
+            data.cp_version,
+            JSON.stringify(data.picture_url),
+            data.cp_state,
+            data.publish_time,
+            data.update_time,
+            data.update_content,
+            data.invite_share,
+            data.operator_id,
+        );
+        return { code: ReturnCode.Success, data: null, message: "创建CP成功" };
     }
 
     /**

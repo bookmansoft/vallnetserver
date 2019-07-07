@@ -26,6 +26,8 @@ class UserEntity extends BaseUserEntity
                 return this.openid;
             case IndexType.Phone:
                 return this.baseMgr.info.getAttr('phone');
+            case IndexType.Terminal:
+                return this.baseMgr.info.getAttr('cid');
             default:
                 return this.orm.id;
         }

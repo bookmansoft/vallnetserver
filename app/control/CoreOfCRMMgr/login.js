@@ -18,6 +18,7 @@ class login extends facade.Control
 
         ret.data = user.GetInfo();
         ret.data.id = user.id;         //本服唯一数字编号
+        ret.data.domain = user.domain; //domain
         ret.data.openid = user.openid; //uuid
         ret.data.name = user.name;     //用户昵称，客户端直接获取
         ret.data.token = user.sign;    //登录令牌
