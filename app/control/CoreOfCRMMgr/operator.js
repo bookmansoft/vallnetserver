@@ -116,6 +116,7 @@ class operator extends facade.Control {
                     id: $value.id, 
                     login_name: $value.openid, 
                     cid: $value.baseMgr.info.getAttr('cid'), 
+                    balance: $value.baseMgr.info.getAttr('balance') || 0,
                     state: $value.baseMgr.info.getAttr('state') || 0, 
                     remark: $value.baseMgr.info.getAttr('name') || '', 
                     rank: $idx 

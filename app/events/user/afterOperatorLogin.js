@@ -35,7 +35,7 @@ function handle(data){
                 data.user.baseMgr.info.setAttr('cid', remoteSetup.cid);         //记录为管理员分配的终端编号
                 data.user.baseMgr.info.setAttr('token', remoteSetup.token);     //记录为管理员分配的终端令牌，注意不是登录CRM的令牌
             } else {
-                let remote = this.service.RemoteNode.conn(`auth2step.${this.options.master[0]}`);
+                let remote = this.service.RemoteNode.conn(`auth2step.${this.options.master[0]}`); //注意这里使用了管理员专属连接器
                 remote.execute('sys.createAuthToken', [data.user.domainId]).then(retAuth => {
                     let cid = retAuth.result[0].cid;
                     let {aeskey, aesiv} = remote.getAes();
@@ -46,12 +46,6 @@ function handle(data){
 
                     //建立终端授权号反向索引
                     this.GetMapping(EntityType.User).addId([data.user.baseMgr.info.getAttr('cid'), data.user.id], IndexType.Terminal);
-
-                    //查询操作员名下所有已注册CP
-                    remote.execute('cp.mine', []).then(result => {
-                        //todo 根据查询结果逐条插入CP表
-                    });
-
                 }).catch(e => {
                     console.log(e);
                 });
@@ -59,6 +53,24 @@ function handle(data){
         } else {
             //建立终端授权号反向索引
             this.GetMapping(EntityType.User).addId([data.user.baseMgr.info.getAttr('cid'), data.user.id], IndexType.Terminal);
+
+            //获取操作员专属连接器
+            let remote = this.service.RemoteNode.conn(data.user.domainId);
+
+            let account = data.user.baseMgr.info.getAttr('cid');
+            if(this.options.master.includes(data.user.openid)) {
+                account = 'default';
+            }
+            
+            //查询操作员账户余额
+            remote.execute('balance.all', [account]).then(ret => {
+                data.user.baseMgr.info.setAttr('balance', ret.result.confirmed);
+            });
+
+            //查询操作员名下所有已注册CP
+            remote.execute('cp.mine', []).then(ret => {
+                //todo 根据查询结果逐条插入CP表
+            });
         }
 
         if(!!data.user.baseMgr.info.getAttr('phone')) {
