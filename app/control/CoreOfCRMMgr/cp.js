@@ -1,6 +1,7 @@
 let facade = require('gamecloud')
 let { ReturnCode, NotifyType, TableType } = facade.const
 let fetch = require("node-fetch");
+let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
  * 游戏的控制器
@@ -67,21 +68,22 @@ class cp extends facade.Control {
         }
 
         //CP注册指令：cp.create "name" "url" ["addr", "cls" ,"grate 媒体分成比例" ,"ip"]
-        let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.create', paramArray);
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.create', paramArray);
         return { code: ret.code, data: ret.result };
     }
 
     /**
-     * 主网下发CP注册通知，该通知为先前操作员发起的CP注册请求的确认应答，此时应该将CP记录插入数据库
+     * 将CP信息写入数据库
      * @param {*} user 
      * @param {Object} cpinfo { cid, name, url, address, ip, cls, grate, wid, account }
      */
     async CreateRecord(user, cpinfo) {
+        //从CP登记的集采接口获取CP详细信息
         let res = await fetch(`${cpinfo.url}/${cpinfo.name}`, { mode: 'no-cors' });
-        let qry = await res.json();
-        //patch 更改目录层次结构
-        qry = qry.game;
+        res = await res.json();
+        let qry = res.game;
 
+        //合并主网信息和集采信息，调整部分字段名称和数值
         let data = {};
         data.cp_name = cpinfo.name;
         data.cp_url = cpinfo.url;
@@ -90,22 +92,22 @@ class cp extends facade.Control {
         data.wallet_addr = cpinfo.address;
         data.cp_id = cpinfo.cid;
 
-        //patch 弥补协议字段差异
         data.cp_text = qry.game_title;
         data.develop_name = qry.provider;
         data.cp_desc = qry.desc;
         data.cp_version = qry.version;
-        data.picture_url = {
+        data.picture_url = JSON.stringify({
             icon_url: qry.icon_url,
             face_url: qry.large_img_url,
             pic_urls: qry.pic_urls,
-        };
+        });
         data.publish_time = qry.publish_time;
         data.update_time = qry.update_time;
         data.update_content = qry.update_content;
         data.cp_state = qry.state;
         data.operator_id = user.id;
 
+        //写入数据库
         await this.core.GetMapping(TableType.Cp).Create(
             data.cp_id,
             data.cp_name,
@@ -116,7 +118,7 @@ class cp extends facade.Control {
             data.develop_name,
             data.cp_desc,
             data.cp_version,
-            JSON.stringify(data.picture_url),
+            data.picture_url,
             data.cp_state,
             data.publish_time,
             data.update_time,
@@ -140,7 +142,7 @@ class cp extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.change', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.change', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -162,7 +164,7 @@ class cp extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.byId', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.byId', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -184,7 +186,7 @@ class cp extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.byName', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.byName', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -248,7 +250,7 @@ class cp extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('cp.list', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.list', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -267,6 +269,11 @@ class cp extends facade.Control {
 
         //构造查询条件
         let paramArray = [];
+        if(remoteSetup.cid == user.cid) {
+            //普通操作员只能查看自己的游戏，超级管理员则可以查看所有游戏
+            paramArray.push(['operator_id', user.id]);
+        }
+
         if (!!objData.cp_text) {
             paramArray.push(['cp_text', 'like', objData.cp_text]);
         }

@@ -27,10 +27,23 @@ class UserEntity extends BaseUserEntity
             case IndexType.Phone:
                 return this.baseMgr.info.getAttr('phone');
             case IndexType.Terminal:
-                return this.baseMgr.info.getAttr('cid');
+                return this.cid;
             default:
                 return this.orm.id;
         }
+    }
+
+    /**
+     * 读取用户CID属性
+     */
+    get cid() {
+        return this.baseMgr.info.getAttr('cid');
+    }
+    /**
+     * 改写用户CID属性
+     */
+    set cid(val) {
+        this.baseMgr.info.setAttr('cid', val);
     }
 }
 

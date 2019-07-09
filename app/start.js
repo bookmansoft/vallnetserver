@@ -86,7 +86,11 @@ facade.boot({
             core.notifyEvent('crm.cp.register', {msg:msg});
         }, 'cp/register').execute('subscribe', 'cp/register');
 
-        //订阅 cp/register 消息，登记处理句柄
+        //直接登记消息处理句柄，因为 tx.client/balance.account.client/order.pay 这样的消息是默认发送的，不需要订阅
+        core.service.monitor.remote.watch(msg => {
+            //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/user/balanceChange.js
+            core.notifyEvent('crm.balance.change', {data:msg});
+        }, 'balance.account.client');
         core.service.monitor.remote.watch(msg => {
         }, 'tx.client');
     });

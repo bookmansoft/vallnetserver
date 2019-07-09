@@ -89,14 +89,6 @@ async function handle(sofar) {
                         }
                     });
 
-                    //判断是否是设置的超级管理员
-                    if(sofar.facade.options.master.includes(usr.openid)) {
-                        usr.SetAttr('role', 1);
-                        sofar.facade.master = usr; //设置系统管理员对象
-                    } else {
-                        usr.SetAttr('role', 0);
-                    }
-
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
                     sofar.facade.service.mail.send({
                         addr: usr.openid, 

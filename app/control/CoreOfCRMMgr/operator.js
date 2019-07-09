@@ -1,5 +1,6 @@
 let facade = require('gamecloud')
 let { ReturnCode, EntityType, NotifyType } = facade.const
+let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
  * 游戏的控制器
@@ -37,7 +38,7 @@ class operator extends facade.Control {
         }
 
         let operator = this.core.GetObject(EntityType.User, parseInt(objData.id));
-        if (!!operator && !this.core.options.master.includes(operator.openid)) { //不能禁止系统管理员
+        if (!!operator && operator.cid != remoteSetup.cid) { //不能禁止系统管理员
             operator.baseMgr.info.setAttr('state', objData.state);
         }
 
@@ -57,7 +58,7 @@ class operator extends facade.Control {
                     code: ReturnCode.Success,
                     data: {
                         login_name: operator.openid,
-                        cid: operator.baseMgr.info.getAttr('cid'),
+                        cid: operator.cid,
                         state: operator.baseMgr.info.getAttr('state')|| 1,
                         remark: operator.baseMgr.info.getAttr('name'),
                     },
@@ -115,7 +116,7 @@ class operator extends facade.Control {
                 $data.items[$idx] = { 
                     id: $value.id, 
                     login_name: $value.openid, 
-                    cid: $value.baseMgr.info.getAttr('cid'), 
+                    cid: $value.cid, 
                     balance: $value.baseMgr.info.getAttr('balance') || 0,
                     state: $value.baseMgr.info.getAttr('state') || 0, 
                     remark: $value.baseMgr.info.getAttr('name') || '', 

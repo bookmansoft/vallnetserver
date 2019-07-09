@@ -20,7 +20,7 @@ class tx extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('tx.get.wallet', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('tx.get.wallet', paramArray);
             //console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -44,7 +44,7 @@ class tx extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray, "::", paramGold.currentPage);
-            let orignData = await this.core.service.RemoteNode.conn(user.domainId).execute('tx.list', paramArray);
+            let orignData = await this.core.service.RemoteNode.conn(user.cid).execute('tx.list', paramArray);
             let srcData=orignData.result.reverse();//倒排序
 
             //扩展分页器对象
@@ -115,7 +115,7 @@ class tx extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('tx.sign', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('tx.sign', paramArray);
             console.log(ret);
              //return { code: ReturnCode.Success, data: ret };
              return { code: ret.code, data: ret.result };
@@ -140,7 +140,7 @@ class tx extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('tx.create', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('tx.create', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -167,7 +167,7 @@ class tx extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('tx.send', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('tx.send', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };

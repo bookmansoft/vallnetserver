@@ -19,7 +19,7 @@ class account extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.list', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('account.list', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -42,7 +42,7 @@ class account extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.get', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('account.get', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -66,7 +66,7 @@ class account extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.create', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('account.create', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -90,7 +90,7 @@ class account extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.amount', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('account.amount', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -114,7 +114,7 @@ class account extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.received', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('account.received', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -138,7 +138,7 @@ class account extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('account.listreceived', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('account.listreceived', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -162,7 +162,7 @@ class account extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('balance.confirmed', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('balance.confirmed', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -186,7 +186,7 @@ class account extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('balance.all', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('balance.all', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -210,7 +210,7 @@ class account extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('balance.unconfirmed', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('balance.unconfirmed', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };

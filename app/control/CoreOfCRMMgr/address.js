@@ -1,5 +1,6 @@
 let facade = require('gamecloud')
 let { ReturnCode, NotifyType } = facade.const
+let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
  * 收款地址的控制器
@@ -19,7 +20,7 @@ class address extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('address.create', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('address.create', paramArray);
             console.log(ret);
             //return { code: ReturnCode.Success, data: ret };
             return { code: ret.code, data: ret.result };
@@ -39,13 +40,14 @@ class address extends facade.Control {
             if(!!params.account) {
                 account = params.account;
             } else {
-                account = user.baseMgr.info.getAttr('cid');
-                if(this.core.options.master.includes(user.openid)) {
+                //普通操作员的CID属性就是其钱包账户，如果是超级管理员需要进一步转换为 default 账户
+                account = user.cid;
+                if(account == remoteSetup.cid) {
                     account = 'default';
                 }
             }
 
-            let ret = await this.core.service.RemoteNode.conn(`auth2step.${this.core.options.master[0]}`).execute('address.create', [account]);
+            let ret = await this.core.service.RemoteNode.conn(remoteSetup.cid).execute('address.create', [account]);
             return { code: ret.code, data: ret.result.address };
         } catch (error) {
             console.log(error);
@@ -66,7 +68,7 @@ class address extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log(paramArray);
-            let retOld = await this.core.service.RemoteNode.conn(user.domainId).execute('address.filter', paramArray);
+            let retOld = await this.core.service.RemoteNode.conn(user.cid).execute('address.filter', paramArray);
             console.log(retOld);
             let ret=retOld.result;
 

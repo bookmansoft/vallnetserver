@@ -71,7 +71,7 @@ class cpfunding extends facade.Control {
                 paramArray = JSON.parse(paramArray);
             }
             console.log("paramArray:",paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('stock.record', paramArray);
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.record', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
@@ -94,8 +94,8 @@ class cpfunding extends facade.Control {
             //获取operator
             let operator = this.core.GetObject(EntityType.User, user.id);
             
-            let paramArray = [cid,stock_num,stock_amount, operator.baseMgr.info.getAttr('cid')];
-            let ret = await this.core.service.RemoteNode.conn(user.domainId).execute('stock.offer', paramArray);
+            let paramArray = [cid,stock_num,stock_amount, operator.cid];
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.offer', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
