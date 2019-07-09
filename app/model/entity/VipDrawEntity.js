@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let {VipDraw} = require('../table/vipdraw');
-let tableType = require('../../util/tabletype');
+let VipDraw = facade.models.VipDraw
 
 //用户微信账号(openid)
 class VipDrawEntity extends BaseEntity
@@ -13,7 +13,7 @@ class VipDrawEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.vipdraw,                     //表类型
+            etype: TableType.VipDraw,                     //表类型
             model: VipDraw,               //表映射类
             entity: VipDrawEntity,        //ORM映射类
         };

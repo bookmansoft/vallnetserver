@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType } = facade.const
-let tableType = require('../../util/tabletype');
+let { ReturnCode, NotifyType, TableType } = facade.const
 let fetch = require("node-fetch");
 
 /**
@@ -14,7 +13,7 @@ class cp extends facade.Control {
      */
     DeleteRecord(user, objData) {
         try {
-            this.core.GetMapping(tableType.cp).Delete(objData.id, true);
+            this.core.GetMapping(TableType.Cp).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -28,7 +27,7 @@ class cp extends facade.Control {
      */
     UpdateRecord(user, objData) {
         try {
-            let cp = this.core.GetObject(tableType.cp, objData.id);
+            let cp = this.core.GetObject(TableType.Cp, objData.id);
             if (!!cp) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 cp.setAttr('cp_id', objData.cp_id);
@@ -107,7 +106,7 @@ class cp extends facade.Control {
         data.cp_state = qry.state;
         data.operator_id = user.id;
 
-        await this.core.GetMapping(tableType.cp).Create(
+        await this.core.GetMapping(TableType.Cp).Create(
             data.cp_id,
             data.cp_name,
             data.cp_text,
@@ -201,7 +200,7 @@ class cp extends facade.Control {
      */
     Retrieve(user, objData) {
         try {
-            let cp = this.core.GetObject(tableType.cp, parseInt(objData.id));
+            let cp = this.core.GetObject(TableType.Cp, parseInt(objData.id));
             if (!!cp) {
                 return {
                     code: ReturnCode.Success,
@@ -282,7 +281,7 @@ class cp extends facade.Control {
         }
 
         //得到 Mapping 对象
-        let muster = this.core.GetMapping(tableType.cp)
+        let muster = this.core.GetMapping(TableType.Cp)
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .where(paramArray)
             .orderby('id', 'desc') //根据id字段倒叙排列
@@ -318,7 +317,7 @@ class cp extends facade.Control {
     ListCpType(user, objData) {
         try {
             //得到 Mapping 对象
-            let muster = this.core.GetMapping(tableType.cpType)
+            let muster = this.core.GetMapping(TableType.CpType)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .orderby('id', 'asc') //根据id字段倒叙排列
                 .paginate(10, 1); 

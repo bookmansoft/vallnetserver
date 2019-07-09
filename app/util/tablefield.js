@@ -1,14 +1,14 @@
-let blockGame = ['id','game_code','game_title','game_resource_uri','game_ico_uri','game_link_url','game_desc','sort','category_id',
+let BlockGame = ['id','game_code','game_title','game_resource_uri','game_ico_uri','game_link_url','game_desc','sort','category_id',
     'category_title','provider_id','provider_name','ad_title','ranking','star_level','down_count','comment_count',
     'create_time','update_time','store_status','game_version',
     'developer','update_desc','game_screenshots','player_count','cpid','cpurl','cp_addr','cp_name'
 ];
 
-let blockGameCate = [
+let BlockGameCate = [
     'id','category_id','category_title'
 ];
 
-let blockGameProp = [ 
+let BlockGameProp = [ 
     'id',
     'cpid',
     'prop_id',
@@ -23,7 +23,7 @@ let blockGameProp = [
     'nstatus'
 ];
 
-let blockGameProvider = [
+let BlockGameProvider = [
     'id',
     'provider_id',
     'provider_name',
@@ -35,7 +35,7 @@ let blockGameProvider = [
     'comprehensive_grade'
 ];
 
-let userWallet = [
+let UserWallet = [
     'id',
     'uid',
     'cid',
@@ -50,14 +50,14 @@ let userWallet = [
     'buy_count'
 ];
 
-let userGame = [
+let UserGame = [
     'id',
     'uid',
     'openid',
     'game_id'
 ];
 
-let userProp = [
+let UserProp = [
     'uid',
     'openid',
     'cid',
@@ -76,7 +76,7 @@ let userProp = [
     'cp_ip'
 ];
 
-let cpUser = [
+let CpUser = [
     'id',
     'openid',
     'addr',
@@ -85,7 +85,7 @@ let cpUser = [
     'created_at'
 ];
 
-let cpProp = [
+let CpProp = [
     'id',
     'oid',
     'prop_id',
@@ -96,7 +96,7 @@ let cpProp = [
     'price'
 ];
 
-let cpOrder = [
+let CpOrder = [
     'id',
     'uid',
     'openid',
@@ -115,7 +115,7 @@ let cpOrder = [
     'update_time'
 ];
 
-let order = [ 
+let Order = [ 
     'uid',
     'order_sn',
     'order_num',
@@ -129,7 +129,7 @@ let order = [
     'update_time',
 ]
 
-let vip = [ 
+let Vip = [ 
     'uid',
     'is_expired',
     'vip_level',
@@ -142,7 +142,7 @@ let vip = [
     'update_at',
 ]
 
-let vipdraw = [ 
+let VipDraw = [ 
     'uid',
     'draw_count',
     'pay_status',
@@ -150,7 +150,7 @@ let vipdraw = [
     'draw_at',
 ]
 
-let blockNotify = [
+let BlockNotify = [
     'sn',
     'h',
     'status',
@@ -161,7 +161,7 @@ let blockNotify = [
     'update_time'
 ]
 
-let redpack = [
+let RedPack = [
     'user_redpack_id',
     'uid',
     'act_id',
@@ -178,7 +178,7 @@ let redpack = [
     'order_status'
 ]
 
-let redpackAct = [
+let RedPackAct = [
     'id',
     'act_name',
     'act_sequence',
@@ -193,7 +193,7 @@ let redpackAct = [
     'status'
 ]
 
-let userRedpack = [
+let UserRedPack = [
     'id',
     'uid',
     'act_id',
@@ -206,7 +206,7 @@ let userRedpack = [
     'cid'
 ]
 
-let userRedpackAct = [
+let UserRedPackAct = [
     'id',
     'uid',
     'act_id',
@@ -216,7 +216,7 @@ let userRedpackAct = [
     'last_act_at',
 ]
 
-let blockGameComment = [
+let BlockGameComment = [
     'id',
     'cid',
     'reply_id',
@@ -231,7 +231,7 @@ let blockGameComment = [
     'content',
 ]
 
-let mobileVerify = [
+let MobileVerify = [
     'mobile',
     'code',
     'daystamp',
@@ -239,7 +239,7 @@ let mobileVerify = [
     'send_num'
 ]
 
-let stock = [
+let Stock = [
     'id',
     'cid',
     'cname',
@@ -255,7 +255,7 @@ let stock = [
     'support'
 ]
 
-let userStock = [
+let UserStock = [
     'id',
     'uid',
     'cid',
@@ -269,7 +269,7 @@ let userStock = [
     'src'
 ]
 
-let userStockLog = [
+let UserStockLog = [
     'id',
     'uid',
     'cid',
@@ -279,8 +279,8 @@ let userStockLog = [
 ]
 
 exports = module.exports = tableField = {
-    blockGame, blockGameCate, blockGameProp, blockGameProvider,
-    userWallet, redpack, redpackAct,
-    cpUser, cpProp, cpOrder, userGame, userProp, order, vipdraw, vip, blockNotify,
-    userRedpack, userRedpackAct, blockGameComment, mobileVerify, stock, userStock, userStockLog
+    BlockGame, BlockGameCate, BlockGameProp, BlockGameProvider,
+    UserWallet, RedPack, RedPackAct,
+    CpUser, CpProp, CpOrder, UserGame, UserProp, Order, VipDraw, Vip, BlockNotify,
+    UserRedPack, UserRedPackAct, BlockGameComment, MobileVerify, Stock, UserStock, UserStockLog
 }

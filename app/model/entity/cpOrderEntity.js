@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let {CpOrder} = require('../table/cporder');
-let tableType = require('../../util/tabletype');
+let CpOrder = facade.models.CpOrder;
 
 //订单
 class cpOrderEntity extends BaseEntity
@@ -13,7 +13,7 @@ class cpOrderEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.cpOrder,                     //表类型
+            etype: TableType.CpOrder,     //表类型
             model: CpOrder,               //表映射类
             entity: cpOrderEntity,        //ORM映射类
         };

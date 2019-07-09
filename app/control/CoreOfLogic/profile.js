@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let tableType = require('../../util/tabletype');
+let {TableType} = facade.const;
 let tableField = require('../../util/tablefield');
 
 /**
@@ -21,7 +21,7 @@ class profile extends facade.Control
     async AddUserGame(user, params)  {
         let uid = user.id;
         let game_id = params.game_id;
-        let userGames = await this.core.GetMapping(tableType.userGame).groupOf().where([
+        let userGames = await this.core.GetMapping(TableType.UserGame).groupOf().where([
             ['uid', '==', uid],
             ['game_id', '==', game_id],
         ]).records(['uid']);
@@ -31,7 +31,7 @@ class profile extends facade.Control
                 uid: uid,
                 game_id: game_id
             };
-            this.core.GetMapping(tableType.userGame).Create(userGameItem);
+            this.core.GetMapping(TableType.UserGame).Create(userGameItem);
         }
         return {errcode: 'success', item: userGameItem};
     }
@@ -39,7 +39,7 @@ class profile extends facade.Control
     //我的游戏
     async UserGame(user, params)  {
         let uid = user.id;
-        let userGames = await this.core.GetMapping(tableType.userGame).groupOf().where([
+        let userGames = await this.core.GetMapping(TableType.UserGame).groupOf().where([
             ['uid', '==', uid]
         ]).records(['game_id']);
         if(userGames.length >0 ) {
@@ -47,9 +47,9 @@ class profile extends facade.Control
             userGames.forEach(element => {
                 gameIds.push(element.game_id);
             });
-            let blockGames = await this.core.GetMapping(tableType.blockGame).groupOf().where([
+            let blockGames = await this.core.GetMapping(TableType.BlockGame).groupOf().where([
                 ['id', 'include', gameIds]
-            ]).records(tableField.blockGame);
+            ]).records(tableField.BlockGame);
             return {errcode: 'success', data: blockGames};
         }
     }
@@ -105,16 +105,16 @@ class profile extends facade.Control
         let last = params.last
         let vipDrawLog = null; 
         if(last==1) {
-            vipDrawLog = await this.core.GetMapping(tableType.vipdraw)
+            vipDrawLog = await this.core.GetMapping(TableType.VipDraw)
             .groupOf().where([['uid','==',uid]])
             .orderby('draw_at', 'desc')
             .paginate(5, 1)
-            .records(tableField.vipdraw)
+            .records(tableField.VipDraw)
         } else {
-            vipDrawLog = await this.core.GetMapping(tableType.vipdraw)
+            vipDrawLog = await this.core.GetMapping(TableType.VipDraw)
             .groupOf().where([['uid','==',uid]])
             .orderby('draw_at', 'desc')
-            .records(tableField.vipdraw);
+            .records(tableField.VipDraw);
         }
         return {errcode: 'success', errmsg: 'vipdrawlog:ok', ret:vipDrawLog};
     }

@@ -2,8 +2,7 @@ const facade = require('gamecloud')
 //加载用户自定义模块 - 这句必须紧跟在模块引入语句之后
 facade.addition = true;
 
-let {IndexType} = facade.const
-let tableType = require('./util/tabletype');
+let {IndexType, TableType} = facade.const
 
 //#region 新增索引类型，需要在 UserEntity.prototype.IndexOf 函数中增加字段映射
 IndexType.Phone = 1001;
@@ -58,15 +57,15 @@ facade.boot({
     },
     //指示加载自定义数据库表
     loading: [
-        tableType.test, 
-        tableType.cp,
-        tableType.propEntity,
-        tableType.cpType,
-        tableType.RedpacketEntity,
-        tableType.PrizeEntity,
-        tableType.cpfunding,
-        tableType.CpStockEntity,
-        tableType.CpStockBaseEntity,         
+        TableType.Test, 
+        TableType.Cp,
+        TableType.Prop,
+        TableType.CpType,
+        TableType.RedPacket,
+        TableType.Prize,
+        TableType.CpFunding,
+        TableType.CpStock,
+        TableType.CpStockBase,         
     ],
     //设置静态资源映射
     static: [
@@ -108,34 +107,34 @@ facade.boot({
 //     env: env,
 //     //指示加载自定义数据库表
 //     loading: [
-//         tableType.test, 
-//         tableType.userWallet, 
-//         tableType.blockGameCate,
-//         tableType.blockGame, 
-//         tableType.blockGameProp, 
-//         tableType.blockGameProvider, 
-//         tableType.cpUser, 
-//         tableType.cpProp, 
-//         tableType.cpOrder, 
-//         tableType.userGame, 
-//         tableType.userProp, 
-//         tableType.order, 
-//         tableType.vipdraw, 
-//         tableType.vip, 
-//         tableType.blockNotify, 
-//         tableType.redpack, 
-//         tableType.redpackAct, 
-//         tableType.userRedPack, 
-//         tableType.userRedPackAct, 
-//         tableType.blockGameComment, 
-//         tableType.manySend, 
-//         tableType.manyReceive, 
-//         tableType.mobileVerify, 
-//         tableType.stock, 
-//         tableType.userStock, 
-//         tableType.userStockLog,
-//         tableType.stockbulletin, 
-//         tableType.stockBase,
+//         TableType.Test, 
+//         TableType.UserWallet, 
+//         TableType.BlockGameCate,
+//         TableType.BlockGame, 
+//         TableType.BlockGameProp, 
+//         TableType.BlockGameProvider, 
+//         TableType.CpUser, 
+//         TableType.CpProp, 
+//         TableType.CpOrder, 
+//         TableType.UserGame, 
+//         TableType.UserProp, 
+//         TableType.Order, 
+//         TableType.VipDraw, 
+//         TableType.Vip, 
+//         TableType.BlockNotify, 
+//         TableType.RedPack, 
+//         TableType.RedPackAct, 
+//         TableType.UserRedPack, 
+//         TableType.UserRedPackAct, 
+//         TableType.BlockGameComment, 
+//         TableType.ManySend, 
+//         TableType.ManyReceive, 
+//         TableType.MobileVerify, 
+//         TableType.Stock, 
+//         TableType.UserStock, 
+//         TableType.UserStockLog,
+//         TableType.StockBulletin, 
+//         TableType.StockBase,
 //     ],
 //     //设置静态资源映射
 //     static: [['/client/', './web/client']], 

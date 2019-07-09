@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
-let { EntityType, ReturnCode, NotifyType } = facade.const
-let tableType = require('../../util/tabletype');
+let { EntityType, ReturnCode, NotifyType, TableType } = facade.const
 
 /**
  * 游戏的控制器
@@ -14,7 +13,7 @@ class cpfunding extends facade.Control {
      */
     async DeleteRecord(user, objData) {
         try {
-            this.core.GetMapping(tableType.cpfunding).Delete(objData.id, true);
+            this.core.GetMapping(TableType.CpFunding).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -29,7 +28,7 @@ class cpfunding extends facade.Control {
     async UpdateRecord(user, objData) {
         try {
             console.log("46:更新数据",objData.id);
-            let cpfunding = this.core.GetObject(tableType.cpfunding, parseInt(objData.id));
+            let cpfunding = this.core.GetObject(TableType.CpFunding, parseInt(objData.id));
             if (!!cpfunding) {
                 console.log(49);
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
@@ -113,7 +112,7 @@ class cpfunding extends facade.Control {
     async CreateRecord(user, objData) {
         try {
            
-            let cpfunding = await this.core.GetMapping(tableType.cpfunding).Create(
+            let cpfunding = await this.core.GetMapping(TableType.CpFunding).Create(
                 objData.cpid,
                 objData.stock_num,
                 objData.total_amount,
@@ -150,7 +149,7 @@ class cpfunding extends facade.Control {
     async Retrieve(user, objData) {
         console.log(158,objData.id);
         try {
-            let cpfunding = this.core.GetObject(tableType.cpfunding, parseInt(objData.id));
+            let cpfunding = this.core.GetObject(TableType.CpFunding, parseInt(objData.id));
             if (!!cpfunding) {
                 // console.log(162,"有数据啊");
                 // console.log(cpfunding.getAttr('cpid'));
@@ -217,7 +216,7 @@ class cpfunding extends facade.Control {
             }
 
             //得到 Mapping 对象
-            let muster = this.core.GetMapping(tableType.cpfunding)
+            let muster = this.core.GetMapping(TableType.CpFunding)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
@@ -255,7 +254,7 @@ class cpfunding extends facade.Control {
     ListCp(user, objData) {
         try {
             //得到 Mapping 对象
-            let muster = this.core.GetMapping(tableType.cp)
+            let muster = this.core.GetMapping(TableType.Cp)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .orderby('id', 'asc') //根据id字段倒叙排列
                 .paginate(10, 1); 

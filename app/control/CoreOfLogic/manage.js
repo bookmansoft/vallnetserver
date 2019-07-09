@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let tableType = require('../../util/tabletype');
+let {TableType} = facade.const;
 let tableField = require('../../util/tablefield');
 
 /**
@@ -9,24 +9,24 @@ class manage extends facade.Control
 {
     //活动列表
     async RedPackActList(user, params) {
-        let redpackActList = this.core.GetMapping(tableType.redpackAct).groupOf().records(tableField.redpackAct)
+        let redpackActList = this.core.GetMapping(TableType.RedPackAct).groupOf().records(tableField.RedPackAct)
         return {errcode: 'success', length:redpackActList.length, data:redpackActList}
     }
 
     //创建活动
     async RedPackActCreate(user, params) {
         let data = params.data
-        this.core.GetMapping(tableType.redpackAct).Create(data)
+        this.core.GetMapping(TableType.RedPackAct).Create(data)
         return {errcode: 'success'}
     }
 
     //更新活动
     async RedPackActUpdate(user, params) {
         let data = params.data
-        let act = this.core.GetObject(tableType.redpackAct, data.id)  //根据上行id查找表中记录
+        let act = this.core.GetObject(TableType.RedPackAct, data.id)  //根据上行id查找表中记录
         if(!!act) {
-            for (let key in tableField.redpackAct) {
-                let value = tableField.redpackAct[key]
+            for (let key in tableField.RedPackAct) {
+                let value = tableField.RedPackAct[key]
                 if(data.hasOwnProperty(value)) {
                     act.setAttr(value, data[value])
                 }
@@ -40,7 +40,7 @@ class manage extends facade.Control
     //红包订单列表
     async RedPackOrderList(user, params)  {
         //res.json({errcode: 'success', length: rows.length, data: rows});
-        let redpackList = this.core.GetMapping(tableType.redpack).groupOf().where([['uid', '==', uid]]).records(tableField.redpack)
+        let redpackList = this.core.GetMapping(TableType.RedPack).groupOf().where([['uid', '==', uid]]).records(tableField.RedPack)
         return {errcode: 'success', length:redpackList.length, data:redpackList}
     };
 
@@ -48,7 +48,7 @@ class manage extends facade.Control
     async UserRedPackActList(user, params)  {
         let paramsData = params.data
         //res.json({errcode: 'success', length: rows.length, data: rows});
-        let data = this.core.GetMapping(tableType.userRedPack).groupOf().records(tableField.userRedpack)
+        let data = this.core.GetMapping(TableType.UserRedPack).groupOf().records(tableField.UserRedPack)
         return {errcode: 'success', length:data.length, data:data}
     };
 
@@ -57,7 +57,7 @@ class manage extends facade.Control
     async UserRedPackList(user, params)  {
         //res.json({errcode: 'success', length: rows.length, data: rows});
         let paramsData = params.data
-        let data = this.core.GetMapping(tableType.userRedPackAct).groupOf().records(tableField.userRedpackAct)
+        let data = this.core.GetMapping(TableType.UserRedPackAct).groupOf().records(tableField.UserRedPackAct)
         return {errcode: 'success', length:data.length, data:data}
     };
 

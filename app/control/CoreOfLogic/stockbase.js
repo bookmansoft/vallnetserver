@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
-let tableType = require('../../util/tabletype');
-let { ReturnCode, NotifyType } = facade.const
+let { ReturnCode, NotifyType, TableType } = facade.const
 
 /**
  * 游戏的控制器
@@ -44,7 +43,7 @@ class stockbase extends facade.Control {
      */
     async DeleteRecord(user, objData) {
         try {
-            this.core.GetMapping(tableType.stockBase).Delete(objData.id, true);
+            this.core.GetMapping(TableType.StockBase).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -59,7 +58,7 @@ class stockbase extends facade.Control {
     async UpdateRecord(user, objData) {
         try {
             console.log("46:更新数据", objData.id);
-            let stockbase = this.core.GetObject(tableType.stockBase, parseInt(objData.id));
+            let stockbase = this.core.GetObject(TableType.StockBase, parseInt(objData.id));
             if (!!stockbase) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 stockbase.setAttr('cid', objData.cid);
@@ -107,7 +106,7 @@ class stockbase extends facade.Control {
      */
     async CreateRecord(user, objData) {
         try {
-            await this.core.GetMapping(tableType.stockBase).Create(
+            await this.core.GetMapping(TableType.StockBase).Create(
                 objData.cid,
                 objData.cp_name,
                 objData.cp_text,
@@ -152,7 +151,7 @@ class stockbase extends facade.Control {
     async Retrieve(user, objData) {
         console.log(158, objData.id);
         try {
-            let stockbase = this.core.GetObject(tableType.stockBase, parseInt(objData.id));
+            let stockbase = this.core.GetObject(TableType.StockBase, parseInt(objData.id));
             if (!!stockbase) {
                 return {
                     code: ReturnCode.Success,
@@ -229,7 +228,7 @@ class stockbase extends facade.Control {
             console.log('stockbase列表参数：', paramArray);
 
             //得到 Mapping 对象
-            let muster = this.core.GetMapping(tableType.stockBase)
+            let muster = this.core.GetMapping(TableType.StockBase)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列

@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let tableType = require('../../util/tabletype');
+let {TableType} = facade.const;
 let tableField = require('../../util/tablefield');
 
 /**
@@ -11,34 +11,34 @@ class game extends facade.Control
     //游戏类别
     async GameCateList(user, params)  {
         //res.json({errcode: 'success', length: rows.length, data: rows});
-        let gamecateList = this.core.GetMapping(tableType.blockGameCate).groupOf().records(tableField.blockGameCate);
+        let gamecateList = this.core.GetMapping(TableType.BlockGameCate).groupOf().records(tableField.BlockGameCate);
         return {errcode: 'success', length:gamecateList.length, data:gamecateList};
     };
 
     //游戏列表
     async GameList(user, params)  {
-        let gameList = this.core.GetMapping(tableType.blockGame).groupOf().records(tableField.blockGame);
+        let gameList = this.core.GetMapping(TableType.BlockGame).groupOf().records(tableField.BlockGame);
         return {errcode: 'success', length:gameList.length, data:gameList};
     }
 
     //所有游戏
     async GameAll(user, params)  {
-        let gameList = this.core.GetMapping(tableType.blockGame).groupOf().records(tableField.blockGame);
+        let gameList = this.core.GetMapping(TableType.BlockGame).groupOf().records(tableField.BlockGame);
         return {errcode: 'success', length:gameList.length, data:gameList};
     }
 
     //游戏道具
     async GameProp(user, params) {
         let cpid = params.cpid;
-        let gameProps = this.core.GetMapping(tableType.blockGameProp).groupOf().where([['cpid','==',cpid]]).records(tableField.blockGameProp);
+        let gameProps = this.core.GetMapping(TableType.BlockGameProp).groupOf().where([['cpid','==',cpid]]).records(tableField.BlockGameProp);
         return {errcode: 'success', length:gameProps.length, data:gameProps};
     }
 
     //游戏首页
     async GameHome(user, params) {
-        let gameCates = this.core.GetMapping(tableType.blockGameCate).groupOf().records(tableField.blockGameCate);
-        let hotGame = this.core.GetMapping(tableType.blockGame).groupOf().where([['player_count','>',1000]]).records(tableField.blockGame);
-        let games = this.core.GetMapping(tableType.blockGame).groupOf().where([['store_status','==',1]]).records(tableField.blockGame);
+        let gameCates = this.core.GetMapping(TableType.BlockGameCate).groupOf().records(tableField.BlockGameCate);
+        let hotGame = this.core.GetMapping(TableType.BlockGame).groupOf().where([['player_count','>',1000]]).records(tableField.BlockGame);
+        let games = this.core.GetMapping(TableType.BlockGame).groupOf().where([['store_status','==',1]]).records(tableField.BlockGame);
         return {
             errcode: 'success', 
             hotGame: hotGame.length>0 ? hotGame[0] : null, 
@@ -50,7 +50,7 @@ class game extends facade.Control
     //游戏详情
     async GameInfo(user, params) {
         let id = params.id;
-        let gameInfo = this.core.GetObject(tableType.blockGame, id); 
+        let gameInfo = this.core.GetObject(TableType.BlockGame, id); 
         return {errcode: 'success', data:gameInfo.orm};
     }
 }

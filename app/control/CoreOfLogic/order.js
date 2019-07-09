@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
-
-let tableType = require('../../util/tabletype');
+let {TableType} = facade.const;
 
 /**
  * 节点控制器--订单
@@ -60,7 +59,7 @@ class order extends facade.Control
             create_time: current_time,
             update_time: 0,
         };
-        await this.core.GetMapping(tableType.order).Create(orderItem);
+        await this.core.GetMapping(TableType.Order).Create(orderItem);
         //return {errcode: 'success', errmsg: 'order:ok', tradeId: tradeId};
         return {errcode: 'success', errmsg: 'order:ok', tradeId: tradeId, order:orderItem};
     }
@@ -68,7 +67,7 @@ class order extends facade.Control
     async OrderStatus(user, params) {
         let uid = user.id
         let tradeId = params.tradeId
-        let userOrders = this.core.GetMapping(tableType.order).groupOf().where([['order_sn', '==', tradeId]]).records();
+        let userOrders = this.core.GetMapping(TableType.Order).groupOf().where([['order_sn', '==', tradeId]]).records();
         if(userOrders.length >0 ) {
             let order = userOrders[0];
             return {errcode: 'success', errmsg: 'order:ok', order: order.orm};
@@ -82,7 +81,7 @@ class order extends facade.Control
         let tradeId = params.tradeId
         let status = params.status
 
-        let userOrders = this.core.GetMapping(tableType.order).groupOf().where([['order_sn', '==', tradeId]]).records();
+        let userOrders = this.core.GetMapping(TableType.Order).groupOf().where([['order_sn', '==', tradeId]]).records();
         if(userOrders.length >0 ) {
             let order = userOrders[0]
             let current_time = parseInt(new Date().getTime() / 1000)
@@ -100,7 +99,7 @@ class order extends facade.Control
                     let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(uid, cid);
                     await this.core.service.gamegoldHelper.execute('stock.send', [cid, quantity, addr, 'alice']);
 
-                    let stock = this.core.GetObject(tableType.stock, order.orm.product_id);          
+                    let stock = this.core.GetObject(TableType.Stock, order.orm.product_id);          
                     if(!!stock) {
                         stock.setAttr('support', stock.orm.support+1);
                         stock.setAttr('remainder', stock.orm.remainder - quantity);
@@ -113,9 +112,9 @@ class order extends facade.Control
                             pay_at: current_time,
                             status: 1
                         }
-                        await this.core.GetMapping(tableType.userStockLog).Create(userStockLogItem)
+                        await this.core.GetMapping(TableType.UserStockLog).Create(userStockLogItem)
 
-                        let userStockItems = this.core.GetMapping(tableType.userStock).groupOf().where([
+                        let userStockItems = this.core.GetMapping(TableType.UserStock).groupOf().where([
                             ['uid', '==', uid],
                             ['cid', '==', cid]
                         ]).records();
@@ -138,7 +137,7 @@ class order extends facade.Control
                                 src: stock.orm.item_pic,
                                 title: stock.orm.cname
                             }
-                            await this.core.GetMapping(tableType.userStock).Create(userStockItem)
+                            await this.core.GetMapping(TableType.UserStock).Create(userStockItem)
                         }
 
                     }

@@ -1,6 +1,5 @@
 let facade = require('gamecloud');
-let { ReturnCode, NotifyType } = facade.const;
-let tableType = require('../../util/tabletype');
+let { ReturnCode, NotifyType, TableType } = facade.const;
 
 /**
  * 游戏的控制器
@@ -13,7 +12,7 @@ class manyreceive extends facade.Control {
      */
     DeleteRecord(user, objData) {
         try {
-            this.core.GetMapping(tableType.manyReceive).Delete(objData.id, true);
+            this.core.GetMapping(TableType.ManyReceive).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -30,7 +29,7 @@ class manyreceive extends facade.Control {
         try {
             console.log(JSON.stringify(objData));
             console.log(objData.id);
-            let manyreceive = this.core.GetObject(tableType.manyReceive, parseInt(objData.id));
+            let manyreceive = this.core.GetObject(TableType.ManyReceive, parseInt(objData.id));
             if (!!manyreceive) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 manyreceive.setAttr('send_id', objData.send_id);
@@ -62,7 +61,7 @@ class manyreceive extends facade.Control {
      */
     async CreateRecord(user, objData) {
         try {
-            let manyreceive = await this.core.GetMapping(tableType.manyReceive).Create(
+            let manyreceive = await this.core.GetMapping(TableType.ManyReceive).Create(
                 objData.send_id,
                 objData.receive_amount,
                 objData.send_uid,
@@ -94,7 +93,7 @@ class manyreceive extends facade.Control {
     Retrieve(user, objData) {
         try {
             //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-            let manyreceive = this.core.GetObject(tableType.manyReceive, parseInt(objData.id));
+            let manyreceive = this.core.GetObject(TableType.ManyReceive, parseInt(objData.id));
             console.log(manyreceive);
             if (!!manyreceive) {
                 return {
@@ -149,7 +148,7 @@ class manyreceive extends facade.Control {
 
             console.log(paramArray);
             //得到 Mapping 对象
-            let muster = this.core.GetMapping(tableType.manyReceive)
+            let muster = this.core.GetMapping(TableType.ManyReceive)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'asc') //根据id字段正序排列
@@ -188,7 +187,7 @@ class manyreceive extends facade.Control {
     async Receive(user, objData) {
         try {
             //获取到发送的记录
-            let manysend = this.core.GetObject(tableType.manySend, parseInt(objData.id));
+            let manysend = this.core.GetObject(TableType.ManySend, parseInt(objData.id));
             //console.log(manysend);
             if (!!manysend) {
                 let manysendData = {
@@ -247,7 +246,7 @@ class manyreceive extends facade.Control {
                             manysendData.real_amount=manyreceive.list[i].receive_amount;//设置接收金额
                             console.log("manyreceive.js 274:",user.id);
                             //重新单独获取收件表的记录才能更新
-                            let receiveData = this.core.GetObject(tableType.manyReceive, parseInt(manyreceive.list[i].id));
+                            let receiveData = this.core.GetObject(TableType.ManyReceive, parseInt(manyreceive.list[i].id));
                             receiveData.setAttr("receive_uid",user.id);
                             receiveData.setAttr("receive_nickname",user.baseMgr.info.getAttr("nickname"));
                             receiveData.setAttr("receive_headimg",user.baseMgr.info.getAttr("avatar_uri"));

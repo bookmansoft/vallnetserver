@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType } = facade.const
-const tableType = require('../../util/tabletype')
+let { ReturnCode, NotifyType, TableType } = facade.const
 
 /**
  * 游戏的控制器
@@ -14,7 +13,7 @@ class cpstockbase extends facade.Control {
      */
     async DeleteRecord(user, objData) {
         try {
-            this.core.GetMapping(tableType.CpStockBaseEntity).Delete(objData.id, true);
+            this.core.GetMapping(TableType.CpStockBase).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -29,7 +28,7 @@ class cpstockbase extends facade.Control {
     async UpdateRecord(user, objData) {
         try {
             console.log("46:更新数据",objData.id);
-            let cpstockbase = this.core.GetObject(tableType.CpStockBaseEntity, parseInt(objData.id));
+            let cpstockbase = this.core.GetObject(TableType.CpStockBase, parseInt(objData.id));
             if (!!cpstockbase) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 cpstockbase.setAttr('cpid', objData.cpid);
@@ -60,7 +59,7 @@ class cpstockbase extends facade.Control {
      */
     async CreateRecord(user, objData) {
         try {
-            let cpstockbase = await this.core.GetMapping(tableType.CpStockBaseEntity).Create(
+            let cpstockbase = await this.core.GetMapping(TableType.CpStockBase).Create(
                 objData.cpid,
                 objData.cid,
                 objData.cp_name,
@@ -89,7 +88,7 @@ class cpstockbase extends facade.Control {
     async Retrieve(user, objData) {
         console.log(158,objData.id);
         try {
-            let cpstockbase = this.core.GetObject(tableType.CpStockBaseEntity, parseInt(objData.id));
+            let cpstockbase = this.core.GetObject(TableType.CpStockBase, parseInt(objData.id));
             if (!!cpstockbase) {
                 return {
                     code: ReturnCode.Success,
@@ -150,7 +149,7 @@ class cpstockbase extends facade.Control {
             console.log('cpstockbase列表参数：',paramArray);
 
             //得到 Mapping 对象
-            let muster = this.core.GetMapping(tableType.CpStockBaseEntity)
+            let muster = this.core.GetMapping(TableType.CpStockBase)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列

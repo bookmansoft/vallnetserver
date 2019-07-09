@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let tableType = require('../../util/tabletype');
+let {TableType} = facade.const;
 
 /**
  * 节点控制器--道具

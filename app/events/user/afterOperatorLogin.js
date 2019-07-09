@@ -67,9 +67,41 @@ function handle(data){
                 data.user.baseMgr.info.setAttr('balance', ret.result.confirmed);
             });
 
-            //查询操作员名下所有已注册CP
+            //查询操作员名下所有已注册CP, 逐条插入数据库
             remote.execute('cp.mine', []).then(ret => {
-                //todo 根据查询结果逐条插入CP表
+                /** ret.list: {
+                    "cid",
+                    "name",
+                    "url",
+                    "ip",
+                    "cls",
+                    "grate",
+                    "current": { "hash", "index", "address" },
+                    "stock": { "hHeight", "hSum", "hPrice", "hBonus", "hAds", "sum", "price", "height" },
+                    "height",
+                    "status"
+                }
+                */
+                ret.list.map(async item => {
+                    await this.GetMapping(TableType.Cp).Create(
+                        item.cid, //item.cp_id,
+                        item.name,//item.cp_name,
+                        '', //item.cp_text,
+                        item.url, //item.cp_url,
+                        item.current.address, //item.wallet_addr,
+                        item.cls, //item.cp_type,
+                        '', //item.develop_name,
+                        '', //item.cp_desc,
+                        '', //item.cp_version,
+                        '', //item.picture_url,
+                        '', //item.cp_state,
+                        Math.floor(Date.now()/1000), //item.publish_time,
+                        Math.floor(Date.now()/1000), //item.update_time,
+                        '', //item.update_content,
+                        item.grate, //item.invite_share,
+                        data.user.id, //item.operator_id,
+                    );
+                });                
             });
         }
 

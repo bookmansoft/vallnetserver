@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let {MobileVerify} = require('../table/mobileverify');
-let tableType = require('../../util/tabletype');
+let MobileVerify = facade.models.MobileVerify
 
 //用户微信账号(openid)
 class MobileVerifyEntity extends BaseEntity
@@ -13,7 +13,7 @@ class MobileVerifyEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.mobileVerify,                     //表类型
+            etype: TableType.MobileVerify,                     //表类型
             model: MobileVerify,               //表映射类
             entity: MobileVerifyEntity,        //ORM映射类
         };

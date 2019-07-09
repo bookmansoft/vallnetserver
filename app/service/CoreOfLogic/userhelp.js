@@ -1,10 +1,10 @@
 let facade = require('gamecloud');
-let tableType = require('../../util/tabletype');
+let {TableType} = facade.const;
 
 class userhelp  extends facade.Service 
 {
     async getAddrFromUserIdAndCid(uid, cid) {
-        let userWallets = await this.core.GetMapping(tableType.userWallet).groupOf()
+        let userWallets = await this.core.GetMapping(TableType.UserWallet).groupOf()
             .where([
                 ['uid', '==', uid],
                 ['cid', '==', cid],

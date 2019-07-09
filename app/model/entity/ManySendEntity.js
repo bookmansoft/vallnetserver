@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let {ManySend} = require('../table/manysend');
-let tableType = require('../../util/tabletype');
+let ManySend = facade.models.ManySend
 
 //用户微信账号(uid)
 class ManySendEntity extends BaseEntity
@@ -13,7 +13,7 @@ class ManySendEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.manySend,                     //表类型
+            etype: TableType.ManySend,                     //表类型
             model: ManySend,               //表映射类
             entity: ManySendEntity,        //ORM映射类
         };

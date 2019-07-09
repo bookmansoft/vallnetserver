@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let {CpProp} = require('../table/cpprop');
-let tableType = require('../../util/tabletype');
+let CpProp = facade.models.CpProp;
 
 //道具库
 class cpPropEntity extends BaseEntity
@@ -13,7 +13,7 @@ class cpPropEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.cpProp,                     //表类型
+            etype: TableType.CpProp,     //表类型
             model: CpProp,               //表映射类
             entity: cpPropEntity,        //ORM映射类
         };

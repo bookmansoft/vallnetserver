@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let {BlockGameProp} = require('../table/blockgameprop');
-let tableType = require('../../util/tabletype');
+let BlockGameProp = facade.models.BlockGameProp;
 
 //游戏道具
 class blockGamePropEntity extends BaseEntity
@@ -13,7 +13,7 @@ class blockGamePropEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.blockGameProp,                     //表类型
+            etype: TableType.BlockGameProp,                     //表类型
             model: BlockGameProp,               //表映射类
             entity: blockGamePropEntity,        //ORM映射类
         };

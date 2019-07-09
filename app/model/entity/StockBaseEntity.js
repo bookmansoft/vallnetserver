@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity
-let {StockBase} = require('../table/StockBase.js')
-let tableType = require('../../util/tabletype');
+let StockBase = facade.models.StockBase
 
 class StockBaseEntity extends BaseEntity
 {
@@ -12,7 +12,7 @@ class StockBaseEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.stockBase,          //表类型
+            etype: TableType.StockBase,          //表类型
             model: StockBase,                    //表映射类
             entity: StockBaseEntity,             //ORM映射类
         };

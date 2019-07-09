@@ -7,8 +7,7 @@
 
 let moment = require('./../../../node_modules/moment')
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType } = facade.const
-let tableType = require('../../util/tabletype');
+let { ReturnCode, NotifyType, TableType } = facade.const
 
 /**
  * 道具管理类
@@ -64,7 +63,7 @@ class prop extends facade.Control {
         cpIdText = cpIdText.data || {};
 
         //得到 Mapping 对象
-        let muster = this.core.GetMapping(tableType.propEntity)
+        let muster = this.core.GetMapping(TableType.Prop)
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .where(paramArray)
             .orderby('id', 'desc') //根据id字段倒叙排列
@@ -102,7 +101,7 @@ class prop extends facade.Control {
         if (typeof (objData.cid) != "undefined" && (objData.cid != "")) {
             paramArray.push(['cid', '==', objData.cid]);
         }
-        let resList = this.core.GetMapping(tableType.propEntity) //得到 Mapping 对象
+        let resList = this.core.GetMapping(TableType.Prop) //得到 Mapping 对象
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .where(paramArray)
             .orderby('id', 'desc') //根据id字段倒叙排列
@@ -137,7 +136,7 @@ class prop extends facade.Control {
         cpIdText = cpIdText.data || {};
         cpIdUrl = cpIdUrl.data || {};
         //根据上行id查找表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-        let prop = this.core.GetObject(tableType.propEntity, parseInt(objData.id));
+        let prop = this.core.GetObject(TableType.Prop, parseInt(objData.id));
         if (!!prop) {
             return {
                 code: ReturnCode.Success,
@@ -218,7 +217,7 @@ class prop extends facade.Control {
         //查找是否有props_id存在的记录
         let paramArray = new Array();
         paramArray.push(['props_id','==', paramGold.props_id]);
-        let isExists = this.core.GetMapping(tableType.propEntity)
+        let isExists = this.core.GetMapping(TableType.Prop)
             .groupOf()
             .where(paramArray)
             .records(['id']);
@@ -226,7 +225,7 @@ class prop extends facade.Control {
             return { code: 3, msg: "props is exists" };
         }
         try{
-             res = await this.core.GetMapping(tableType.propEntity).Create(
+             res = await this.core.GetMapping(TableType.Prop).Create(
                 paramGold.props_id,
                 paramGold.props_name,
                 paramGold.props_type,
@@ -269,7 +268,7 @@ class prop extends facade.Control {
         if (id == '') {
             return { code: -1 };
         }
-        let prop = this.core.GetObject(tableType.propEntity, id);
+        let prop = this.core.GetObject(TableType.Prop, id);
         if (!!prop) {
             if (props_id != '') {
                 prop.setAttr('props_id', props_id);
@@ -328,7 +327,7 @@ class prop extends facade.Control {
         }
         let id = parseInt(paramGold.id);
         //查找该道具本地详情
-        let propDetail = this.core.GetObject(tableType.propEntity, id);
+        let propDetail = this.core.GetObject(TableType.Prop, id);
         if (propDetail == '') {
             return { code: -2, msg: '道具信息错误' };
         }
@@ -389,7 +388,7 @@ class prop extends facade.Control {
     cpIdText() {
         let paramArray = new Array();
         //paramArray.push(['cp_state','==',2]);//读取已上架
-        let resList = this.core.GetMapping(tableType.cp)
+        let resList = this.core.GetMapping(TableType.Cp)
             .groupOf()
             .where(paramArray)
             .orderby('id', 'desc')
@@ -408,7 +407,7 @@ class prop extends facade.Control {
     cpIdUrl() {
         let paramArray = new Array();
         //paramArray.push(['cp_state','==',2]);//读取已上架
-        let resList = this.core.GetMapping(tableType.cp)
+        let resList = this.core.GetMapping(TableType.Cp)
             .groupOf()
             .where(paramArray)
             .orderby('id', 'desc')
@@ -435,7 +434,7 @@ class prop extends facade.Control {
         if (id == '') {
             return { code: -1 };
         }
-        let prop = this.core.GetObject(tableType.propEntity, id);
+        let prop = this.core.GetObject(TableType.Prop, id);
         if (!!prop) {
             if (status != '') {
                 prop.setAttr('status', status);
@@ -491,7 +490,7 @@ class prop extends facade.Control {
      */
     getCpUrl(user, objData) {
         try {
-            let cp = this.core.GetObject(tableType.cp, parseInt(objData.id));
+            let cp = this.core.GetObject(TableType.Cp, parseInt(objData.id));
             if (!!cp) {
                 return {
                     code: ReturnCode.Success,
@@ -518,7 +517,7 @@ class prop extends facade.Control {
      */
     async ListAllCpRecord() {
         let paramArray = new Array();
-        let resList = this.core.GetMapping(tableType.cp)
+        let resList = this.core.GetMapping(TableType.Cp)
             .groupOf()
             .where(paramArray)
             .orderby('id', 'desc')

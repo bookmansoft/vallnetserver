@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity
-let {CpFunding} = require('../table/CpFunding.js')
-const tableType = require('../../util/tabletype')
+let CpFunding = facade.models.CpFunding;
 
 class CpFundingEntity extends BaseEntity
 {
@@ -12,7 +12,7 @@ class CpFundingEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.cpfunding,          //表类型
+            etype: TableType.CpFunding,          //表类型
             model: CpFunding,                    //表映射类
             entity: CpFundingEntity,             //ORM映射类
         };

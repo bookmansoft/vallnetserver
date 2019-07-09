@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType } = facade.const
-const tableType = require('../../util/tabletype')
+let { ReturnCode, NotifyType, TableType } = facade.const
 
 /**
  * 游戏的控制器
@@ -14,7 +13,7 @@ class cpstock extends facade.Control {
      */
     async DeleteRecord(user, objData) {
         try {
-            this.core.GetMapping(tableType.CpStockEntity).Delete(objData.id, true);
+            this.core.GetMapping(TableType.CpStock).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -29,7 +28,7 @@ class cpstock extends facade.Control {
     async UpdateRecord(user, objData) {
         try {
             console.log("46:更新数据",objData.id);
-            let cpstock = this.core.GetObject(tableType.CpStockEntity, parseInt(objData.id));
+            let cpstock = this.core.GetObject(TableType.CpStock, parseInt(objData.id));
             if (!!cpstock) {
                 cpstock.setAttr('cid', objData.cid);
                 cpstock.setAttr('cp_name', objData.cp_name);
@@ -60,7 +59,7 @@ class cpstock extends facade.Control {
      */
     async CreateRecord(user, objData) {
         try {
-            let cpstock = await this.core.GetMapping(tableType.CpStockEntity).Create(
+            let cpstock = await this.core.GetMapping(TableType.CpStock).Create(
                 objData.cid,
                 objData.cp_name,
                 objData.cp_text,
@@ -90,7 +89,7 @@ class cpstock extends facade.Control {
     async Retrieve(user, objData) {
         console.log(158,objData.id);
         try {
-            let cpstock = this.core.GetObject(tableType.CpStockEntity, parseInt(objData.id));
+            let cpstock = this.core.GetObject(TableType.CpStock, parseInt(objData.id));
             if (!!cpstock) {
                 return {
                     code: ReturnCode.Success,
@@ -144,7 +143,7 @@ class cpstock extends facade.Control {
             }
             console.log('cpstock列表参数：',paramArray);
             //得到 Mapping 对象
-            let muster = this.core.GetMapping(tableType.CpStockEntity)
+            let muster = this.core.GetMapping(TableType.CpStock)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列

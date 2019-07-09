@@ -1,9 +1,9 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity
-let {Redpacket} = require('../table/Redpacket.js')
-const tableType = require('../../util/tabletype')
+let RedPacket = facade.models.RedPacket
 
-class RedpacketEntity extends BaseEntity
+class RedPacketEntity extends BaseEntity
 {
     //region 集合功能
 
@@ -12,9 +12,9 @@ class RedpacketEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.RedpacketEntity,    //表类型
-            model: Redpacket,                    //表映射类
-            entity: RedpacketEntity,             //ORM映射类
+            etype: TableType.RedPacket,    //表类型
+            model: RedPacket,                    //表映射类
+            entity: RedPacketEntity,             //ORM映射类
         };
     }
 
@@ -23,7 +23,7 @@ class RedpacketEntity extends BaseEntity
      */
     static async onCreate(db, act_name,act_sequence,total_gamegold,each_gamegold,total_num,each_num,act_desc,act_start_at,act_end_at) {
         try{
-            let it = await Redpacket(db).create({
+            let it = await RedPacket(db).create({
                 'act_name': act_name,
                 'act_sequence': act_sequence,
                 'total_gamegold': total_gamegold,
@@ -49,7 +49,7 @@ class RedpacketEntity extends BaseEntity
      * @param {*} record 
      */
     static onMapping(record, core) {
-        return new RedpacketEntity(record, core);
+        return new RedPacketEntity(record, core);
     }
 
     /**
@@ -59,7 +59,7 @@ class RedpacketEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await Redpacket(db).findAll();
+            let ret = await RedPacket(db).findAll();
             ret.map(it=>{
                 callback(it);
             });
@@ -73,8 +73,8 @@ class RedpacketEntity extends BaseEntity
      */
     onUpdate() {
         //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        this.core.notifyEvent('Redpacket.update', {Redpacket:this})
+        this.core.notifyEvent('RedPacket.update', {RedPacket:this})
     }
 }
 
-exports = module.exports = RedpacketEntity;
+exports = module.exports = RedPacketEntity;

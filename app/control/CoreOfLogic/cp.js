@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let tableType = require('../../util/tabletype');
+let {TableType} = facade.const;
 const axios = require('axios')
 
 /**
@@ -111,7 +111,7 @@ class cp extends facade.Control
         ]);
         if (!!ret && ret.result.hasOwnProperty("data")) {
             let addr = ret.result.data.addr;
-            let userWallet = await this.core.GetMapping(tableType.userWallet).groupOf().where([
+            let userWallet = await this.core.GetMapping(TableType.UserWallet).groupOf().where([
                 ['cid', '==', params.cid],
                 ['user_id', '==', params.user_id],
                 ['account', '==', params.account]
@@ -124,7 +124,7 @@ class cp extends facade.Control
                     user_id: params.user_id,
                     account: params.account,
                 };
-                this.core.GetMapping(tableType.userWallet).Create(userWalletItem);
+                this.core.GetMapping(TableType.UserWallet).Create(userWalletItem);
             }
         }
         return {errcode: 'success', errmsg:'usertoken:ok', ret: ret.result};

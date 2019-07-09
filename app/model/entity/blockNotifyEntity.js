@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let {BlockNotify} = require('../table/blockNotify');
-let tableType = require('../../util/tabletype');
+let BlockNotify = facade.models.BlockNotify;
 
 //区块链游戏库
 class blockNotifyEntity extends BaseEntity
@@ -13,7 +13,7 @@ class blockNotifyEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.blockNotify,                     //表类型
+            etype: TableType.BlockNotify,                     //表类型
             model: BlockNotify,               //表映射类
             entity: blockNotifyEntity,        //ORM映射类
         };

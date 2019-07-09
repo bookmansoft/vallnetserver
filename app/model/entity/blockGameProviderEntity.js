@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let {BlockGameProvider} = require('../table/blockgameprovider');
-let tableType = require('../../util/tabletype');
+let BlockGameProvider = facade.models.BlockGameProvider
 
 //游戏供应商
 class blockGameProviderEntity extends BaseEntity
@@ -13,7 +13,7 @@ class blockGameProviderEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.blockGameProvider,                     //表类型
+            etype: TableType.BlockGameProvider,     //表类型
             model: BlockGameProvider,               //表映射类
             entity: blockGameProviderEntity,        //ORM映射类
         };

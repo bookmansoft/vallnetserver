@@ -1,7 +1,6 @@
 let facade = require('gamecloud')
 let assert = require('assert')
-let {ReturnCode, NotifyType} = facade.const
-let tableType = require('../../util/tabletype');
+let {ReturnCode, NotifyType, TableType} = facade.const
 
 //引入工具包
 const toolkit = require('gamerpc')
@@ -30,7 +29,7 @@ class test extends facade.Control
      * @param {*} objData 
      */
     async Create(user, objData) {
-        let test = await this.core.GetMapping(tableType.test).Create(Math.random().toString());
+        let test = await this.core.GetMapping(TableType.Test).Create(Math.random().toString());
         return {code: ReturnCode.Success, data: test.item};
     }
 
@@ -40,7 +39,7 @@ class test extends facade.Control
      * @param {*} objData 
      */
     Update(user, objData) {
-        let test = this.core.GetObject(tableType.test, objData.id);           //根据上行id查找test表中记录
+        let test = this.core.GetObject(TableType.Test, objData.id);           //根据上行id查找test表中记录
         if(!!test) {
             test.setAttr('item', Math.random().toString());     //修改所得记录的item字段，下次查询时将得到新值，同时会自动存入数据库
             return {code: ReturnCode.Success, data: test.getAttr('item')};
@@ -57,7 +56,7 @@ class test extends facade.Control
         console.log("控制器添加日志：");
         console.log(objData.id);
         //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-        let test = this.core.GetObject(tableType.test, parseInt(objData.id));
+        let test = this.core.GetObject(TableType.Test, parseInt(objData.id));
         if(!!test) {
             return {code: ReturnCode.Success, data: test.getAttr('item')};
         }
@@ -70,7 +69,7 @@ class test extends facade.Control
      * @param {*} objData 
      */
     async Delete(user, objData) {
-        await this.core.GetMapping(tableType.test).Delete(objData.id, true);
+        await this.core.GetMapping(TableType.Test).Delete(objData.id, true);
         return {code: ReturnCode.Success};
     }
 
@@ -80,7 +79,7 @@ class test extends facade.Control
      * @param {*} objData 
      */
     async List(user, objData) {
-        let muster = await this.core.GetMapping(tableType.test) //得到 Mapping 对象
+        let muster = await this.core.GetMapping(TableType.Test) //得到 Mapping 对象
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .orderby('item', 'desc') //根据id字段倒叙排列
             .paginate(5, objData.id); //每页5条，显示第${objData.id}页，只选取'id'和'item'字段

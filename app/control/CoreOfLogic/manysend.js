@@ -1,6 +1,5 @@
 let facade = require('gamecloud');
-let { ReturnCode, NotifyType } = facade.const;
-let tableType = require('../../util/tabletype');
+let { ReturnCode, NotifyType, TableType } = facade.const;
 
 /**
  * 游戏的控制器
@@ -13,7 +12,7 @@ class manysend extends facade.Control {
      */
     DeleteRecord(user, objData) {
         try {
-            this.core.GetMapping(tableType.manySend).Delete(objData.id, true);
+            this.core.GetMapping(TableType.ManySend).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -30,7 +29,7 @@ class manysend extends facade.Control {
         try {
             console.log(JSON.stringify(objData));
             console.log(objData.id);
-            let manysend = this.core.GetObject(tableType.manySend, parseInt(objData.id));
+            let manysend = this.core.GetObject(TableType.ManySend, parseInt(objData.id));
             if (!!manysend) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 manysend.setAttr('total_amount', objData.total_amount);
@@ -61,7 +60,7 @@ class manysend extends facade.Control {
      */
     async CreateRecord(user, objData) {
         try {
-            let manysend = await this.core.GetMapping(tableType.manySend).Create(
+            let manysend = await this.core.GetMapping(TableType.ManySend).Create(
                 objData.total_amount,
                 objData.actual_amount,
                 objData.total_num,
@@ -92,7 +91,7 @@ class manysend extends facade.Control {
     Retrieve(user, objData) {
         try {
             //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-            let manysend = this.core.GetObject(tableType.manySend, parseInt(objData.id));
+            let manysend = this.core.GetObject(TableType.ManySend, parseInt(objData.id));
             if (!!manysend) {
                 return {
                     code: ReturnCode.Success,
@@ -145,7 +144,7 @@ class manysend extends facade.Control {
 
             console.log(paramArray);
             //得到 Mapping 对象
-            let muster = this.core.GetMapping(tableType.manySend)
+            let muster = this.core.GetMapping(TableType.ManySend)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
@@ -186,7 +185,7 @@ class manysend extends facade.Control {
     async Send(user, objData) {
         try {
             //写发送表 - todo 20190604 liub 这里提示 Field 'send_uid' doesn't have a default value
-            let manysend = await this.core.GetMapping(tableType.manySend).Create(
+            let manysend = await this.core.GetMapping(TableType.ManySend).Create(
                 objData.total_amount,
                 objData.total_amount, //actual_amount等同于输入参数total_amount
                 objData.total_num,
@@ -238,7 +237,7 @@ class manysend extends facade.Control {
             console.log(retSend);
             // 接收表
             for (var i=0;i<receive_amount.length;i++) {
-                await this.core.GetMapping(tableType.manyReceive).Create(
+                await this.core.GetMapping(TableType.ManyReceive).Create(
                     manysend.ormAttr("id"),
                     receive_amount[i],
                     user.id,

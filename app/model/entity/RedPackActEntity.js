@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let {RedPackAct} = require('../table/redpackact');
-let tableType = require('../../util/tabletype');
+let RedPackAct = facade.models.RedPackAct
 
 //用户微信账号(openid)
 class RedPackActEntity extends BaseEntity
@@ -13,7 +13,7 @@ class RedPackActEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.redpackAct,                     //表类型
+            etype: TableType.RedPackAct,                     //表类型
             model: RedPackAct,               //表映射类
             entity: RedPackActEntity,        //ORM映射类
         };

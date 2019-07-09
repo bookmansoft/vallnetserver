@@ -7,7 +7,7 @@ let {Sequelize, seqconn} = facade.tools;
 
 //建立数据库ORM模型
 let Vip = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
-    'VipDraw',
+    'Vip',
     {
         uid: Sequelize.INTEGER,
         is_expired: Sequelize.INTEGER,

@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
+let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let {UserStock} = require('../table/userstock');
-let tableType = require('../../util/tabletype');
+let UserStock = facade.models.UserStock
 
 //用户微信账号(openid)
 class userStockEntity extends BaseEntity
@@ -13,7 +13,7 @@ class userStockEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: tableType.userStock,                     //表类型
+            etype: TableType.UserStock,                     //表类型
             model: UserStock,               //表映射类
             entity: userStockEntity,        //ORM映射类
         };

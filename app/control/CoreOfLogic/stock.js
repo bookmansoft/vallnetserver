@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let tableType = require('../../util/tabletype');
+let {TableType} = facade.const;
 let tableField = require('../../util/tablefield');
 
 /**
@@ -9,13 +9,13 @@ class stock extends facade.Control
 {
     //众筹列表
     async Stocks(user, params) {
-        let stockList = await this.core.GetMapping(tableType.stock).groupOf().where([['status', '==', 1]]).records(tableField.stock)
+        let stockList = await this.core.GetMapping(TableType.Stock).groupOf().where([['status', '==', 1]]).records(tableField.Stock)
         return {errcode: 'success', data: stockList} 
     }
 
     //众筹详情
     async StockInfo(user, params) {
-        let stockInfo = this.core.GetObject(tableType.stock, params.id);          
+        let stockInfo = this.core.GetObject(TableType.Stock, params.id);          
         if(!!userStock) {
             return {errcode: 'success', data: stockInfo};
         }
@@ -30,7 +30,7 @@ class stock extends facade.Control
         let quantity = params.quantity
         let current_time = parseInt(new Date().getTime() / 1000)
 
-        let userStockItems = this.core.GetMapping(tableType.userStock).groupOf().where([
+        let userStockItems = this.core.GetMapping(TableType.UserStock).groupOf().where([
             ['uid', '==', uid],
             ['cid', '==', cid]
         ]).records();
@@ -47,7 +47,7 @@ class stock extends facade.Control
             pay_at: current_time,
             status: 0
         }
-        await this.core.GetMapping(tableType.userStockLog).Create(userStockLogItem)
+        await this.core.GetMapping(TableType.UserStockLog).Create(userStockLogItem)
         return {errcode: 'success', data: userStockLogItem};
 
     }
@@ -56,27 +56,27 @@ class stock extends facade.Control
     async UserStockLogs(user, params) {
         let uid = user.id
         let cid = params.cid
-        let userStockLogs = await this.core.GetMapping(tableType.userStockLog).groupOf()
+        let userStockLogs = await this.core.GetMapping(TableType.UserStockLog).groupOf()
             .where([
                 ['uid', '==', uid],
                 ['cid', '==', cid]
-            ]).records(tableField.userStockLog)
+            ]).records(tableField.UserStockLog)
         return {errcode: 'success', data: userStockLogs}    
     }
 
     //用户众筹记录
     async UserStocks(user, params) {
         let uid = user.id
-        let userStockActs = await this.core.GetMapping(tableType.userStock).groupOf()
+        let userStockActs = await this.core.GetMapping(TableType.UserStock).groupOf()
             .where([
                 ['uid', '==', uid]
-            ]).records(tableField.userStock)
+            ]).records(tableField.UserStock)
         return {errcode: 'success', data: userStockActs}    
     }
 
     //用户众筹记录详情
     async UserStockInfo(user, params) {
-        let userStock = this.core.GetObject(tableType.userStock, params.id);          
+        let userStock = this.core.GetObject(TableType.UserStock, params.id);          
         if(!!userStock) {
             return {errcode: 'success', data: userStock};
         }
