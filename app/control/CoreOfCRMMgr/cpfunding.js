@@ -1,5 +1,6 @@
 let facade = require('gamecloud')
 let { EntityType, ReturnCode, NotifyType, TableType } = facade.const
+let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
  * 游戏的控制器
@@ -7,57 +8,71 @@ let { EntityType, ReturnCode, NotifyType, TableType } = facade.const
  */
 class cpfunding extends facade.Control {
     /**
-     * 删除记录
+     * 增加数据库记录。此方法被从页面入口的Create方法所调用
+     * 众筹申请写数据库的部分
      * @param {*} user 
      * @param {*} objData 
      */
-    async DeleteRecord(user, objData) {
-        try {
-            this.core.GetMapping(TableType.CpFunding).Delete(objData.id, true);
-            return { code: ReturnCode.Success, data: null };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cpfunding.DeleteRecord方法出错" };
-        }
+    async CreateRecord(user, objData) {
+        await this.core.GetMapping(TableType.CpFunding).Create(
+            objData.cpid,               //CP在本地数据库的编号
+            objData.stock_num,
+            objData.total_amount,
+            objData.stock_amount,
+            objData.stock_rmb,
+            objData.audit_state_id,
+            objData.audit_text,
+            objData.modify_date,
+            objData.cp_name,
+            objData.cp_text,
+            objData.cp_type,
+            objData.cp_url,
+            objData.develop_name,
+            objData.develop_text,
+            user.id,                    //发起者编号
+            objData.cid,                //发起众筹的游戏编码
+        );
+
+        let ret = { code: ReturnCode.Success, data: null, message: "cpfunding.CreateRecord成功" };
+        return ret;
     }
+
     /**
-     * 修改数据库记录
+     * 审核众筹
      * @param {*} user 
      * @param {*} objData 
      */
     async UpdateRecord(user, objData) {
-        try {
-            console.log("46:更新数据",objData.id);
+        if(user.cid == remoteSetup.cid) { //只能超级管理员执行
             let cpfunding = this.core.GetObject(TableType.CpFunding, parseInt(objData.id));
             if (!!cpfunding) {
-                console.log(49);
-                //需要针对各个属性增加为null的判断；如果为null的情况下，则
-                cpfunding.setAttr('cpid', objData.cpid);
-                cpfunding.setAttr('stock_num', objData.stock_num);
-                cpfunding.setAttr('total_amount', objData.total_amount);
-                cpfunding.setAttr('stock_amount', objData.stock_amount);
-                cpfunding.setAttr('stock_rmb', objData.stock_rmb);
-                cpfunding.setAttr('audit_state_id', objData.audit_state_id);
-                cpfunding.setAttr('audit_text', objData.audit_text);
-                cpfunding.setAttr('modify_date', objData.modify_date);
-                cpfunding.setAttr('cp_name', objData.cp_name);
-                cpfunding.setAttr('cp_text', objData.cp_text);
-                cpfunding.setAttr('cp_type', objData.cp_type);
-                cpfunding.setAttr('cp_url', objData.cp_url);
-                cpfunding.setAttr('develop_name', objData.develop_name);
-                cpfunding.setAttr('develop_text', objData.develop_text);
-                cpfunding.setAttr('user_id', objData.user_id);
-                cpfunding.setAttr('cid', objData.cid);
-                cpfunding.setAttr('operator_id', user.id);
-                cpfunding.Save();
-                return { code: ReturnCode.Success };
+                //获取发行众筹的发起者
+                let operator = this.core.GetObject(EntityType.User, cpfunding.getAttr('user_id'));
+                if(!!operator) {
+                    //以发起者身份，向主链广播众筹报文
+                    let ret = await this.core.service.RemoteNode.conn(operator.cid).execute('stock.offer', [
+                        cpfunding.getAttr('cid'),              //CP编码
+                        cpfunding.getAttr('stock_num'),        //发行总量
+                        cpfunding.getAttr('stock_amount'),     //发行单价
+                    ]);
+
+                    if(ret.code == 0) {
+                        //广播成功，更新本地数据库
+                        cpfunding.setAttr('stock_rmb', objData.stock_rmb);
+                        cpfunding.setAttr('audit_state_id', objData.audit_state_id);
+                        cpfunding.setAttr('audit_text', objData.audit_text);
+                        cpfunding.setAttr('modify_date', new Date().getTime() / 1000);
+                        cpfunding.setAttr('operator_id', user.id);
+                    }
+
+                    return { code: ret.code, data: ret.result };
+                }
             }
-            return { code: -2, data: null,message:"找不到记录" };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cp.UpdateRecord方法出错" };
         }
+
+        return { code: -2, data: null,message:"找不到记录" };
     }
+
     /**
      * 此方法暂时给众筹详情页的列表使用
      * @param {*} user 
@@ -81,78 +96,14 @@ class cpfunding extends facade.Control {
     }
 
     /**
-     * 众筹申请访问区块链的部分
-     * @param {*} user 
-     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
-     */
-    async Create(user, paramGold) {
-        try {
-            console.log("cpfunding.Create参数串：");
-            let cid=paramGold.cid;
-            let stock_num=parseInt(paramGold.stock_num);
-            let stock_amount=parseInt(paramGold.stock_amount);
-            //获取operator
-            let operator = this.core.GetObject(EntityType.User, user.id);
-            
-            let paramArray = [cid,stock_num,stock_amount, operator.cid];
-            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.offer', paramArray);
-            return { code: ret.code, data: ret.result };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cpfunding.Create方法出错" };
-        }
-
-    }
-    /**
-     * 增加数据库记录。此方法被从页面入口的Create方法所调用
-     * 众筹申请写数据库的部分
-     * @param {*} user 
-     * @param {*} objData 
-     */
-    async CreateRecord(user, objData) {
-        try {
-           
-            let cpfunding = await this.core.GetMapping(TableType.CpFunding).Create(
-                objData.cpid,
-                objData.stock_num,
-                objData.total_amount,
-                objData.stock_amount,
-                objData.stock_rmb,
-                objData.audit_state_id,
-                objData.audit_text,
-                objData.modify_date,
-                objData.cp_name,
-                objData.cp_text,
-                objData.cp_type,
-                objData.cp_url,
-                objData.develop_name,
-                objData.develop_text,
-                objData.userinfo.id,
-                objData.cid,
-                user.id,
-            );
-            let ret = { code: ReturnCode.Success, data: null, message: "cpfunding.CreateRecord成功" };
-            console.log(ret);
-            return ret;
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cpfunding.CreateRecord方法出错" };
-        }
-
-    }
-
-    /**
      * 查看单个记录
      * @param {*} user 
      * @param {*} objData 
      */
     async Retrieve(user, objData) {
-        console.log(158,objData.id);
         try {
             let cpfunding = this.core.GetObject(TableType.CpFunding, parseInt(objData.id));
             if (!!cpfunding) {
-                // console.log(162,"有数据啊");
-                // console.log(cpfunding.getAttr('cpid'));
                 return {
                     code: ReturnCode.Success,
                     data: {
