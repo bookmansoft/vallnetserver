@@ -288,8 +288,6 @@ class CoreOfResource extends CoreOfBase {
                     //发送k线图的数据，采用JSONP协议，即callback(option);
                     res.jsonp(option);
                 });
-
-
             }
             catch (e) {
                 console.error(e);

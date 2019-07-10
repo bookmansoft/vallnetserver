@@ -73,13 +73,25 @@ facade.boot({
     ], 
 }, core => {
     //单独维护一个到公链的长连接，进行消息监控
-    core.service.monitor.setlongpoll().execute('block.tips', []).then( async (ret) => {
+    core.service.monitor.setlongpoll().execute('block.count', []).then( async (ret) => {
+        if(ret.code == 0) {
+            if(!core.chain) {
+                core.chain = {}
+            }
+            core.chain.height = ret.result;
+        }
+
         await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(500);
 
         //订阅 notify/receive 消息，登记处理句柄
         core.service.monitor.remote.watch(msg => {
             core.notifyEvent('user.receiveNotify', {data:msg});
         }, 'notify/receive').execute('subscribe', 'notify/receive');
+
+        //订阅 block/tips 消息，更新最新块高度
+        core.service.monitor.remote.watch(msg => {
+            core.chain.height = msg.height;
+        }, 'block/tips').execute('subscribe', 'block/tips');
 
         //订阅 cp/register 消息，登记处理句柄
         core.service.monitor.remote.watch(msg => {

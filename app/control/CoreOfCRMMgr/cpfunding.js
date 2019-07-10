@@ -92,7 +92,6 @@ class cpfunding extends facade.Control {
             console.log(error);
             return { code: -1, data: null, message: "cpfunding.StockRecord方法出错" };
         }
-
     }
 
     /**
@@ -137,7 +136,80 @@ class cpfunding extends facade.Control {
             console.log(error);
             return { code: -1, data: null, message: "cpfunding.Retrieve方法出错" };
         }
+    }
 
+    async StockList(user, objData) {
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.offer.list', [
+            [
+                ['page', objData.currentPage],
+                ['size', objData.pageSize],
+            ]
+        ]);
+
+        if(ret.code == 0) {
+            let $data = { list: [] };
+            $data.pagination = { "total": ret.result.count, "pageSize": ret.result.countCur, "current": ret.result.cur };
+            $data.total = ret.result.page;
+            $data.page = ret.result.cur;
+
+            for(let it of ret.result.list) {
+                let stock = {
+                    cpid: it.cid,
+                    cpname: it.name,
+                    hisSum: it.stock.hSum,
+                    sum: it.stock.sum,
+                    hisPrice: it.stock.hPrice,
+                    price: it.stock.price,
+                    audit_state_id: 2,
+                    sell_limit_date: Date.now()/1000 - (this.core.chain.height - it.stock.height)*600 + 3600*24*14,
+                };
+                $data.list.push(stock);
+            }
+    
+            return {code: 0, data:$data}
+        } else {
+            return {code: ret.code, data: null};
+        }
+
+        /** {
+            "cid": "b47f1ab0-a246-11e9-9e6c-493029995e58",
+            "name": "cp010061",
+            "url": "http://localhost:9701/mock",
+            "ip": "",
+            "cls": "SHT",
+            "grate": 15,
+            "current": {
+                "hash": "8db3c4a0baabf3577765f9dccf425dc2ccc2f87d468e94088edcc9ec00f7e0d0",
+                "index": 0,
+                "address": "tb1qwlm83tk3cd6wmcf34x43unewkhp9scu6x9x3l7"
+            },
+            "stock": {
+                "hHeight": 191,
+                "hSum": 0,
+                "hPrice": 0,
+                "hBonus": 0,
+                "hAds": 0,
+                "sum": 10000,
+                "price": 1000000,
+                "height": 191
+            },
+            "height": 191,
+            "status": 0
+        }*/
+    }
+
+    /**
+     * 通过一级市场购买凭证
+     * @param {*} user 
+     * @param {*} objData 
+     */
+    async StockPurchase(user, objData) {
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.purchase', [objData.cid, objData.num]);
+        if(ret.code == 0) {
+            return {code: 0}
+        } else {
+            return {code: ret.code, data: null};
+        }
     }
 
     /**
@@ -147,53 +219,47 @@ class cpfunding extends facade.Control {
      * @param {*} objData 查询及翻页参数，等整体调通以后再细化。
      */
     ListRecord(user, objData) {
-        try {
-            if (objData == null) {
-                objData = {};
-            }
-            let currentPage = objData.currentPage;
-            // console.log(Number.isNaN(parseInt(currentPage)));
-            if (Number.isNaN(parseInt(currentPage))) {
-                currentPage = 1;
-            }
-
-            //构造查询条件
-            let paramArray = [];
-            if (!!objData.cp_text) {
-                paramArray.push(['cp_text', objData.cp_text]);
-            }
-            if (!!objData.audit_state_id) {
-                paramArray.push(['audit_state_id', objData.audit_state_id]);
-            }
-
-            //得到 Mapping 对象
-            let muster = this.core.GetMapping(TableType.CpFunding)
-                .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
-                .where(paramArray)
-                .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, currentPage);
-
-            let $data = { items: {}, list: [], pagination: {} };
-            //扩展分页器对象
-            $data.pagination = { "total": muster.pageNum * 10, "pageSize": 10, "current": muster.pageCur };
-            $data.total = muster.pageNum;
-            $data.page = muster.pageCur;
-
-            let $idx = (muster.pageCur - 1) * muster.pageSize;
-            for (let $value of muster.records(['id', 'cpid', 'stock_num', 'total_amount', 'stock_amount', 'stock_rmb', 'audit_state_id', 'audit_text', 'modify_date', 'cp_name', 'cp_text', 'cp_type', 'cp_url', 'develop_name', 'develop_text', 'user_id', 'cid', 'operator_id'])) {
-                $data.items[$idx] = $value;
-                $value['sell_limit_date'] = $value['modify_date'] + 3600*24*14;
-                $value['rank'] = $idx++;
-            }
-
-            //转化并设置数组属性
-            $data.list = Object.keys($data.items).map(key => $data.items[key]);
-
-            return $data;
-        } catch (error) {
-            console.log(error);
-            return { items: {}, list: [], pagination: {} };
+        if (objData == null) {
+            objData = {};
         }
+        let currentPage = objData.currentPage;
+        if (Number.isNaN(parseInt(currentPage))) {
+            currentPage = 1;
+        }
+
+        //构造查询条件
+        let paramArray = [];
+        if (!!objData.cp_text) {
+            paramArray.push(['cp_text', objData.cp_text]);
+        }
+        if (!!objData.audit_state_id) {
+            paramArray.push(['audit_state_id', objData.audit_state_id]);
+        }
+
+        //得到 Mapping 对象
+        let muster = this.core.GetMapping(TableType.CpFunding)
+            .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
+            .where(paramArray)
+            .orderby('id', 'desc') //根据id字段倒叙排列
+            .paginate(10, currentPage);
+
+        let $data = { items: {}, list: [], pagination: {} };
+        //扩展分页器对象
+        $data.pagination = { "total": muster.pageNum * 10, "pageSize": 10, "current": muster.pageCur };
+        $data.total = muster.pageNum;
+        $data.page = muster.pageCur;
+
+        let $idx = (muster.pageCur - 1) * muster.pageSize;
+        for (let $value of muster.records(['id', 'cpid', 'stock_num', 'total_amount', 'stock_amount', 'stock_rmb', 'audit_state_id', 'audit_text', 'modify_date', 'cp_name', 'cp_text', 'cp_type', 'cp_url', 'develop_name', 'develop_text', 'user_id', 'cid', 'operator_id'])) {
+            $data.items[$idx] = $value;
+            $value['sell_limit_date'] = $value['modify_date'] + 3600*24*14;
+            $value['rank'] = $idx++;
+        }
+
+        //转化并设置数组属性
+        $data.list = Object.keys($data.items).map(key => $data.items[key]);
+
+        return $data;
     }
 
     /**
