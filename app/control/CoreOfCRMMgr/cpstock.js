@@ -7,51 +7,6 @@ let { ReturnCode, NotifyType, TableType } = facade.const
  */
 class cpstock extends facade.Control {
     /**
-     * 删除记录
-     * @param {*} user 
-     * @param {*} objData 
-     */
-    async DeleteRecord(user, objData) {
-        try {
-            this.core.GetMapping(TableType.CpStock).Delete(objData.id, true);
-            return { code: ReturnCode.Success, data: null };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cpstock.DeleteRecord方法出错" };
-        }
-    }
-    /**
-     * 修改数据库记录
-     * @param {*} user 
-     * @param {*} objData 
-     */
-    async UpdateRecord(user, objData) {
-        try {
-            console.log("46:更新数据",objData.id);
-            let cpstock = this.core.GetObject(TableType.CpStock, parseInt(objData.id));
-            if (!!cpstock) {
-                cpstock.setAttr('cid', objData.cid);
-                cpstock.setAttr('cp_name', objData.cp_name);
-                cpstock.setAttr('cp_text', objData.cp_text);
-                cpstock.setAttr('stock_day', objData.stock_day);
-                cpstock.setAttr('stock_open', objData.stock_open);
-                cpstock.setAttr('stock_close', objData.stock_close);
-                cpstock.setAttr('stock_high', objData.stock_high);
-                cpstock.setAttr('stock_low', objData.stock_low);
-                cpstock.setAttr('total_num', objData.total_num);
-                cpstock.setAttr('total_amount', objData.total_amount);
-
-                cpstock.Save();
-                return { code: ReturnCode.Success };
-            }
-            return { code: -2, data: null,message:"找不到记录" };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cp.UpdateRecord方法出错" };
-        }
-    }
-
-    /**
      * 增加数据库记录。此方法被从页面入口的Create方法所调用
      * 众筹申请写数据库的部分
      * @param {*} user 
