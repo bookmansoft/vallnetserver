@@ -54,7 +54,6 @@ class CoreOfResource extends CoreOfBase {
         this.listenCP(app);
         this.listenQrCode(app);
         this.listenEChart(app);
-        this.listenStock(app);
         //#endregion
     }
 
@@ -303,13 +302,6 @@ class CoreOfResource extends CoreOfBase {
         });
     }
 
-    listenStock(app) {
-        //cp_stock自动触发行情计算和入库
-        app.get('/stockJob/:id', this.stockJob.bind(this));
-        //cp_stock_base自动触发证券挂单信息查询和入库
-        app.get('/stockJobBase/:id', this.stockJobBase.bind(this));
-    }
-
     /**
      * 我的道具列表【确权】 /mock/:cp_name/myprops/:address
      */
@@ -361,142 +353,6 @@ class CoreOfResource extends CoreOfBase {
         } catch (e) {
             console.error(e);
             res.json({ code: -100, message: '查询我的道具失败' });
-        }
-    }
-
-    /**
-     * 定时触发证券值记录
-     * @param {*} req 
-     * @param {*} res 
-     */
-    async stockJob(req, res) {
-        console.log("stockJob触发:", req.params.id);
-        try {
-            //0、获取对象及cid
-            let cpstockbase = this.core.GetObject(TableType.CpStockBase, parseInt(req.params.id));
-            if (!!!cpstockbase) {
-                console.log("cpstockbase不存在!", req.params.id);
-                return;
-            }
-            let cid = cpstockbase.getAttr("cid");
-            //1、先获取当前区块位置，再向前推144个（测试为1440个）区块取行情
-            let retBlockCount = await this.service.gamegoldHelper.execute('block.count', []);
-            if (retBlockCount - 1440 < 0) {
-                console.log("无法取得当前区块，放弃执行stockJob定时任务。");
-                return;
-            }
-            let firstBlockCount = retBlockCount - 1440;//144
-            console.log('需要显示数据的区块为从: ', firstBlockCount, ' 到: ', retBlockCount);
-            //2、查询指定区块至今的数据集
-            let paramArray = [
-                7,  //有偿转让凭证交易查询
-                cid,
-                firstBlockCount,
-            ];
-            console.log('stock.record 的参数:', paramArray);
-            let stockRecordList = (await this.service.gamegoldHelper.execute('stock.record', paramArray)).list;
-            console.log(stockRecordList);
-            if (stockRecordList.length > 0) {
-                let stock_open = stockRecordList[0].price;
-                let stock_close = stockRecordList[stockRecordList.length - 1].price;
-                //最高价最低价，先设置为开盘价
-                let stock_high = stock_open;
-                let stock_low = stock_open;
-                let total_amount = 0;
-                let total_num = 0;
-                for (let stockInfo of stockRecordList) {
-                    total_num = total_num + stockInfo.sum;
-                    total_amount = total_amount + stockInfo.sum * stockInfo.price;
-                    console.log('发现股票价格' + stockInfo.price);
-                    if (stockInfo.price > stock_high) {
-                        stock_high = stockInfo.price;
-                    }
-                    if (stockInfo.price < stock_low) {
-                        stock_low = stockInfo.price;
-                    }
-                }
-                //记录股票的开盘、收盘价等数据
-                //..todo
-                let today = new Date();
-                console.log(
-                    cpstockbase.getAttr("cid"),
-                    cpstockbase.getAttr("cp_name"),
-                    cpstockbase.getAttr("cp_text"),
-                    today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(),
-                    stock_open,
-                    stock_close,
-                    stock_high,
-                    stock_low,
-                    total_num,
-                    total_amount,
-                );
-
-                let cpstock = await this.core.GetMapping(TableType.CpStock).Create(
-                    cpstockbase.getAttr("cid"),
-                    cpstockbase.getAttr("cp_name"),
-                    cpstockbase.getAttr("cp_text"),
-                    today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(),
-                    stock_open,
-                    stock_close,
-                    stock_high,
-                    stock_low,
-                    total_num,
-                    total_amount,
-                );
-                console.log("保存cpstock成功");
-            }
-
-        } catch (error) {
-            console.log(270, '定时任务stockJobBase出错');
-        }
-    }
-
-    /**
-     * 定时触发证券挂单情况查询及记录
-     * @param {*} req 
-     * @param {*} res 
-     */
-    async stockJobBase(req, res) {
-        console.log("stockJobBase触发:", req.params.id);
-        try {
-            //0、获取对象及cid
-            let cpstockbase = this.core.GetObject(TableType.CpStockBase, parseInt(req.params.id));
-            if (!!!cpstockbase) {
-                console.log("cpstockbase不存在!", req.params.id);
-                return;
-            }
-            let cid = cpstockbase.getAttr("cid");
-            //1、先获取当前区块位置，再向前推144个（测试环境取最近一天的数据，实际可只需要1个区块）区块取行情
-            let retBlockCount = await this.service.gamegoldHelper.execute('block.count', []);
-            if (retBlockCount - 144 < 0) {
-                console.log("无法取得当前区块，放弃执行stockJobBase定时任务。");
-                return;
-            }
-            let firstBlockCount = retBlockCount - 144;//6或144
-            console.log('需要显示数据的区块为从: ', firstBlockCount, ' 到: ', retBlockCount);
-            //2、查询指定区块至今的数据集
-            let paramArray = [
-                6,  //有偿转让凭证挂单查询
-                cid,
-                firstBlockCount,
-            ];
-            console.log('stock.record 的参数:', paramArray);
-            let stockRecordList = await this.service.gamegoldHelper.execute('stock.record', paramArray);
-            console.log(stockRecordList);
-            if (stockRecordList.count != 0) {
-                //console.log('第一个元素',stockRecordList.list[0]);
-                let sell_stock_amount = stockRecordList.list[0].price;
-                let sell_stock_num = stockRecordList.list[0].sum;
-                cpstockbase.setAttr('sell_stock_amount', sell_stock_amount);
-                cpstockbase.setAttr('sell_stock_num', sell_stock_num);
-                console.log("302 更新到数据库中");
-                cpstockbase.Save();
-                console.log("304 更新完成");
-            }
-
-
-        } catch (error) {
-            console.log(317, '定时任务stockJobBase出错');
         }
     }
 

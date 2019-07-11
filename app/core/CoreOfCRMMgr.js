@@ -94,6 +94,12 @@ class CoreOfCRMMgr extends CoreOfBase
         }).catch(e=>{
             throw e;
         });
+
+        //定期刷新凭证信息
+        this.autoTaskMgr.addCommonMonitor(() => {
+            this.notifyEvent('crm.stock.refresh', {msg:{}});
+            return false;
+        }, 60000);
     }
 
     /**

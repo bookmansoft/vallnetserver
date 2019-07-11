@@ -82,12 +82,20 @@ class cpfunding extends facade.Control {
         try {
             console.log("cpfunding.StockRecord参数串：");
             let paramArray = paramGold.items;
-            if (typeof (paramArray) == "string") {
+            if (typeof paramArray == "string") {
                 paramArray = JSON.parse(paramArray);
             }
             console.log("paramArray:",paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.record', paramArray);
-            return { code: ret.code, data: ret.result };
+            if(!!ret.result) {
+                //添加客户端所需要的字段，以正确渲染表格内容
+                ret.result.pagination = { current: ret.result.cur, pageSize: ret.result.countCur };
+            }
+
+            return { 
+                code: ret.code, 
+                data: ret.result,
+            };
         } catch (error) {
             console.log(error);
             return { code: -1, data: null, message: "cpfunding.StockRecord方法出错" };
@@ -138,6 +146,11 @@ class cpfunding extends facade.Control {
         }
     }
 
+    /**
+     * 查询一级市场待售列表
+     * @param {*} user 
+     * @param {*} objData 
+     */
     async StockList(user, objData) {
         let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.offer.list', [
             [
