@@ -1,5 +1,6 @@
 let facade = require('gamecloud')
 let { ReturnCode, NotifyType, TableType } = facade.const
+let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
  * 游戏的控制器
@@ -13,26 +14,67 @@ class cpstockbase extends facade.Control {
      * @param {*} objData 
      */
     async CreateRecord(user, objData) {
-        try {
-            let cpstockbase = await this.core.GetMapping(TableType.CpStockBase).Create(
-                objData.cpid,
-                objData.cid,
-                objData.cp_name,
-                objData.cp_text,
-                objData.total_num,
-                objData.sell_stock_amount,
-                objData.sell_stock_num,
-                objData.base_amount,
-                user.id,
-            );
-            let ret = { code: ReturnCode.Success, data: null, message: "cpstockbase.CreateRecord成功" };
-            console.log(ret);
-            return ret;
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cpstockbase.CreateRecord方法出错" };
+        await this.core.GetMapping(TableType.CpStockBase).Create(
+            objData.cpid,
+            objData.cid,
+            objData.cp_name,
+            objData.cp_text,
+            objData.total_num,
+            objData.sell_stock_amount,
+            objData.sell_stock_num,
+            objData.base_amount,
+            user.id,
+        );
+        return { code: ReturnCode.Success, data: null, message: "cpstockbase.CreateRecord成功" };
+    }
+
+    async sendStock(user, objData) {
+        let account = user.cid;
+        if(account == remoteSetup.cid) {
+            account = 'game';
         }
 
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.send', [
+            objData.params.cid, objData.params.num, objData.params.address, null, objData.params.srcAddr,
+        ]);
+
+        return {code: ret.code}
+    }
+
+    async MyStock(user, objData) {
+        let account = user.cid;
+        if(account == remoteSetup.cid) {
+            account = 'game';
+        }
+
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.list.wallet', [
+            [
+                ['page', objData.currentPage],
+                ['size', objData.pageSize],
+                ['account', account],
+            ]
+        ]);
+
+        if(ret.code == 0) {
+            let $data = { list: [] };
+            $data.pagination = { "total": ret.result.count, "pageSize": ret.result.countCur, "current": ret.result.cur };
+            $data.total = ret.result.page;
+            $data.page = ret.result.cur;
+            for(let item of ret.result.list) {
+                $data.list.push({
+                    cid: item.cid,
+                    addr: item.addr,
+                    sum: item.sum,
+                    price: item.price,
+                    sell_price: item.stock.price,
+                    sell_sum: item.stock.sum,
+                });
+            }
+
+            return {code: 0, data:$data}
+        } else {
+            return {code: ret.code, data: null};
+        }
     }
 
     /**

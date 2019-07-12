@@ -8,51 +8,22 @@ let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
  */
 class address extends facade.Control {
     /**
-     * 创建收款地址
-     * @param {*} user 
-     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
-     */
-    async Create(user, paramGold) {
-        try {
-            console.log("address.Create参数串：");
-            let paramArray = paramGold.items;
-            if (typeof (paramArray) == "string") {
-                paramArray = JSON.parse(paramArray);
-            }
-            console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('address.create', paramArray);
-            console.log(ret);
-            //return { code: ReturnCode.Success, data: ret };
-            return { code: ret.code, data: ret.result };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "address.Create方法出错" };
-        }
-    }
-
-    /**
      * 获取一个新的收款地址
      * @param {*} user 
      */
     async Receive(user, params) {
-        try {
-            let account;
+        //普通操作员的CID属性就是其钱包账户，如果是超级管理员需要进一步转换为 default 账户
+        let account = user.cid;
+        if(account == remoteSetup.cid) {
             if(!!params.account) {
                 account = params.account;
             } else {
-                //普通操作员的CID属性就是其钱包账户，如果是超级管理员需要进一步转换为 default 账户
-                account = user.cid;
-                if(account == remoteSetup.cid) {
-                    account = 'default';
-                }
+                account = 'default';
             }
-
-            let ret = await this.core.service.RemoteNode.conn(remoteSetup.cid).execute('address.create', [account]);
-            return { code: ret.code, data: ret.result.address };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "address.Receive方法出错" };
         }
+
+        let ret = await this.core.service.RemoteNode.conn(remoteSetup.cid).execute('address.create', [account]);
+        return { code: ret.code, data: ret.result.address };
     }
 
     /**
