@@ -62,7 +62,7 @@ class address extends facade.Control {
             return $data;
         }
         catch (ex) {
-            console.log(error);
+            console.log(ex);
             return { code: -1, data: null, message: "address.Filter方法出错" };
         }
     }

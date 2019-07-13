@@ -28,6 +28,11 @@ class cpstockbase extends facade.Control {
         return { code: ReturnCode.Success, data: null, message: "cpstockbase.CreateRecord成功" };
     }
 
+    /**
+     * 向目标地址赠送凭证
+     * @param {*} user      当前操作员，注意如果是系统管理员，要将账户切换为'game'
+     * @param {*} objData 
+     */
     async sendStock(user, objData) {
         let account = user.cid;
         if(account == remoteSetup.cid) {
@@ -41,6 +46,11 @@ class cpstockbase extends facade.Control {
         return {code: ret.code}
     }
 
+    /**
+     * 列表我的凭证
+     * @param {*} user      当前操作员，注意如果是系统管理员，要将账户切换为'game'
+     * @param {*} objData 
+     */
     async MyStock(user, objData) {
         let account = user.cid;
         if(account == remoteSetup.cid) {
@@ -68,6 +78,78 @@ class cpstockbase extends facade.Control {
                     price: item.price,
                     sell_price: item.stock.price,
                     sell_sum: item.stock.sum,
+                });
+            }
+
+            return {code: 0, data:$data}
+        } else {
+            return {code: ret.code, data: null};
+        }
+    }
+
+    /**
+     * 拍卖凭证
+     * @param {*} user      当前操作员，注意如果是系统管理员，要将账户切换为'game'
+     * @param {*} objData 
+     */
+    async bidStock(user, objData) {
+        let account = user.cid;
+        if(account == remoteSetup.cid) {
+            account = 'game';
+        }
+
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.bid', [
+            objData.params.cid, objData.params.num, objData.params.price, null, objData.params.srcAddr,
+        ]);
+
+        return {code: ret.code}
+    }
+
+    /**
+     * 拍卖凭证
+     * @param {*} user      当前操作员，注意如果是系统管理员，要将账户切换为'game'
+     * @param {*} objData 
+     */
+    async auctionStock(user, objData) {
+        let account = user.cid;
+        if(account == remoteSetup.cid) {
+            account = 'game';
+        }
+
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.auction', [
+            objData.params.cid, objData.params.srcAddr, objData.params.num, objData.params.price,
+        ]);
+
+        return {code: ret.code}
+    }
+
+    /**
+     * 查询转让凭证列表
+     * @param {*} user      当前操作员，注意如果是系统管理员，要将账户切换为'game'
+     * @param {*} objData 
+     */
+    async BidList(user, objData) {
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.bid.list', [
+            [
+                ['page', objData.currentPage],
+                ['size', objData.pageSize],
+            ]
+        ]);
+
+        if(ret.code == 0) {
+            let $data = { list: [] };
+            $data.pagination = { "total": ret.result.count, "pageSize": ret.result.countCur, "current": ret.result.cur };
+            $data.total = ret.result.page;
+            $data.page = ret.result.cur;
+            for(let item of ret.result.list) {
+                $data.list.push({
+                    cid: item.cid,
+                    addr: item.addr,
+                    sum: item.sum,
+                    price: item.price,
+                    sell_price: item.stock.price,
+                    sell_sum: item.stock.sum,
+                    period: item.stock.period,
                 });
             }
 
@@ -110,54 +192,6 @@ class cpstockbase extends facade.Control {
         } catch (error) {
             console.log(error);
             return { code: -1, data: null, message: "cpstockbase.Retrieve方法出错" };
-        }
-
-    }
-
-    /**
-     * 从数据库中获取列表
-     * 客户端直接调用此方法
-     * @param {*} user 
-     * @param {*} objData 查询及翻页参数，等整体调通以后再细化。
-     */
-    ListRecord(user, objData) {
-        try {
-            objData = objData || {};
-
-            let paramArray = [];
-            if (!!objData.cp_text) {
-                paramArray.push(['cp_text', objData.cp_text]);
-            }
-            if (!!objData.audit_state_id) {
-                paramArray.push(['audit_state_id', objData.audit_state_id]);
-            }
-
-            let muster = this.core.GetMapping(TableType.CpStockBase)
-                .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
-                .where(paramArray)
-                .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, objData.currentPage || 1);
-
-            let $data = { items: {}, list: [], pagination: {} };
-
-            //扩展分页器对象, 这是为了给客户端做适配 todo: 建议移到客户端去做
-            $data.pagination = { "total": muster.pageNum * 10, "pageSize": 10, "current": muster.pageCur };
-            $data.total = muster.pageNum;
-            $data.page = muster.pageCur;
-
-            let $idx = (muster.pageCur - 1) * muster.pageSize;
-            for (let $value of muster.records(['id', 'cpid', 'cp_name', 'cp_text', 'total_num', 'sell_stock_amount', 'sell_stock_num', 'base_amount', 'operator_id'])) {
-                $data.items[$idx] = $value;
-                $value['rank'] = $idx++;
-            }
-
-            //转化并设置数组属性
-            $data.list = Object.keys($data.items).map(key => $data.items[key]);
-
-            return $data;
-        } catch (error) {
-            console.log(error);
-            return { items: {}, list: [], pagination: {} };
         }
     }
 }
