@@ -2,6 +2,7 @@ let facade = require('gamecloud')
 let { ReturnCode, NotifyType, TableType } = facade.const
 let fetch = require("node-fetch");
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
+let uuid = require('uuid');
 
 /**
  * 游戏的控制器
@@ -170,7 +171,24 @@ class cp extends facade.Control {
             console.log(error);
             return { code: -1, data: null, message: "cp.ById方法出错" };
         }
+    }
 
+    /**
+     * 生成订单
+     * @param {*} user      当前操作员，注意如果是系统管理员，要将账户切换为'default'
+     * @param {*} objData 
+     */
+    async payOrder(user, objData) {
+        let account = user.cid;
+        if(account == remoteSetup.cid) {
+            account = 'default';
+        }
+
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('order.pay', [
+            objData.params.cid, user.domainId, uuid.v1(), objData.params.amount, account,
+        ]);
+
+        return {code: ret.code}
     }
 
     /**
@@ -269,7 +287,7 @@ class cp extends facade.Control {
 
         //构造查询条件
         let paramArray = [];
-        if(remoteSetup.cid == user.cid) {
+        if(user.cid != remoteSetup.cid) {
             //普通操作员只能查看自己的游戏，超级管理员则可以查看所有游戏
             paramArray.push(['operator_id', user.id]);
         }
