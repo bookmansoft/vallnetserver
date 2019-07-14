@@ -18,9 +18,9 @@ let CpStock = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.por
         total_amount: Sequelize.INTEGER,
     },
     {
-        'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段
+        'timestamps': false,        // 是否需要增加createdAt、updatedAt、deletedAt字段
         'tableName': 'cp_stock',    // 实际使用的表名
-        'paranoid': false       // true表示删除数据时不会进行物理删除，而是设置deletedAt为当前时间
+        'paranoid': false           // true表示删除数据时不会进行物理删除，而是设置deletedAt为当前时间
     }
 );
 exports.CpStock = CpStock;

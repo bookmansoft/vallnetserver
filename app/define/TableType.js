@@ -32,7 +32,6 @@ const TableType ={
     'Prize': 208,
     'CpFunding': 209,
     'CpStock': 210,
-    'CpStockBase': 211,
     'StockBulletin': 302,
     'StockBase': 303,
 };

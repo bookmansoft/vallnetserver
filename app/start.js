@@ -45,7 +45,8 @@ facade.boot({
     },
     //设置静态资源映射
     static: [
-        ['/image', './web/image']
+        ['/image', './web/image'],
+        ['/echart', './web/echart'],
     ], 
 });
 
@@ -65,7 +66,6 @@ facade.boot({
         TableType.Prize,
         TableType.CpFunding,
         TableType.CpStock,
-        TableType.CpStockBase,         
     ],
     //设置静态资源映射
     static: [
@@ -73,11 +73,9 @@ facade.boot({
     ], 
 }, core => {
     //单独维护一个到公链的长连接，进行消息监控
+    core.chain = {height: 0};
     core.service.monitor.setlongpoll().execute('block.count', []).then( async (ret) => {
         if(ret.code == 0) {
-            if(!core.chain) {
-                core.chain = {}
-            }
             core.chain.height = ret.result;
         }
 

@@ -7,36 +7,6 @@ let { ReturnCode, NotifyType, TableType } = facade.const
  */
 class cpstock extends facade.Control {
     /**
-     * 增加数据库记录。此方法被从页面入口的Create方法所调用
-     * 众筹申请写数据库的部分
-     * @param {*} user 
-     * @param {*} objData 
-     */
-    async CreateRecord(user, objData) {
-        try {
-            let cpstock = await this.core.GetMapping(TableType.CpStock).Create(
-                objData.cid,
-                objData.cp_name,
-                objData.cp_text,
-                objData.stock_day,
-                objData.stock_open,
-                objData.stock_close,
-                objData.stock_high,
-                objData.stock_low,
-                objData.total_num,
-                objData.total_amount,
-            );
-            let ret = { code: ReturnCode.Success, data: null, message: "cpstock.CreateRecord成功" };
-            console.log(ret);
-            return ret;
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cpstock.CreateRecord方法出错" };
-        }
-
-    }
-
-    /**
      * 查看单个记录
      * @param {*} user 
      * @param {*} objData 

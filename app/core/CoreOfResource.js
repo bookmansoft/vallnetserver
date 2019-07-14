@@ -5,7 +5,6 @@ let qr = require('qr-image');
 let fetch = require('node-fetch');
 let mysql = require('mysql');
 let facade = require('gamecloud');
-let {TableType} = facade.const;
 let CoreOfBase = facade.CoreOfBase;
 let { stringify } = require('../util/stringUtil');
 
@@ -108,87 +107,21 @@ class CoreOfResource extends CoreOfBase {
      * @param {*} app 
      */
     listenEChart(app) {
-        //---------------------------------------------------------------
-        //K线图静态资源
-        app.get('/echart/:filename', (req, res) => {
-            var options = {
-                root: __dirname + '../../../web/echart/',
-                headers: {
-                    'x-timestamp': Date.now(),
-                    'x-sent': true
-                }
-            };
-            //发送图片
-            res.sendFile(req.params.filename, options, function (err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    // console.log('Sent OK');
-                }
-            });
-
-        });
-        //子目录
-        app.get('/echart/:group/:filename', (req, res) => {
-            var options = {
-                root: __dirname + '../../../web/echart/' + req.params.group + '/',
-                headers: {
-                    'x-timestamp': Date.now(),
-                    'x-sent': true
-                }
-            };
-            //发送图片
-            res.sendFile(req.params.filename, options, function (err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    // console.log('Sent OK');
-                }
-            });
-
-        });
-        //孙目录
-        app.get('/echart/:group/:group2/:filename', (req, res) => {
-            var options = {
-                root: __dirname + '../../../web/echart/' + req.params.group + '/' + req.params.group2 + '/',
-                headers: {
-                    'x-timestamp': Date.now(),
-                    'x-sent': true
-                }
-            };
-            //发送图片
-            res.sendFile(req.params.filename, options, function (err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    // console.log('Sent OK');
-                }
-            });
-
-        });
-        //曾孙目录
-        app.get('/echart/:group/:group2/:group3/:filename', (req, res) => {
-            var options = {
-                root: __dirname + '../../../web/echart/' + req.params.group + '/' + req.params.group2 + '/' + req.params.group3 + '/',
-                headers: {
-                    'x-timestamp': Date.now(),
-                    'x-sent': true
-                }
-            };
-            //发送图片
-            res.sendFile(req.params.filename, options, function (err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    // console.log('Sent OK');
-                }
-            });
-        });
+        // cp_stock = {
+        //     `id`             int(11),        'cp记录流水号'
+        //     `cid`            varchar(255)    'cp编码',
+        //     `stock_day`      varchar(10)     '发生交易的年月日',
+        //     `stock_open`     int(11)         '开盘价',
+        //     `stock_close`    int(11)         '收盘价',
+        //     `stock_high`     int(11)         '最高价',
+        //     `stock_low`      int(11)         '最低价',
+        //     `total_num`      bigint(20)      '总成交数量（凭证数量）',
+        //     `total_amount`   bigint(20)      '总成交金额（游戏金）',
+        // }
 
         app.get('/chart/kline', (req, res) => {
             let connection = null;
             try {
-                console.log("302", req.query.cid);
                 let dtData = new Array();
                 let stockData = new Array();
                 connection = mysql.createConnection({
@@ -198,17 +131,13 @@ class CoreOfResource extends CoreOfBase {
                     port: this.options.mysql.port,
                     database: this.options.mysql.db,
                 });
-                console.log(311);
                 connection.connect();
-                console.log("conn ok!");
-                var select = 'SELECT * FROM cp_stock where cid=? order by id asc';//暂不考虑最多多少条，全部输出有数据
-                //查 query
-                connection.query(select, [req.query.cid], function (err, result) {
+                connection.query('SELECT * FROM cp_stock where cid=? order by id asc', [req.query.cid], function (err, result) {
                     if (err) {
                         console.log('[SELECT ERROR] - ', err.message);
                         return;
                     }
-                    console.log(result);
+
                     //把上述结构设置到目标数据结构
                     for (let i = 0; i < result.length; i++) {
                         result[i] = JSON.parse(JSON.stringify(result[i]));
@@ -220,9 +149,10 @@ class CoreOfResource extends CoreOfBase {
                             result[i].stock_high,
                         ];
                     }
+
                     let option = {
                         title: {
-                            text: '众筹凭证指数(游戏金本位)'
+                            text: '众筹凭证指数'
                         },
                         tooltip: {
                             trigger: 'axis',
@@ -234,7 +164,7 @@ class CoreOfResource extends CoreOfBase {
                             }
                         },
                         legend: {
-                            data: []//'众筹凭证指数(游戏金本位)'
+                            data: []
                         },
                         toolbox: {
                             show: true,
@@ -260,9 +190,6 @@ class CoreOfResource extends CoreOfBase {
                                 axisTick: { onGap: false },
                                 splitLine: { show: false },
                                 data: dtData,
-                                // data: [
-                                //     '2019-05-07', '2019-05-07'
-                                // ]
                             }
                         ],
                         yAxis: [
@@ -277,14 +204,9 @@ class CoreOfResource extends CoreOfBase {
                                 name: '众筹凭证指数',
                                 type: 'k',
                                 data: stockData,
-                                // data: [
-                                //     [80,100,70,110],
-                                //     [80,100,70,110],
-                                // ],
                             }
                         ]
                     };
-                    //发送k线图的数据，采用JSONP协议，即callback(option);
                     res.jsonp(option);
                 });
             }
@@ -294,8 +216,9 @@ class CoreOfResource extends CoreOfBase {
             }
             finally {
                 try {
-                    //关闭连接
-                    connection.end();
+                    if(!!connection) {
+                        connection.end();
+                    }
                 } catch (ex1) {
                 }
             }
