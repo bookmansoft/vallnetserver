@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
+let {IndexType, TableType} = facade.const;
 let BaseEntity = facade.BaseEntity
 let Cp = facade.models.Cp
 
@@ -16,6 +16,20 @@ class CpEntity extends BaseEntity
             model: Cp,                    //表映射类
             entity: CpEntity,             //ORM映射类
         };
+    }
+
+    /**
+     * 索引值，用于配合Mapping类的索引/反向索引。
+     * 
+     * @note 集成Ranking接口时，也必须拥有此函数
+     */
+    IndexOf(type){
+        switch(type){
+            case IndexType.Foreign:
+                return this.orm.cp_id;
+            default:
+                return this.orm.id;
+        }
     }
 
     /**

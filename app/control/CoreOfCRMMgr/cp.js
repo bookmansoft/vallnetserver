@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType, TableType } = facade.const
+let { IndexType, ReturnCode, NotifyType, TableType } = facade.const
 let fetch = require("node-fetch");
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 let uuid = require('uuid');
@@ -8,20 +8,6 @@ let uuid = require('uuid');
  * 游戏的控制器
  */
 class cp extends facade.Control {
-    /**
-     * 删除记录
-     * @param {*} user 
-     * @param {*} objData 
-     */
-    DeleteRecord(user, objData) {
-        try {
-            this.core.GetMapping(TableType.Cp).Delete(objData.id, true);
-            return { code: ReturnCode.Success, data: null };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cp.DeleteRecord方法出错" };
-        }
-    }
     /**
      * 修改数据库记录
      * @param {*} user 
@@ -218,41 +204,41 @@ class cp extends facade.Control {
      * @param {*} user 
      * @param {*} objData 
      */
-    Retrieve(user, objData) {
-        try {
-            let cp = this.core.GetObject(TableType.Cp, parseInt(objData.id));
-            if (!!cp) {
-                return {
-                    code: ReturnCode.Success,
-                    data: {
-                        id: parseInt(objData.id),
-                        cp_id: cp.getAttr('cp_id'),
-                        cp_name: cp.getAttr('cp_name'),
-                        cp_text: cp.getAttr('cp_text'),
-                        cp_url: cp.getAttr('cp_url'),
-                        wallet_addr: cp.getAttr('wallet_addr'),
-                        cp_type: cp.getAttr('cp_type'),
-                        develop_name: cp.getAttr('develop_name'),
-                        cp_desc: cp.getAttr('cp_desc'),
-                        cp_version: cp.getAttr('cp_version'),
-                        picture_url: cp.getAttr('picture_url'),
-                        cp_state: cp.getAttr('cp_state'),
-                        publish_time: cp.getAttr('publish_time'),
-                        update_time: cp.getAttr('update_time'),
-                        update_content: cp.getAttr('update_content'),
-                        invite_share: cp.getAttr('invite_share'),
-                        operator_id: cp.getAttr('operator_id'),
-                    },
-                };
+    async Retrieve(user, objData) {
+        let cp = this.core.GetObject(TableType.Cp, objData.id, IndexType.Foreign);
+        if (!!cp) {
+            return {
+                code: ReturnCode.Success,
+                data: {
+                    id: parseInt(objData.id),
+                    cp_id: cp.getAttr('cp_id'),
+                    cp_name: cp.getAttr('cp_name'),
+                    cp_text: cp.getAttr('cp_text'),
+                    cp_url: cp.getAttr('cp_url'),
+                    wallet_addr: cp.getAttr('wallet_addr'),
+                    cp_type: cp.getAttr('cp_type'),
+                    develop_name: cp.getAttr('develop_name'),
+                    cp_desc: cp.getAttr('cp_desc'),
+                    cp_version: cp.getAttr('cp_version'),
+                    picture_url: cp.getAttr('picture_url'),
+                    cp_state: cp.getAttr('cp_state'),
+                    publish_time: cp.getAttr('publish_time'),
+                    update_time: cp.getAttr('update_time'),
+                    update_content: cp.getAttr('update_content'),
+                    invite_share: cp.getAttr('invite_share'),
+                    operator_id: cp.getAttr('operator_id'),
+                },
+            };
+        } else {
+            //到主链上查询
+            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.byId', objData.id);
+            if(ret.code == 0) {
+                await this.CreateRecord(user, ret.result);
+                return await this.Retrieve(user, objData);
             }
-            else {
-                return { code: -2, data: null, message: "该CP不存在" };
-            }
-        } catch (error) {
-            console.log(error);
-            return { code: -1, data: null, message: "cp.Retrieve方法出错" };
-        }
 
+            return { code: -2, data: null, message: "指定CP不存在" };
+        }
     }
 
     /**
@@ -267,7 +253,6 @@ class cp extends facade.Control {
             if (typeof (paramArray) == "string") {
                 paramArray = JSON.parse(paramArray);
             }
-            console.log(paramArray);
             let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.list', paramArray);
             return { code: ret.code, data: ret.result };
         } catch (error) {
