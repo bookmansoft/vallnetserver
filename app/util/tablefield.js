@@ -129,19 +129,6 @@ let Order = [
     'update_time',
 ]
 
-let Vip = [ 
-    'uid',
-    'is_expired',
-    'vip_level',
-    'vip_start_time',
-    'vip_end_time',
-    'vip_last_get_time',
-    'vip_last_get_count',
-    'vip_usable_count',
-    'create_at',
-    'update_at',
-]
-
 let VipDraw = [ 
     'uid',
     'draw_count',
@@ -281,6 +268,6 @@ let UserStockLog = [
 exports = module.exports = tableField = {
     BlockGame, BlockGameCate, BlockGameProp, BlockGameProvider,
     UserWallet, RedPack, RedPackAct,
-    CpUser, CpProp, CpOrder, UserGame, UserProp, Order, VipDraw, Vip, BlockNotify,
+    CpUser, CpProp, CpOrder, UserGame, UserProp, Order, VipDraw, BlockNotify,
     UserRedPack, UserRedPackAct, BlockGameComment, MobileVerify, Stock, UserStock, UserStockLog
 }

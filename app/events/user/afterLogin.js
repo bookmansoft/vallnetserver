@@ -47,7 +47,7 @@ function handle(data){
         }
     }
 
-    try{
+    try {
         data.user.baseMgr.info.SetStatus(UserStatus.online, false);
 
         //刷新资源、体力值
@@ -55,8 +55,7 @@ function handle(data){
         data.user.baseMgr.item.AutoAddAP();//	刷新体力
 
         data.user.notify({type: NotifyType.actions, info: data.user.getActionMgr().getInfo()});
-    }
-    catch(e){
+    } catch(e){
         console.error(e);
     }
 }

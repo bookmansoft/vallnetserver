@@ -76,7 +76,12 @@ class order extends facade.Control
         }
     }
 
-    async OrderPayResutl(user, params) {
+    /**
+     * 收到支付完成请求
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async OrderPayResult(user, params) {
         let uid = user.id
         let tradeId = params.tradeId
         let status = params.status
@@ -87,12 +92,32 @@ class order extends facade.Control
             let current_time = parseInt(new Date().getTime() / 1000)
             order.setAttr('pay_status', status)
             order.setAttr('update_time', current_time)
-            order.orm.save()
             if(status==1) { //支付成功 
                 if (order.orm.product_id < 10) {
-                    let vip_level =  order.orm.product_id
-                    uid = order.orm.uid
-                    await this.core.service.viphelp.recharge(uid, vip_level)
+                    let vip_level =  order.orm.product_id;
+
+                    // `vip_level` INT(4) 'VIP等级',
+                    // `vip_start_time` INT(8) 'VIP开始时间',
+                    // `vip_end_time` INT(8) 'VIP结束时间',
+                    // `vip_last_get_time` INT(8) 'VIP获取福利时间',
+                    // `is_expired` INT(1) '是否过期',
+                    // `vip_last_get_count` INT(8) 'VIP获取数量',
+                    // `vip_usable_count` INT(8) 'VIP可用游戏金',
+                    let current_time = parseInt(new Date().getTime() / 1000)
+                    let month_time =  3600 * 24 * 30;
+            
+                    if(user.baseMgr.info.getAttr('is_expired') == 1) {   //过期，重新开卡
+                        user.baseMgr.info.setAttr('vip_start_time', current_time);
+                        user.baseMgr.info.setAttr('vip_end_time', current_time + month_time);
+                        user.baseMgr.info.setAttr('vip_last_get_time', current_time);
+                        user.baseMgr.info.setAttr('vip_last_get_count', 0);
+                        user.baseMgr.info.setAttr('vip_level', vip_level);
+                        user.baseMgr.info.setAttr('is_expired', 0);
+                    } else if(user.baseMgr.info.getAttr('vip_level') == vip_level) {     //续费
+                        user.baseMgr.info.setAttr('vip_end_time', user.baseMgr.info.getAttr('vip_end_time' + month_time));
+                    } else if(user.baseMgr.info.getAttr('vip_level') < vip_level) {      //升级
+                        user.baseMgr.info.setAttr('vip_level', vip_level);
+                    }
                 } else if (!!order.orm.attach) {
                     let cid = order.orm.attach;
                     let quantity = order.orm.quantity;

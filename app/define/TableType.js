@@ -12,7 +12,6 @@ const TableType ={
     'UserProp': 114,
     'Order': 115,
     'VipDraw': 116,
-    'Vip': 117,
     'BlockNotify': 118,
     'RedPack': 119,
     'RedPackAct': 120,

@@ -51,6 +51,43 @@ class info extends baseMgr
      * 返回客户端需要展示的数据
      */
     getData() {
+        if(this.getAttr('is_expired') == 0) {
+            let vip_usable_count = this.getAttr('vip_usable_count');
+
+            let time_get_count = 0;
+            switch(this.getAttr('vip_level')) {
+                case 1:
+                    time_get_count = 10;
+                    break;
+                case 2:
+                    time_get_count = 110;
+                    break;
+                case 3:
+                    time_get_count = 330;
+                    break;
+            }
+
+            if(time_get_count > 0) {
+                let current_time = parseInt(new Date().getTime() / 1000);
+                let delta_time = 0;
+                if(current_time > this.getAttr('vip_end_time')) {
+                    delta_time = this.getAttr('vip_end_time') - this.getAttr('vip_last_get_time');
+                    //设置过期
+                    this.setAttr('is_expired', 1);
+                } else {
+                    delta_time = current_time - userVip.orm.vip_last_get_time;
+                }
+
+                if(delta_time > 0) {
+                    let vip_last_get_count = delta_time * time_get_count;
+                    vip_usable_count =  userVip.orm.vip_usable_count + vip_last_get_count;
+                    this.setAttr('vip_last_get_time', current_time);
+                    this.setAttr('vip_last_get_count', vip_last_get_count);
+                    this.setAttr('vip_usable_count', vip_usable_count);
+                }
+            }
+        }
+
         return JSON.stringify(this.v);
     }
 
@@ -189,21 +226,6 @@ class info extends baseMgr
     }
     set address(val){
         this.SetRecord(RecordType.address,val);
-    }
-
-    /**
-     * 是否机器人
-     * @returns {boolean}
-     */
-    getRobot(){
-        return (this.v.robot == null) ? false : this.v.robot;
-    }
-    /**
-     * 设置为机器人
-     */
-    setRobot(){
-        this.v.robot = true;
-        this.dirty = true;
     }
 
     //	设置头像

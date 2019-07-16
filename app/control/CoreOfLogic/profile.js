@@ -8,8 +8,13 @@ let tableField = require('../../util/tablefield');
  */
 class profile extends facade.Control
 {
-    //用户信息
+    /**
+     * 用户信息
+     * @param {*} user 
+     * @param {*} params 
+     */
     async Info(user, params)  {
+        //todo 这里对主网的访问是不是太频繁了？
         let ret = await this.core.service.gamegoldHelper.execute('prop.list', [1, user.id]);
         if(!!ret) {
             user.baseMgr.info.setAttr('current_prop_count', ret.result.count);
@@ -63,36 +68,46 @@ class profile extends facade.Control
         return {errcode: 'success', errmsg: 'userprop:ok', props: ret.result.list};
     }
     
-    //用户信息
-    async Mine(user, params)  {
-        let current_prop_count = 0;
-        let ret = await this.core.service.gamegoldHelper.execute('prop.list', [1, user.id])
-        if(!!ret) {
-            current_prop_count = ret.result.count;
-            user.baseMgr.info.setAttr('current_prop_count', current_prop_count);
-        }
-        
-        let prop_count = user.baseMgr.info.getAttr('prop_count');
 
-        let vip = await this.core.service.viphelp.getVip(user.id)
 
-        return {errcode: 'success', mine: {
-            vip: vip,
-            current_prop_count: current_prop_count,
-            prop_count: prop_count,
-        }};
-    };
 
-    //提取游戏币
+    /**
+     * 提取游戏币
+     * @param {*} user 
+     * @param {*} params 
+     */
     async VipDraw(user, params)  {
         let draw_count = params.draw_count;
-        let drawResult = await this.core.service.viphelp.vipDraw(user.id, draw_count, user.baseMgr.info.getAttr('block_addr'));
-        if(drawResult.result == false) {
-            return {errcode: 'fail', errmsg: drawResult.errmsg};
-        } else {
-            return {errcode: 'success', errmsg: drawResult.errmsg, ret: drawResult.drawItem};
+        let vip_usable_count = user.baseMgr.info.getAttr('vip_usable_count');
+        if( draw_count < 10 * 100000) {
+            return {result: false, errmsg: 'draw is not enouth'};
         }
-}
+        if(draw_count > vip_usable_count) {
+            return {result: false, errmsg: 'draw beyond'};
+        }
+
+        let ret = await this.core.service.gamegoldHelper.execute('tx.send', [
+            user.baseMgr.info.getAttr('block_addr'),
+            draw_count,
+        ]);   
+
+        if(!ret) {
+            return {errcode: 'fail', errmsg: 'txsend fail'};
+        } else {
+            let remainder = vip_usable_count - draw_count;
+            let current_time = parseInt(new Date().getTime() / 1000);
+            let drawItem = {
+                uid: user.uid,
+                draw_count: draw_count,
+                remainder: remainder,
+                draw_at: current_time,
+            }
+            this.core.GetMapping(TableType.VipDraw).Create(drawItem);
+            user.baseMgr.info.setAttr('vip_usable_count', remainder);
+
+            return {errcode: 'success', errmsg: 'vipdraw:ok', ret: drawItem};
+        }
+    }
 
     /**
      * 提币记录
