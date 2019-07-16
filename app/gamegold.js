@@ -27,6 +27,7 @@ var node = new gamegold.fullnode({
   coinCache: 30000000,
   logConsole: true,
   workers: true,
+  //workerFile: '/gamegold-worker.js', //会覆盖 process.env.GAMEGOLD_WORKER_FILE，视情况运用
   logger: logger,
   persistent: true,
   logLevel: 'debug',
@@ -56,7 +57,7 @@ node.mempool.on('tx', addItem);
    * 2、提供基于WS的代理服务，负责 websocket 到 tcpsocket 的桥接
    */
 
-  //region 启动全节点程序
+  //#region 启动全节点程序
   await node.ensure();
 
   //测试钱包数据库是否已经建立
@@ -101,12 +102,23 @@ node.mempool.on('tx', addItem);
 
       //衍生键用的盐, 实际运行时由用户实时输入，而非采用配置表传入
       wdb.setpassphrase('bookmansoft');
-    }
-    else {
+    } else {
       //当前已经建立了钱包数据库，可以做一些进一步的判断，例如钱包是否已备份等
     }
-  }
-  else {
+
+    //2019.03.12 V1.5.5 新增功能：订阅钱包事件
+    wdb.on('prop/receive', msg => {
+      console.log('prop/receive:', msg);
+    });
+
+    wdb.on('balance.account.client', msg => {
+      console.log('balance.account.client', msg);
+    });
+
+    wdb.on('balance.client', msg => {
+      console.log('balance.client', msg);
+    });
+  } else {
     //当前节点不具备钱包插件
   }
 
@@ -114,16 +126,9 @@ node.mempool.on('tx', addItem);
   await node.connect();
   node.startSync();
 
-  //开启挖矿
-  await node.rpc.execute({method:'miner.set',params:[true]});
-  // endregion
+  //开启或关闭挖矿
+  await node.rpc.execute({method:'miner.set.admin',params:[false]});
 
-  //#region 建立代理服务
-  gamegold.startproxy({
-    node: node, 
-    pow: process.argv.indexOf('--pow') !== -1,
-    ports: [7333, 17333, 17444, 27333, 27901],
-  });
   //#endregion
 })().catch(err =>{
   console.error(err.stack);
