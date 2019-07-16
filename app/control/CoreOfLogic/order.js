@@ -60,12 +60,10 @@ class order extends facade.Control
             update_time: 0,
         };
         await this.core.GetMapping(TableType.Order).Create(orderItem);
-        //return {errcode: 'success', errmsg: 'order:ok', tradeId: tradeId};
         return {errcode: 'success', errmsg: 'order:ok', tradeId: tradeId, order:orderItem};
     }
 
     async OrderStatus(user, params) {
-        let uid = user.id
         let tradeId = params.tradeId
         let userOrders = this.core.GetMapping(TableType.Order).groupOf().where([['order_sn', '==', tradeId]]).records();
         if(userOrders.length >0 ) {

@@ -31,13 +31,11 @@ class wallet extends facade.Control
     async TxSend(user, params) {
         let addr = params.addr;
         let amount = params.amount;
-        let uid = user.id;
         let ret = await this.core.service.gamegoldHelper.execute('tx.send', [
             addr,
             amount,
-            uid
+            user.openid,
         ]); 
-        console.log(ret.result);
         return {errcode: 'success', errmsg: 'tx.send:ok', ret: ret.result}; 
     }
 
@@ -48,15 +46,7 @@ class wallet extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
      async BalanceAll(user, params) {
-        let uid = user.id;
-        let ret = await this.core.service.gamegoldHelper.execute('balance.all', [
-            uid //openid
-        ]);    
-        // assert(ret.result.confirmed);
-        console.log(ret);
-        //特殊处理，原因不明
-        // let result=(!!ret.result) ? result=ret.result : ret;
-        console.log("wallet.js 68:",ret.result);
+        let ret = await this.core.service.gamegoldHelper.execute('balance.all', [user.openid]);    
         return {errcode: 'success', errmsg: 'balance.all:ok', balance: ret.result}; 
     }
 
@@ -67,14 +57,8 @@ class wallet extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async TxLogs(user, params) {                      
-        let uid = user.id;
-        //let number = 10000;                          
-        let ret = await this.core.service.gamegoldHelper.execute('tx.list', [
-            uid, 
-            //number
-        ]);    
+        let ret = await this.core.service.gamegoldHelper.execute('tx.list', [use.openid,]);    
         assert(ret.result[0].account);
-        //console.log(ret.result);
         return {errcode: 'success', errmsg: 'tx.list:ok', list: ret.result};           
     }
 

@@ -47,15 +47,11 @@ class profile extends facade.Control
 
     //我的道具
     async UserProp(user, params)  {
-        let uid = user.id;
         let page = params.page;
-        let ret = await remote.execute('prop.list', [page, uid]);
+        let ret = await remote.execute('prop.list', [page, user.openid]);
         user.baseMgr.info.setAttr('prop_count', ret.result.count);
         return {errcode: 'success', errmsg: 'userprop:ok', props: ret.result.list};
     }
-    
-
-
 
     /**
      * 提取游戏币

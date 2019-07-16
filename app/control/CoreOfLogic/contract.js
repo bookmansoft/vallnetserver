@@ -23,9 +23,8 @@ class contract extends facade.Control
         let num = params.num;
         let btc = params.btc;
         let addr = params.addr;
-        let uid = user.id;
         let ret = await this.core.service.gamegoldHelper.execute('contract.create', [
-            ntype, num, btc, addr, uid
+            ntype, num, btc, addr, user.openid
         ]);
         return {errcode: 'success', errmsg: 'contract.create:ok', ret: ret.result};
     }
@@ -33,9 +32,8 @@ class contract extends facade.Control
     //签署交易对
     async ContractPromise(user, params) {
         let txid = params.txid;
-        let uid = user.id;
         let ret = await this.core.service.gamegoldHelper.execute('contract.promise', [
-            txid, uid
+            txid, user.openid
         ]);
         return {errcode: 'success', errmsg: 'contract.promise', ret: ret.result};
     }

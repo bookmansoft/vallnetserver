@@ -227,14 +227,8 @@ class manysend extends facade.Control {
             let retSend = await this.core.service.gamegoldHelper.execute('tx.send', [
                 ret.result.data.addr,
                 objData.total_amount,
-                String(user.id), //转成字符串格式
+                user.openid,
             ]); 
-            console.log([
-                ret.result.data.addr,
-                objData.total_amount,
-                String(user.id)
-            ]);
-            console.log(retSend);
             // 接收表
             for (var i=0;i<receive_amount.length;i++) {
                 await this.core.GetMapping(TableType.ManyReceive).Create(

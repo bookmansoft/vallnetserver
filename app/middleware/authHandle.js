@@ -89,7 +89,7 @@ async function handle(sofar) {
                 if(!usr.baseMgr.info.GetRecord('block_addr')) {
                     try {
                         let rt = await sofar.facade.service.gamegoldHelper.execute('token.user', ['first-acc-01', unionid, null, unionid]);
-                        usr.baseMgr.info.SetRecord('block_addr', (!!rt && rt.hasOwnProperty("data")) ? rt.data.addr : '');
+                        usr.baseMgr.info.SetRecord('block_addr', !!rt && rt.code == 0 ? rt.result.data.addr : '');
                     } catch(e) {
                         console.log('create block_addr', e.message);
                     }
