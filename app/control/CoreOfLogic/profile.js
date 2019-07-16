@@ -8,20 +8,6 @@ let tableField = require('../../util/tablefield');
  */
 class profile extends facade.Control
 {
-    /**
-     * 用户信息
-     * @param {*} user 
-     * @param {*} params 
-     */
-    async Info(user, params)  {
-        //todo 这里对主网的访问是不是太频繁了？
-        let ret = await this.core.service.gamegoldHelper.execute('prop.list', [1, user.id]);
-        if(!!ret) {
-            user.baseMgr.info.setAttr('current_prop_count', ret.result.count);
-        }
-        return {errcode: 'success', profile: user.baseMgr.info.getData()};
-    };
-
     //新增游戏
     async AddUserGame(user, params)  {
         let uid = user.id;

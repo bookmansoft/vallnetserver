@@ -510,43 +510,6 @@ CREATE TABLE IF NOT EXISTS `our_block_user_game` (
 
 -- 数据导出被取消选择。
 
-
--- 导出  表 wechat-wallet.our_block_user_profile 结构
-CREATE TABLE IF NOT EXISTS `our_block_user_profile` (
-  `id` int(8) unsigned NOT NULL COMMENT 'ID',
-  `uid` int(8) unsigned NOT NULL COMMENT '用户编号',
-  `nick` varchar(128) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '昵称',
-  `phone` varchar(32) DEFAULT NULL COMMENT '手机',
-  `email` varchar(128) DEFAULT NULL COMMENT '邮件',
-  `gender` int(1) unsigned NOT NULL DEFAULT '0' COMMENT '性别',
-  `birth` varchar(16) DEFAULT '0' COMMENT '生日',
-  `country` varchar(32) DEFAULT NULL COMMENT '国家',
-  `province` varchar(32) DEFAULT NULL COMMENT '省份',
-  `city` varchar(32) DEFAULT NULL COMMENT '城市',
-  `prop_count` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '道具数量',
-  `current_prop_count` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '当前道具数量',
-  `block_addr` varchar(64) DEFAULT NULL,
-  `nlevel` int(1) unsigned NOT NULL DEFAULT '0' COMMENT '等级',
-  `avatar` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '头像',
-  `ranking` int(2) unsigned NOT NULL DEFAULT '0' COMMENT '排名',
-  `star_level` int(2) unsigned NOT NULL DEFAULT '0' COMMENT '星级',
-  `down_count` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '下载次数',
-  `game_count` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '游戏数',
-  `follow_count` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '关注数',
-  `no_reading_msg_count` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '未读消息数',
-  `comment_count` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '评论数',
-  `buy_count` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '消费次数',
-  `games` varchar(255) DEFAULT NULL COMMENT '所有游戏，以","隔开',
-  `avatar_uri` varchar(255) DEFAULT NULL COMMENT '头像uri',
-  `desc` varchar(255) DEFAULT NULL COMMENT '个人描述',
-  PRIMARY KEY (`id`),
-  KEY `uid` (`uid`),
-  CONSTRAINT `our_block_user_profile_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `our_block_user_base` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 数据导出被取消选择。
-
-
 -- 导出  表 wechat-wallet.our_block_user_prop 结构
 CREATE TABLE IF NOT EXISTS `our_block_user_prop` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',

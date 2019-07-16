@@ -77,7 +77,7 @@ class wechat extends facade.Control {
     }
 
     async SendRecPack(user, params) {
-        let openid = params.openid
+        let openid = user.openid;
 
         let now = new Date();
         let date_time = now.getFullYear() + '' + (now.getMonth() + 1) + '' + now.getDate();
