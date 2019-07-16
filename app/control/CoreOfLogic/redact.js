@@ -27,10 +27,9 @@ class manage extends facade.Control
             .where([
                 ['uid', '==', uid],
                 ['act_id', '==', act_id]
-            ]).records(tableField.UserRedPackAct)
-        if(userRedPactActs.length >0 ) {
-            let userRedPactAct = userRedPactActs[0]
-            return {errcode: 'success', data: userRedPactAct}    
+            ]).records(tableField.UserRedPackAct);
+        if(userRedPactActs.length > 0 ) {
+            return {errcode: 'success', data: userRedPactActs[0]};
         }
         return {errcode: 'error', errmsg: '未参与红包活动'}
     }
