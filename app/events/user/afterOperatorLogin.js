@@ -10,7 +10,7 @@ let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
  * @note 事件处理函数，this则由外部注入并指向上下文相关的节点对象
  * @param data
  */
-function handle(data){
+async function handle(data){
     try {
         data.user.loginTime = facade.util.now(); //记录登录时间
 
@@ -31,25 +31,7 @@ function handle(data){
         //检测操作员CID是否已经正确设置
         let cid = data.user.cid;
         if(!cid) {
-            if(this.options.master.includes(data.user.openid)) {
-                data.user.cid = remoteSetup.cid;         //记录为管理员分配的终端编号
-                data.user.baseMgr.info.setAttr('token', remoteSetup.token);     //记录为管理员分配的终端令牌，注意不是登录CRM的令牌
-            } else {
-                let remote = this.service.RemoteNode.conn(remoteSetup.cid); //注意这里使用了管理员专属连接器
-                remote.execute('sys.createAuthToken', [data.user.domainId]).then(retAuth => {
-                    let cid = retAuth.result[0].cid;
-                    let {aeskey, aesiv} = remote.getAes();
-                    let token = remote.decrypt(aeskey, aesiv, retAuth.result[0].encry);
-                
-                    data.user.cid = cid;
-                    data.user.baseMgr.info.setAttr('token', token);
-
-                    //建立终端授权号反向索引
-                    this.GetMapping(EntityType.User).addId([data.user.cid, data.user.id], IndexType.Terminal);
-                }).catch(e => {
-                    console.log(e);
-                });
-            }
+            await this.notifyEvent('user.fetchCid', {user:data.user});
         } else {
             //建立终端授权号反向索引
             this.GetMapping(EntityType.User).addId([data.user.cid, data.user.id], IndexType.Terminal);
@@ -63,46 +45,43 @@ function handle(data){
             }
             
             //查询操作员账户余额
-            remote.execute('balance.all', [account]).then(ret => {
-                data.user.baseMgr.info.setAttr('balance', ret.result.confirmed);
-            });
+            let rt = await remote.execute('balance.all', [account]);
+            if(!!rt && rt.code == 0) {
+                data.user.baseMgr.info.setAttr('balance', rt.result.confirmed);
+            }
 
             //查询操作员名下所有已注册CP
-            remote.execute('cp.mine', [null, account]).then(ret => {
-                /** ret.result.list: [{
-                    "cid",
-                    "name",
-                    "url",
-                    "ip",
-                    "cls",
-                    "grate",
-                    "current": { "hash", "index", "address" },
-                    "stock": { "hHeight", "hSum", "hPrice", "hBonus", "hAds", "sum", "price", "height" },
-                    "height",
-                    "status"
-                }] */
+            /** rt.result.list: [{
+                "cid",
+                "name",
+                "url",
+                "ip",
+                "cls",
+                "grate",
+                "current": { "hash", "index", "address" },
+                "stock": { "hHeight", "hSum", "hPrice", "hBonus", "hAds", "sum", "price", "height" },
+                "height",
+                "status"
+            }] */
+            rt = await remote.execute('cp.mine', [null, account]);
+            if(!!rt && rt.code == 0) {
+                //将操作员名下已注册、未入库的CP条目写入数据库
+                let cids = this.GetMapping(TableType.Cp).groupOf().excludeProperty(rt.result.list.map(it=>it.cid), 'cp_id');
+                if(cids.length > 0) {
+                    let items = rt.result.list.reduce((sofar, cur)=>{
+                        sofar[cur.cid] = cur;
+                        return sofar;
+                    }, {});
 
-                if(!!ret && ret.code == 0) {
-                    //将操作员名下已注册、未入库的CP条目写入数据库
-                    let cids = this.GetMapping(TableType.Cp).groupOf().excludeProperty(ret.result.list.map(it=>it.cid), 'cp_id');
-                    if(cids.length > 0) {
-                        let items = ret.result.list.reduce((sofar, cur)=>{
-                            sofar[cur.cid] = cur;
-                            return sofar;
-                        }, {});
-
-                        for(let cid of cids) {
-                            //调整协议字段，满足创建CP接口的需要
-                            items[cid].address = items[cid].current.address; 
-                            items[cid].account = account;
-                            
-                            this.notifyEvent('crm.cp.register', {msg:items[cid]});
-                        }
+                    for(let cid of cids) {
+                        //调整协议字段，满足创建CP接口的需要
+                        items[cid].address = items[cid].current.address; 
+                        items[cid].account = account;
+                        
+                        this.notifyEvent('crm.cp.register', {msg:items[cid]});
                     }
                 }
-            }).catch(e => {
-                console.log(e);
-            });
+            }
         }
 
         if(!!data.user.baseMgr.info.getAttr('phone')) {
@@ -112,8 +91,7 @@ function handle(data){
 
         //test only: push msg to client
         //data.user.notify({type: NotifyType.test, info: {content: 'hello world'}});
-    }
-    catch(e){
+    } catch(e) {
         console.error(e);
     }
 }

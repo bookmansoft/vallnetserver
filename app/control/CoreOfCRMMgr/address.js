@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType } = facade.const
+let { IndexType, EntityType, ReturnCode, NotifyType } = facade.const
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
@@ -14,6 +14,11 @@ class address extends facade.Control {
     async Receive(user, params) {
         //普通操作员的CID属性就是其钱包账户，如果是超级管理员需要进一步转换为 default 账户
         let account = user.cid;
+        if(!account) {
+            //同步完成事件的调用
+            await this.core.notifyEvent('user.fetchCid', {user:user});
+        }
+
         if(account == remoteSetup.cid) {
             if(!!params.account) {
                 account = params.account;
