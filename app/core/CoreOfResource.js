@@ -43,17 +43,17 @@ class CoreOfResource extends CoreOfBase {
      * @note 该函数并未调用父类方法，因为不需要承载父类的相关功能
      */
     async Start(app) {
-        //启动网络监听服务
-        let hrv = this.options.UrlHead == "https" ? require(this.options.UrlHead).createServer(this.credentials, app) : require(this.options.UrlHead).createServer(app);
-        hrv.listen(this.options.webserver.port, this.options.webserver.host, () => {
-            console.log(`资源服务在端口 ${this.options.webserver.port} 上准备就绪`);
-        });
-
         //#region 设置各类路由的路径和句柄
         this.listenCP(app);
         this.listenQrCode(app);
         this.listenEChart(app);
         //#endregion
+
+        //启动网络监听服务
+        let hrv = this.options.UrlHead == "https" ? require(this.options.UrlHead).createServer(this.credentials, app) : require(this.options.UrlHead).createServer(app);
+        hrv.listen(this.options.webserver.port, this.options.webserver.host, () => {
+            console.log(`资源服务在端口 ${this.options.webserver.port} 上准备就绪`);
+        });
     }
 
     /**
@@ -317,7 +317,7 @@ class CoreOfResource extends CoreOfBase {
                     prop.id = req.params.cp_name + "_prop_" + i;
                     prop.props_name = prop.props_name + "-" + i;
                     prop.props_price = 100001 + parseInt(i) * 10000,//非标准参数，仅供模拟cp客户端使用
-                        prop.icon = "http://127.0.0.1:9701/image/" + groupNum + "/prop_icon.jpg",//非标准参数，仅供模拟cp客户端使用
+                        prop.icon = `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_icon.jpg",//非标准参数，仅供模拟cp客户端使用
                         prop.props_rank = 3,//非标准参数，仅供模拟cp客户端使用
                         propArray.push(prop);
                 }
@@ -350,12 +350,12 @@ class CoreOfResource extends CoreOfBase {
                         "cp_name": req.params.cp_name,
                         "game_title": `${arrayGameTitle[groupNum]}(${req.params.cp_name})`,
                         "cp_type": arrayCpTye[groupNum],
-                        "icon_url": "http://127.0.0.1:9701/image/" + groupNum + "/icon_img.jpg",
-                        "small_img_url": "http://127.0.0.1:9701/image/" + groupNum + "/small_img.jpg",
-                        "large_img_url": "http://127.0.0.1:9701/image/" + groupNum + "/large_img.jpg",
-                        "pic_urls": ["http://127.0.0.1:9701/image/" + groupNum + "/pic1.jpg",
-                        "http://127.0.0.1:9701/image/" + groupNum + "/pic2.jpg",
-                        "http://127.0.0.1:9701/image/" + groupNum + "/pic3.jpg"],
+                        "icon_url": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/${groupNum}/icon_img.jpg`,
+                        "small_img_url": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/small_img.jpg",
+                        "large_img_url": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/large_img.jpg",
+                        "pic_urls": [`http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic1.jpg",
+                        `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic2.jpg",
+                        `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic3.jpg"],
                         "desc": arrayDesc[groupNum],
                         "provider": arrayProvider[groupNum],
                         "version": "V1.0",
@@ -423,11 +423,11 @@ class CoreOfResource extends CoreOfBase {
             let prop = {
                 "id": req.params.id,
                 "props_name": arrayPropName[groupNum] + propIndex,
-                "icon": "http://127.0.0.1:9701/image/" + groupNum + "/prop_icon.jpg",
-                "large_icon": "http://127.0.0.1:9701/image/" + groupNum + "/prop_large_icon.jpg",
-                "more_icon": ["http://127.0.0.1:9701/image/" + groupNum + "/prop_pic1.jpg",
-                "http://127.0.0.1:9701/image/" + groupNum + "/prop_pic2.jpg",
-                "http://127.0.0.1:9701/image/" + groupNum + "/prop_pic3.jpg"],
+                "icon": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_icon.jpg",
+                "large_icon": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_large_icon.jpg",
+                "more_icon": [`http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_pic1.jpg",
+                `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_pic2.jpg",
+                `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_pic3.jpg"],
                 "props_type": "装备",
                 "props_desc": arrayDesc[groupNum],
                 "props_price": 100001 + parseInt(propIndex) * 10000,
