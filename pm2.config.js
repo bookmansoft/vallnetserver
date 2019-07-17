@@ -18,8 +18,8 @@ let config = {
                     "portal": true //指示该服务器兼任门户
                 }
             }
-        }
-        ,{ //gamegold全节点配置
+        },
+        { //gamegold全节点配置
             "name"      : "gamegold",
             "script"    : "app/gamegold.js",
             "cwd"         : "./",  // pm2运行目录相对main.js的路径

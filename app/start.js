@@ -19,6 +19,17 @@ if(env.constructor == String) {
     env = JSON.parse(env);
 }
 
+//添加静态网站，开启反向代理
+facade.startProxy({
+    router: {
+        'test.gamegold.xin': {target: 'http://localhost:9801'},
+        'wallet.vallnet.cn': {target: 'http://localhost:9101'},
+        'crm.vallnet.cn': {target: 'http://localhost:9801'},
+    },
+    port: 80,
+    protocol: 'http',
+});
+
 //新增Auth服务器，请参照 gameconfig-backup 对 gameconfig 文件进行相应配置
 facade.boot({
     env:{
@@ -36,11 +47,6 @@ if(env.portal) { //如果该服务器兼任门户，则启动索引服务
         }
     });
 }
-
-//添加静态站点, 相比通过向 facade.boot 传入 static 数组而言，该方法能灵活指定协议、地址和端口
-// facade.addWebSite('http', '127.0.0.1', 80, [
-//     {path: '/', dir: './web/dist'}, {path: '/client', dir: './web/client'},
-// ]);
 
 //加载资源管理节点
 facade.boot({
@@ -72,6 +78,9 @@ facade.boot({
         TableType.CpFunding,
         TableType.CpStock,
     ],
+    static: [
+        ['/', './web/dist'],
+    ], 
 }, async core => {
     while(true) {
         //单独维护一个到公链的长连接，进行消息监控
@@ -152,6 +161,9 @@ facade.boot({
         TableType.StockBulletin, 
         TableType.StockBase,
     ],
+    static: [
+        ['/', './web/client'],
+    ], 
 }, core => {
     //单独维护一个到公链的长连接，进行消息监控
     core.service.monitor.setlongpoll().execute('block.tips', []).then( async (ret) => {

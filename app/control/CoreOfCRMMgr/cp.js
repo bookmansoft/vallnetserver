@@ -77,7 +77,6 @@ class cp extends facade.Control {
             console.log(error);
             return { code: -1, data: null, message: "cp.Change方法出错" };
         }
-
     }
 
     /**
@@ -138,7 +137,6 @@ class cp extends facade.Control {
             console.log(error);
             return { code: -1, data: null, message: "cp.ByName方法出错" };
         }
-
     }
 
     /**
