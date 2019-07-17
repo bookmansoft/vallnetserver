@@ -9,7 +9,6 @@ let {Sequelize, seqconn} = facade.tools;
 let CpFunding = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
     'CpFunding',
     {
-        cpid: Sequelize.INTEGER,
         stock_num: Sequelize.INTEGER,
         total_amount: Sequelize.INTEGER,
         stock_amount: Sequelize.INTEGER,

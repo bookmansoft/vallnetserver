@@ -114,7 +114,6 @@ CREATE TABLE IF NOT EXISTS `cp` (
 -- 导出  表 gamegold-mgr.cp_funding 结构
 CREATE TABLE IF NOT EXISTS `cp_funding` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `cpid` int(11) NOT NULL COMMENT 'cp表的id值',
   `stock_num` int(11) NOT NULL COMMENT '凭证数量',
   `total_amount` bigint(20) NOT NULL COMMENT '总金额（筹款目标）',
   `stock_amount` int(11) NOT NULL COMMENT '单份凭证金额-游戏金，单位是尘',
@@ -159,7 +158,6 @@ CREATE TABLE IF NOT EXISTS `cp_stock` (
 -- 导出  表 gamegold-mgr.cp_stock_base 结构
 CREATE TABLE IF NOT EXISTS `cp_stock_base` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `cpid` int(11) NOT NULL COMMENT 'cp表的id值',
   `cid` varchar(50) NOT NULL COMMENT '链数据库cid',
   `cp_name` varchar(255) NOT NULL COMMENT '游戏简称',
   `cp_text` varchar(255) NOT NULL COMMENT '游戏中文名',

@@ -21,28 +21,4 @@ describe('众筹（cpFunding）', function() {
             }
         }
     );
-
-    it('cpfunding 创建表记录', async () => {
-        await remote.login({openid: `${Math.random()*1000000000 | 0}`});
-        let msg = await remote.fetching({func: "cpfunding.CreateRecord",userinfo:{id:1},
-            cpid:2,
-            stock_num:100,
-            total_amount:100,
-            stock_amount:100,
-            stock_rmb:1000,
-            audit_state_id:1,
-            audit_text:'正常',
-            modify_date:2000000,
-            cp_name: 'cp_name',
-            cp_text: 'cp_text',
-            cp_type: 1,
-            cp_url: 'cp_url',
-            develop_name: 'develop_name',
-            develop_text: 'develop_text',
-            user_id: 1,
-
-        });
-    });
-
-
 });

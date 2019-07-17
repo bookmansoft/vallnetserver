@@ -68,7 +68,7 @@ function handle(data){
             });
 
             //查询操作员名下所有已注册CP
-            remote.execute('cp.mine', []).then(ret => {
+            remote.execute('cp.mine', [null, account]).then(ret => {
                 /** ret.result.list: [{
                     "cid",
                     "name",
@@ -92,11 +92,11 @@ function handle(data){
                         }, {});
 
                         for(let cid of cids) {
-                            items[cid].address = items[cid].current.address; //调整协议字段，满足 cp.CreateRecord 接口的需要
-                            this.control.cp.CreateRecord(data.user, items[cid]).catch(e => {
-                                console.log('error on writing cp info to db', items[cid].url, items[cid].cid);
-                                console.error(e);
-                            });
+                            //调整协议字段，满足创建CP接口的需要
+                            items[cid].address = items[cid].current.address; 
+                            items[cid].account = account;
+                            
+                            this.notifyEvent('crm.cp.register', {msg:items[cid]});
                         }
                     }
                 }

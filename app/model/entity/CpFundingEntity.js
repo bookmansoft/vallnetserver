@@ -21,12 +21,11 @@ class CpFundingEntity extends BaseEntity
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(db, cpid,stock_num,total_amount,stock_amount,stock_rmb,audit_state_id,audit_text,modify_date,
+    static async onCreate(db, stock_num,total_amount,stock_amount,stock_rmb,audit_state_id,audit_text,modify_date,
         cp_name,cp_text,cp_type,cp_url,develop_name,develop_text,user_id,cid,operator_id) {
         try{
             // console.log(26,cp_name);
             let it = await CpFunding(db).create({
-                'cpid': cpid,
                 'stock_num': stock_num,
                 'total_amount': total_amount,
                 'stock_amount': stock_amount,

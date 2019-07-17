@@ -49,27 +49,6 @@ describe('游戏（cp）', function() {
         }
     );
 
-    it('cp创建表记录', async () => {
-        await remote.login({openid: `${Math.random()*1000000000 | 0}`});
-        let msg = await remote.fetching({func: "cp.CreateRecord",
-            cp_id: '06b29ea0-ecc2-11e8-914e-9765abd9da46',
-            cp_name: 'ABCDEF',
-            cp_text: '游戏中文名啦',
-            cp_url: 'theurl',
-            wallet_addr: 'addr',
-            cp_type:'type2',
-            develop_name:'dev',
-            cp_desc:'desc',
-            cp_version:'version',
-            picture_url:'theUrl',
-            cp_state:1,
-            publish_time:2,
-            audit_time:3,
-            online_time:4,
-            offline_time:5,
-        });
-    });
-
     it('获取外部数据记录', async () => { 
         let msg = await remote.login({openid: `${Math.random()*1000000000 | 0}`});
         if(remote.isSuccess(msg)) {

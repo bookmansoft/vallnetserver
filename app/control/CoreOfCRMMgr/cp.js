@@ -16,30 +16,29 @@ class cp extends facade.Control {
     UpdateRecord(user, objData) {
         try {
             let cp = this.core.GetObject(TableType.Cp, objData.id);
-            if (!!cp) {
-                //需要针对各个属性增加为null的判断；如果为null的情况下，则
-                cp.setAttr('cp_id', objData.cp_id);
-                cp.setAttr('cp_name', objData.cp_name);
-                cp.setAttr('cp_text', objData.cp_text);
-                cp.setAttr('cp_url', objData.cp_url);
-                cp.setAttr('wallet_addr', objData.wallet_addr);
-                cp.setAttr('cp_type', objData.cp_type);
-                cp.setAttr('develop_name', objData.develop_name);
-                cp.setAttr('cp_desc', objData.cp_desc);
-                cp.setAttr('cp_version', objData.cp_version);
-                cp.setAttr('cp_version', objData.cp_version);
-                cp.setAttr('cp_state', objData.cp_state);
-                cp.setAttr('publish_time', objData.publish_time);
-                cp.setAttr('update_time', objData.update_time);
-                cp.setAttr('update_content', objData.update_content);
-                cp.setAttr('invite_share',objData.invite_share);
-                cp.setAttr('operator_id', user.id);
-                return { code: ReturnCode.Success };
+            if(!cp || (user.id != cp.getAttr('operator_id') && user.cid != remoteSetup.cid)) {
+                return { code: -2, data: null };
             }
-            return { code: -2, data: null };
+
+            //需要针对各个属性增加为null的判断；如果为null的情况下，则
+            cp.setAttr('cp_name', objData.cp_name);
+            cp.setAttr('cp_text', objData.cp_text);
+            cp.setAttr('cp_url', objData.cp_url);
+            cp.setAttr('wallet_addr', objData.wallet_addr);
+            cp.setAttr('cp_type', objData.cp_type);
+            cp.setAttr('develop_name', objData.develop_name);
+            cp.setAttr('cp_desc', objData.cp_desc);
+            cp.setAttr('cp_version', objData.cp_version);
+            cp.setAttr('cp_version', objData.cp_version);
+            cp.setAttr('cp_state', objData.cp_state);
+            cp.setAttr('update_time', objData.update_time);
+            cp.setAttr('update_content', objData.update_content);
+            cp.setAttr('invite_share',objData.invite_share);
+
+            return { code: ReturnCode.Success };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "cp.UpdateRecord方法出错" };
+            return { code: -1, data: null, message: "cp.UpdateRecord 方法出错" };
         }
     }
 
@@ -57,63 +56,6 @@ class cp extends facade.Control {
         //CP注册指令：cp.create "name" "url" ["addr", "cls" ,"grate 媒体分成比例" ,"ip"]
         let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.create', paramArray);
         return { code: ret.code, data: ret.result };
-    }
-
-    /**
-     * 将CP信息写入数据库
-     * @param {*} user 
-     * @param {Object} cpinfo { cid, name, url, address, ip, cls, grate, wid, account }
-     */
-    async CreateRecord(user, cpinfo) {
-        //从CP登记的集采接口获取CP详细信息
-        let res = await fetch(`${cpinfo.url}/${cpinfo.name}`, { mode: 'no-cors' });
-        res = await res.json();
-        let qry = res.game;
-
-        //合并主网信息和集采信息，调整部分字段名称和数值
-        let data = {};
-        data.cp_name = cpinfo.name;
-        data.cp_url = cpinfo.url;
-        data.cp_type = cpinfo.cls;
-        data.invite_share = cpinfo.grate || 0;
-        data.wallet_addr = cpinfo.address;
-        data.cp_id = cpinfo.cid;
-
-        data.cp_text = qry.game_title;
-        data.develop_name = qry.provider;
-        data.cp_desc = qry.desc;
-        data.cp_version = qry.version;
-        data.picture_url = JSON.stringify({
-            icon_url: qry.icon_url,
-            face_url: qry.large_img_url,
-            pic_urls: qry.pic_urls,
-        });
-        data.publish_time = qry.publish_time;
-        data.update_time = qry.update_time;
-        data.update_content = qry.update_content;
-        data.cp_state = qry.state;
-        data.operator_id = user.id;
-
-        //写入数据库
-        await this.core.GetMapping(TableType.Cp).Create(
-            data.cp_id,
-            data.cp_name,
-            data.cp_text,
-            data.cp_url,
-            data.wallet_addr,
-            data.cp_type,
-            data.develop_name,
-            data.cp_desc,
-            data.cp_version,
-            data.picture_url,
-            data.cp_state,
-            data.publish_time,
-            data.update_time,
-            data.update_content,
-            data.invite_share,
-            data.operator_id,
-        );
-        return { code: ReturnCode.Success, data: null, message: "创建CP成功" };
     }
 
     /**
@@ -200,12 +142,12 @@ class cp extends facade.Control {
     }
 
     /**
-     * 查看单个记录
+     * 查询并返回CP对象
      * @param {*} user 
      * @param {*} objData 
      */
     async Retrieve(user, objData) {
-        let cp = this.core.GetObject(TableType.Cp, objData.id, IndexType.Foreign);
+        let cp = this.core.GetObject(TableType.Cp, parseInt(objData.id));
         if (!!cp) {
             return {
                 code: ReturnCode.Success,
@@ -351,7 +293,7 @@ class cp extends facade.Control {
      */
     async getGameFromUrl(user, objData) {
         let res = await fetch(objData.cp_url, { mode: 'no-cors' });
-        return res.json();
+        return await res.json();
     }
 }
 

@@ -85,7 +85,7 @@ class cpstockbase extends facade.Control {
     }
 
     /**
-     * 拍卖凭证
+     * 竞拍凭证
      * @param {*} user      当前操作员，注意如果是系统管理员，要将账户切换为'game'
      * @param {*} objData 
      */

@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { EntityType, ReturnCode, NotifyType, TableType } = facade.const
+let { IndexType, EntityType, ReturnCode, NotifyType, TableType } = facade.const
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
@@ -14,27 +14,42 @@ class cpfunding extends facade.Control {
      * @param {*} objData 
      */
     async CreateRecord(user, objData) {
+        //1. 首先检验该操作员是否有权发布该众筹
+        let cp = this.core.GetObject(TableType.Cp, objData.cid, IndexType.Foreign);
+        if(!cp) {
+            return { code: -1, data: null, message: "指定CP不存在" };
+        } else if(cp.getAttr('operator_id') != user.id) {
+            return { code: -1, data: null, message: "不具备指定CP操作权" };
+        }
+
+        //2. 检查操作员余额
+        if(user.baseMgr.info.getAttr('balance')/100000 < (parseInt(objData.stock_num) * parseInt(objData.stock_amount)*1.02)) {
+            return { code: -1, data: null, message: "不具备足够的发行资金" };
+        }
+
+        //3. 其次检验当前情况下，是否允许为指定CP发布众筹，例如发行周期等
+        //todo ...
+
+        //4. 提交众筹申请，等待管理员审批
         await this.core.GetMapping(TableType.CpFunding).Create(
-            objData.cpid,               //CP在本地数据库的编号
             objData.stock_num,
-            objData.total_amount,
+            objData.stock_num * objData.stock_amount,
             objData.stock_amount,
             objData.stock_rmb,
             objData.audit_state_id,
             objData.audit_text,
-            objData.modify_date,
-            objData.cp_name,
-            objData.cp_text,
-            objData.cp_type,
-            objData.cp_url,
-            objData.develop_name,
+            new Date().getTime() / 1000,
+            cp.getAttr('cp_name'),
+            cp.getAttr('cp_text'),
+            cp.getAttr('cp_type'),
+            cp.getAttr('cp_url'),
+            cp.getAttr('develop_name'),
             objData.develop_text,
             user.id,                    //发起者编号
-            objData.cid,                //发起众筹的游戏编码
+            cp.getAttr('cp_id'),        //发起众筹的游戏编码
         );
 
-        let ret = { code: ReturnCode.Success, data: null, message: "cpfunding.CreateRecord成功" };
-        return ret;
+        return { code: ReturnCode.Success, data: null, message: "cpfunding.CreateRecord成功" };
     }
 
     /**
@@ -115,7 +130,6 @@ class cpfunding extends facade.Control {
                     code: ReturnCode.Success,
                     data: {
                         id: parseInt(objData.id),
-                        cpid: cpfunding.getAttr('cpid'),
                         stock_num: cpfunding.getAttr('stock_num'),
                         total_amount: cpfunding.getAttr('total_amount'),
                         stock_amount: cpfunding.getAttr('stock_amount'),
@@ -263,7 +277,7 @@ class cpfunding extends facade.Control {
         $data.page = muster.pageCur;
 
         let $idx = (muster.pageCur - 1) * muster.pageSize;
-        for (let $value of muster.records(['id', 'cpid', 'stock_num', 'total_amount', 'stock_amount', 'stock_rmb', 'audit_state_id', 'audit_text', 'modify_date', 'cp_name', 'cp_text', 'cp_type', 'cp_url', 'develop_name', 'develop_text', 'user_id', 'cid', 'operator_id'])) {
+        for (let $value of muster.records(['id', 'stock_num', 'total_amount', 'stock_amount', 'stock_rmb', 'audit_state_id', 'audit_text', 'modify_date', 'cp_name', 'cp_text', 'cp_type', 'cp_url', 'develop_name', 'develop_text', 'user_id', 'cid', 'operator_id'])) {
             $data.items[$idx] = $value;
             $value['sell_limit_date'] = $value['modify_date'] + 3600*24*14;
             $value['rank'] = $idx++;
@@ -279,15 +293,16 @@ class cpfunding extends facade.Control {
      * 从数据库中获取Cp。用于在客户端显示所有数据库中的cp用于查询
      * 客户端直接调用此方法
      * @param {*} user 
-     * @param {*} objData 无需参数。
+     * @param {*} objData
      */
     ListCp(user, objData) {
         try {
-            //得到 Mapping 对象
+            //查询当前操作员名下注册的CP列表
             let muster = this.core.GetMapping(TableType.Cp)
-                .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
-                .orderby('id', 'asc') //根据id字段倒叙排列
-                .paginate(10, 1); 
+                .groupOf()                          // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
+                .where([['operator_id', user.id]])  //只罗列当前操作员名下记录
+                .orderby('id', 'asc')               //根据id字段倒叙排列
+                .paginate(-1, 1);                   //在第一页罗列所有记录
 
             let $data=[];
             for (let $value of muster.records(['id', 'cp_id', 'cp_text'])) {
@@ -295,7 +310,6 @@ class cpfunding extends facade.Control {
                 $data.push(item);
             }
             return $data;
-
         } catch (error) {
             console.log(error);
             return null;
