@@ -32,6 +32,15 @@ function handle(data) {
  * @param {Object} cpinfo { cid, name, url, address, ip, cls, grate, wid, account }
  */
 async function CreateRecord(user, cpinfo, core) {
+    if(!cpinfo || typeof cpinfo != 'object') {
+        console.log('cp.CreateRecord: error cp info.');
+        return {code: 0};
+    }
+
+    if(cpinfo.cid == "xxxxxxxx-game-gold-boss-xxxxxxxxxxxx") { //强制跳过特殊CP
+        return {code: 0};
+    }
+
     //从CP登记的集采接口获取CP详细信息
     let res = await fetch(`${cpinfo.url}/${cpinfo.name}`, { mode: 'no-cors' });
     res = await res.json();
