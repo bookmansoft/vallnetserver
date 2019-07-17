@@ -127,7 +127,7 @@ node.mempool.on('tx', addItem);
   node.startSync();
 
   //开启或关闭挖矿
-  await node.rpc.execute({method:'miner.set.admin',params:[false]});
+  await node.rpc.execute({method:'miner.set.admin',params:[true]});
 
   //#endregion
 })().catch(err =>{
