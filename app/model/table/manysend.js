@@ -6,8 +6,8 @@ const facade = require('gamecloud');
 let {Sequelize, seqconn} = facade.tools;
 
 //建立数据库ORM模型
-let ManySend = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
-    'ManySend',
+let manysend = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
+    'manysend',
     {
         // CREATE TABLE `our_many_red_send` (
         //     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '红包id',
@@ -37,4 +37,4 @@ let ManySend = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.po
         'paranoid': false       // true表示删除数据时不会进行物理删除，而是设置deletedAt为当前时间
     }
 );
-exports.ManySend = ManySend;
+exports.manysend = manysend;

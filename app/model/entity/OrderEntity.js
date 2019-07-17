@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let Order = facade.models.Order
+let order = facade.models.order
 
 //用户微信账号(openid)
 class OrderEntity extends BaseEntity
@@ -13,8 +13,8 @@ class OrderEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.Order,     //表类型
-            model: Order,               //表映射类
+            etype: TableType.order,     //表类型
+            model: order,               //表映射类
             entity: OrderEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class OrderEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await Order(db).create(item);
+            let it = await order(db).create(item);
             await it.save();
     
             return it;
@@ -50,7 +50,7 @@ class OrderEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await Order(db).findAll();
+            let ret = await order(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

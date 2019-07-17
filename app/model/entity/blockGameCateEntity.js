@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let BlockGameCate = facade.models.BlockGameCate
+let blockgamecate = facade.models.blockgamecate
 
 //游戏类别
 class blockGameCateEntity extends BaseEntity
@@ -13,8 +13,8 @@ class blockGameCateEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.BlockGameCate,     //表类型
-            model: BlockGameCate,               //表映射类
+            etype: TableType.blockgamecate,     //表类型
+            model: blockgamecate,               //表映射类
             entity: blockGameCateEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class blockGameCateEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await BlockGameCate(db).create(item);
+            let it = await blockgamecate(db).create(item);
             await it.save();
     
             return it;
@@ -50,7 +50,7 @@ class blockGameCateEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await BlockGameCate(db).findAll();
+            let ret = await blockgamecate(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

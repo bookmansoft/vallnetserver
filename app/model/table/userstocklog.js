@@ -6,8 +6,8 @@ const facade = require('gamecloud');
 let {Sequelize, seqconn} = facade.tools;
 
 //建立数据库ORM模型
-let UserStockLog = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
-    'UserStockLog',
+let userstocklog = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
+    'userstocklog',
     {
         uid: Sequelize.INTEGER,
         cid: Sequelize.INTEGER,
@@ -21,4 +21,4 @@ let UserStockLog = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, d
         'paranoid': false       // true表示删除数据时不会进行物理删除，而是设置deletedAt为当前时间
     }
 );
-exports.UserStockLog = UserStockLog;
+exports.userstocklog = userstocklog;

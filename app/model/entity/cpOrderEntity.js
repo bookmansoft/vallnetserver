@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let CpOrder = facade.models.CpOrder;
+let cporder = facade.models.cporder;
 
 //订单
 class cpOrderEntity extends BaseEntity
@@ -13,8 +13,8 @@ class cpOrderEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.CpOrder,     //表类型
-            model: CpOrder,               //表映射类
+            etype: TableType.cporder,     //表类型
+            model: cporder,               //表映射类
             entity: cpOrderEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class cpOrderEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await CpOrder(db).create(item);
+            let it = await cporder(db).create(item);
             await it.save();
     
             return it;
@@ -50,7 +50,7 @@ class cpOrderEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await CpOrder(db).findAll();
+            let ret = await cporder(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

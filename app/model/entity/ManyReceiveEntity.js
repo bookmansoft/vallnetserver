@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let ManyReceive = facade.models.ManyReceive
+let manyreceive = facade.models.manyreceive
 
 //用户微信账号(uid)
 class ManyReceiveEntity extends BaseEntity
@@ -13,8 +13,8 @@ class ManyReceiveEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.ManyReceive,                     //表类型
-            model: ManyReceive,               //表映射类
+            etype: TableType.manyreceive,                     //表类型
+            model: manyreceive,               //表映射类
             entity: ManyReceiveEntity,        //ORM映射类
         };
     }
@@ -22,7 +22,7 @@ class ManyReceiveEntity extends BaseEntity
     static async onCreate(db, send_id,receive_amount,send_uid,send_nickname,send_headimg,receive_uid,receive_nickname,receive_headimg,modify_date) {
         try{
             console.log(24);
-            let it = await ManyReceive(db).create({
+            let it = await manyreceive(db).create({
                 'send_id': send_id,
                 'receive_amount': receive_amount,
                 'send_uid': send_uid,
@@ -58,7 +58,7 @@ class ManyReceiveEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await ManyReceive(db).findAll();
+            let ret = await manyreceive(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

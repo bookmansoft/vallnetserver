@@ -6,8 +6,8 @@ const facade = require('gamecloud');
 let {Sequelize, seqconn} = facade.tools;
 
 //建立数据库ORM模型
-let BlockGameCate = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
-    'BlockGameCate',
+let blockgamecate = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
+    'blockgamecate',
     {
         category_id: Sequelize.INTEGER,
         category_title: Sequelize.STRING,
@@ -18,4 +18,4 @@ let BlockGameCate = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, 
         'paranoid': false       // true表示删除数据时不会进行物理删除，而是设置deletedAt为当前时间
     }
 );
-exports.BlockGameCate = BlockGameCate;
+exports.blockgamecate = blockgamecate;

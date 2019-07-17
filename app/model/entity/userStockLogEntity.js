@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let UserStockLog = facade.models.UserStockLog
+let userstocklog = facade.models.userstocklog
 
 //用户微信账号(openid)
 class userStockLogEntity extends BaseEntity
@@ -13,8 +13,8 @@ class userStockLogEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.UserStockLog,                     //表类型
-            model: UserStockLog,               //表映射类
+            etype: TableType.userstocklog,                     //表类型
+            model: userstocklog,               //表映射类
             entity: userStockLogEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class userStockLogEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await UserStockLog(db).create(item);
+            let it = await userstocklog(db).create(item);
             await it.save();
     
             return it;
@@ -50,7 +50,7 @@ class userStockLogEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await UserStockLog(db).findAll();
+            let ret = await userstocklog(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

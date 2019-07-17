@@ -74,7 +74,7 @@ class wallet extends facade.Control
         ]);
         if(!!ret && ret.result.length > 0) {
             ret.result.forEach(element => {
-                let blockNotifys = this.core.GetMapping(TableType.BlockNotify).groupOf().where([['sn', '==', element.sn]]).records();
+                let blockNotifys = this.core.GetMapping(TableType.blockNotify).groupOf().where([['sn', '==', element.sn]]).records();
                 if(blockNotifys.length==0) {
                     let current_time = parseInt(new Date().getTime() / 1000)
                     let notifyUid = ''
@@ -82,7 +82,7 @@ class wallet extends facade.Control
                         let obj = JSON.parse(element.body.content);
                         if(!!obj && obj.hasOwnProperty('address')) {
                             let addr = obj.address
-                            let userWallets = this.core.GetMapping(TableType.UserWallet).groupOf().where([['addr', '==', addr]]).records();
+                            let userWallets = this.core.GetMapping(TableType.userwallet).groupOf().where([['addr', '==', addr]]).records();
                             if(userWallets.length >0) {
                                 notifyUid = userWallets[0].orm.uid
                             }
@@ -100,11 +100,11 @@ class wallet extends facade.Control
                         create_time: current_time,
                         update_time: 0
                     }
-                    this.core.GetMapping(TableType.BlockNotify).Create(notifyItem);
+                    this.core.GetMapping(TableType.blockNotify).Create(notifyItem);
                 }
             });
         }
-        let blockNotifys = this.core.GetMapping(TableType.BlockNotify).groupOf().where([
+        let blockNotifys = this.core.GetMapping(TableType.blockNotify).groupOf().where([
             ['uid', '==', uid],
             ['status', '==', 1]
         ]).records();
@@ -118,7 +118,7 @@ class wallet extends facade.Control
      */
     async NotifyList(user, params) {
         let openid = params.openid
-        let blockNotifys = this.core.GetMapping(TableType.BlockNotify).groupOf().where([
+        let blockNotifys = this.core.GetMapping(TableType.blockNotify).groupOf().where([
             ['openid', '==', openid]
         ]).records();
         let data = new Array()
@@ -142,7 +142,7 @@ class wallet extends facade.Control
     async NotifyOrderPay(user, params) {
         let openid = params.openid
         let sn = params.sn
-        let blockNotifys = this.core.GetMapping(TableType.BlockNotify).groupOf().where([
+        let blockNotifys = this.core.GetMapping(TableType.blockNotify).groupOf().where([
             ['openid', '==', openid],
             ['sn', '==', sn]
         ]).records();

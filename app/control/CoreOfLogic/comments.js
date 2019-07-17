@@ -11,9 +11,9 @@ class comments extends facade.Control
     //评论列表
     async GameCommentList(user, params)  {
         let cid = params.cid
-        let dataList = this.core.GetMapping(TableType.BlockGameComment).groupOf()
+        let dataList = this.core.GetMapping(TableType.blockgamecomment).groupOf()
             .where([['cid', '==', cid]])
-            .records(tableField.BlockGameComment);
+            .records(tableField.blockgamecomment);
         return {errcode: 'success', data:dataList};
     };
 
@@ -33,7 +33,7 @@ class comments extends facade.Control
             point_up_count: 0,
             create_at: current_time,
         };
-        this.core.GetMapping(TableType.BlockGameComment).Create(commentItem);
+        this.core.GetMapping(TableType.blockgamecomment).Create(commentItem);
         return {errcode: 'success', errmsg: 'create:ok'};
     }
 }

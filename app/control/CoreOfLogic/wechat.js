@@ -110,7 +110,7 @@ class wechat extends facade.Control {
             return_msg: ret.return_msg,
             order_status: 0,
         }
-        this.core.GetMapping(TableType.RedPack).Create(redpackItem);
+        this.core.GetMapping(TableType.redpack).Create(redpackItem);
 
         return { errcode: 'success', ret: ret.return_msg }
     }

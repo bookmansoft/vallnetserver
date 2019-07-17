@@ -10,7 +10,7 @@ class cpprop extends facade.Control
 {
     //用户信息
     async PropList(user, params)  {
-        let props = this.core.GetMapping(TableType.CpProp).groupOf().records(tableField.CpProp);
+        let props = this.core.GetMapping(TableType.cpprop).groupOf().records(tableField.cpprop);
         return {errcode: 'success', errmsg:'proplist:ok', props: props};
     };
 
@@ -24,9 +24,9 @@ class cpprop extends facade.Control
         ]);
         var queryprops = [];
         await ret.result.forEach(element => {
-            let prop = this.core.GetMapping(TableType.CpProp).groupOf().where([
+            let prop = this.core.GetMapping(TableType.cpprop).groupOf().where([
                 ['oid', '==', element.oid]
-            ]).records(tableField.CpProp)[0];
+            ]).records(tableField.cpprop)[0];
             if(!!prop) {
                 queryprops.push(prop);
             }
@@ -37,18 +37,18 @@ class cpprop extends facade.Control
     //道具详情查询
     async GetPropByOid(user, params) { 
         let oid = params.oid;
-        let prop = this.core.GetMapping(TableType.CpProp).groupOf().where([
+        let prop = this.core.GetMapping(TableType.cpprop).groupOf().where([
             ['oid', '==', oid]
-        ]).records(tableField.CpProp)[0];
+        ]).records(tableField.cpprop)[0];
         return {errcode: 'success', errmsg:'queryprops:ok', prop: !!prop ? prop : null};
     }
 
     //批量查询道具
     async GetPropByOids(user, params) { 
         let oids = params.oids;
-        let props = this.core.GetMapping(TableType.CpProp).groupOf().where([
+        let props = this.core.GetMapping(TableType.cpprop).groupOf().where([
             ['oid', 'include', oids]
-        ]).records(tableField.CpProp);
+        ]).records(tableField.cpprop);
         return {errcode: 'success', errmsg:'getpropbyoids:ok', props: !!props ? props : null};
     }
 

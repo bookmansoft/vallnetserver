@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let CpUser = facade.models.CpUser
+let cpuser = facade.models.cpuser
 
 //用户
 class cpUserEntity extends BaseEntity
@@ -13,8 +13,8 @@ class cpUserEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.CpUser,                     //表类型
-            model: CpUser,               //表映射类
+            etype: TableType.cpuser,                     //表类型
+            model: cpuser,               //表映射类
             entity: cpUserEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class cpUserEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await CpUser(db).create(item);
+            let it = await cpuser(db).create(item);
             await it.save();
     
             return it;
@@ -50,7 +50,7 @@ class cpUserEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await CpUser(db).findAll();
+            let ret = await cpuser(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

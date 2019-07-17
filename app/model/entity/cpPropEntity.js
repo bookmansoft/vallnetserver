@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let CpProp = facade.models.CpProp;
+let cpprop = facade.models.cpprop;
 
 //道具库
 class cpPropEntity extends BaseEntity
@@ -13,8 +13,8 @@ class cpPropEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.CpProp,     //表类型
-            model: CpProp,               //表映射类
+            etype: TableType.cpprop,     //表类型
+            model: cpprop,               //表映射类
             entity: cpPropEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class cpPropEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await CpProp(db).create(item);
+            let it = await cpprop(db).create(item);
             await it.save();
     
             return it;
@@ -50,7 +50,7 @@ class cpPropEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await CpProp(db).findAll();
+            let ret = await cpprop(db).findAll();
             ret.map(it=>{
                 callback(it);
             });
@@ -72,7 +72,7 @@ class cpPropEntity extends BaseEntity
     //user.destroy({'where':{'id':{eq:23}}});//将表内userId等于23的元组删除
     static async onDestroy(options) {
         try{
-            let it = await CpProp().destroy(options);
+            let it = await cpprop().destroy(options);
             return it;
         }
         catch(e){

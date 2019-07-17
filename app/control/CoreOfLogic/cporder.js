@@ -15,8 +15,8 @@ class cporder extends facade.Control
         let uid = user.id;
         let addr = params.addr;
         let openid = params.openid;
-        let cpprops = this.core.GetMapping(TableType.CpProp).groupOf().where([['id','==',prop_id]]).records(tableField.CpProp);
-        let cpusers = this.core.GetMapping(TableType.CpUser).groupOf().where([['id','==',uid]]).records(tableField.CpUser);
+        let cpprops = this.core.GetMapping(TableType.cpprop).groupOf().where([['id','==',prop_id]]).records(tableField.cpprop);
+        let cpusers = this.core.GetMapping(TableType.cpuser).groupOf().where([['id','==',uid]]).records(tableField.cpuser);
         if(cpprops.length> 0 && cpusers.length > 0 ) {
             let cpprop = cpprops[0];
             let created_at = new Date().getTime();
@@ -38,7 +38,7 @@ class cporder extends facade.Control
                 create_time: created_at,
                 update_time: 0
             }
-            this.core.GetMapping(TableType.CpOrder).Create(cpOrderItem);
+            this.core.GetMapping(TableType.cporder).Create(cpOrderItem);
         }
         return {errcode: 'success', errmsg:'propbuy:ok'};
     };
@@ -46,7 +46,7 @@ class cporder extends facade.Control
     //用户订单
     async OrderList(user, params)  {
         let uid = user.id;
-        let orders = this.core.GetMapping(TableType.CpOrder).groupOf().where([['uid','==',uid]]).orderby('create_time', 'desc').records(tableField.CpOrder);
+        let orders = this.core.GetMapping(TableType.cporder).groupOf().where([['uid','==',uid]]).orderby('create_time', 'desc').records(tableField.cporder);
         return {errcode: 'success', errmsg:'orderlist:ok', orders: orders};
     };
 
@@ -56,7 +56,7 @@ class cporder extends facade.Control
         let cid = params.cid;
         let status = params.status;
         //let msg = params.msg;
-        let cpOrders = this.core.GetMapping(TableType.CpOrder).groupOf().where([['order_sn','==',sn]]).records();
+        let cpOrders = this.core.GetMapping(TableType.cporder).groupOf().where([['order_sn','==',sn]]).records();
         if(cpOrders.length >0 ) {
             let cporder = cpOrders[0];
             cporder.setAttr('pay_status', status);                    //修改所得记录的pay_status字段，下次查询时将得到新值，同时会自动存入数据库

@@ -1,14 +1,14 @@
-let BlockGame = ['id','game_code','game_title','game_resource_uri','game_ico_uri','game_link_url','game_desc','sort','category_id',
+let blockgame = ['id','game_code','game_title','game_resource_uri','game_ico_uri','game_link_url','game_desc','sort','category_id',
     'category_title','provider_id','provider_name','ad_title','ranking','star_level','down_count','comment_count',
     'create_time','update_time','store_status','game_version',
     'developer','update_desc','game_screenshots','player_count','cpid','cpurl','cp_addr','cp_name'
 ];
 
-let BlockGameCate = [
+let blockgamecate = [
     'id','category_id','category_title'
 ];
 
-let BlockGameProp = [ 
+let blockgameprop = [ 
     'id',
     'cpid',
     'prop_id',
@@ -23,7 +23,7 @@ let BlockGameProp = [
     'nstatus'
 ];
 
-let BlockGameProvider = [
+let blockgameprovider = [
     'id',
     'provider_id',
     'provider_name',
@@ -35,7 +35,7 @@ let BlockGameProvider = [
     'comprehensive_grade'
 ];
 
-let UserWallet = [
+let userwallet = [
     'id',
     'uid',
     'cid',
@@ -50,14 +50,14 @@ let UserWallet = [
     'buy_count'
 ];
 
-let UserGame = [
+let usergame = [
     'id',
     'uid',
     'openid',
     'game_id'
 ];
 
-let UserProp = [
+let userprop = [
     'uid',
     'openid',
     'cid',
@@ -76,7 +76,7 @@ let UserProp = [
     'cp_ip'
 ];
 
-let CpUser = [
+let cpuser = [
     'id',
     'openid',
     'addr',
@@ -85,7 +85,7 @@ let CpUser = [
     'created_at'
 ];
 
-let CpProp = [
+let cpprop = [
     'id',
     'oid',
     'prop_id',
@@ -96,7 +96,7 @@ let CpProp = [
     'price'
 ];
 
-let CpOrder = [
+let cporder = [
     'id',
     'uid',
     'openid',
@@ -115,7 +115,7 @@ let CpOrder = [
     'update_time'
 ];
 
-let Order = [ 
+let order = [ 
     'uid',
     'order_sn',
     'order_num',
@@ -129,7 +129,7 @@ let Order = [
     'update_time',
 ]
 
-let VipDraw = [ 
+let vipdraw = [ 
     'uid',
     'draw_count',
     'pay_status',
@@ -137,7 +137,7 @@ let VipDraw = [
     'draw_at',
 ]
 
-let BlockNotify = [
+let blockNotify = [
     'sn',
     'h',
     'status',
@@ -148,7 +148,7 @@ let BlockNotify = [
     'update_time'
 ]
 
-let RedPack = [
+let redpack = [
     'user_redpack_id',
     'uid',
     'act_id',
@@ -165,7 +165,7 @@ let RedPack = [
     'order_status'
 ]
 
-let RedPackAct = [
+let redpackact = [
     'id',
     'act_name',
     'act_sequence',
@@ -180,7 +180,7 @@ let RedPackAct = [
     'status'
 ]
 
-let UserRedPack = [
+let userredpack = [
     'id',
     'uid',
     'act_id',
@@ -193,7 +193,7 @@ let UserRedPack = [
     'cid'
 ]
 
-let UserRedPackAct = [
+let userredpackact = [
     'id',
     'uid',
     'act_id',
@@ -203,7 +203,7 @@ let UserRedPackAct = [
     'last_act_at',
 ]
 
-let BlockGameComment = [
+let blockgamecomment = [
     'id',
     'cid',
     'reply_id',
@@ -218,7 +218,7 @@ let BlockGameComment = [
     'content',
 ]
 
-let MobileVerify = [
+let mobileverify = [
     'mobile',
     'code',
     'daystamp',
@@ -226,7 +226,7 @@ let MobileVerify = [
     'send_num'
 ]
 
-let Stock = [
+let stock = [
     'id',
     'cid',
     'cname',
@@ -242,7 +242,7 @@ let Stock = [
     'support'
 ]
 
-let UserStock = [
+let userstock = [
     'id',
     'uid',
     'cid',
@@ -256,7 +256,7 @@ let UserStock = [
     'src'
 ]
 
-let UserStockLog = [
+let userstocklog = [
     'id',
     'uid',
     'cid',
@@ -266,8 +266,8 @@ let UserStockLog = [
 ]
 
 exports = module.exports = tableField = {
-    BlockGame, BlockGameCate, BlockGameProp, BlockGameProvider,
-    UserWallet, RedPack, RedPackAct,
-    CpUser, CpProp, CpOrder, UserGame, UserProp, Order, VipDraw, BlockNotify,
-    UserRedPack, UserRedPackAct, BlockGameComment, MobileVerify, Stock, UserStock, UserStockLog
+    blockgame, blockgamecate, blockgameprop, blockgameprovider,
+    userwallet, redpack, redpackact,
+    cpuser, cpprop, cporder, usergame, userprop, order, vipdraw, blockNotify,
+    userredpack, userredpackact, blockgamecomment, mobileverify, stock, userstock, userstocklog
 }

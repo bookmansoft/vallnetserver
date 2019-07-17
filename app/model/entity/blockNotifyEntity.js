@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let BlockNotify = facade.models.BlockNotify;
+let blockNotify = facade.models.blockNotify;
 
 //区块链游戏库
 class blockNotifyEntity extends BaseEntity
@@ -13,8 +13,8 @@ class blockNotifyEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.BlockNotify,                     //表类型
-            model: BlockNotify,               //表映射类
+            etype: TableType.blockNotify,                     //表类型
+            model: blockNotify,               //表映射类
             entity: blockNotifyEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class blockNotifyEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await BlockNotify(db).create(item);
+            let it = await blockNotify(db).create(item);
             await it.save();
     
             return it;
@@ -50,7 +50,7 @@ class blockNotifyEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await BlockNotify(db).findAll();
+            let ret = await blockNotify(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

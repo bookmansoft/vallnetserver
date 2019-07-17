@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let UserWallet = facade.models.UserWallet
+let userwallet = facade.models.userwallet
 
 //用户钱包地址
 class userWalletEntity extends BaseEntity
@@ -13,8 +13,8 @@ class userWalletEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.UserWallet,     //表类型
-            model: UserWallet,               //表映射类
+            etype: TableType.userwallet,     //表类型
+            model: userwallet,               //表映射类
             entity: userWalletEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class userWalletEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await UserWallet(db).create(item);
+            let it = await userwallet(db).create(item);
             await it.save();
     
             return it;
@@ -50,7 +50,7 @@ class userWalletEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await UserWallet(db).findAll();
+            let ret = await userwallet(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

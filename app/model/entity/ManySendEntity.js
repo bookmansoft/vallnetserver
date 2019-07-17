@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let ManySend = facade.models.ManySend
+let manysend = facade.models.manysend
 
 //用户微信账号(uid)
 class ManySendEntity extends BaseEntity
@@ -13,8 +13,8 @@ class ManySendEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.ManySend,                     //表类型
-            model: ManySend,               //表映射类
+            etype: TableType.manysend,                     //表类型
+            model: manysend,               //表映射类
             entity: ManySendEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class ManySendEntity extends BaseEntity
      */
     static async onCreate(db, total_amount,actual_amount,total_num,send_uid,send_nickname,send_headimg,wishing,modify_date,state_id) {
         try{
-            let it = await ManySend(db).create({
+            let it = await manysend(db).create({
                 'total_amount': total_amount,
                 'actual_amount': actual_amount,
                 'total_num': total_num,
@@ -60,7 +60,7 @@ class ManySendEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await ManySend(db).findAll();
+            let ret = await manysend(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

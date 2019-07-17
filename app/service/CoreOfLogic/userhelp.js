@@ -4,7 +4,7 @@ let {TableType} = facade.const;
 class userhelp  extends facade.Service 
 {
     async getAddrFromUserIdAndCid(uid, cid) {
-        let userWallets = await this.core.GetMapping(TableType.UserWallet).groupOf()
+        let userWallets = await this.core.GetMapping(TableType.userwallet).groupOf()
             .where([
                 ['uid', '==', uid],
                 ['cid', '==', cid],

@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let VipDraw = facade.models.VipDraw
+let vipdraw = facade.models.vipdraw
 
 //用户微信账号(openid)
 class VipDrawEntity extends BaseEntity
@@ -13,8 +13,8 @@ class VipDrawEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.VipDraw,                     //表类型
-            model: VipDraw,               //表映射类
+            etype: TableType.vipdraw,                     //表类型
+            model: vipdraw,               //表映射类
             entity: VipDrawEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class VipDrawEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await VipDraw(db).create(item);
+            let it = await vipdraw(db).create(item);
             await it.save();
     
             return it;
@@ -50,7 +50,7 @@ class VipDrawEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await VipDraw(db).findAll();
+            let ret = await vipdraw(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

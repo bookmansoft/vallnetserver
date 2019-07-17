@@ -6,8 +6,8 @@ const facade = require('gamecloud');
 let {Sequelize, seqconn} = facade.tools;
 
 //建立数据库ORM模型
-let RedPack = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
-    'RedPack',
+let redpack = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
+    'redpack',
     {
         user_redpack_id: Sequelize.INTEGER,
         uid: Sequelize.INTEGER,
@@ -30,4 +30,4 @@ let RedPack = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.por
         'paranoid': false       // true表示删除数据时不会进行物理删除，而是设置deletedAt为当前时间
     }
 );
-exports.RedPack = RedPack;
+exports.redpack = redpack;

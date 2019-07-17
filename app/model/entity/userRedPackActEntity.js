@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let UserRedPackAct = facade.models.UserRedPackAct
+let userredpackact = facade.models.userredpackact
 
 //用户微信账号(openid)
 class userRedPackActEntity extends BaseEntity
@@ -13,8 +13,8 @@ class userRedPackActEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.UserRedPackAct,                     //表类型
-            model: UserRedPackAct,               //表映射类
+            etype: TableType.userredpackact,                     //表类型
+            model: userredpackact,               //表映射类
             entity: userRedPackActEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class userRedPackActEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await UserRedPackAct(db).create(item);
+            let it = await userredpackact(db).create(item);
             await it.save();
     
             return it;
@@ -50,7 +50,7 @@ class userRedPackActEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await UserRedPackAct(db).findAll();
+            let ret = await userredpackact(db).findAll();
             ret.map(it=>{
                 callback(it);
             });

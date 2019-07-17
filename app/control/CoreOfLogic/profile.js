@@ -12,7 +12,7 @@ class profile extends facade.Control
     async AddUserGame(user, params)  {
         let uid = user.id;
         let game_id = params.game_id;
-        let userGames = await this.core.GetMapping(TableType.UserGame).groupOf().where([
+        let userGames = await this.core.GetMapping(TableType.usergame).groupOf().where([
             ['uid', '==', uid],
             ['game_id', '==', game_id],
         ]).records(['uid']);
@@ -22,7 +22,7 @@ class profile extends facade.Control
                 uid: uid,
                 game_id: game_id
             };
-            this.core.GetMapping(TableType.UserGame).Create(userGameItem);
+            this.core.GetMapping(TableType.usergame).Create(userGameItem);
         }
         return {errcode: 'success', item: userGameItem};
     }
@@ -30,7 +30,7 @@ class profile extends facade.Control
     //我的游戏
     async UserGame(user, params)  {
         let uid = user.id;
-        let userGames = await this.core.GetMapping(TableType.UserGame).groupOf().where([
+        let userGames = await this.core.GetMapping(TableType.usergame).groupOf().where([
             ['uid', '==', uid]
         ]).records(['game_id']);
         if(userGames.length >0 ) {
@@ -38,9 +38,9 @@ class profile extends facade.Control
             userGames.forEach(element => {
                 gameIds.push(element.game_id);
             });
-            let blockGames = await this.core.GetMapping(TableType.BlockGame).groupOf().where([
+            let blockGames = await this.core.GetMapping(TableType.blockgame).groupOf().where([
                 ['id', 'include', gameIds]
-            ]).records(tableField.BlockGame);
+            ]).records(tableField.blockgame);
             return {errcode: 'success', data: blockGames};
         }
     }
@@ -84,7 +84,7 @@ class profile extends facade.Control
                 remainder: remainder,
                 draw_at: current_time,
             }
-            this.core.GetMapping(TableType.VipDraw).Create(drawItem);
+            this.core.GetMapping(TableType.vipdraw).Create(drawItem);
             user.baseMgr.info.setAttr('vip_usable_count', remainder);
 
             return {errcode: 'success', errmsg: 'vipdraw:ok', ret: drawItem};
@@ -102,16 +102,16 @@ class profile extends facade.Control
         let last = params.last
         let vipDrawLog = null; 
         if(last==1) {
-            vipDrawLog = await this.core.GetMapping(TableType.VipDraw)
+            vipDrawLog = await this.core.GetMapping(TableType.vipdraw)
             .groupOf().where([['uid','==',uid]])
             .orderby('draw_at', 'desc')
             .paginate(5, 1)
-            .records(tableField.VipDraw)
+            .records(tableField.vipdraw)
         } else {
-            vipDrawLog = await this.core.GetMapping(TableType.VipDraw)
+            vipDrawLog = await this.core.GetMapping(TableType.vipdraw)
             .groupOf().where([['uid','==',uid]])
             .orderby('draw_at', 'desc')
-            .records(tableField.VipDraw);
+            .records(tableField.vipdraw);
         }
         return {errcode: 'success', errmsg: 'vipdrawlog:ok', ret:vipDrawLog};
     }

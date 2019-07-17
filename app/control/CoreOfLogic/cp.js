@@ -111,7 +111,7 @@ class cp extends facade.Control
         ]);
         if (!!ret && ret.result.hasOwnProperty("data")) {
             let addr = ret.result.data.addr;
-            let userWallet = await this.core.GetMapping(TableType.UserWallet).groupOf().where([
+            let userWallet = await this.core.GetMapping(TableType.userwallet).groupOf().where([
                 ['cid', '==', params.cid],
                 ['user_id', '==', params.user_id],
                 ['account', '==', params.account]
@@ -124,7 +124,7 @@ class cp extends facade.Control
                     user_id: params.user_id,
                     account: params.account,
                 };
-                this.core.GetMapping(TableType.UserWallet).Create(userWalletItem);
+                this.core.GetMapping(TableType.userwallet).Create(userWalletItem);
             }
         }
         return {errcode: 'success', errmsg:'usertoken:ok', ret: ret.result};

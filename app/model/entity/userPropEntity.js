@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let UserProp = facade.models.UserProp
+let userprop = facade.models.userprop
 
 //用户微信账号(openid)
 class userPropEntity extends BaseEntity
@@ -13,8 +13,8 @@ class userPropEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.UserProp,     //表类型
-            model: UserProp,               //表映射类
+            etype: TableType.userprop,     //表类型
+            model: userprop,               //表映射类
             entity: userPropEntity,        //ORM映射类
         };
     }
@@ -24,7 +24,7 @@ class userPropEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await UserProp(db).create(item);
+            let it = await userprop(db).create(item);
             await it.save();
     
             return it;
@@ -50,7 +50,7 @@ class userPropEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await UserProp(db).findAll();
+            let ret = await userprop(db).findAll();
             ret.map(it=>{
                 callback(it);
             });
