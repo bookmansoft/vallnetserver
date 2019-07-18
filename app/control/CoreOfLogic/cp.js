@@ -24,7 +24,7 @@ class cp extends facade.Control
     }
 
     async GetCpProxy(user, params) {
-        let url = params.url;
+        let url = params.uri;
         // 使用 axios 发送数据带微信支付服务器
         let result = await new Promise(function(resolve, reject){
             axios.get(url).then(res => {

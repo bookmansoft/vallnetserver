@@ -228,45 +228,6 @@ function getPrePaySign(appId, attach, productIntro, mchId, nonceStr, notifyUrl, 
     return sign
 }
 
-function getSign(url, callback) {
-    var noncestr = wechatcfg.noncestr, timestamp = Math.floor(Date.now()/1000), jsapi_ticket;
-    if(cache.has('ticket')){
-        jsapi_ticket = cache.get('ticket');
-        console.log('1' + 'jsapi_ticket=' + jsapi_ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url);
-        callback({
-            noncestr:noncestr,
-            timestamp:timestamp,
-            url:url,
-            jsapi_ticket:jsapi_ticket,
-            signature:sha1('jsapi_ticket=' + jsapi_ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url)
-        });
-    } else {
-        request(wechatcfg.accessTokenUrl + '?grant_type=' + wechatcfg.grant_type + '&appid=' + wechatcfg.appid + '&secret=' + wechatcfg.secret ,function(error, response, body){
-            if (!error && response.statusCode == 200) {
-                console.log("tokenMap " + body);
-                var tokenMap = JSON.parse(body);
-                request(wechatcfg.ticketUrl + '?access_token=' + tokenMap.access_token + '&type=jsapi', function(error, resp, json){
-                    if (!error && response.statusCode == 200) {
-                        var ticketMap = JSON.parse(json);
-                        console.log("ticketMap " + json);
-                        cache.set('ticket', ticketMap.ticket, wechatcfg.cache_duration);  //加入缓存
-                        console.log('jsapi_ticket=' + ticketMap.ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url);
-                        callback({
-                            debug: true,
-                            noncestr: noncestr,
-                            timestamp: timestamp,
-                            url: url,
-                            jsapi_ticket: ticketMap.ticket,
-                            signature: sha1('jsapi_ticket=' + ticketMap.ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url)
-                        });
-                    }
-                })
-            }
-        })
-    }
-}
-
-
 class AccessToken {
     constructor(accessToken, expireTime) {
       this.accessToken = accessToken;
@@ -572,6 +533,44 @@ class weChat extends facade.Service
         let sendData = fnGetHBInfo(mch_billno);
         let result = await redpackApi(host, path, sendData);
         return result
+    }
+
+    getSign(url, callback) {
+        var noncestr = wechatcfg.noncestr, timestamp = Math.floor(Date.now()/1000), jsapi_ticket;
+        if(cache.has('ticket')){
+            jsapi_ticket = cache.get('ticket');
+            console.log('1' + 'jsapi_ticket=' + jsapi_ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url);
+            callback({
+                noncestr:noncestr,
+                timestamp:timestamp,
+                url:url,
+                jsapi_ticket:jsapi_ticket,
+                signature:sha1('jsapi_ticket=' + jsapi_ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url)
+            });
+        } else {
+            request(wechatcfg.accessTokenUrl + '?grant_type=' + wechatcfg.grant_type + '&appid=' + wechatcfg.appid + '&secret=' + wechatcfg.secret ,function(error, response, body){
+                if (!error && response.statusCode == 200) {
+                    console.log("tokenMap " + body);
+                    var tokenMap = JSON.parse(body);
+                    request(wechatcfg.ticketUrl + '?access_token=' + tokenMap.access_token + '&type=jsapi', function(error, resp, json){
+                        if (!error && response.statusCode == 200) {
+                            var ticketMap = JSON.parse(json);
+                            console.log("ticketMap " + json);
+                            cache.set('ticket', ticketMap.ticket, wechatcfg.cache_duration);  //加入缓存
+                            console.log('jsapi_ticket=' + ticketMap.ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url);
+                            callback({
+                                debug: true,
+                                noncestr: noncestr,
+                                timestamp: timestamp,
+                                url: url,
+                                jsapi_ticket: ticketMap.ticket,
+                                signature: sha1('jsapi_ticket=' + ticketMap.ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url)
+                            });
+                        }
+                    })
+                }
+            })
+        }
     }
 }
 
