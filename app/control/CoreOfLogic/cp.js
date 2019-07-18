@@ -14,22 +14,18 @@ class cp extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async List(user, params) {
-        let page = params.page;
-        let num = params.num;
         let ret = await this.core.service.gamegoldHelper.execute('cp.remoteQuery', []);
-        console.log("cp.js:",ret.result);
         if(ret.code==0) {
             ret.result.list.forEach(element => {
-                //this.core.remoteCall("kv", {k:element.cid, v: JSON.stringify(element)});
                 this.core.callFunc("remotecall", "kv", user, {k: element.cid, v: JSON.stringify(element)});
             });
         }
-        return {errcode: 'success', cp: ret.result};
+        return {code: 0, data: ret.result};
     }
 
     async GetCpProxy(user, params) {
         let url = params.url;
-        // 使用 axios 发送数据带微信支付服务器, 没错, 后端也可以使用 axios
+        // 使用 axios 发送数据带微信支付服务器
         let result = await new Promise(function(resolve, reject){
             axios.get(url).then(res => {
                 // 微信返回的数据也是 xml, 使用 xmlParser 将它转换成 js 的对象
@@ -38,7 +34,7 @@ class cp extends facade.Control
                 reject(err)
             })
         });
-        return {errcode: 'success', result: result};
+        return {code: 0, data: result};
     }
 
     /**
@@ -54,7 +50,7 @@ class cp extends facade.Control
             num
         ]);
         let count = ret==null ? 0 : ret.result.list.length
-        return {errcode: 'success', cp_count: count};
+        return {code: 0, data: count};
     }
 
     /**
@@ -84,11 +80,9 @@ class cp extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async ById(user, params) {
-        console.log(params.items);
         let cid = params.cid
         let ret = await this.core.service.gamegoldHelper.execute('cp.byId', [cid]);
-        console.log(ret.result)
-        return {errcode: 'success',result: ret.result};
+        return {code: 0, data: ret.result};
     }
 
     /**
@@ -127,7 +121,7 @@ class cp extends facade.Control
                 this.core.GetMapping(TableType.userwallet).Create(userWalletItem);
             }
         }
-        return {errcode: 'success', errmsg:'usertoken:ok', ret: ret.result};
+        return {code: 0, msg:'usertoken:ok', data: ret.result};
     }
 }
 

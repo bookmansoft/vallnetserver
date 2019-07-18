@@ -168,26 +168,19 @@ class stockbulletin extends facade.Control {
                 currentPage = 1;
             }
             //构造查询条件
-            //stock_day=2019-05-07
-            let paramArray = new Array();
-            if (typeof (objData.stock_day) != "undefined" && (objData.stock_day != "undefined")  && (objData.stock_day != "")) {
-                console.log(`stock_day 参数: ${objData.stock_day}`);
-                let tmp = ['stock_day', '==', objData.stock_day];
-                paramArray.push(tmp);
+            let paramArray = [];
+            if (!!objData.stock_day) {
+                paramArray.push(['stock_day', objData.stock_day]);
             }
-            if (typeof (objData.cid) != "undefined" && (objData.cid != "undefined")  && (objData.cid != "")) {
-                console.log(`cid 参数: ${objData.cid}`);
-                let tmp = ['cid', '==', objData.cid];
-                paramArray.push(tmp);
+            if (!!objData.cid) {
+                paramArray.push(['cid', objData.cid]);
             }
-            console.log('stockbulletin列表参数：',paramArray);
             //得到 Mapping 对象
             let muster = this.core.GetMapping(TableType.StockBulletin)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列
                 .paginate(10, currentPage);
-// console.log(195,muster.pageNum);
             let $data = { items: {}, list: [], pagination: {} };
             //扩展分页器对象
             $data.pagination = { "total": muster.pageNum * 10, "pageSize": 10, "current": muster.pageCur };
@@ -203,17 +196,12 @@ class stockbulletin extends facade.Control {
             //转化并设置数组属性
             $data.list = Object.keys($data.items).map(key => $data.items[key]);
 
-            console.log($data.list);
-            return $data;
-
+            return {code: 0, data: $data};
         } catch (error) {
             console.log(error);
-            return { items: {}, list: [], pagination: {} };
         }
+        return {code: 0, data: { items: {}, list: [], pagination: {} }};
     }
-
-
-
 }
 
 exports = module.exports = stockbulletin;

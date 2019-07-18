@@ -136,13 +136,11 @@ class manysend extends facade.Control {
             //构造查询条件
             //id=3
             let paramArray = new Array();
-            if (typeof (objData.send_uid) != "undefined" && (objData.send_uid != "")) {
+            if (!!objData.send_uid) {
                 console.log(`send_uid 参数查询本人发送的所有红包: ${objData.send_uid}`);
-                let tmp = ['send_uid', '==', objData.send_uid];
-                paramArray.push(tmp);
+                paramArray.push(['send_uid', objData.send_uid]);
             }
 
-            console.log(paramArray);
             //得到 Mapping 对象
             let muster = this.core.GetMapping(TableType.manysend)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
@@ -166,10 +164,10 @@ class manysend extends facade.Control {
             //转化并设置数组属性
             $data.list = Object.keys($data.items).map(key => $data.items[key]);
 
-            return $data;
+            return {code: 0, data: $data};
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "manysend.ListRecord方法出错" };
+            return { code: -1, msg: "manysend.ListRecord方法出错" };
         }
     }
 
@@ -198,7 +196,7 @@ class manysend extends facade.Control {
             );
             console.log("执行创建成功了吗？",manysend.ormAttr("id"));
             if (manysend == null) {
-                return { code: -1, message: "违反唯一性约束" }
+                return { code: -1, msg: "违反唯一性约束" }
             }
             //将金额拆分到total_num个包中
             let receive_amount=new Array(objData.total_num);
@@ -243,12 +241,10 @@ class manysend extends facade.Control {
                     null,
                 );
             }
-
             return { code: 0, data: manysend.ormAttr("id") };
-
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "manysend.Send 方法出错" };
+            return { code: -1, msg: "manysend.Send 方法出错" };
         }
     }
 }

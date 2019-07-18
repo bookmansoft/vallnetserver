@@ -48,7 +48,7 @@ class stock extends facade.Control
             status: 0
         }
         await this.core.GetMapping(TableType.userstocklog).Create(userStockLogItem)
-        return {errcode: 'success', data: userStockLogItem};
+        return {code: 0, data: userStockLogItem};
 
     }
 
@@ -61,7 +61,7 @@ class stock extends facade.Control
                 ['uid', '==', uid],
                 ['cid', '==', cid]
             ]).records(tableField.userstocklog)
-        return {errcode: 'success', data: userStockLogs}    
+        return {code: 0, data: userStockLogs};
     }
 
     //用户众筹记录
@@ -70,8 +70,9 @@ class stock extends facade.Control
         let userStockActs = await this.core.GetMapping(TableType.userstock).groupOf()
             .where([
                 ['uid', '==', uid]
-            ]).records(tableField.userstock)
-        return {errcode: 'success', data: userStockActs}    
+            ]).records(tableField.userstock);
+
+        return {code: 0, data: userStockActs};
     }
 
     //用户众筹记录详情

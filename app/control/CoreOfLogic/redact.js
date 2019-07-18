@@ -13,25 +13,26 @@ class manage extends facade.Control
     async RedPackActCurrent(user, params) {
         let redpackActList = await this.core.GetMapping(TableType.redpackact).groupOf().where([['status', '==', 1]]).records(tableField.redpackact)
         if(redpackActList.length >0 ) {
-            let redPacetAct = redpackActList[0]
-            return {errcode: 'success', data: redPacetAct}    
+            let redPacetAct = redpackActList[0];
+            return {code: 0, data: redPacetAct};
         }
-        return {errcode: 'error', errmsg: '无红包活动'}
+        return {code: -1, msg: '无红包活动'};
     }
 
     //用户红包汇中
     async UserRedPackAct(user, params) {
-        let uid = user.id
-        let act_id = params.act_id
+        let uid = user.id;
+        let act_id = params.act_id;
         let userRedPactActs = await this.core.GetMapping(TableType.userredpackact).groupOf()
             .where([
                 ['uid', '==', uid],
                 ['act_id', '==', act_id]
             ]).records(tableField.userredpackact);
+        
         if(userRedPactActs.length > 0 ) {
-            return {errcode: 'success', data: userRedPactActs[0]};
+            return {code: 0, data: userRedPactActs[0]};
         }
-        return {errcode: 'error', errmsg: '未参与红包活动'}
+        return {code: -1, msg: '未参与红包活动'};
     }
 
     //用户红包记录
@@ -43,10 +44,11 @@ class manage extends facade.Control
                 ['uid', '==', uid],
                 ['act_id', '==', act_id]
             ]).records(tableField.userRedpack)
+        
         if(userRedPacts.length >0 ) {
-            return {errcode: 'success', data: userRedPacts}    
+            return {code: 0, data: userRedPacts};
         }
-        return {errcode: 'error', errmsg: '无红包参与记录'}
+        return {code: -1, msg: '无红包参与记录'};
     }
 
     //用户抽中红包
@@ -59,7 +61,7 @@ class manage extends facade.Control
 
         let redpackAct = this.core.GetObject(TableType.redpackact, act_id); 
         if(!!!redpackAct ) {
-            return {errcode: 'fail', errmsg: '无红包活动'}    
+            return {code: -1, msg: '无红包活动'};
         }
 
         let current_time = parseInt(new Date().getTime() / 1000)
@@ -99,7 +101,8 @@ class manage extends facade.Control
             }
             await this.core.GetMapping(TableType.userredpackact).Create(userRedpackActItem)
         }
-        return {errcode: 'success'}
+
+        return {code: 0};
         
     };
 
@@ -111,7 +114,6 @@ class manage extends facade.Control
         let openid = params.openid
         let userRedPact = this.core.GetObject(TableType.userredpack, id);     //根据上行id查找userRedPact表中记录
         if( !!userRedPact ) {
-            
             if(userRedPact.orm.status != 0) {
                 return {errcode: 'error', errmsg: '红包已领取'}
             }
@@ -167,10 +169,10 @@ class manage extends facade.Control
             //发送游戏金
             await this.core.service.gamegoldHelper.orderPay(cid, uid, sn, userRedPact.orm.gamegold, uid)
 
-            return {errcode: 'success'}
+            return {code: 0};
 
         } else {
-            return {errcode: 'error'}
+            return {code: -1};
         }
         
     };

@@ -14,7 +14,8 @@ class comments extends facade.Control
         let dataList = this.core.GetMapping(TableType.blockgamecomment).groupOf()
             .where([['cid', '==', cid]])
             .records(tableField.blockgamecomment);
-        return {errcode: 'success', data:dataList};
+
+        return {code: 0, data:dataList};
     };
 
     //添加评论
@@ -34,7 +35,7 @@ class comments extends facade.Control
             create_at: current_time,
         };
         this.core.GetMapping(TableType.blockgamecomment).Create(commentItem);
-        return {errcode: 'success', errmsg: 'create:ok'};
+        return {code: 0};
     }
 }
 

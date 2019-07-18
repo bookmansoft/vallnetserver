@@ -17,7 +17,10 @@ class contract extends facade.Control
         console.log(ret.result);
         return {errcode: 'success', errmsg: 'address.create:ok', ret: ret.result};
     }
-    //发布交易对合约
+    
+    /**
+     * 发布交易对合约
+     */
     async ContractCreate(user, params) {
         let ntype = params.ntype;
         let num = params.num;
@@ -26,7 +29,7 @@ class contract extends facade.Control
         let ret = await this.core.service.gamegoldHelper.execute('contract.create', [
             ntype, num, btc, addr, user.openid
         ]);
-        return {errcode: 'success', errmsg: 'contract.create:ok', ret: ret.result};
+        return {code: 0, msg: 'contract.create:ok', data: ret.result};
     }
 
     //签署交易对
@@ -35,7 +38,7 @@ class contract extends facade.Control
         let ret = await this.core.service.gamegoldHelper.execute('contract.promise', [
             txid, user.openid
         ]);
-        return {errcode: 'success', errmsg: 'contract.promise', ret: ret.result};
+        return {code: 0, msg: 'contract.promise', data: ret.result};
     }
 
     //执行交易对
@@ -50,7 +53,7 @@ class contract extends facade.Control
 
     async ContractList(user, params) {
         let ret = await this.core.service.gamegoldHelper.execute('contract.list', [1, 1]);
-        return {errcode: 'success', errmsg: 'contract.list:ok', ret: ret.result};
+        return {code: 0, msg: 'contract.list:ok', data: ret.result};
     }
 
 }

@@ -62,10 +62,10 @@ class profile extends facade.Control
         let draw_count = params.draw_count;
         let vip_usable_count = user.baseMgr.info.getAttr('vip_usable_count');
         if( draw_count < 10 * 100000) {
-            return {result: false, errmsg: 'draw is not enouth'};
+            return {code: -1, msg: 'draw is not enouth'};
         }
         if(draw_count > vip_usable_count) {
-            return {result: false, errmsg: 'draw beyond'};
+            return {code: -1, msg: 'draw beyond'};
         }
 
         let ret = await this.core.service.gamegoldHelper.execute('tx.send', [
@@ -74,7 +74,7 @@ class profile extends facade.Control
         ]);   
 
         if(!ret) {
-            return {errcode: 'fail', errmsg: 'txsend fail'};
+            return {code: -1, msg: 'txsend fail'};
         } else {
             let remainder = vip_usable_count - draw_count;
             let current_time = parseInt(new Date().getTime() / 1000);
@@ -87,7 +87,7 @@ class profile extends facade.Control
             this.core.GetMapping(TableType.vipdraw).Create(drawItem);
             user.baseMgr.info.setAttr('vip_usable_count', remainder);
 
-            return {errcode: 'success', errmsg: 'vipdraw:ok', ret: drawItem};
+            return {code: 0, msg: 'vipdraw:ok', data: drawItem};
         }
     }
 
@@ -113,7 +113,8 @@ class profile extends facade.Control
             .orderby('draw_at', 'desc')
             .records(tableField.vipdraw);
         }
-        return {errcode: 'success', errmsg: 'vipdrawlog:ok', ret:vipDrawLog};
+
+        return {code: 0, data:vipDrawLog};
     }
 }
 

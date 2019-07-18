@@ -1,5 +1,6 @@
 let facade = require('gamecloud')
 let {TableType} = facade.const;
+let tableField = require('../../util/tablefield');
 
 /**
  * 节点控制器--订单
@@ -25,12 +26,12 @@ class order extends facade.Control
             sn, //order_sn订单编号
             price, //order_sum订单金额
             account  //指定结算的钱包账户，一般为微信用户的openid
-          ]);
-        console.log(ret.result);
+        ]);
+
         if(ret.result == null) {
-            return {errcode: 'faile', errmsg: 'pay error'};
+            return {code: -1, msg: 'pay error'};
         } else {
-            return {errcode: 'success', errmsg: 'orderpay:ok', ret: ret.result};
+            return {code: 0, data: ret.result};
         }
     }
 
@@ -60,17 +61,17 @@ class order extends facade.Control
             update_time: 0,
         };
         await this.core.GetMapping(TableType.order).Create(orderItem);
-        return {errcode: 'success', errmsg: 'order:ok', tradeId: tradeId, order:orderItem};
+        return {code: 0, data: {tradeId: tradeId, order:orderItem}};
     }
 
     async OrderStatus(user, params) {
         let tradeId = params.tradeId
-        let userOrders = this.core.GetMapping(TableType.order).groupOf().where([['order_sn', '==', tradeId]]).records();
+        let userOrders = this.core.GetMapping(TableType.order).groupOf().where([['order_sn', '==', tradeId]]).records(tableField.order);
         if(userOrders.length >0 ) {
             let order = userOrders[0];
-            return {errcode: 'success', errmsg: 'order:ok', order: order.orm};
+            return {code: 0, data: order};
         } else {
-            return {errcode: 'fail', errmsg: 'order:error'};
+            return {code: -1, msg: 'order:error'};
         }
     }
 
@@ -165,12 +166,11 @@ class order extends facade.Control
 
                     }
                 }
-
             }
-            return {errcode: 'success', errmsg: 'result:ok'}; 
+            return {code: 0}; 
 
         } else {
-            return {errcode: 'error', errmsg: 'no order'};
+            return {code: -1, msg: 'no order'};
         }
     }
 }

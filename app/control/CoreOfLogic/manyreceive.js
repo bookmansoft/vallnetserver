@@ -128,25 +128,20 @@ class manyreceive extends facade.Control {
      */
     ListRecord(user, objData) {
         try {
-            console.log("manyreceive.ListRecord:", objData);
-            if (objData == null) {
-                objData = {};
-            }
+            objData = objData || {};
             let currentPage = 1;
+
             //构造查询条件
-            let paramArray = new Array();
-            if (typeof (objData.id) != "undefined" && (objData.id != "")) {
+            let paramArray = [];
+            if (!!objData.id) {
                 console.log(`send_id 参数查询本红包组中的所有红包: ${objData.id}`);
-                let tmp = ['send_id', '==', objData.id];
-                paramArray.push(tmp);
+                paramArray.push(['send_id', objData.id]);
             }
-            if (typeof (objData.receive_uid) != "undefined" && (objData.receive_uid != "")) {
+            if (!!objData.receive_uid) {
                 console.log(`receive_uid 参数查询本人接收的所有红包: ${objData.receive_uid}`);
-                let tmp = ['receive_uid', '==', objData.receive_uid];
-                paramArray.push(tmp);
+                paramArray.push(['receive_uid', objData.receive_uid]);
             }
 
-            console.log(paramArray);
             //得到 Mapping 对象
             let muster = this.core.GetMapping(TableType.manyreceive)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
@@ -171,11 +166,10 @@ class manyreceive extends facade.Control {
 
             //转化并设置数组属性
             $data.list = Object.keys($data.items).map(key => $data.items[key]);
-            //console.log($data);
-            return $data;
+            return {code: 0, data: $data};
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "manyreceive.ListRecord方法出错" };
+            return { code: -1, msg: "manyreceive.ListRecord方法出错" };
         }
     }
 
@@ -188,7 +182,6 @@ class manyreceive extends facade.Control {
         try {
             //获取到发送的记录
             let manysend = this.core.GetObject(TableType.manysend, parseInt(objData.id));
-            //console.log(manysend);
             if (!!manysend) {
                 let manysendData = {
                     total_amount: manysend.getAttr('total_amount'),
@@ -202,7 +195,6 @@ class manyreceive extends facade.Control {
                     state_id: manysend.getAttr('state_id'),
                     state_name: '',
                 };
-                console.log(manysendData);
                 //检查设置state_id状态 ，并更新到数据库中
                 if (manysendData.state_id==1) { //仅对正常状态生效
                     //首次查询，获取实际已领取的记录数。
@@ -212,17 +204,13 @@ class manyreceive extends facade.Control {
                         manysendData.state_id=2;
                         //更新到数据库中。
                         manysend.setAttr('state_id',2);
-                        manysend.Save();
                     }
                     else if (new Date().getTime()/1000 - manysendData.modify_date > 24*3600) {
                         console.log("红包过期啦");
                         manysendData.state_id=3;
                         //更新到数据库中。
                         manysend.setAttr('state_id',3);
-                        manysend.Save();
                     }
-                    
-
                 }
                 
                 //经过上述处理，如果仍然是状态1，则确定可以抢红包。否则忽略抢红包逻辑
@@ -261,8 +249,7 @@ class manyreceive extends facade.Control {
                             break;//跳出循环
                         }
                     }
-                }
-                else {
+                } else {
                     //虽然是已领完或者已过期状态，但是本人领取过，仍然按state=1处理
                     console.log("299 已领完或已过期");
                     objData.server_flag=1;  //设置获取所有记录，包括未填写收件人的记录
@@ -283,15 +270,12 @@ class manyreceive extends facade.Control {
                 //设置状态名称用于显示
                 manysendData.state_name = (manysendData.state_id == 2 ? '红包已领完' : '红包已过期');
                 //将数据返回给客户端
-                return {
-                    data: manysendData,
-                    list: manyreceive.list, //实际不使用，重新获取一次；以后可以注释本行
-                };
+                return { code: 0, data: manysendData };
             }
-            return { code: -1, data: null };
+            return { code: -1 };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "manysend.Retrieve方法出错" };
+            return { code: -1, msg: "manysend.Retrieve方法出错" };
         }
     }
 }

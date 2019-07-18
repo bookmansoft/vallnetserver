@@ -203,67 +203,50 @@ class stockbase extends facade.Control {
      * @param {*} objData 查询及翻页参数，等整体调通以后再细化。
      */
     ListRecord(user, objData) {
-        try {
-            if (objData == null) {
-                objData = {};
-            }
-            let currentPage = objData.currentPage;
-            if (Number.isNaN(parseInt(currentPage))) {
-                currentPage = 1;
-            }
-            //构造查询条件
-            //cp_text=3&audit_state_id=2
-            let paramArray = new Array();
-            if (typeof (objData.cp_text) != "undefined" && (objData.cp_text != "undefined") && (objData.cp_text != "")) {
-                console.log(`cp_text 参数: ${objData.cp_text}`);
-                let tmp = ['cp_text', '==', objData.cp_text];
-                paramArray.push(tmp);
-            }
-            console.log(`audit_state_id 参数: ${objData.audit_state_id}`);
-            if (typeof (objData.audit_state_id) != "undefined" && (objData.audit_state_id != "undefined") && (objData.audit_state_id != "")) {
-                console.log(`audit_state_id 参数: ${objData.audit_state_id}`);
-                let tmp = ['audit_state_id', '==', objData.audit_state_id];
-                paramArray.push(tmp);
-            }
-            console.log('stockbase列表参数：', paramArray);
-
-            //得到 Mapping 对象
-            let muster = this.core.GetMapping(TableType.StockBase)
-                .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
-                .where(paramArray)
-                .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, currentPage);
-
-            let $data = { items: {}, list: [], pagination: {} };
-            //扩展分页器对象
-            $data.pagination = { "total": muster.pageNum * 10, "pageSize": 10, "current": muster.pageCur };
-            $data.total = muster.pageNum;
-            $data.page = muster.pageCur;
-
-            let $idx = (muster.pageCur - 1) * muster.pageSize;
-            for (let $value of muster.records([
-                'id', 'cid', 'cp_name', 'cp_text', 'total_num', 'sell_stock_amount',
-                'sell_stock_num','base_amount','large_img_url','small_img_url','icon_url','pic_urls','cp_desc','funding_text','funding_project_text',
-                'stock_money','supply_people_num','supply_money','funding_residue_day','funding_target_amount','funding_done_amount','provider','history_text','now_sale'
-            ])) {
-                $data.items[$idx] = $value;
-                $value['rank'] = $idx++;
-            }
-
-            //转化并设置数组属性
-            $data.list = Object.keys($data.items).map(key => $data.items[key]);
-
-            // let ret=$data.list;
-            return $data;
-
-        } catch (error) {
-            console.log(error);
-            return { items: {}, list: [], pagination: {} };
+        if (objData == null) {
+            objData = {};
         }
+        let currentPage = objData.currentPage;
+        if (Number.isNaN(parseInt(currentPage))) {
+            currentPage = 1;
+        }
+        //构造查询条件
+        let paramArray = [];
+        if (!!objData.cp_text) {
+            paramArray.push(['cp_text', objData.cp_text]);
+        }
+        if (!!objData.audit_state_id) {
+            paramArray.push(['audit_state_id', objData.audit_state_id]);
+        }
+
+        //得到 Mapping 对象
+        let muster = this.core.GetMapping(TableType.StockBase)
+            .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
+            .where(paramArray)
+            .orderby('id', 'desc') //根据id字段倒叙排列
+            .paginate(10, currentPage);
+
+        let $data = { items: {}, list: [], pagination: {} };
+        //扩展分页器对象
+        $data.pagination = { "total": muster.pageNum * 10, "pageSize": 10, "current": muster.pageCur };
+        $data.total = muster.pageNum;
+        $data.page = muster.pageCur;
+
+        let $idx = (muster.pageCur - 1) * muster.pageSize;
+        for (let $value of muster.records([
+            'id', 'cid', 'cp_name', 'cp_text', 'total_num', 'sell_stock_amount',
+            'sell_stock_num','base_amount','large_img_url','small_img_url','icon_url','pic_urls','cp_desc','funding_text','funding_project_text',
+            'stock_money','supply_people_num','supply_money','funding_residue_day','funding_target_amount','funding_done_amount','provider','history_text','now_sale'
+        ])) {
+            $data.items[$idx] = $value;
+            $value['rank'] = $idx++;
+        }
+
+        //转化并设置数组属性
+        $data.list = Object.keys($data.items).map(key => $data.items[key]);
+
+        return {code: 0, data: $data};
     }
-
-
-
 }
 
 exports = module.exports = stockbase;

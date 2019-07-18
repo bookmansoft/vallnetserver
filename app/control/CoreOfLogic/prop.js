@@ -40,7 +40,7 @@ class prop extends facade.Control
     async PropCount(user, params) {
         let ret = await this.core.service.gamegoldHelper.execute('prop.list', [1, user.openid]);
         user.baseMgr.info.setAttr('prop_count', ret.result.count);
-        return {errcode: 'success', errmsg: 'prop.count:ok', count: ret.result.count};
+        return {code: 0, data: {count: ret.result.count}};
     }
 
     //我的道具
@@ -50,7 +50,6 @@ class prop extends facade.Control
             page, //游戏编号
             user.openid
         ]);
-        console.log(ret.result);
         let props = Array()
         for(let i=0; i<ret.result.list.length; i++) {
             let element = ret.result.list[i]
@@ -64,7 +63,7 @@ class prop extends facade.Control
             //#endregion
             props.push(element);
         }
-        return {errcode: 'success', errmsg: 'prop.list:ok', props: props, count: ret.result.count};
+        return {code: 0, data : {props: props, count: ret.result.count}};
     }
 
     //道具熔铸
@@ -73,12 +72,14 @@ class prop extends facade.Control
         let ret = await this.core.service.gamegoldHelper.execute('prop.found', [
             pid, //生产者编码
         ]);
-        console.log(ret.result);
-        return {errcode: 'success', errmsg: 'prop.found:ok', ret: ret.result};
+        return {code: 0, msg: 'prop.found:ok', data: ret.result};
     }
 
-    //道具捐赠
-    //prop.donate hash index [openid]
+    /**
+     * 道具捐赠 prop.donate hash index [openid]
+     * @param {*} user 
+     * @param {*} params 
+     */
     async PropDonate(user, params) {
         let txid = this.core.service.gamegoldHelper.revHex(params.txid);
         let pid = params.pid;
@@ -87,11 +88,11 @@ class prop extends facade.Control
             pid,
             user.openid
         ]);
-        console.log(ret);
+
         if(!!!ret || ret.code != 0) {
-            return {errcode: 'fail', errmsg: 'fail'};
+            return {code: -1, msg: 'fail'};
         } else {
-            return {errcode: 'success', errmsg: 'prop.donate:ok', ret: ret.result};
+            return {code: 0, data: ret.result};
         }
     }
 
@@ -103,8 +104,7 @@ class prop extends facade.Control
             raw, 
             user.openid,
         ]);    
-        console.log(ret.result);
-        return {errcode: 'success', errmsg: 'prop.receive:ok', ret: ret.result};
+        return {code: 0, msg: 'prop.receive:ok', data: ret.result};
     }  
 
     //道具转移
@@ -131,15 +131,13 @@ class prop extends facade.Control
             fixedPrice,
             user.openid
         ]);
-        console.log(ret.result);
-        return {errcode: 'success', errmsg: 'prop.sale:ok', ret: ret.result};
+        return {code: 0, data: ret.result};
     }
 
     //道具市场
     async PropListMarket(user, params) {
         let ret = await this.core.service.gamegoldHelper.execute('prop.remoteQuery', [[['pst', 2]]]);
-        console.log(ret.result);
-        return {errcode: 'success', errmsg: 'prop.list.market:ok', ret: ret.result.list};
+        return {code: 0, msg: 'prop.list.market:ok', data: ret.result.list};
     }
 
     //道具购买
@@ -152,11 +150,11 @@ class prop extends facade.Control
             price,
             user.openid
         ]);     
-        console.log(ret.result);
+
         if(!!ret && ret.code == 0) {
-            return {errcode: 'success', errmsg: 'prop.buy:ok', ret: ret.result}; 
+            return {code: 0, data: ret.result}; 
         } else {
-            return {errcode: 'fail', errmsg: 'prop.buy:ok'}; 
+            return {code: -1, msg: 'prop.buy:ok'};
         }
         
     }

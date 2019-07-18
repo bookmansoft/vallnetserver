@@ -36,7 +36,7 @@ class wallet extends facade.Control
             amount,
             user.openid,
         ]); 
-        return {errcode: 'success', errmsg: 'tx.send:ok', ret: ret.result}; 
+        return {code: 0, data: ret.result};
     }
 
     /**
@@ -46,8 +46,8 @@ class wallet extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
      async BalanceAll(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('balance.all', [user.openid]);    
-        return {errcode: 'success', errmsg: 'balance.all:ok', balance: ret.result}; 
+        let ret = await this.core.service.gamegoldHelper.execute('balance.all', [user.openid]);
+        return {code: 0, msg: 'balance.all:ok', data: ret.result}; 
     }
 
     /**
@@ -59,7 +59,7 @@ class wallet extends facade.Control
     async TxLogs(user, params) {                      
         let ret = await this.core.service.gamegoldHelper.execute('tx.list', [use.openid,]);    
         assert(ret.result[0].account);
-        return {errcode: 'success', errmsg: 'tx.list:ok', list: ret.result};           
+        return {code: 0, data: {list: ret.result}};
     }
 
     /**
@@ -68,10 +68,8 @@ class wallet extends facade.Control
      * @param {*} params 
      */
     async GetNotify(user, params) {
-        let uid = user.id
-        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [
-            1 
-        ]);
+        let uid = user.id;
+        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [1]);
         if(!!ret && ret.result.length > 0) {
             ret.result.forEach(element => {
                 let blockNotifys = this.core.GetMapping(TableType.blockNotify).groupOf().where([['sn', '==', element.sn]]).records();
@@ -108,7 +106,8 @@ class wallet extends facade.Control
             ['uid', '==', uid],
             ['status', '==', 1]
         ]).records();
-        return {errcode: 'success', errmsg: 'notify.list:ok', count: blockNotifys.length}; 
+
+        return {code : 0, data: {count: blockNotifys.length}};
     }
 
     /**
@@ -131,7 +130,7 @@ class wallet extends facade.Control
                 data.push(element.orm)
             });
         }
-        return {errcode: 'success', errmsg: 'notify.list:ok', notifys: data}; 
+        return {code: 0, msg: 'notify.list:ok', data: data}; 
     }
 
     /**
@@ -161,17 +160,18 @@ class wallet extends facade.Control
                     price, //order_sum订单金额
                     openid  //指定结算的钱包账户，一般为微信用户的openid
                 ]);
-               if(ret != null) {
+
+                if(ret != null) {
                   blockNotify.setAttr('status', 3);
-                  return {errcode: 'success', errmsg: 'notify.orderpay:ok', ret:ret.result}; 
-               }  else {
-                  return {errcode: 'fail', errmsg: 'pay error', ret: null}; 
-               }
+                  return {code: 0, data:ret.result}; 
+                }  else {
+                  return {code: -1, msg: 'pay error'}; 
+                }
             } else {
-                return {errcode: 'fail', errmsg: 'invalid order'}; 
+                return {code: -1, msg: 'invalid order'}; 
             }
         } else {
-            return {errcode: 'fail', errmsg: 'notify not exist'}; 
+            return {code: -2, msg: 'notify not exist'}; 
         }
     }
 

@@ -17,7 +17,6 @@ class wechat extends facade.Control {
       */
     async WechatConfig(user, params) {
         let url = params.url;
-        console.log("signature url " + url);
         let res = await new Promise(function (resolve, reject) {
             signature.sign(url, function (data) {
                 console.log({ signature: data });
@@ -29,13 +28,10 @@ class wechat extends facade.Control {
                     signature: data.signature,// 必填，签名，见附录1
                     jsApiList: wechatcfg.jsApiList,
                 }
-                //res.json(wxconfig);
-                console.log("wxconfig " + wxconfig);
                 resolve(wxconfig);
             });
         })
-        console.log({ errcode: 'success', wxconfig: res })
-        return { errcode: 'success', wxconfig: res }
+        return { code: 0, data: res };
     }
 
     /**
@@ -54,10 +50,10 @@ class wechat extends facade.Control {
         //const appId = 'wx4b3efb80ac5de780'
         try {
             let res = await this.core.service.wechat.unifiedOrder(appId, openid, ip, price, productInfo, tradeId);
-            return { errcode: 'success', unifiedOrder: res }
+            return { code: 0, data: {unifiedOrder: res} };
         } catch (e) {
             console.log(e);
-            return { errcode: 'error', errmsg: e }
+            return { code: -1, msg: e.message };
         }
     }
 
@@ -112,7 +108,7 @@ class wechat extends facade.Control {
         }
         this.core.GetMapping(TableType.redpack).Create(redpackItem);
 
-        return { errcode: 'success', ret: ret.return_msg }
+        return { code: 0, data: ret.return_msg };
     }
 
     async GetRecPackInfo(user, params) {

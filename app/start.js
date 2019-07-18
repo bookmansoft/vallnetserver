@@ -19,16 +19,16 @@ if(env.constructor == String) {
     env = JSON.parse(env);
 }
 
-//添加静态网站，开启反向代理
-facade.startProxy({
-    router: {
-        'test.gamegold.xin': {target: 'http://localhost:9801'},
-        'wallet.vallnet.cn': {target: 'http://localhost:9101'},
-        'crm.vallnet.cn': {target: 'http://localhost:9801'},
-    },
-    port: 80,
-    protocol: 'http',
-});
+// //添加静态网站，开启反向代理
+// facade.startProxy({
+//     router: {
+//         'test.gamegold.xin': {target: 'http://localhost:9801'},
+//         'wallet.vallnet.cn': {target: 'http://localhost:9101'},
+//         'crm.vallnet.cn': {target: 'http://localhost:9801'},
+//     },
+//     port: 80,
+//     protocol: 'http',
+// });
 
 //新增Auth服务器，请参照 gameconfig-backup 对 gameconfig 文件进行相应配置
 facade.boot({
