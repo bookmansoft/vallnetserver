@@ -188,9 +188,9 @@ facade.boot({
         //直接登记消息处理句柄，因为类似 balance.account.client/order.pay 这样的消息是默认发送的，不需要订阅
         core.service.monitor.remote.watch(msg => {
             //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/user/balanceChange.js
-            core.notifyEvent('user.balanceChange', {data:msg});
+            core.notifyEvent('wallet.balanceChange', {data:msg});
         }, 'balance.account.client');
-
+    
         core.service.monitor.remote.watch(msg => {
             //用户执行 order.pay 之后，CP特约节点发起到账通知消息，抛出内部事件, 处理流程定义于 app/events/user/orderPay.js
             core.notifyEvent('user.orderPay', {data:msg});

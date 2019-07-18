@@ -11,7 +11,6 @@ let {NotifyType, ActionExecuteType, UserStatus,em_Condition_Type} = facade.const
  */
 function handle(data){
     data.user.loginTime = facade.util.now(); //记录登录时间
-    //console.log(`${data.user.openid}进入游戏`);
 
     data.curTime = new Date();//记录当前时间，为后续流程提供统一的时间标尺
     switch(data.user.domainType){

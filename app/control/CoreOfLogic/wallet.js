@@ -13,11 +13,14 @@ class wallet extends facade.Control
      * 创建一个收款地址：address.create 不需要参数
      * 
      * @param {*} user 
-     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
      */
-    async AddressCreate(user, paramGold) {
-        let ret = await this.core.service.gamegoldHelper.execute('address.create', paramGold.items);
-        return {code: 0, data: ret.result};
+    async AddressCreate(user) {
+        let ret = await this.core.service.gamegoldHelper.execute('address.create', [user.domainId]);
+        if(ret.code == 0) {
+            return {code: 0, data: ret.result.address};
+        } else {
+            return {code: -1};
+        }
     }
 
     /**
@@ -36,17 +39,6 @@ class wallet extends facade.Control
             user.openid,
         ]); 
         return {code: 0, data: ret.result};
-    }
-
-    /**
-     * 查询账户余额
-     * balance.all [openid]
-     * @param {*} user 
-     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
-     */
-     async BalanceAll(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('balance.all', [user.openid]);
-        return {code: 0, msg: 'balance.all:ok', data: ret.result}; 
     }
 
     /**

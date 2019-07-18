@@ -76,8 +76,6 @@ async function handle(sofar) {
             }
 
             if (!!usr) {
-                sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});//发送"登录后"事件
-
                 usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌
                 usr.time = CommonFunc.now();                //记录标识令牌有效期的时间戳
 
@@ -88,7 +86,7 @@ async function handle(sofar) {
                 //检测并生成一个专用的钱包地址
                 if(!usr.baseMgr.info.GetRecord('block_addr')) {
                     try {
-                        let rt = await sofar.facade.service.gamegoldHelper.execute('token.user', ['first-acc-01', unionid, null, unionid]);
+                        let rt = await sofar.facade.service.gamegoldHelper.execute('token.user', ['first-acc-01', usr.domainId, null, usr.domainId]);
                         usr.baseMgr.info.SetRecord('block_addr', !!rt && rt.code == 0 ? rt.result.data.addr : '');
                     } catch(e) {
                         console.log('create block_addr', e.message);
@@ -99,6 +97,9 @@ async function handle(sofar) {
                 if(!!usr.baseMgr.info.GetRecord('phone')) {
                     sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.GetRecord('phone'), usr.id], IndexType.Phone);
                 }
+
+                //触发并实时执行"登录后"事件, 注意将事件触发置于此可以：1. 用户持密码或两节点登录时触发 2. 用户持 token 登录时不触发，避免了频繁触发带来的性能问题
+                await sofar.facade.notifyEvent('wallet.afterLogin', {user:usr, objData:sofar.msg});
             }
         }
 
