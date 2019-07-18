@@ -69,7 +69,7 @@ class wechat extends facade.Control {
         response.data.pipe(fs.createWriteStream('qrcode.png'));
         //#endregion
 
-        return { errcode: 'success', token: token };
+        return { code: 0, data: token };
     }
 
     async SendRecPack(user, params) {
@@ -114,7 +114,7 @@ class wechat extends facade.Control {
     async GetRecPackInfo(user, params) {
         let mch_billno = params.mch_billno
         let ret = await this.core.service.wechat.getHBinfo(mch_billno)
-        return { errcode: 'success', ret: ret }
+        return { code: 0, data: ret }
     }
 }
 

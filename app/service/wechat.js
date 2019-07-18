@@ -494,7 +494,6 @@ class weChat extends facade.Service
      * @param {*} callback 
      */
     async getOpenidByCode(code, appId, AppSecret) {
-        console.log("wechat.js 47:",code,appId,AppSecret);
         let options = {
             uri: `https://api.weixin.qq.com/sns/oauth2/access_token`,
             json: true,
@@ -514,7 +513,6 @@ class weChat extends facade.Service
                 }
             });
         });
-        console.log("wechat.js 67:",res);
         return res;
     }
 

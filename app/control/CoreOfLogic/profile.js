@@ -24,7 +24,7 @@ class profile extends facade.Control
             };
             this.core.GetMapping(TableType.usergame).Create(userGameItem);
         }
-        return {errcode: 'success', item: userGameItem};
+        return {code: 0, data: userGameItem};
     }
 
     //我的游戏
@@ -41,7 +41,7 @@ class profile extends facade.Control
             let blockGames = await this.core.GetMapping(TableType.blockgame).groupOf().where([
                 ['id', 'include', gameIds]
             ]).records(tableField.blockgame);
-            return {errcode: 'success', data: blockGames};
+            return {code: 0, data: blockGames};
         }
     }
 
@@ -50,7 +50,7 @@ class profile extends facade.Control
         let page = params.page;
         let ret = await remote.execute('prop.list', [page, user.openid]);
         user.baseMgr.info.setAttr('prop_count', ret.result.count);
-        return {errcode: 'success', errmsg: 'userprop:ok', props: ret.result.list};
+        return {code: 0, data: ret.result.list};
     }
 
     /**
@@ -87,7 +87,7 @@ class profile extends facade.Control
             this.core.GetMapping(TableType.vipdraw).Create(drawItem);
             user.baseMgr.info.setAttr('vip_usable_count', remainder);
 
-            return {code: 0, msg: 'vipdraw:ok', data: drawItem};
+            return {code: 0, data: drawItem};
         }
     }
 

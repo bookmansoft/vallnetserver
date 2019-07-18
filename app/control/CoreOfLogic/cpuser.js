@@ -26,9 +26,9 @@ class cpuser extends facade.Control
                 created_at: created_at
             };
             let newCpUser = await this.core.GetMapping(TableType.cpuser).Create(cpUserItem);
-            data = newCpUser.orm;
+            data = tableField.record(newCpUser.orm, tableField.cpuser);
         }
-        return {errcode: 'success', errmsg:'checkopenid:ok', data: data};
+        return {code: 0, data: data};
     };
 
     //用户登录授权
@@ -39,10 +39,9 @@ class cpuser extends facade.Control
         if(cpusers.length >0 ) {
             let cpuser = cpusers[0];
             cpuser.setAttr('addr', token.data.addr);     //修改所得记录的item字段，下次查询时将得到新值，同时会自动存入数据库
-            cpuser.orm.save();
-            return {errcode: 'success', errmsg:'usertokennotify:ok', token: token};
+            return {code: 0, data: {token: token}};
         }
-        return {errcode: 'faile', errmsg:'usertokennotify:err', token: token};
+        return {code: -1};
     }
 }
 

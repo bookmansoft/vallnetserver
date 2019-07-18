@@ -265,9 +265,23 @@ let userstocklog = [
     'status'
 ]
 
+/**
+ * 选择对象的指定属性，构造新对象并返回
+ * @param {*} obj 
+ * @param {*} attrs 
+ */
+function record(obj, attrs) {
+    let ret = {};
+    for(let attr of attrs) {
+        if(!!obj[attr]) {
+            ret[attr] = obj[attr];
+        }
+    }
+}
+
 exports = module.exports = tableField = {
     blockgame, blockgamecate, blockgameprop, blockgameprovider,
     userwallet, redpack, redpackact,
     cpuser, cpprop, cporder, usergame, userprop, order, vipdraw, blockNotify,
-    userredpack, userredpackact, blockgamecomment, mobileverify, stock, userstock, userstocklog
+    userredpack, userredpackact, blockgamecomment, mobileverify, stock, userstock, userstocklog, record,
 }

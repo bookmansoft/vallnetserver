@@ -1,6 +1,7 @@
 let facade = require('gamecloud')
 let {TableType} = facade.const;
 const assert = require('assert')
+let tableField = require('../../util/tablefield');
 
 /**
  * 钱包
@@ -15,10 +16,8 @@ class wallet extends facade.Control
      * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async AddressCreate(user, paramGold) {
-        console.log(paramGold.items);
         let ret = await this.core.service.gamegoldHelper.execute('address.create', paramGold.items);
-        console.log(ret.result);
-        return {errcode: 'success', errmsg: 'address.create:ok', ret: ret.result};
+        return {code: 0, data: ret.result};
     }
 
     /**
@@ -125,9 +124,8 @@ class wallet extends facade.Control
             blockNotifys.forEach(element => {
                 if(element.orm.status == 1) {
                     element.setAttr('status', 2);
-                    element.orm.save()
                 }
-                data.push(element.orm)
+                data.push(tableField.record(element.orm, tableField.blockNotify))
             });
         }
         return {code: 0, msg: 'notify.list:ok', data: data}; 
@@ -146,8 +144,8 @@ class wallet extends facade.Control
             ['sn', '==', sn]
         ]).records();
         if(blockNotifys.length > 0) {
-            let blockNotify = blockNotifys[0]
-            let obj = JSON.parse(blockNotify.orm.content)
+            let blockNotify = blockNotifys[0];
+            let obj = JSON.parse(blockNotify.orm.content);
             if(!!obj && obj.hasOwnProperty('cid') && obj.hasOwnProperty('price') && obj.hasOwnProperty('sn')) { 
                 let cid = obj.cid;
                 let uid = openid;

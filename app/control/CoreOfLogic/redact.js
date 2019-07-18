@@ -89,7 +89,6 @@ class manage extends facade.Control
             userRedPactAct.setAttr('act_count', userRedPactAct.orm.act_count+1);
             userRedPactAct.setAttr('amount_all', userRedPactAct.orm.amount_all+amount);
             userRedPactAct.setAttr('last_act_at', current_time);
-            userRedPactAct.orm.save()
         } else {
             let userRedpackActItem = {
                 uid: uid,
@@ -115,7 +114,7 @@ class manage extends facade.Control
         let userRedPact = this.core.GetObject(TableType.userredpack, id);     //根据上行id查找userRedPact表中记录
         if( !!userRedPact ) {
             if(userRedPact.orm.status != 0) {
-                return {errcode: 'error', errmsg: '红包已领取'}
+                return {code: -1, msg: '红包已领取'};
             }
 
             /*
@@ -158,25 +157,20 @@ class manage extends facade.Control
             
             this.core.GetMapping(TableType.redpack).Create(redpackItem);
             */
-           let cid = userRedPact.orm.cid
+           let cid = userRedPact.orm.cid;
            let sn = stringRandom(32)
 
             userRedPact.setAttr('status', 1)
             userRedPact.setAttr('order_sn', sn)
             userRedPact.setAttr('cid', cid)
-            userRedPact.orm.save()
 
             //发送游戏金
-            await this.core.service.gamegoldHelper.orderPay(cid, uid, sn, userRedPact.orm.gamegold, uid)
-
+            await this.core.service.gamegoldHelper.orderPay(cid, uid, sn, userRedPact.orm.gamegold, uid);
             return {code: 0};
-
         } else {
             return {code: -1};
         }
-        
     };
-
 }
 
 exports = module.exports = manage;

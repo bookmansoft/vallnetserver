@@ -8,10 +8,9 @@ let tableField = require('../../util/tablefield');
  */
 class cpprop extends facade.Control
 {
-    //用户信息
     async PropList(user, params)  {
         let props = this.core.GetMapping(TableType.cpprop).groupOf().records(tableField.cpprop);
-        return {errcode: 'success', errmsg:'proplist:ok', props: props};
+        return {code: 0, data: {props: props}};
     };
 
     //道具确权
@@ -31,7 +30,7 @@ class cpprop extends facade.Control
                 queryprops.push(prop);
             }
         });
-        return {errcode: 'success', errmsg:'queryprops:ok', queryprops: queryprops};    
+        return {code: 0, data: {queryprops: queryprops}};
     }
 
     //道具详情查询
@@ -40,7 +39,7 @@ class cpprop extends facade.Control
         let prop = this.core.GetMapping(TableType.cpprop).groupOf().where([
             ['oid', '==', oid]
         ]).records(tableField.cpprop)[0];
-        return {errcode: 'success', errmsg:'queryprops:ok', prop: !!prop ? prop : null};
+        return {code: 0, data: {prop: !!prop ? prop : null}};
     }
 
     //批量查询道具
@@ -49,7 +48,8 @@ class cpprop extends facade.Control
         let props = this.core.GetMapping(TableType.cpprop).groupOf().where([
             ['oid', 'include', oids]
         ]).records(tableField.cpprop);
-        return {errcode: 'success', errmsg:'getpropbyoids:ok', props: !!props ? props : null};
+
+        return {code: 0, data: {props: !!props ? props : null}};
     }
 
 }

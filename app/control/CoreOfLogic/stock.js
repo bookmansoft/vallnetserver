@@ -10,16 +10,16 @@ class stock extends facade.Control
     //众筹列表
     async Stocks(user, params) {
         let stockList = await this.core.GetMapping(TableType.stock).groupOf().where([['status', '==', 1]]).records(tableField.stock)
-        return {errcode: 'success', data: stockList} 
+        return {code: 0, data: stockList} 
     }
 
     //众筹详情
     async StockInfo(user, params) {
         let stockInfo = this.core.GetObject(TableType.stock, params.id);          
         if(!!userStock) {
-            return {errcode: 'success', data: stockInfo};
+            return {code: 0, data: stockInfo};
         }
-        return {errcode: 'fail', data: null};
+        return {code: -1, data: null};
     }
 
     //众筹详情
@@ -36,8 +36,7 @@ class stock extends facade.Control
         ]).records();
         if(userStockItems.length >0 ) {
             let userStockItem = userStockItems[0]
-            userStockItem.setAttr('quantity', userStockItem.orm.quantity - quantity)
-            userStockItem.orm.save()
+            userStockItem.setAttr('quantity', userStockItem.orm.quantity - quantity);
         }
 
         let userStockLogItem = {
@@ -79,9 +78,9 @@ class stock extends facade.Control
     async UserStockInfo(user, params) {
         let userStock = this.core.GetObject(TableType.userstock, params.id);          
         if(!!userStock) {
-            return {errcode: 'success', data: userStock};
+            return {code: 0, data: userStock};
         }
-        return {errcode: 'fail', data: null};
+        return {code: -1};
     }
 
     async StockSend(user, params) {
@@ -89,7 +88,7 @@ class stock extends facade.Control
         let cid = params.cid
         let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(uid, cid)
         let ret = await this.core.service.gamegoldHelper.execute('stock.send', [cid, 100, addr, 'alice']);
-        return {errcode: 'success', data: ret} 
+        return {code: 0, data: ret} 
     }
 
 }

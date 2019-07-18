@@ -13,15 +13,13 @@ class prop extends facade.Control
         let prop_ori_id = params.prop_ori_id;
         let prop_value = params.prop_value;
         let user_addr = params.user_addr;
-        //npm run cli rpc prop.order {game_id} {prop_ori_id} {prop_value} {user_addr}
         let ret = await this.core.service.gamegoldHelper.execute('prop.order', [
             cid, //游戏编号
             prop_ori_id, //道具原始
             prop_value, //道具含金量
             user_addr //游戏内玩家的有效地址
         ]);
-        console.log(ret.result);
-        return {errcode: 'success', errmsg: 'prop.order:ok', ret: ret.result};
+        return {code: 0, data: ret.result};
     }
 
     //道具确权
@@ -32,8 +30,7 @@ class prop extends facade.Control
             cid, //游戏编号
             user_addr //游戏内玩家的有效地址
         ]);
-        console.log(ret.result);
-        return {errcode: 'success', errmsg: 'queryProps:ok', ret: ret.result};
+        return {code: 0, data: ret.result};
     }
 
     //道具数量
@@ -108,7 +105,6 @@ class prop extends facade.Control
     }  
 
     //道具转移
-    //prop.send addr hash index [openid]
     async PropSend(user, params) {
         let addr = params.addr;
         let pid = params.pid;
@@ -117,8 +113,7 @@ class prop extends facade.Control
             pid,
             user.openid
         ]); 
-        console.log(ret.result);
-        return {errcode: 'success', errmsg: 'prop.send:ok', ret: ret.result};
+        return {code: 0, data: ret.result};
     }     
 
     //道具出售
@@ -137,7 +132,7 @@ class prop extends facade.Control
     //道具市场
     async PropListMarket(user, params) {
         let ret = await this.core.service.gamegoldHelper.execute('prop.remoteQuery', [[['pst', 2]]]);
-        return {code: 0, msg: 'prop.list.market:ok', data: ret.result.list};
+        return {code: 0, data: ret.result.list};
     }
 
     //道具购买
@@ -156,7 +151,6 @@ class prop extends facade.Control
         } else {
             return {code: -1, msg: 'prop.buy:ok'};
         }
-        
     }
 }
 

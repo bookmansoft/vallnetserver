@@ -40,14 +40,14 @@ class cporder extends facade.Control
             }
             this.core.GetMapping(TableType.cporder).Create(cpOrderItem);
         }
-        return {errcode: 'success', errmsg:'propbuy:ok'};
+        return {code: 0};
     };
     
     //用户订单
     async OrderList(user, params)  {
         let uid = user.id;
         let orders = this.core.GetMapping(TableType.cporder).groupOf().where([['uid','==',uid]]).orderby('create_time', 'desc').records(tableField.cporder);
-        return {errcode: 'success', errmsg:'orderlist:ok', orders: orders};
+        return {code: 0, data: {orders: orders}};
     };
 
     //支付订单
@@ -60,7 +60,6 @@ class cporder extends facade.Control
         if(cpOrders.length >0 ) {
             let cporder = cpOrders[0];
             cporder.setAttr('pay_status', status);                    //修改所得记录的pay_status字段，下次查询时将得到新值，同时会自动存入数据库
-            cporder.orm.save();
             let cporder_orm = cporder.orm;
             if(status==1) {
                 let user_addr = cporder_orm.user_addr;
@@ -74,11 +73,10 @@ class cporder extends facade.Control
                     prop_value, //道具含金量
                     user_addr   //游戏内玩家的有效地址
                 ]);
-                console.log(ret.result);
-                return {errcode: 'success', errmsg:'ordernotify:ok', cid: cid, user_addr: user_addr, ret: ret.result};
+                return {code: 0, data: {cid: cid, user_addr: user_addr, ret: ret.result}};
             }
         }
-        return {errcode: 'success', errmsg:'ordernotify:ok'};
+        return {code: 0};
     }    
 }
 

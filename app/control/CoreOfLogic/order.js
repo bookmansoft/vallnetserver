@@ -127,7 +127,6 @@ class order extends facade.Control
                     if(!!stock) {
                         stock.setAttr('support', stock.orm.support+1);
                         stock.setAttr('remainder', stock.orm.remainder - quantity);
-                        stock.orm.save()
                         
                         let userStockLogItem = {
                             uid: uid,
@@ -147,7 +146,6 @@ class order extends facade.Control
                             userStockItem.setAttr('amount', userStockItem.orm.amount + order.orm.order_num)
                             userStockItem.setAttr('quantity', userStockItem.orm.quantity + quantity)
                             userStockItem.setAttr('pay_at', current_time)
-                            userStockItem.orm.save()
                         } else {
                             let userStockItem = {
                                 uid: uid,
@@ -161,14 +159,12 @@ class order extends facade.Control
                                 src: stock.orm.item_pic,
                                 title: stock.orm.cname
                             }
-                            await this.core.GetMapping(TableType.userstock).Create(userStockItem)
+                            await this.core.GetMapping(TableType.userstock).Create(userStockItem);
                         }
-
                     }
                 }
             }
             return {code: 0}; 
-
         } else {
             return {code: -1, msg: 'no order'};
         }

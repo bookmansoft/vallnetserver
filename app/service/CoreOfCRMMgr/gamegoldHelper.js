@@ -44,11 +44,11 @@ class gamegoldHelper extends facade.Service
             price, //order_sum订单金额
             account  //指定结算的钱包账户，一般为微信用户的openid
           ]);
-        console.log(ret);
+
         if(ret == null) {
-            return {errcode: 'faile', errmsg: 'pay error'};
+            return {code: -1, msg: 'pay error'};
         } else {
-            return {errcode: 'success', errmsg: 'orderpay:ok', ret: ret};
+            return {code: 0, data: ret};
         }
     }
 

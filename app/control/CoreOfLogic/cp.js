@@ -54,27 +54,6 @@ class cp extends facade.Control
     }
 
     /**
-     * CP注册指令：cp.create "name" "url" ["ip"]
-     * @param {*} user 
-     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
-     */
-    async Create(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('cp.create', params.items);
-        return {errcode: 'success',result: ret.result};
-    }
-
-    /**
-     * CP修改/转让指令： cp.change "name" ["url" "ip" "addr"]
-     * @param {*} user 
-     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
-     */
-    async Change(user, params) {
-        console.log(params.items);
-        let ret = await this.core.service.gamegoldHelper.execute('cp.change', params.items);
-        return {errcode: 'success',result: ret.result};
-    }
-
-    /**
      * 根据ID查询CP注册信息 cid CP编码
      * @param {*} user 
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
@@ -92,7 +71,7 @@ class cp extends facade.Control
      */
     async ByName(user, params) {
         let ret = await this.core.service.gamegoldHelper.execute('cp.ByName', params.items);
-        return {errcode: 'success',result: ret.result};
+        return {code: 0, data: ret.result};
     }
 
     //申请令牌
@@ -121,7 +100,7 @@ class cp extends facade.Control
                 this.core.GetMapping(TableType.userwallet).Create(userWalletItem);
             }
         }
-        return {code: 0, msg:'usertoken:ok', data: ret.result};
+        return {code: 0, data: ret.result};
     }
 }
 
