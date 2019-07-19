@@ -76,6 +76,7 @@
 <script src="js/md5.js"></script>
 <script src="js/gamegold.cp.js"></script>
 <script>
+    var localhost = 'http://127.0.0.1:9701';
     var mainVue = new Vue({
         el: '#mainVue',
         data:{ 
@@ -195,9 +196,7 @@
 
                 // 返回钱包
                 onBackTowallet: function() {
-                    var url = "https://mini.gamegold.xin/gg-wechat-client";
-                    console.log(url);
-                    window.location.href = url;
+                    window.location.href = "http://localhost:9101";
                 }
             }
     });
@@ -218,7 +217,6 @@ jQuery(function($) {
 	function verifyToken(token, userInfo) {
         let tokenObj = encodeURIComponent(JSON.stringify(token));
         let userInfoObj = encodeURIComponent(JSON.stringify(userInfo));
-        //console.log(tokenObj);
 		$.ajax({type: 'POST', url: 'user/verify', data:{token:tokenObj, userInfo:userInfoObj}, 
 			success:function(rep){
                 console.log(rep.verify);
@@ -337,25 +335,16 @@ jQuery(function($) {
 			}
 		});	
     }
-    //-------------------------------------------------------------------------------
-    //----------------------------重点修改以下三个方法-------------------------------
-    //                if(that.tabIndex == 0) {        //游戏主界面
-    //                    homeInfo();
-    //                } else if(that.tabIndex == 1) { //游戏道具界面
-    //                    propInfo();
-    //                } else if(that.tabIndex == 3) { //我的道具（考虑改成我的订单，似乎更为合理）
-    //                    orderList();
-    //              }
     //游戏信息，首页，动态获取并填充
     function homeInfo() {
         $("#divProp").empty();
         $("#divHome").empty();
         $("#divMyPropList").empty();
         var params=location.search.substring(1).split("/");
-	    var url=location.protocol+"//"+location.host+"/mock/"+params[0];
+        console.log(params);
         $.ajax({
             type: "GET",
-            url: url,
+            url: `${localhost}/mock/${params[0]}`,
             success: function(result){
                 try {
                     console.log(JSON.stringify(result));
@@ -381,11 +370,9 @@ jQuery(function($) {
         $("#divHome").empty();
         $("#divMyPropList").empty();
         var params=location.search.substring(1).split("/");
-	    var url=location.protocol+"//"+location.host+"/mock/"+params[0];
-        //alert(url);
         $.ajax({
             type: "GET",
-            url: url,
+            url: `${localhost}/mock/${params[0]}`,
             success: function(result){
                 try {
                     console.log(JSON.stringify(result));
@@ -416,13 +403,10 @@ jQuery(function($) {
         console.log("进入点击buy方法");
         console.log(price);
         var params=location.search.substring(1).split("/");
-	    var url=location.protocol+"//"+location.host+"/mock/"+params[0]+"/order";
 	    var address=params[1];
-	    //alert(icon);
-	    //alert(props_name);
         $.ajax({
             type: "POST",
-            url: url,
+            url: `${localhost}/mock/${params[0]}/order`,
             data: {
                 "oid":id,
                 "price":price,
@@ -449,11 +433,9 @@ jQuery(function($) {
         $("#divHome").empty();
         $("#divMyPropList").empty();
         var params=location.search.substring(1).split("/");
-	    var url=location.protocol+"//"+location.host+"/mock/"+params[0]+"/myProps/"+params[1];
-        //alert(url);
         $.ajax({
             type: "GET",
-            url: url,
+            url: `${localhost}/mock/${params[0]}/myProps/${params[1]}`,
             success: function(result){
                 try {
                     console.log(JSON.stringify(result));
@@ -480,13 +462,10 @@ jQuery(function($) {
         console.log("进入点击buy方法");
         console.log(price);
         var params=location.search.substring(1).split("/");
-	    var url=location.protocol+"//"+location.host+"/mock/"+params[0]+"/order";
 	    var address=params[1];
-	    alert(icon);
-	    alert(props_name);
         $.ajax({
             type: "POST",
-            url: url,
+            url: `${localhost}/mock/${params[0]}/order`,
             data: {
                 "oid":id,
                 "price":price,

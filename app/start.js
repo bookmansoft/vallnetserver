@@ -58,6 +58,7 @@ facade.boot({
     static: [
         ['/image', './web/image'],
         ['/echart', './web/echart'],
+        ['/test/', './web/game/test'],
     ], 
 });
 
@@ -118,14 +119,16 @@ facade.boot({
     }, 'tx.client');
 });
 
-// //加载游戏管理节点
+//加载游戏管理节点
 // facade.boot({
 //     env: {
 //         serverType: "Chick",
 //         serverId: 1
 //     },
 //     //设置静态资源映射
-//     static: [['/chick/', './web/game/chick']], 
+//     static: [
+//         ['/chick/', './web/game/chick'],
+//     ], 
 // });
 
 //加载Wallet管理节点
