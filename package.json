@@ -1,6 +1,6 @@
 {
   "name": "vallnet_wallet_server",
-  "version": "2.5.5",
+  "version": "2.6.0",
   "author": "bookmansoft <ceo@920.cc>",
   "contributors": [
     "bookmansoft <ceo@920.cc>"
@@ -44,7 +44,7 @@
   "homepage": "https://github.com/bookmansoft/gamegold-wechat-server#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^6.1.4",
+    "mocha": "^6.2.0",
     "should": "^11.2.1"
   },
   "optionalDependencies": {
@@ -57,7 +57,7 @@
     "axios": "^0.19.0",
     "crc-32": "^1.0.2",
     "gamecloud": "^2.2.27",
-    "gamerpc": "^2.2.0",
+    "gamerpc": "^2.2.1",
     "nodemailer": "^6.2.1",
     "qr-image": "^3.2.0",
     "request": "^2.88.0",
