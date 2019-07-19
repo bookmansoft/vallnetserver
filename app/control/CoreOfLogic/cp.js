@@ -4,7 +4,7 @@ const axios = require('axios')
 
 /**
  * 游戏的控制器
- * Updated by thomasFuzhou on 2018-11-19.
+ * Updated on 2018-11-19.
  */
 class cp extends facade.Control
 {
@@ -76,31 +76,8 @@ class cp extends facade.Control
 
     //申请令牌
     async UserToken(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('token.user', [
-            params.cid,
-            params.user_id,
-            null,
-            params.account
-        ]);
-        if (!!ret && ret.result.hasOwnProperty("data")) {
-            let addr = ret.result.data.addr;
-            let userWallet = await this.core.GetMapping(TableType.userwallet).groupOf().where([
-                ['cid', '==', params.cid],
-                ['user_id', '==', params.user_id],
-                ['account', '==', params.account]
-            ]).records();
-            if(userWallet.length == 0) {
-                let userWalletItem = {
-                    uid: user.id,
-                    cid: params.cid,
-                    addr: addr,
-                    user_id: params.user_id,
-                    account: params.account,
-                };
-                this.core.GetMapping(TableType.userwallet).Create(userWalletItem);
-            }
-        }
-        return {code: 0, data: ret.result};
+        let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(user, params.cid);
+        return {code: 0, data: addr};
     }
 }
 

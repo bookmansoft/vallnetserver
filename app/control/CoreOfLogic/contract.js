@@ -1,7 +1,7 @@
 let facade = require('gamecloud')
 /**
  * 交易对
- * Updated by thomasFuzhou on 2018-11-19.
+ * Updated on 2018-11-19.
  */
 class contract extends facade.Control
 {

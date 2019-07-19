@@ -81,15 +81,6 @@ class stock extends facade.Control
         }
         return {code: -1};
     }
-
-    async StockSend(user, params) {
-        let uid = user.id
-        let cid = params.cid
-        let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(uid, cid)
-        let ret = await this.core.service.gamegoldHelper.execute('stock.send', [cid, 100, addr, 'alice']);
-        return {code: 0, data: ret} 
-    }
-
 }
 
 exports = module.exports = stock;

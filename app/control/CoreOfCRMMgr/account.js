@@ -3,7 +3,7 @@ let { ReturnCode, NotifyType } = facade.const
 
 /**
  * 账户的控制器
- * Updated by thomasFuzhou on 2018-11-20.
+ * Updated on 2018-11-20.
  */
 class account extends facade.Control {
     /**

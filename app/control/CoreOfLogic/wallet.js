@@ -4,7 +4,7 @@ let {TableType, TableField} = facade.const;
 
 /**
  * 钱包
- * Updated by thomasFuzhou on 2018-11-19.
+ * Updated on 2018-11-19.
  */
 class wallet extends facade.Control
 {
@@ -58,33 +58,22 @@ class wallet extends facade.Control
      * @param {*} params 
      */
     async GetNotify(user, params) {
-        let uid = user.id;
-        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [1]);
+        //查询用户帐户下是否有系统通知. todo: sys.listNotify 需要改造，当前不具备根据账户查询的功能
+        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [user.domainId]);
         if(!!ret && ret.result.length > 0) {
+            //为每条通知匹配订单
             ret.result.forEach(element => {
                 let blockNotifys = this.core.GetMapping(TableType.blockNotify).groupOf().where([['sn', '==', element.sn]]).records();
-                if(blockNotifys.length==0) {
+                if(blockNotifys.length == 0) {
+                    //没有匹配到订单，生成新的待支付订单
                     let current_time = parseInt(new Date().getTime() / 1000)
-                    let notifyUid = ''
-                    try {
-                        let obj = JSON.parse(element.body.content);
-                        if(!!obj && obj.hasOwnProperty('address')) {
-                            let addr = obj.address
-                            let userWallets = this.core.GetMapping(TableType.userwallet).groupOf().where([['addr', '==', addr]]).records();
-                            if(userWallets.length >0) {
-                                notifyUid = userWallets[0].orm.uid
-                            }
-                        }
-                    } catch(e) {
-
-                    }
                     let notifyItem = {
                         sn: element.sn,
                         h: element.h,
                         status: element.status,
                         content: element.body.content,
                         type: element.body.type,
-                        uid: notifyUid,
+                        uid: use.id,
                         create_time: current_time,
                         update_time: 0
                     }
@@ -92,8 +81,10 @@ class wallet extends facade.Control
                 }
             });
         }
+
+        //查询当前待支付订单
         let blockNotifys = this.core.GetMapping(TableType.blockNotify).groupOf().where([
-            ['uid', '==', uid],
+            ['uid', '==', user.id],
             ['status', '==', 1]
         ]).records();
 

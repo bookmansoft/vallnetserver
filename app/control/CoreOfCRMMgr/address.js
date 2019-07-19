@@ -4,7 +4,7 @@ let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
  * 收款地址的控制器
- * Updated by thomasFuzhou on 2018-11-20.
+ * Updated on 2018-11-20.
  */
 class address extends facade.Control {
     /**

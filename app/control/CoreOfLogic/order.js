@@ -3,7 +3,7 @@ let {TableType, TableField} = facade.const;
 
 /**
  * 节点控制器--订单
- * Updated by thomasFuzhou on 2018-11-19.
+ * Updated on 2018-11-19.
  */
 class order extends facade.Control
 {
@@ -119,7 +119,7 @@ class order extends facade.Control
                 } else if (!!order.orm.attach) {
                     let cid = order.orm.attach;
                     let quantity = order.orm.quantity;
-                    let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(uid, cid);
+                    let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(user, cid);
                     await this.core.service.gamegoldHelper.execute('stock.send', [cid, quantity, addr, 'alice']);
 
                     let stock = this.core.GetObject(TableType.stock, order.orm.product_id);          

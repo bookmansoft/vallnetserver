@@ -3,7 +3,7 @@ let { ReturnCode, NotifyType, TableType, TableField } = facade.const
 
 /**
  * 游戏的控制器
- * Updated by thomasFuzhou on 2018-11-19.
+ * Updated on 2018-11-19.
  */
 class stockbulletin extends facade.Control {
     get router() {

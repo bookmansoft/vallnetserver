@@ -3,7 +3,7 @@ let { ReturnCode, NotifyType } = facade.const
 
 /**
  * 交易的控制器
- * Updated by thomasFuzhou on 2018-11-19.
+ * Updated on 2018-11-19.
  */
 class tx extends facade.Control {
     /**

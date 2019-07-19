@@ -1,10 +1,10 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType, TableType } = facade.const
+let { ReturnCode, TableType } = facade.const
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
  * 游戏的控制器
- * Updated by thomasFuzhou on 2018-11-19.
+ * Updated on 2018-11-19.
  */
 class cpstockbase extends facade.Control {
     /**
