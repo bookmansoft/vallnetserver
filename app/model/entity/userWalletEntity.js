@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
+let {TableType, IndexType} = facade.const;
 let BaseEntity = facade.BaseEntity;
 let userwallet = facade.models.userwallet
 
