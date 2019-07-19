@@ -14,9 +14,9 @@ class operator extends facade.Control {
      */
     async ChangePassword(user, objData) {
         if (user.GetAttr('password') != objData.oldpassword) {
-            return {code: -10, message:"原密码错"};
+            return {code: -10, msg:"原密码错"};
         } else if(!objData.newpassword) {
-            return {code: -10, message:"新密码为空"};
+            return {code: -10, msg:"新密码为空"};
         }
 
         user.SetAttr('password', objData.newpassword);
@@ -42,7 +42,7 @@ class operator extends facade.Control {
             operator.baseMgr.info.setAttr('state', objData.state);
         }
 
-        return { code: 0, data: null,message:"状态成功" };
+        return { code: 0, msg:"状态成功" };
     }
 
     /**
@@ -68,7 +68,7 @@ class operator extends facade.Control {
             return { code: -1, data: null };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "operator.Retrieve方法出错" };
+            return { code: -1, msg: "operator.Retrieve方法出错" };
         }
     }
 
@@ -131,7 +131,7 @@ class operator extends facade.Control {
             return $data;
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "operator.ListRecord方法出错" };
+            return { code: -1, msg: "operator.ListRecord方法出错" };
         }
     }
 }

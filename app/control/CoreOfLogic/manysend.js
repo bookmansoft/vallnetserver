@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let { ReturnCode, NotifyType, TableType } = facade.const;
+let { ReturnCode, NotifyType, TableType, TableField } = facade.const;
 
 /**
  * 游戏的控制器
@@ -16,7 +16,7 @@ class manysend extends facade.Control {
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "manysend.DeleteRecord方法出错" };
+            return { code: -1, msg: "manysend.DeleteRecord方法出错" };
         }
 
     }
@@ -48,7 +48,7 @@ class manysend extends facade.Control {
             return { code: -1, data: null };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "manysend.UpdateRecord方法出错" };
+            return { code: -1, msg: "manysend.UpdateRecord方法出错" };
         }
 
     }
@@ -70,16 +70,15 @@ class manysend extends facade.Control {
                 objData.wishing,
                 objData.modify_date,
             );
-            // console.log("执行创建成功了吗？");
             if (manysend == null) {
-                return { code: -1, message: "违反唯一性约束" }
+                return { code: -1, msg: "违反唯一性约束" }
             }
             else {
                 return { code: 0, data: null };
             }
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "manysend.CreateRecord方法出错" };
+            return { code: -1, msg: "manysend.CreateRecord方法出错" };
         }
     }
 
@@ -111,7 +110,7 @@ class manysend extends facade.Control {
             return { code: -1, data: null };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "manysend.Retrieve方法出错" };
+            return { code: -1, msg: "manysend.Retrieve方法出错" };
         }
     }
 
@@ -156,7 +155,7 @@ class manysend extends facade.Control {
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
             $idx = $idx + 5;
-            for (let $value of muster.records(['id', 'total_amount', 'actual_amount', 'total_num', 'send_uid', 'send_nickname', 'send_headimg', 'wishing', 'modify_date'])) {
+            for (let $value of muster.records(TableField.manysend)) {
                 $data.items[$idx] = $value;
                 $value['rank'] = $idx++;
             }

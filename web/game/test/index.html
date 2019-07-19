@@ -202,17 +202,14 @@
     });
 </script>
 <script>
-jQuery(function($) {
-    //页面加载完成
-	$(document).ready(function(e) {
-	    //alert(document.getElementById("divProp").innerHTML);
-        homeInfo();
+    jQuery(function($) {
+        $(document).ready(function(e) {
+            //页面加载完成
+            homeInfo();
+        });
     });
-});
 </script>
 <script>
-  
-    
     //验证令牌
 	function verifyToken(token, userInfo) {
         let tokenObj = encodeURIComponent(JSON.stringify(token));
@@ -418,13 +415,11 @@ jQuery(function($) {
                 try {
                     //alert(JSON.stringify(result));
                     alert("道具已经在路上，稍后请到“我的道具”查看！");
-
                 }catch(ex) {
                     alert("JS异常:" + ex.message);
                 }
             }
         });
-            
     }
     //我的道具
     //https://mini.gamegold.xin/mock/cp0104/myProps/tb1qrs5u2gzzfzud4at2xf6q8ka8ajsl4cyxnn6wrz
@@ -484,9 +479,6 @@ jQuery(function($) {
             }
         });
     }
-
-  
 </script>
-
 </body>
 </html>

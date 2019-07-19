@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { IndexType, ReturnCode, NotifyType, TableType } = facade.const
+let { IndexType, ReturnCode, NotifyType, TableType, TableField } = facade.const
 let fetch = require("node-fetch");
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 let uuid = require('uuid');
@@ -38,7 +38,7 @@ class cp extends facade.Control {
             return { code: ReturnCode.Success };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "cp.UpdateRecord 方法出错" };
+            return { code: -1, msg: "cp.UpdateRecord 方法出错" };
         }
     }
 
@@ -75,7 +75,7 @@ class cp extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "cp.Change方法出错" };
+            return { code: -1, msg: "cp.Change方法出错" };
         }
     }
 
@@ -96,7 +96,7 @@ class cp extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "cp.ById方法出错" };
+            return { code: -1, msg: "cp.ById方法出错" };
         }
     }
 
@@ -135,7 +135,7 @@ class cp extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "cp.ByName方法出错" };
+            return { code: -1, msg: "cp.ByName方法出错" };
         }
     }
 
@@ -177,7 +177,7 @@ class cp extends facade.Control {
                 return await this.Retrieve(user, objData);
             }
 
-            return { code: -2, data: null, message: "指定CP不存在" };
+            return { code: -2, msg: "指定CP不存在" };
         }
     }
 
@@ -197,7 +197,7 @@ class cp extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "cp.List方法出错" };
+            return { code: -1, msg: "cp.List方法出错" };
         }
     }
 
@@ -247,7 +247,7 @@ class cp extends facade.Control {
 
         let $idx = (muster.pageCur - 1) * muster.pageSize;
         //@warning muster.records不带属性数组调用时，返回Entiry对象列表，访问内部属性时需要使用 .GetAttr(attrName) ，带属性数组调用时，返回属性映射对象列表，可以直接访问内部属性
-        for (let $value of muster.records(['id', 'cp_id', 'cp_text', 'cp_type', 'cp_state', 'publish_time', 'operator_id'])) {
+        for (let $value of muster.records(TableField.Cp)) {
             $data.items[$idx] = $value;
             $value["rank"] = $idx++;
         }
@@ -273,7 +273,7 @@ class cp extends facade.Control {
                 .paginate(10, 1); 
 
             let $data=[];
-            for (let $value of muster.records(['id', 'cp_type_id', 'cp_type_name'])) {
+            for (let $value of muster.records(TableField.CpType)) {
                 let item = { id: $value['id'], cp_type_id: $value['cp_type_id'], cp_type_name: $value['cp_type_name']};
                 $data.push(item);
             }

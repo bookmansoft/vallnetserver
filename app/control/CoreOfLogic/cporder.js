@@ -1,6 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
-let tableField = require('../../util/tablefield');
+let {TableType, TableField} = facade.const;
 let randomHelp = require('../../util/randomHelp');
 
 /**
@@ -15,8 +14,8 @@ class cporder extends facade.Control
         let uid = user.id;
         let addr = params.addr;
         let openid = params.openid;
-        let cpprops = this.core.GetMapping(TableType.cpprop).groupOf().where([['id','==',prop_id]]).records(tableField.cpprop);
-        let cpusers = this.core.GetMapping(TableType.cpuser).groupOf().where([['id','==',uid]]).records(tableField.cpuser);
+        let cpprops = this.core.GetMapping(TableType.cpprop).groupOf().where([['id','==',prop_id]]).records(TableField.cpprop);
+        let cpusers = this.core.GetMapping(TableType.cpuser).groupOf().where([['id','==',uid]]).records(TableField.cpuser);
         if(cpprops.length> 0 && cpusers.length > 0 ) {
             let cpprop = cpprops[0];
             let created_at = new Date().getTime();
@@ -46,7 +45,7 @@ class cporder extends facade.Control
     //用户订单
     async OrderList(user, params)  {
         let uid = user.id;
-        let orders = this.core.GetMapping(TableType.cporder).groupOf().where([['uid','==',uid]]).orderby('create_time', 'desc').records(tableField.cporder);
+        let orders = this.core.GetMapping(TableType.cporder).groupOf().where([['uid','==',uid]]).orderby('create_time', 'desc').records(TableField.cporder);
         return {code: 0, data: {orders: orders}};
     };
 

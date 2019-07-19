@@ -1,6 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
-let tableField = require('../../util/tablefield');
+let {TableType, TableField} = facade.const;
 
 /**
  * 管理后台
@@ -9,7 +8,7 @@ class stock extends facade.Control
 {
     //众筹列表
     async Stocks(user, params) {
-        let stockList = await this.core.GetMapping(TableType.stock).groupOf().where([['status', '==', 1]]).records(tableField.stock)
+        let stockList = await this.core.GetMapping(TableType.stock).groupOf().where([['status', '==', 1]]).records(TableField.stock)
         return {code: 0, data: stockList} 
     }
 
@@ -59,7 +58,7 @@ class stock extends facade.Control
             .where([
                 ['uid', '==', uid],
                 ['cid', '==', cid]
-            ]).records(tableField.userstocklog)
+            ]).records(TableField.userstocklog)
         return {code: 0, data: userStockLogs};
     }
 
@@ -69,7 +68,7 @@ class stock extends facade.Control
         let userStockActs = await this.core.GetMapping(TableType.userstock).groupOf()
             .where([
                 ['uid', '==', uid]
-            ]).records(tableField.userstock);
+            ]).records(TableField.userstock);
 
         return {code: 0, data: userStockActs};
     }

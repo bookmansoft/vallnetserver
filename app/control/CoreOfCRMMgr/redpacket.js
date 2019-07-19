@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType, TableType } = facade.const
+let { ReturnCode, NotifyType, TableType, TableField } = facade.const
 
 /**
  * 游戏的控制器
@@ -14,10 +14,10 @@ class redpacket extends facade.Control {
     DeleteRecord(user, objData) {
         try {
             this.core.GetMapping(TableType.RedPacket).Delete(objData.id, true);
-            return { code: ReturnCode.Success, data: null };
+            return { code: ReturnCode.Success };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "redpacket.DeleteRecord方法出错" };
+            return { code: -1, msg: "redpacket.DeleteRecord方法出错" };
         }
 
     }
@@ -47,10 +47,10 @@ class redpacket extends facade.Control {
                 console.log("62 ok");
                 return { code: ReturnCode.Success };
             }
-            return { code: -1, data: null };
+            return { code: -1 };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "redpacket.UpdateRecord方法出错" };
+            return { code: -1, msg: "redpacket.UpdateRecord方法出错" };
         }
 
     }
@@ -76,14 +76,14 @@ class redpacket extends facade.Control {
             );
             // console.log("执行创建成功了吗？");
             if (redpacket == null) {
-                return { code: -1, message: "违反唯一性约束" }
+                return { code: -1, msg: "违反唯一性约束" }
             }
             else {
                 return { code: 0, data: null };
             }
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "redpacket.CreateRecord方法出错" };
+            return { code: -1, data: null, msg: "redpacket.CreateRecord方法出错" };
         }
     }
 
@@ -118,7 +118,7 @@ class redpacket extends facade.Control {
             return { code: -1, data: null };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "redpacket.Retrieve方法出错" };
+            return { code: -1, msg: "redpacket.Retrieve方法出错" };
         }
     }
 
@@ -165,7 +165,7 @@ class redpacket extends facade.Control {
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
             $idx = $idx + 5;
-            for (let $value of muster.records(['id', 'act_name', 'act_sequence', 'total_gamegold', 'each_gamegold', 'total_num', 'each_num', 'act_desc', 'act_start_at'])) {
+            for (let $value of muster.records(TableField.RedPacket)) {
                 $data.items[$idx] = $value;
                 $value['rank'] = $idx++;
             }
@@ -175,7 +175,7 @@ class redpacket extends facade.Control {
             return $data;
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "redpacket.ListRecord方法出错" };
+            return { code: -1, msg: "redpacket.ListRecord方法出错" };
         }
     }
 }

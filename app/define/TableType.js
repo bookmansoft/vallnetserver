@@ -35,6 +35,321 @@ const TableType ={
     'StockBase': 303,
 };
 
+let blockgame = ['id','game_code','game_title','game_resource_uri','game_ico_uri','game_link_url','game_desc','sort','category_id',
+    'category_title','provider_id','provider_name','ad_title','ranking','star_level','down_count','comment_count',
+    'create_time','update_time','store_status','game_version',
+    'developer','update_desc','game_screenshots','player_count','cpid','cpurl','cp_addr','cp_name'
+];
+
+let blockgamecate = [
+    'id','category_id','category_title'
+];
+
+let blockgameprop = [ 
+    'id',
+    'cpid',
+    'prop_id',
+    'oid',
+    'prop_name',
+    'icon_small',
+    'icon_large',
+    'prop_info',
+    'create_time',
+    'prop_price',
+    'prop_value',
+    'nstatus'
+];
+
+let blockgameprovider = [
+    'id',
+    'provider_id',
+    'provider_name',
+    'contact',
+    'phone',
+    'addr',
+    'uri',
+    'game_number',
+    'comprehensive_grade'
+];
+
+let userwallet = [
+    'id',
+    'uid',
+    'cid',
+    'addr',
+    'account',
+    'user_id',
+    'mnemonic_word',
+    'wallet_service_uri',
+    'remaining_coin',
+    'gift',
+    'donate_count',
+    'buy_count'
+];
+
+let usergame = [
+    'id',
+    'uid',
+    'openid',
+    'game_id'
+];
+
+let userprop = [
+    'uid',
+    'openid',
+    'cid',
+    'oid',
+    'pid',
+    'oper',
+    'current_hash',
+    'current_index',
+    'current_rev',
+    'current_height',
+    'time',
+    'gold',
+    'status',
+    'cp_url',
+    'cp_name',
+    'cp_ip'
+];
+
+let cpuser = [
+    'id',
+    'openid',
+    'addr',
+    'nick',
+    'avatar_uri',
+    'created_at'
+];
+
+let cpprop = [
+    'id',
+    'oid',
+    'prop_id',
+    'prop_name',
+    'prop_icon',
+    'prop_info',
+    'gold',
+    'price'
+];
+
+let cporder = [
+    'id',
+    'uid',
+    'openid',
+    'user_addr',
+    'order_sn',
+    'order_num',
+    'prop_id',
+    'prop_name',
+    'prop_oid',
+    'prop_value',
+    'prop_icon',
+    'order_status',
+    'prop_status',
+    'pay_status',
+    'create_time',
+    'update_time'
+];
+
+let order = [ 
+    'uid',
+    'order_sn',
+    'order_num',
+    'product_id',
+    'product_info',
+    'attach',
+    'quantity',
+    'order_status',
+    'pay_status',
+    'create_time',
+    'update_time',
+]
+
+let vipdraw = [ 
+    'uid',
+    'draw_count',
+    'pay_status',
+    'remainder',
+    'draw_at',
+]
+
+let blockNotify = [
+    'sn',
+    'h',
+    'status',
+    'content',
+    'type',
+    'uid',
+    'create_time',
+    'update_time'
+]
+
+let redpack = [
+    'user_redpack_id',
+    'uid',
+    'act_id',
+    'act_name',
+    'mch_billno',
+    'nick_name',
+    're_openid',
+    'remark',
+    'send_name',
+    'total_amount',
+    'total_num',
+    'wishing',
+    'return_msg',
+    'order_status'
+]
+
+let redpackact = [
+    'id',
+    'act_name',
+    'act_sequence',
+    'total_gamegold',
+    'each_gamegold',
+    'total_num',
+    'each_num',
+    'act_desc',
+    'act_start_at',
+    'act_end_at',
+    'cid',
+    'status'
+]
+
+let userredpack = [
+    'id',
+    'uid',
+    'act_id',
+    'act_name',
+    'gamegold',
+    'amount',
+    'act_at',
+    'status',
+    'order_sn',
+    'cid'
+]
+
+let userredpackact = [
+    'id',
+    'uid',
+    'act_id',
+    'act_name',
+    'act_count',
+    'amount_all',
+    'last_act_at',
+]
+
+let blockgamecomment = [
+    'id',
+    'cid',
+    'reply_id',
+    'uid',
+    'nick',
+    'avatar_url',
+    'ip',
+    'resp_count',
+    'point_up_count',
+    'create_at',
+    'title',
+    'content',
+]
+
+let mobileverify = [
+    'mobile',
+    'code',
+    'daystamp',
+    'last_time',
+    'send_num'
+]
+
+let stock = [
+    'id',
+    'cid',
+    'cname',
+    'totality',
+    'remainder',
+    'price',
+    'gold',
+    'title',
+    'pic',
+    'item_pic',
+    'desc',
+    'status',
+    'support'
+]
+
+let userstock = [
+    'id',
+    'uid',
+    'cid',
+    'gamegold',
+    'amount',
+    'quantity',
+    'pay_at',
+    'order_sn',
+    'status',
+    'title',
+    'src'
+]
+
+let userstocklog = [
+    'id',
+    'uid',
+    'cid',
+    'quantity',
+    'pay_at',
+    'status'
+]
+
+let StockBase = [
+    'id', 'cid', 'cp_name', 'cp_text', 'total_num', 'sell_stock_amount',
+    'sell_stock_num','base_amount','large_img_url','small_img_url','icon_url','pic_urls','cp_desc','funding_text','funding_project_text',
+    'stock_money','supply_people_num','supply_money','funding_residue_day','funding_target_amount','funding_done_amount','provider','history_text','now_sale'
+]
+
+let Prize = ['id', 'act_name', 'mch_billno', 'nick_name', 're_openid', 'remark', 'send_name', 'total_amount', 'total_num', 'wishing', 'return_msg', 'order_status']
+
+let Cp = ['id', 'cp_id', 'cp_text', 'cp_type', 'cp_state', 'publish_time', 'operator_id']
+
+let CpType =  ['id', 'cp_type_id', 'cp_type_name']
+
+let CpFunding = ['id', 'stock_num', 'total_amount', 'stock_amount', 'stock_rmb', 'audit_state_id', 'audit_text', 'modify_date', 'cp_name', 'cp_text', 'cp_type', 'cp_url', 'develop_name', 'develop_text', 'user_id', 'cid', 'operator_id']
+
+let Prop = ['id', 'props_name', 'props_type', 'props_desc', 'icon_url', 'icon_preview', 'status', 'props_price', 'props_rank', 'propsAt', 'cid', 'props_id']
+
+let CpStock = ['id', 'cid', 'cp_name', 'cp_text', 'stock_day', 'stock_open', 'stock_close', 'stock_high', 'stock_low', 'total_num', 'total_amount']
+
+let RedPacket = ['id', 'act_name', 'act_sequence', 'total_gamegold', 'each_gamegold', 'total_num', 'each_num', 'act_desc', 'act_start_at']
+
+let manysend = ['id', 'total_amount', 'actual_amount', 'total_num', 'send_uid', 'send_nickname', 'send_headimg', 'wishing', 'modify_date']
+
+let StockBulletin = ['id', 'cid', 'cp_name', 'cp_text', 'stock_day', 'stock_open', 'stock_close', 'stock_high', 'stock_low', 'total_num', 'total_amount']
+
+let Mail = ['id', 'src', 'dst', 'content', 'time', 'state']
+
+let manyreceive = ['id', 'send_id', 'receive_amount', 'send_uid', 'send_nickname', 'send_headimg', 'receive_uid', 'receive_nickname', 'receive_headimg', 'modify_date']
+
+/**
+ * 选择对象的指定属性，构造新对象并返回
+ * @param {*} obj 
+ * @param {*} attrs 
+ */
+function record(obj, attrs) {
+    let ret = {};
+    for(let attr of attrs) {
+        if(!!obj[attr]) {
+            ret[attr] = obj[attr];
+        }
+    }
+}
+
 exports = module.exports = {
     TableType: TableType,
+    TableField: {
+        blockgame, blockgamecate, blockgameprop, blockgameprovider, StockBulletin, Mail,
+        userwallet, redpack, redpackact, StockBase, Prize, Cp, CpType, CpFunding, CpStock, RedPacket,
+        cpuser, cpprop, cporder, usergame, userprop, order, vipdraw, blockNotify, Prop, manysend, manyreceive,
+        userredpack, userredpackact, blockgamecomment, mobileverify, stock, userstock, userstocklog, record,
+    },
 }

@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {EntityType, UserStatus, ActivityType, NotifyType, ActionExecuteType, em_Condition_Type, OperEnum, ReturnCode} = facade.const
+let {TableField, EntityType, NotifyType, ReturnCode} = facade.const
 let UserEntity = facade.entities.UserEntity
 
 /**
@@ -25,7 +25,7 @@ class mail extends facade.Control
             .groupOf(user.openid)
             .orderby('time', 'desc')
             .paginate(10, objData.page)
-            .records(['id', 'src', 'dst', 'content', 'time', 'state']);
+            .records(TableField.Mail);
 
         return { code: ReturnCode.Success, data: list,};
     }

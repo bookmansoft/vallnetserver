@@ -237,7 +237,7 @@ class CoreOfResource extends CoreOfBase {
             console.log('cp.byName 的参数:', cpParamArray);
             let cpInfo = await this.service.gamegoldHelper.execute('cp.byName', cpParamArray);
             if (!cpInfo) {
-                res.json({ code: -200, message: '查询我的道具失败，CP不存在' });
+                res.json({ code: -200, msg: '查询我的道具失败，CP不存在' });
                 return;
             }
 
@@ -275,7 +275,7 @@ class CoreOfResource extends CoreOfBase {
             res.json({ code: 0, data: retData });
         } catch (e) {
             console.error(e);
-            res.json({ code: -100, message: '查询我的道具失败' });
+            res.json({ code: -100, msg: '查询我的道具失败' });
         }
     }
 

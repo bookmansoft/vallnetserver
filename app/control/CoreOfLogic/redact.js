@@ -1,6 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
-let tableField = require('../../util/tablefield');
+let {TableType, TableField} = facade.const;
 const stringRandom = require('string-random');
 let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 
@@ -11,7 +10,7 @@ class manage extends facade.Control
 {
     //活动列表
     async RedPackActCurrent(user, params) {
-        let redpackActList = await this.core.GetMapping(TableType.redpackact).groupOf().where([['status', '==', 1]]).records(tableField.redpackact)
+        let redpackActList = await this.core.GetMapping(TableType.redpackact).groupOf().where([['status', '==', 1]]).records(TableField.redpackact)
         if(redpackActList.length >0 ) {
             let redPacetAct = redpackActList[0];
             return {code: 0, data: redPacetAct};
@@ -27,7 +26,7 @@ class manage extends facade.Control
             .where([
                 ['uid', '==', uid],
                 ['act_id', '==', act_id]
-            ]).records(tableField.userredpackact);
+            ]).records(TableField.userredpackact);
         
         if(userRedPactActs.length > 0 ) {
             return {code: 0, data: userRedPactActs[0]};
@@ -43,7 +42,7 @@ class manage extends facade.Control
             .where([
                 ['uid', '==', uid],
                 ['act_id', '==', act_id]
-            ]).records(tableField.userRedpack)
+            ]).records(TableField.userRedpack)
         
         if(userRedPacts.length >0 ) {
             return {code: 0, data: userRedPacts};

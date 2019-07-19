@@ -1,6 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
-let tableField = require('../../util/tablefield');
+let {TableType, TableField} = facade.const;
 
 /**
  * 管理后台
@@ -9,7 +8,7 @@ class manage extends facade.Control
 {
     //活动列表
     async RedPackActList(user, params) {
-        let redpackActList = this.core.GetMapping(TableType.redpackact).groupOf().records(tableField.redpackact)
+        let redpackActList = this.core.GetMapping(TableType.redpackact).groupOf().records(TableField.redpackact)
         return {code: 0, data: {length:redpackActList.length, data:redpackActList}};
     }
 
@@ -25,8 +24,8 @@ class manage extends facade.Control
         let data = params.data
         let act = this.core.GetObject(TableType.redpackact, data.id)  //根据上行id查找表中记录
         if(!!act) {
-            for (let key in tableField.redpackact) {
-                let value = tableField.redpackact[key]
+            for (let key in TableField.redpackact) {
+                let value = TableField.redpackact[key]
                 if(data.hasOwnProperty(value)) {
                     act.setAttr(value, data[value])
                 }
@@ -38,14 +37,14 @@ class manage extends facade.Control
 
     //红包订单列表
     async RedPackOrderList(user, params)  {
-        let redpackList = this.core.GetMapping(TableType.redpack).groupOf().where([['uid', '==', uid]]).records(tableField.redpack)
+        let redpackList = this.core.GetMapping(TableType.redpack).groupOf().where([['uid', '==', uid]]).records(TableField.redpack)
         return {code: 0, data: {length:redpackList.length, data:redpackList}};
     };
 
     //用户参与红包活动列表
     async UserRedPackActList(user, params)  {
         let paramsData = params.data
-        let data = this.core.GetMapping(TableType.userredpack).groupOf().records(tableField.userredpack);
+        let data = this.core.GetMapping(TableType.userredpack).groupOf().records(TableField.userredpack);
         return {code: 0, data: {length:data.length, data:data}};
     };
 
@@ -53,7 +52,7 @@ class manage extends facade.Control
     //用户抽奖红包列表
     async UserRedPackList(user, params)  {
         let paramsData = params.data
-        let data = this.core.GetMapping(TableType.userredpackact).groupOf().records(tableField.userredpackact)
+        let data = this.core.GetMapping(TableType.userredpackact).groupOf().records(TableField.userredpackact)
         return {code: 0, data: {length:data.length, data:data}};
     };
 

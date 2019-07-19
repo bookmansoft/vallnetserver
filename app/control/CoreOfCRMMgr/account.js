@@ -25,7 +25,7 @@ class account extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "account.List方法出错" };
+            return { code: -1, msg: "account.List方法出错" };
         }
     }
 
@@ -48,7 +48,7 @@ class account extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "account.Get方法出错" };
+            return { code: -1, msg: "account.Get方法出错" };
         }
 
     }
@@ -72,7 +72,7 @@ class account extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "account.Create方法出错" };
+            return { code: -1, msg: "account.Create方法出错" };
         }
 
     }
@@ -96,7 +96,7 @@ class account extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "account.Amount方法出错" };
+            return { code: -1, msg: "account.Amount方法出错" };
         }
 
     }
@@ -120,7 +120,7 @@ class account extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "account.Received方法出错" };
+            return { code: -1, msg: "account.Received方法出错" };
         }
 
     }
@@ -144,7 +144,7 @@ class account extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "account.ListReceived方法出错" };
+            return { code: -1, msg: "account.ListReceived方法出错" };
         }
 
     }
@@ -168,7 +168,7 @@ class account extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "account.BalanceConfirmed方法出错" };
+            return { code: -1, msg: "account.BalanceConfirmed方法出错" };
         }
 
     }
@@ -192,7 +192,7 @@ class account extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "account.BalanceAll方法出错" };
+            return { code: -1, msg: "account.BalanceAll方法出错" };
         }
 
     }
@@ -216,7 +216,7 @@ class account extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "account.BalanceUnconfirmed方法出错" };
+            return { code: -1, msg: "account.BalanceUnconfirmed方法出错" };
         }
 
     }

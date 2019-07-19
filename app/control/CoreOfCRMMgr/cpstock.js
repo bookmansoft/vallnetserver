@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType, TableType } = facade.const
+let { ReturnCode, NotifyType, TableType, TableField } = facade.const
 
 /**
  * 游戏的控制器
@@ -34,11 +34,11 @@ class cpstock extends facade.Control {
                 };
             }
             else {
-                return { code: -2, data: null, message: "该cpstock不存在" };
+                return { code: -2, msg: "该cpstock不存在" };
             }
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "cpstock.Retrieve方法出错" };
+            return { code: -1, msg: "cpstock.Retrieve方法出错" };
         }
     }
 
@@ -81,7 +81,7 @@ class cpstock extends facade.Control {
             $data.page = muster.pageCur;
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
-            for (let $value of muster.records(['id', 'cid', 'cp_name', 'cp_text', 'stock_day', 'stock_open', 'stock_close', 'stock_high', 'stock_low', 'total_num', 'total_amount'])) {
+            for (let $value of muster.records(TableField.CpStock)) {
                 $data.items[$idx] = $value;
                 $value['rank'] = $idx++;
             }

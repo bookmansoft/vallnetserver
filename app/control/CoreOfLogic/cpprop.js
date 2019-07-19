@@ -1,6 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
-let tableField = require('../../util/tablefield');
+let {TableType, TableField} = facade.const;
 
 /**
  * 游戏用户
@@ -9,7 +8,7 @@ let tableField = require('../../util/tablefield');
 class cpprop extends facade.Control
 {
     async PropList(user, params)  {
-        let props = this.core.GetMapping(TableType.cpprop).groupOf().records(tableField.cpprop);
+        let props = this.core.GetMapping(TableType.cpprop).groupOf().records(TableField.cpprop);
         return {code: 0, data: {props: props}};
     };
 
@@ -25,7 +24,7 @@ class cpprop extends facade.Control
         await ret.result.forEach(element => {
             let prop = this.core.GetMapping(TableType.cpprop).groupOf().where([
                 ['oid', '==', element.oid]
-            ]).records(tableField.cpprop)[0];
+            ]).records(TableField.cpprop)[0];
             if(!!prop) {
                 queryprops.push(prop);
             }
@@ -38,7 +37,7 @@ class cpprop extends facade.Control
         let oid = params.oid;
         let prop = this.core.GetMapping(TableType.cpprop).groupOf().where([
             ['oid', '==', oid]
-        ]).records(tableField.cpprop)[0];
+        ]).records(TableField.cpprop)[0];
         return {code: 0, data: {prop: !!prop ? prop : null}};
     }
 
@@ -47,7 +46,7 @@ class cpprop extends facade.Control
         let oids = params.oids;
         let props = this.core.GetMapping(TableType.cpprop).groupOf().where([
             ['oid', 'include', oids]
-        ]).records(tableField.cpprop);
+        ]).records(TableField.cpprop);
 
         return {code: 0, data: {props: !!props ? props : null}};
     }

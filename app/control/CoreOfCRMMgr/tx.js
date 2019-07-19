@@ -26,7 +26,7 @@ class tx extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "tx.GetWallet方法出错" };
+            return { code: -1, msg: "tx.GetWallet方法出错" };
         }
     }
 
@@ -97,7 +97,7 @@ class tx extends facade.Control {
             // return { code: ReturnCode.Success, data: retArray };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "tx.List方法出错" };
+            return { code: -1, msg: "tx.List方法出错" };
         }
     }
 
@@ -121,7 +121,7 @@ class tx extends facade.Control {
              return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "tx.Sign方法出错" };
+            return { code: -1, msg: "tx.Sign方法出错" };
         }
 
     }
@@ -146,7 +146,7 @@ class tx extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "tx.Create方法出错" };
+            return { code: -1, msg: "tx.Create方法出错" };
         }
 
     }
@@ -173,7 +173,7 @@ class tx extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "tx.Send方法出错" };
+            return { code: -1, msg: "tx.Send方法出错" };
         }
 
     }

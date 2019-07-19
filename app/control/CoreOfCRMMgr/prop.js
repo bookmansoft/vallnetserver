@@ -7,7 +7,7 @@
 
 let moment = require('./../../../node_modules/moment')
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType, TableType } = facade.const
+let { ReturnCode, NotifyType, TableType, TableField } = facade.const
 
 /**
  * 道具管理类
@@ -76,7 +76,7 @@ class prop extends facade.Control {
         $data.page = muster.pageCur;
 
         let $idx = (muster.pageCur - 1) * muster.pageSize;
-        for (let $value of muster.records(['id', 'props_name', 'props_type', 'cid', 'props_desc', 'icon_url', 'icon_preview', 'status', 'props_price', 'props_rank', 'propsAt', 'cid'])) {
+        for (let $value of muster.records(TableField.Prop)) {
             $data.items[$idx] = $value;
             $value['cp_name'] = cpIdText[$value['cid']] || '';
             $value['rank'] = $idx++;
@@ -105,7 +105,7 @@ class prop extends facade.Control {
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .where(paramArray)
             .orderby('id', 'desc') //根据id字段倒叙排列
-            .records(['id', 'props_id', 'props_name', 'props_type', 'cid', 'props_desc', 'icon_url', 'icon_preview', 'status', 'props_price', 'props_rank', 'propsAt']);
+            .records(TableField.Prop);
 
         let cpIdText = this.cpIdText();
         cpIdText = cpIdText.data || {};
@@ -392,7 +392,7 @@ class prop extends facade.Control {
             .groupOf()
             .where(paramArray)
             .orderby('id', 'desc')
-            .records(['cp_id', 'cp_text']);
+            .records(TableField.Cp);
 
         let $data = {};
         for (let $value of resList) {
@@ -411,7 +411,7 @@ class prop extends facade.Control {
             .groupOf()
             .where(paramArray)
             .orderby('id', 'desc')
-            .records(['cp_id', 'cp_url']);
+            .records(TableField.Cp);
         let $data = {};
         for (let $value of resList) {
             $data[$value['cp_id']] = $value['cp_url'];
@@ -502,11 +502,11 @@ class prop extends facade.Control {
                 };
             }
             else {
-                return { code: -2, data: null, message: "该CP不存在" };
+                return { code: -2, msg: "该CP不存在" };
             }
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "cp.Retrieve方法出错" };
+            return { code: -1, msg: "cp.Retrieve方法出错" };
         }
     }
 
@@ -521,7 +521,7 @@ class prop extends facade.Control {
             .groupOf()
             .where(paramArray)
             .orderby('id', 'desc')
-            .records(['id', 'cp_id', 'cp_text', 'cp_type', 'cp_state', 'cp_url', 'publish_time']);
+            .records(TableField.Cp);
         let $data = {};
         let $idx = 0;
         for (let $value of resList) {

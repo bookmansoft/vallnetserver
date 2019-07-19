@@ -1,7 +1,6 @@
-let facade = require('gamecloud')
-let {TableType} = facade.const;
 const assert = require('assert')
-let tableField = require('../../util/tablefield');
+let facade = require('gamecloud')
+let {TableType, TableField} = facade.const;
 
 /**
  * 钱包
@@ -117,7 +116,7 @@ class wallet extends facade.Control
                 if(element.orm.status == 1) {
                     element.setAttr('status', 2);
                 }
-                data.push(tableField.record(element.orm, tableField.blockNotify))
+                data.push(TableField.record(element.orm, TableField.blockNotify))
             });
         }
         return {code: 0, msg: 'notify.list:ok', data: data}; 

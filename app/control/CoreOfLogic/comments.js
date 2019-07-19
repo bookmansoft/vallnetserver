@@ -1,6 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
-let tableField = require('../../util/tablefield');
+let {TableType, TableField} = facade.const;
 
 /**
  * 游戏接口
@@ -13,7 +12,7 @@ class comments extends facade.Control
         let cid = params.cid
         let dataList = this.core.GetMapping(TableType.blockgamecomment).groupOf()
             .where([['cid', '==', cid]])
-            .records(tableField.blockgamecomment);
+            .records(TableField.blockgamecomment);
 
         return {code: 0, data:dataList};
     };

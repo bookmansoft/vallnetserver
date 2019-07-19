@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType, TableType } = facade.const
+let { ReturnCode, NotifyType, TableType, TableField } = facade.const
 
 /**
  * 游戏的控制器
@@ -17,7 +17,7 @@ class prize extends facade.Control {
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "prize.DeleteRecord方法出错" };
+            return { code: -1, msg: "prize.DeleteRecord方法出错" };
         }
 
     }
@@ -47,7 +47,7 @@ class prize extends facade.Control {
             return { code: -1, data: null };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "prize.UpdateRecord方法出错" };
+            return { code: -1, msg: "prize.UpdateRecord方法出错" };
         }
 
     }
@@ -75,14 +75,14 @@ class prize extends facade.Control {
             );
             // console.log("执行创建成功了吗？");
             if (prize == null) {
-                return { code: -1, message: "违反唯一性约束" }
+                return { code: -1, msg: "违反唯一性约束" }
             }
             else {
                 return { code: 0, data: null };
             }
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "prize.CreateRecord方法出错" };
+            return { code: -1, msg: "prize.CreateRecord方法出错" };
         }
     }
 
@@ -118,7 +118,7 @@ class prize extends facade.Control {
             return { code: -1, data: null };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "prize.Retrieve方法出错" };
+            return { code: -1, msg: "prize.Retrieve方法出错" };
         }
     }
 
@@ -165,7 +165,7 @@ class prize extends facade.Control {
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
             $idx = $idx + 5;
-            for (let $value of muster.records(['id', 'act_name', 'mch_billno', 'nick_name', 're_openid', 'remark', 'send_name', 'total_amount', 'total_num', 'wishing', 'return_msg', 'order_status'])) {
+            for (let $value of muster.records(TableField.Prize)) {
                 $data.items[$idx] = $value;
                 $value['rank'] = $idx++;
             }
@@ -177,7 +177,7 @@ class prize extends facade.Control {
             return $data;
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "prize.ListRecord方法出错" };
+            return { code: -1, msg: "prize.ListRecord方法出错" };
         }
 
     }

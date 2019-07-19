@@ -25,7 +25,7 @@ class wallet extends facade.Control {
             return { code: ret.code, list: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "wallet.Create方法出错" };
+            return { code: -1, msg: "wallet.Create方法出错" };
         }
 
     }
@@ -49,7 +49,7 @@ class wallet extends facade.Control {
             return { code: ret.code, list: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "wallet.List方法出错" };
+            return { code: -1, msg: "wallet.List方法出错" };
         }
 
     }
@@ -74,7 +74,7 @@ class wallet extends facade.Control {
             return { code: ret.code, list: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "wallet.Info方法出错" };
+            return { code: -1, msg: "wallet.Info方法出错" };
         }
 
     }
@@ -98,7 +98,7 @@ class wallet extends facade.Control {
             return { code: ret.code, list: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "wallet.Dump方法出错" };
+            return { code: -1, msg: "wallet.Dump方法出错" };
         }
 
     }
@@ -122,7 +122,7 @@ class wallet extends facade.Control {
             return { code: ret.code, list: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "wallet.ImportWallet方法出错" };
+            return { code: -1, msg: "wallet.ImportWallet方法出错" };
         }
 
     }
@@ -146,7 +146,7 @@ class wallet extends facade.Control {
             return { code: ret.code, list: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "wallet.Backup方法出错" };
+            return { code: -1, msg: "wallet.Backup方法出错" };
         }
 
     }
@@ -170,7 +170,7 @@ class wallet extends facade.Control {
             return { code: ret.code, data: ret.result };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "key.master.admin 方法出错" };
+            return { code: -1, msg: "key.master.admin 方法出错" };
         }
 
     }

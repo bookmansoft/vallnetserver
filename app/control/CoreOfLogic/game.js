@@ -1,6 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
-let tableField = require('../../util/tablefield');
+let {TableType, TableField} = facade.const;
 
 /**
  * 游戏接口
@@ -10,34 +9,34 @@ class game extends facade.Control
 {
     //游戏类别
     async GameCateList(user, params)  {
-        let gamecateList = this.core.GetMapping(TableType.blockgamecate).groupOf().records(tableField.blockgamecate);
+        let gamecateList = this.core.GetMapping(TableType.blockgamecate).groupOf().records(TableField.blockgamecate);
         return {code: 0, data: {length:gamecateList.length, data:gamecateList}};
     };
 
     //游戏列表
     async GameList(user, params)  {
-        let gameList = this.core.GetMapping(TableType.blockgame).groupOf().records(tableField.blockgame);
+        let gameList = this.core.GetMapping(TableType.blockgame).groupOf().records(TableField.blockgame);
         return {code: 0, data: {length:gameList.length, data:gameList}};
     }
 
     //所有游戏
     async GameAll(user, params)  {
-        let gameList = this.core.GetMapping(TableType.blockgame).groupOf().records(tableField.blockgame);
+        let gameList = this.core.GetMapping(TableType.blockgame).groupOf().records(TableField.blockgame);
         return {code: 0, data: {length:gameList.length, data:gameList}};
     }
 
     //游戏道具
     async GameProp(user, params) {
         let cpid = params.cpid;
-        let gameProps = this.core.GetMapping(TableType.blockgameprop).groupOf().where([['cpid','==',cpid]]).records(tableField.blockgameprop);
+        let gameProps = this.core.GetMapping(TableType.blockgameprop).groupOf().where([['cpid','==',cpid]]).records(TableField.blockgameprop);
         return {code: 0, data: {length:gameProps.length, data:gameProps}};
     }
 
     //游戏首页
     async GameHome(user, params) {
-        let gameCates = this.core.GetMapping(TableType.blockgamecate).groupOf().records(tableField.blockgamecate);
-        let hotGame = this.core.GetMapping(TableType.blockgame).groupOf().where([['player_count','>',1000]]).records(tableField.blockgame);
-        let games = this.core.GetMapping(TableType.blockgame).groupOf().where([['store_status','==',1]]).records(tableField.blockgame);
+        let gameCates = this.core.GetMapping(TableType.blockgamecate).groupOf().records(TableField.blockgamecate);
+        let hotGame = this.core.GetMapping(TableType.blockgame).groupOf().where([['player_count','>',1000]]).records(TableField.blockgame);
+        let games = this.core.GetMapping(TableType.blockgame).groupOf().where([['store_status','==',1]]).records(TableField.blockgame);
         return {
             code: 0,
             data: {
@@ -52,7 +51,7 @@ class game extends facade.Control
     async GameInfo(user, params) {
         let id = params.id;
         let gameInfo = this.core.GetObject(TableType.blockgame, id);
-        return {code: 0, data: tableField.record(gameInfo, tableField.blockgame)};
+        return {code: 0, data: TableField.record(gameInfo, TableField.blockgame)};
     }
 }
 

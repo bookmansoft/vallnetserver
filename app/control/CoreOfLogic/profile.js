@@ -1,6 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
-let tableField = require('../../util/tablefield');
+let {TableType, TableField} = facade.const;
 
 /**
  * 个人中心
@@ -40,7 +39,7 @@ class profile extends facade.Control
             });
             let blockGames = await this.core.GetMapping(TableType.blockgame).groupOf().where([
                 ['id', 'include', gameIds]
-            ]).records(tableField.blockgame);
+            ]).records(TableField.blockgame);
             return {code: 0, data: blockGames};
         }
     }
@@ -106,12 +105,12 @@ class profile extends facade.Control
             .groupOf().where([['uid','==',uid]])
             .orderby('draw_at', 'desc')
             .paginate(5, 1)
-            .records(tableField.vipdraw)
+            .records(TableField.vipdraw)
         } else {
             vipDrawLog = await this.core.GetMapping(TableType.vipdraw)
             .groupOf().where([['uid','==',uid]])
             .orderby('draw_at', 'desc')
-            .records(tableField.vipdraw);
+            .records(TableField.vipdraw);
         }
 
         return {code: 0, data:vipDrawLog};

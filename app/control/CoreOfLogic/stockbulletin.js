@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType, TableType } = facade.const
+let { ReturnCode, NotifyType, TableType, TableField } = facade.const
 
 /**
  * 游戏的控制器
@@ -48,7 +48,7 @@ class stockbulletin extends facade.Control {
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "stockbulletin.DeleteRecord方法出错" };
+            return { code: -1, msg: "stockbulletin.DeleteRecord方法出错" };
         }
     }
     /**
@@ -75,10 +75,10 @@ class stockbulletin extends facade.Control {
                 stockbulletin.Save();
                 return { code: ReturnCode.Success };
             }
-            return { code: -2, data: null,message:"找不到记录" };
+            return { code: -2, msg:"找不到记录" };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "cp.UpdateRecord方法出错" };
+            return { code: -1, msg: "cp.UpdateRecord方法出错" };
         }
     }
 
@@ -102,12 +102,12 @@ class stockbulletin extends facade.Control {
                 objData.total_num,
                 objData.total_amount,
             );
-            let ret = { code: ReturnCode.Success, data: null, message: "stockbulletin.CreateRecord成功" };
+            let ret = { code: ReturnCode.Success, msg: "stockbulletin.CreateRecord成功" };
             console.log(ret);
             return ret;
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "stockbulletin.CreateRecord方法出错" };
+            return { code: -1, msg: "stockbulletin.CreateRecord方法出错" };
         }
 
     }
@@ -142,11 +142,11 @@ class stockbulletin extends facade.Control {
                 };
             }
             else {
-                return { code: -2, data: null, message: "该stockbulletin不存在" };
+                return { code: -2, msg: "该stockbulletin不存在" };
             }
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "stockbulletin.Retrieve方法出错" };
+            return { code: -1, msg: "stockbulletin.Retrieve方法出错" };
         }
 
     }
@@ -188,7 +188,7 @@ class stockbulletin extends facade.Control {
             $data.page = muster.pageCur;
 
             let $idx = (muster.pageCur - 1) * muster.pageSize;
-            for (let $value of muster.records(['id', 'cid', 'cp_name', 'cp_text', 'stock_day', 'stock_open', 'stock_close', 'stock_high', 'stock_low', 'total_num', 'total_amount'])) {
+            for (let $value of muster.records(TableField.StockBulletin)) {
                 $data.items[$idx] = $value;
                 $value['rank'] = $idx++;
             }

@@ -89,7 +89,7 @@ async function CreateRecord(user, cpinfo, core) {
         data.invite_share,
         data.operator_id,
     );
-    return { code: 0, data: null, message: "创建CP成功" };
+    return { code: 0, msg: "创建CP成功" };
 }
 
 module.exports.handle = handle;

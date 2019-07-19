@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType, TableType } = facade.const
+let { ReturnCode, NotifyType, TableType, TableField } = facade.const
 
 /**
  * 游戏的控制器
@@ -47,7 +47,7 @@ class stockbase extends facade.Control {
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "stockbase.DeleteRecord方法出错" };
+            return { code: -1, msg: "stockbase.DeleteRecord方法出错" };
         }
     }
     /**
@@ -91,10 +91,10 @@ class stockbase extends facade.Control {
 
                 return { code: ReturnCode.Success };
             }
-            return { code: -2, data: null, message: "找不到记录" };
+            return { code: -2, msg: "找不到记录" };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "stockbase.UpdateRecord方法出错" };
+            return { code: -1, msg: "stockbase.UpdateRecord方法出错" };
         }
     }
 
@@ -133,12 +133,12 @@ class stockbase extends facade.Control {
                 objData.history_text,
                 objData.now_sale,
             );
-            let ret = { code: ReturnCode.Success, data: null, message: "stockbase.CreateRecord成功" };
+            let ret = { code: ReturnCode.Success, msg: "stockbase.CreateRecord成功" };
             console.log(ret);
             return ret;
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "stockbase.CreateRecord方法出错" };
+            return { code: -1, msg: "stockbase.CreateRecord方法出错" };
         }
 
     }
@@ -187,11 +187,11 @@ class stockbase extends facade.Control {
                 };
             }
             else {
-                return { code: -2, data: null, message: "该stockbase不存在" };
+                return { code: -2, msg: "该stockbase不存在" };
             }
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "stockbase.Retrieve方法出错" };
+            return { code: -1, msg: "stockbase.Retrieve方法出错" };
         }
 
     }
@@ -203,9 +203,7 @@ class stockbase extends facade.Control {
      * @param {*} objData 查询及翻页参数，等整体调通以后再细化。
      */
     ListRecord(user, objData) {
-        if (objData == null) {
-            objData = {};
-        }
+        objData = objData || {};
         let currentPage = objData.currentPage;
         if (Number.isNaN(parseInt(currentPage))) {
             currentPage = 1;
@@ -233,11 +231,7 @@ class stockbase extends facade.Control {
         $data.page = muster.pageCur;
 
         let $idx = (muster.pageCur - 1) * muster.pageSize;
-        for (let $value of muster.records([
-            'id', 'cid', 'cp_name', 'cp_text', 'total_num', 'sell_stock_amount',
-            'sell_stock_num','base_amount','large_img_url','small_img_url','icon_url','pic_urls','cp_desc','funding_text','funding_project_text',
-            'stock_money','supply_people_num','supply_money','funding_residue_day','funding_target_amount','funding_done_amount','provider','history_text','now_sale'
-        ])) {
+        for (let $value of muster.records(TableField.StockBase)) {
             $data.items[$idx] = $value;
             $value['rank'] = $idx++;
         }

@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { IndexType, EntityType, ReturnCode, NotifyType, TableType } = facade.const
+let { IndexType, EntityType, ReturnCode, NotifyType, TableType, TableField } = facade.const
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
@@ -17,14 +17,14 @@ class cpfunding extends facade.Control {
         //1. 首先检验该操作员是否有权发布该众筹
         let cp = this.core.GetObject(TableType.Cp, objData.cid, IndexType.Foreign);
         if(!cp) {
-            return { code: -1, data: null, message: "指定CP不存在" };
+            return { code: -1, msg: "指定CP不存在" };
         } else if(cp.getAttr('operator_id') != user.id) {
-            return { code: -1, data: null, message: "不具备指定CP操作权" };
+            return { code: -1, msg: "不具备指定CP操作权" };
         }
 
         //2. 检查操作员余额
         if(user.baseMgr.info.getAttr('balance')/100000 < (parseInt(objData.stock_num) * parseInt(objData.stock_amount)*1.02)) {
-            return { code: -1, data: null, message: "不具备足够的发行资金" };
+            return { code: -1, msg: "不具备足够的发行资金" };
         }
 
         //3. 其次检验当前情况下，是否允许为指定CP发布众筹，例如发行周期等
@@ -49,7 +49,7 @@ class cpfunding extends facade.Control {
             cp.getAttr('cp_id'),        //发起众筹的游戏编码
         );
 
-        return { code: ReturnCode.Success, data: null, message: "cpfunding.CreateRecord成功" };
+        return { code: ReturnCode.Success, msg: "cpfunding.CreateRecord成功" };
     }
 
     /**
@@ -85,7 +85,7 @@ class cpfunding extends facade.Control {
             }
         }
 
-        return { code: -2, data: null,message:"找不到记录" };
+        return { code: -2, msg:"找不到记录" };
     }
 
     /**
@@ -113,7 +113,7 @@ class cpfunding extends facade.Control {
             };
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "cpfunding.StockRecord方法出错" };
+            return { code: -1, msg: "cpfunding.StockRecord方法出错" };
         }
     }
 
@@ -152,11 +152,11 @@ class cpfunding extends facade.Control {
                 };
             }
             else {
-                return { code: -2, data: null, message: "该cpfunding不存在" };
+                return { code: -2, msg: "该cpfunding不存在" };
             }
         } catch (error) {
             console.log(error);
-            return { code: -1, data: null, message: "cpfunding.Retrieve方法出错" };
+            return { code: -1, msg: "cpfunding.Retrieve方法出错" };
         }
     }
 
@@ -277,7 +277,7 @@ class cpfunding extends facade.Control {
         $data.page = muster.pageCur;
 
         let $idx = (muster.pageCur - 1) * muster.pageSize;
-        for (let $value of muster.records(['id', 'stock_num', 'total_amount', 'stock_amount', 'stock_rmb', 'audit_state_id', 'audit_text', 'modify_date', 'cp_name', 'cp_text', 'cp_type', 'cp_url', 'develop_name', 'develop_text', 'user_id', 'cid', 'operator_id'])) {
+        for (let $value of muster.records(TableField.CpFunding)) {
             $data.items[$idx] = $value;
             $value['sell_limit_date'] = $value['modify_date'] + 3600*24*14;
             $value['rank'] = $idx++;
@@ -305,7 +305,7 @@ class cpfunding extends facade.Control {
                 .paginate(-1, 1);                   //在第一页罗列所有记录
 
             let $data=[];
-            for (let $value of muster.records(['id', 'cp_id', 'cp_text'])) {
+            for (let $value of muster.records(TableField.Cp)) {
                 let item = { id: $value['id'], cp_id: $value['cp_id'], cp_text: $value['cp_text']};
                 $data.push(item);
             }

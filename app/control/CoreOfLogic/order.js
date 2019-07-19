@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
-let {TableType} = facade.const;
-let tableField = require('../../util/tablefield');
+let {TableType, TableField} = facade.const;
 
 /**
  * 节点控制器--订单
@@ -66,7 +65,7 @@ class order extends facade.Control
 
     async OrderStatus(user, params) {
         let tradeId = params.tradeId
-        let userOrders = this.core.GetMapping(TableType.order).groupOf().where([['order_sn', '==', tradeId]]).records(tableField.order);
+        let userOrders = this.core.GetMapping(TableType.order).groupOf().where([['order_sn', '==', tradeId]]).records(TableField.order);
         if(userOrders.length >0 ) {
             let order = userOrders[0];
             return {code: 0, data: order};
