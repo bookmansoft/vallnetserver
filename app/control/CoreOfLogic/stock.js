@@ -6,21 +6,6 @@ let {TableType, TableField} = facade.const;
  */
 class stock extends facade.Control
 {
-    //众筹列表
-    async Stocks(user, params) {
-        let stockList = await this.core.GetMapping(TableType.stock).groupOf().where([['status', '==', 1]]).records(TableField.stock)
-        return {code: 0, data: stockList} 
-    }
-
-    //众筹详情
-    async StockInfo(user, params) {
-        let stockInfo = this.core.GetObject(TableType.stock, params.id);          
-        if(!!userStock) {
-            return {code: 0, data: stockInfo};
-        }
-        return {code: -1, data: null};
-    }
-
     //众筹详情
     async StockSale(user, params) {
         let uid = user.id
@@ -47,7 +32,6 @@ class stock extends facade.Control
         }
         await this.core.GetMapping(TableType.userstocklog).Create(userStockLogItem)
         return {code: 0, data: userStockLogItem};
-
     }
 
     //用户众筹记录

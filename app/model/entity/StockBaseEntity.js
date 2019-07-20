@@ -21,35 +21,9 @@ class StockBaseEntity extends BaseEntity
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(db, cid,cp_name,cp_text,total_num,sell_stock_amount,sell_stock_num,base_amount,
-        provider,history_text,now_sale) {
+    static async onCreate(db, item) {
         try{
-            let it = await StockBase(db).create({
-                'cid':cid,
-                'cp_name': cp_name,
-                'cp_text': cp_text,
-                'total_num': total_num,
-                'sell_stock_amount': sell_stock_amount,
-                'sell_stock_num': sell_stock_num,
-                'base_amount': base_amount,
-
-                'large_img_url': large_img_url,
-                'small_img_url': small_img_url,
-                'icon_url': icon_url,
-                'pic_urls': pic_urls,
-                'cp_desc': cp_desc,
-                'funding_text': funding_text,
-                'funding_project_text': funding_project_text,
-                'stock_money': stock_money,
-                'supply_people_num': supply_people_num,
-                'supply_money': supply_money,
-                'funding_residue_day': funding_residue_day,
-                'funding_target_amount': funding_target_amount,
-                'funding_done_amount': funding_done_amount,
-                'provider':provider,
-                'history_text':history_text,
-                'now_sale':now_sale,
-            });
+            let it = await order(db).create(item);
             await it.save();
     
             return it;

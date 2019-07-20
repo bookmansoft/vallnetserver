@@ -122,45 +122,9 @@ class order extends facade.Control
                     let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(user, cid);
                     await this.core.service.gamegoldHelper.execute('stock.send', [cid, quantity, addr, 'alice']);
 
-                    let stock = this.core.GetObject(TableType.stock, order.orm.product_id);          
-                    if(!!stock) {
-                        stock.setAttr('support', stock.orm.support+1);
-                        stock.setAttr('remainder', stock.orm.remainder - quantity);
-                        
-                        let userStockLogItem = {
-                            uid: uid,
-                            cid: cid,
-                            quantity: quantity,
-                            pay_at: current_time,
-                            status: 1
-                        }
-                        await this.core.GetMapping(TableType.userstocklog).Create(userStockLogItem)
-
-                        let userStockItems = this.core.GetMapping(TableType.userstock).groupOf().where([
-                            ['uid', '==', uid],
-                            ['cid', '==', cid]
-                        ]).records();
-                        if(userStockItems.length >0 ) {
-                            let userStockItem = userStockItems[0]
-                            userStockItem.setAttr('amount', userStockItem.orm.amount + order.orm.order_num)
-                            userStockItem.setAttr('quantity', userStockItem.orm.quantity + quantity)
-                            userStockItem.setAttr('pay_at', current_time)
-                        } else {
-                            let userStockItem = {
-                                uid: uid,
-                                cid: cid,
-                                gamegold: 0,
-                                amount: order.orm.order_num,
-                                quantity: quantity,
-                                pay_at: current_time,
-                                order_sn: order.orm.order_sn,
-                                status: 1,
-                                src: stock.orm.item_pic,
-                                title: stock.orm.cname
-                            }
-                            await this.core.GetMapping(TableType.userstock).Create(userStockItem);
-                        }
-                    }
+                    //此时的 order.orm.product_id 是 our_block_stock 记录的主键，目前 our_block_stock 已经与 our_stock_base 整合，该字段包含信息已失去价值
+                    //原流程中，此处会实时将凭证购买情况记录入库，但只能记录到本网站用户的购买记录
+                    //目前已经调整为根据系统启动时查询主网，或者收到主网通知消息时入库
                 }
             }
             return {code: 0}; 

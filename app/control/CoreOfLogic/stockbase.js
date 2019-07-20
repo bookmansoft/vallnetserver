@@ -7,48 +7,6 @@ let { ReturnCode, TableType, TableField } = facade.const
  */
 class stockbase extends facade.Control {
     /**
-     * 众筹申请写数据库的部分
-     * @param {*} user 
-     * @param {*} objData 
-     */
-    async CreateRecord(user, objData) {
-        try {
-            await this.core.GetMapping(TableType.StockBase).Create(
-                objData.cid,
-                objData.cp_name,
-                objData.cp_text,
-                objData.total_num,
-                objData.sell_stock_amount,
-                objData.sell_stock_num,
-                objData.base_amount,
-                objData.operator_id,
-                objData.large_img_url,
-                objData.small_img_url,
-                objData.icon_url,
-                objData.pic_urls,
-                objData.cp_desc,
-                objData.funding_text,
-                objData.funding_project_text,
-                objData.stock_money,
-                objData.supply_people_num,
-                objData.supply_money,
-                objData.funding_residue_day,
-                objData.funding_target_amount,
-                objData.funding_done_amount,
-                objData.provider,
-                objData.history_text,
-                objData.now_sale,
-            );
-            let ret = { code: ReturnCode.Success, msg: "stockbase.CreateRecord成功" };
-            console.log(ret);
-            return ret;
-        } catch (error) {
-            console.log(error);
-            return { code: -1, msg: "stockbase.CreateRecord方法出错" };
-        }
-    }
-
-    /**
      * 从数据库中获取列表
      * 客户端直接调用此方法
      * @param {*} user 
