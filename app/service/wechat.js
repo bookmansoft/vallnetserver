@@ -371,7 +371,6 @@ class weChat extends facade.Service
         //将微信需要的数据拼成 xml 发送出去
         const sendData = wxSendData(appId, attach, productIntro, wechatcfg.mch_id, nonceStr, wechatcfg.notifyUrl, openId, tradeId, ip, price, sign)
     
-        // 使用 axios 发送数据带微信支付服务器, 没错, 后端也可以使用 axios
         let result = await new Promise(function(resolve, reject){
             axios.post('https://api.mch.weixin.qq.com/pay/unifiedorder', sendData).then(wxResponse => {
                 // 微信返回的数据也是 xml, 使用 xmlParser 将它转换成 js 的对象

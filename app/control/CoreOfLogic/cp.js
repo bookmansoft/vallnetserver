@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
 let {TableType} = facade.const;
-const axios = require('axios')
 
 /**
  * 游戏的控制器
@@ -9,48 +8,20 @@ const axios = require('axios')
 class cp extends facade.Control
 {
     /**
-     * 查询系统中现有的所有CP列表：cp.list
+     * 查询CP列表
      * @param {*} user 
-     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
+     * @param {*} params
      */
     async List(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('cp.remoteQuery', []);
+        let ret = await this.core.service.gamegoldHelper.execute('cp.remoteQuery', [[['page', params.page], ['size', 10]]]);
         if(ret.code==0) {
             ret.result.list.forEach(element => {
-                this.core.callFunc("remotecall", "kv", user, {k: element.cid, v: JSON.stringify(element)});
+                this.core.remoteCall("kv", {k: element.cid, v: JSON.stringify(element)});
             });
+            return {code: 0, data: ret.result};
         }
-        return {code: 0, data: ret.result};
-    }
 
-    async GetCpProxy(user, params) {
-        let url = params.uri;
-        // 使用 axios 发送数据带微信支付服务器
-        let result = await new Promise(function(resolve, reject){
-            axios.get(url).then(res => {
-                // 微信返回的数据也是 xml, 使用 xmlParser 将它转换成 js 的对象
-                resolve(res.data);
-            }).catch(err => {
-                reject(err)
-            })
-        });
-        return {code: 0, data: result};
-    }
-
-    /**
-     * 查询系统中现有的CP数量
-     * @param {*} user 
-     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
-     */
-    async CpCount(user, params) {
-        let page = 1;
-        let num = 100000;
-        let ret = await this.core.service.gamegoldHelper.execute('cp.list', [
-            page,
-            num
-        ]);
-        let count = ret==null ? 0 : ret.result.list.length
-        return {code: 0, data: count};
+        return {code: -1};
     }
 
     /**
