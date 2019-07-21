@@ -36,7 +36,6 @@ class wechat extends facade.Control {
 
     /**
      * 统一下单
-     * 【用法还不明确】
      * @param {*} user 
      * @param {*} params
     */
@@ -47,8 +46,10 @@ class wechat extends facade.Control {
         let productInfo = params.productInfo
         let tradeId = params.tradeId
         let appId = params.appId
+        let notifyUrl = `${this.core.options.UrlHead}://${this.core.options.webserver.host}:${this.core.options.webserver.port}/wxnotify`;
+
         try {
-            let res = await this.core.service.wechat.unifiedOrder(appId, openid, ip, price, productInfo, tradeId);
+            let res = await this.core.service.wechat.unifiedOrder(appId, openid, ip, price, productInfo, tradeId, notifyUrl);
             return { code: 0, data: {unifiedOrder: res} };
         } catch (e) {
             console.log(e);

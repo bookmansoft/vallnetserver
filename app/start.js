@@ -4,6 +4,8 @@ facade.addition = true;
 
 let {IndexType, TableType} = facade.const
 
+let orderMonitor = require('./util/autoExec/orderMonitor');
+
 //#region 新增索引类型，需要在 UserEntity.prototype.IndexOf 函数中增加字段映射
 IndexType.Phone = 1001;
 IndexType.Terminal = 1002;
@@ -252,4 +254,7 @@ facade.boot({
         //用户执行 order.pay 之后，CP特约节点发起到账通知消息，抛出内部事件, 处理流程定义于 app/events/user/orderPay.js
         core.notifyEvent('wallet.orderPay', {data:msg});
     }, 'order.pay');
+
+    //订单状态定时查询
+    core.autoTaskMgr.addMonitor(new orderMonitor(), 1800*1000);
 });

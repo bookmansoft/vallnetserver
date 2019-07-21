@@ -3,46 +3,71 @@ let request = require('request')
 const axios = require('axios')
 const xml2js = require('xml2js')
 const xmlParser = new xml2js.Parser()
-
-let cache = require('../util/memcache')
-let {md5, sha1} = require('../util/encrtyto')
-
+let cache = require('../../util/memcache')
+let {md5, sha1} = require('../../util/encrtyto')
 let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
+let fs = require('fs')
+let https = require('https')
 
-//构建xml
-let fnCreateXml = function (json) {
+/**
+ * 生成随机字符串
+ */
+function getNonceStr() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    for (var i = 0; i < 16; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length))
+    }
+    return text
+}
+
+/**
+ * 构建传入对象相应的XML
+ * @param {*} json 
+ */
+function fnCreateXml(json) {
     let _xml = '';
     for (let key in json) {
         _xml += '<' + key + '>' + json[key] + '</' + key + '>';
     }
     return _xml;
 };
- 
-//生成url串用于微信md5校验
-let fnCreateUrlParam = function (json) {
-    let _arr = [];
-    for (let key in json) {
-        _arr.push(key + '=' + json[key]);
-    }
-    return _arr.join('&');
-};
 
-//生成微信红包数据
-let fnGetWeixinBonus = function (option, redPackConfig) {
+/**
+ * 将数据对象封装成微信要求的上行参数字符串
+ * @param {*} json 
+ */
+function getSendData(json) {
+    return `<xml>${fnCreateXml(getSignedData(json))}</xml>`;
+}
+
+function getSignedData(json) {
+    let stringA = Object.keys(json).sort().reduce((sofar, cur) => {
+        sofar += (sofar=='') ? `${cur}=${json[cur]}` : `&${cur}=${json[cur]}`;
+        return sofar;
+    }, '');
+    let stringSignTemp = stringA + "&key=" + wechatcfg.mch_key;
+    json.sign = md5(stringSignTemp).toUpperCase();
+    return json;
+}
+ 
+/**
+ * 生成微信红包数据
+ * @param {*} option 
+ * @param {*} redPackConfig 
+ */
+function fnGetWeixinBonus(option, redPackConfig) {
     let total_amount = option.total_amount || 10, 	//红包总金额
         re_openid = option.re_openid, 				//红包发送的目标用户
         total_num = option.total_num || 1; 			//红包个数
-    let now = new Date();
 
+    let now = new Date();
     let showName = redPackConfig.showName;			//红包名字
     let clientIp = redPackConfig.clientIp;			//客户端IP
     let wishing = redPackConfig.wishing;			//红包上显示的祝福语
     let remark = redPackConfig.remark;              //备注
-
     let mch_id = wechatcfg.mch_id;					//商户ID
     let wxappid = wechatcfg.appid;					//微信公众号APPID
-    let wxkey = wechatcfg.mch_key;					//商户号key
-    
     let date_time = now.getFullYear() + '' + (now.getMonth() + 1) + '' + now.getDate();
     let date_no = (now.getTime() + '').substr(-8); //生成8为日期数据，精确到毫秒
     let random_no = Math.floor(Math.random() * 99);
@@ -56,7 +81,6 @@ let fnGetWeixinBonus = function (option, redPackConfig) {
     contentJson.client_ip = clientIp;
     contentJson.mch_billno = redPackConfig.mch_billno; // muc_id + date_time + date_no + random_no; //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字; //+201502041234567893';
     contentJson.mch_id = muc_id;
- 
     contentJson.nick_name = showName;
     contentJson.nonce_str = Math.random().toString(36).substr(2, 15);
     contentJson.re_openid = re_openid;
@@ -66,20 +90,17 @@ let fnGetWeixinBonus = function (option, redPackConfig) {
     contentJson.total_num = total_num;
     contentJson.wishing = wishing;
     contentJson.wxappid = wxappid;
-    contentJson.key = wxkey;
-    let contentStr = fnCreateUrlParam(contentJson);
-    contentJson.sign = md5(contentStr).toUpperCase();
-    delete contentJson.key;
-    let sendData = `<xml>${fnCreateXml(contentJson)}</xml>`;
-    return sendData;
+
+    return getSendData(contentJson);
 };
 
-//生成微信红包数据
-let fnGetHBInfo = function (mch_billno) {
+/**
+ * 生成微信红包数据
+ * @param {*} mch_billno 
+ */
+function fnGetHBInfo(mch_billno) {
     let mch_id = wechatcfg.mch_id;					//商户ID
     let wxappid = wechatcfg.appid;					//微信公众号APPID
-    let wxkey = wechatcfg.mch_key;					//商户号key
-    
     let muc_id = mch_id;
     let contentJson = {};
 
@@ -88,29 +109,12 @@ let fnGetHBInfo = function (mch_billno) {
     contentJson.mch_billno = mch_billno;
     contentJson.mch_id = muc_id;
     contentJson.nonce_str = Math.random().toString(36).substr(2, 15);
-    contentJson.key = wxkey;
-    let contentStr = fnCreateUrlParam(contentJson);
-    contentJson.sign = md5(contentStr).toUpperCase();
-    delete contentJson.key;
-    let sendData = `<xml>${fnCreateXml(contentJson)}</xml>`;
-    return sendData;
+
+    return getSendData(contentJson);
 };
 
-/**
- * 
- * @param {*} total_amount  红包总金额
- * @param {*} total_num     红包个数
- * @param {*} re_openid     发送用户
- */
 async function  redpackApi(host, path, sendData) {
     let ret = new Promise((resolve, reject) => {
-        //let host = 'api.mch.weixin.qq.com';
-        //let path = '/mmpaymkttransfers/sendredpack';
-        //let total_num = 1;
-        let fs = require('fs')
-        let https = require('https')
-        let xml2js = require('xml2js')
-
         let opt = {
             host: host,
             port: '443',
@@ -138,7 +142,6 @@ async function  redpackApi(host, path, sendData) {
                     }
                     */
                    //resolve({return_msg: result["return_msg"]})
-                   console.log(result)
                    resolve(result)
                 });
             });
@@ -152,80 +155,6 @@ async function  redpackApi(host, path, sendData) {
     });
 
     return ret
-}
-
-function wxSendData(appId, attach, productIntro, mchId, nonceStr, notifyUrl, openId, tradeId, ip, price, sign) {
-    const sendData = '<xml>' +
-        '<appid>' + appId + '</appid>' +
-        '<attach>' + attach + '</attach>' +
-        '<body>' + productIntro + '</body>' +
-        '<mch_id>' + mchId + '</mch_id>' +
-        '<nonce_str>' + nonceStr + '</nonce_str>' +
-        '<notify_url>' + notifyUrl + '</notify_url>' +
-        '<openid>' + openId + '</openid>' +
-        '<out_trade_no>' + tradeId + '</out_trade_no>' +
-        '<spbill_create_ip>' + ip + '</spbill_create_ip>' +
-        '<total_fee>' + price + '</total_fee>' +
-        '<trade_type>JSAPI</trade_type>' +
-        '<sign>' + sign + '</sign>' +
-        '</xml>'
-    return sendData
-}
-
-function getPaySign(appId, timeStamp, nonceStr, package) {
-    var stringA = 'appId=' + appId +
-        '&nonceStr=' + nonceStr +
-        '&package=' + package +
-        '&signType=MD5' +
-        '&timeStamp=' + timeStamp
-
-    var stringSignTemp = stringA + '&key=' + wechatcfg.mch_key
-    var sign = md5(stringSignTemp).toUpperCase()
-    return sign
-}
-
-function getNonceStr() {
-    var text = ""
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    for (var i = 0; i < 16; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length))
-    }
-    return text
-}
-
-function getPayParams(appId, prepayId, tradeId) {
-    const nonceStr = getNonceStr()
-    const timeStamp = new Date().getTime().toString()
-    const package = 'prepay_id=' + prepayId
-    const paySign = getPaySign(appId, timeStamp, nonceStr, package)
-    // 前端需要的所有数据, 都从这里返回过去
-    const payParamsObj = {
-        appId: appId,
-        nonceStr: nonceStr,
-        timeStamp: timeStamp,
-        package: package,
-        paySign: paySign,
-        signType: 'MD5',
-        tradeId: tradeId,
-    }
-    return payParamsObj
-}
-
-function getPrePaySign(appId, attach, productIntro, mchId, nonceStr, notifyUrl, openId, tradeId, ip, price) {
-    var stringA = 'appid=' + appId +
-        '&attach=' + attach +
-        '&body=' + productIntro +
-        '&mch_id=' + mchId +
-        '&nonce_str=' + nonceStr +
-        '&notify_url=' + notifyUrl +
-        '&openid=' + openId +
-        '&out_trade_no=' + tradeId +
-        '&spbill_create_ip=' + ip +
-        '&total_fee=' + price +
-        '&trade_type=JSAPI'
-    var stringSignTemp = stringA + '&key=' + wechatcfg.mch_key
-    var sign = md5(stringSignTemp).toUpperCase()
-    return sign
 }
 
 class AccessToken {
@@ -293,8 +222,73 @@ class weChat extends facade.Service
         this.merchantPrefix = 'https://api.weixin.qq.com/merchant/';
         this.customservicePrefix = 'https://api.weixin.qq.com/customservice/';
         this.wxaPrefix = 'https://api.weixin.qq.com/wxa/';
+        //查询订单接口
+        this.orderquery = 'https://api.mch.weixin.qq.com/pay/orderquery';
+
         this.defaults = {};
         this.tokenFromCustom = tokenFromCustom;
+    }
+
+    /**
+     * 主动向微信查询订单状态
+     * @param {*} transaction_id 
+     */
+    async orderQuery(transaction_id) {
+        // 发送内容
+        // 公众账号ID	appid	        是	    String(32)	    wxd678efh567hg6787	                微信支付分配的公众账号ID（企业号corpid即为此appId）
+        // 商户号	    mch_id	        是	    String(32)	    1230000109	                        微信支付分配的商户号
+        // 微信订单号	transaction_id	二选一	String(32)	    1009660380201506130728806387	    微信的订单号，建议优先使用
+        // 随机字符串	nonce_str	    是	    String(32)	    C380BEC2BFD727A4B6845133519F3AD6	随机字符串，不长于32位。推荐随机数生成算法
+        // 签名	    sign	        是	    String(32)	    5K8264ILTKCH16CQ2502SI8ZNMTM67VS	    通过签名算法计算得出的签名值，详见签名生成算法
+        // 签名类型	sign_type	    否	    String(32)	    HMAC-SHA256	                            签名类型，目前支持HMAC-SHA256和MD5，默认为MD5
+        // 生成签名
+        let ori = {
+            appid: wechatcfg.appid,
+            mch_id: wechatcfg.mch_id,
+            transaction_id: transaction_id,
+            nonce_str: getNonceStr(),
+        };
+
+        let result = await new Promise((resolve, reject) => {
+            axios.post(this.orderquery, getSendData(ori)).then(wxResponse => {
+                xmlParser.parseString(wxResponse.data, (err, success) => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        if (success.xml.return_code[0] === 'SUCCESS') {
+                            resolve(success.xml);
+                        } else {
+                            reject(success.xml.return_msg[0])
+                        }
+                    }
+                })
+            }).catch(err => {
+                console.log(err);
+                reject(err)
+            })
+        });
+        // 返回结果
+        // 返回状态码      return_code	String(16)	SUCCESS/FAIL    此字段是通信标识，非交易标识，交易是否成功需要查看trade_state来判断
+        // 返回信息        return_msg	    String(128)	OK	            当return_code为FAIL时返回信息为错误原因 ，例如签名失败/参数格式校验错误
+        // 公众账号ID	    appid	是	String(32)	wxd678efh567hg6787	微信分配的公众账号ID
+        // 商户号	        mch_id	是	String(32)	1230000109	微信支付分配的商户号
+        // 随机字符串	    nonce_str	是	String(32)	5K8264ILTKCH16CQ2502SI8ZNMTM67VS	随机字符串，不长于32位。推荐随机数生成算法
+        // 签名	        sign	是	String(32)	C380BEC2BFD727A4B6845133519F3AD6	签名，详见签名生成算法
+        // 业务结果	    result_code	是	String(16)	SUCCESS	SUCCESS/FAIL
+        // 错误代码	    err_code	否	String(32)	 	当result_code为FAIL时返回错误代码，详细参见下文错误列表
+        // 错误代码描述	err_code_des	否	String(128)	 	当result_code为FAIL时返回错误描述，详细参见下文错误列表
+        // 交易状态	    trade_state	是	String(32)	SUCCESS	
+        //                     SUCCESS—支付成功
+        //                     REFUND—转入退款
+        //                     NOTPAY—未支付
+        //                     CLOSED—已关闭
+        //                     REVOKED—已撤销（付款码支付）
+        //                     USERPAYING--用户支付中（付款码支付）
+        //                     PAYERROR--支付失败(其他原因，如银行返回失败)
+        // 微信支付订单号	    transaction_id	是	String(32)	1009660380201506130728806387	微信支付订单号
+        // 附加数据	    attach	否	String(128)	深圳分店	附加数据，原样返回
+
+        return result;
     }
 
     /*!
@@ -353,46 +347,66 @@ class weChat extends facade.Service
         return this.getAccessToken();
     }
 
-    async unifiedOrder(appId, openId, ip, price, productIntro, tradeId) {
+    /**
+     * 向微信申请生成预处理订单
+     * @param {*} appId 
+     * @param {*} openId 
+     * @param {*} ip 
+     * @param {*} price 
+     * @param {*} productIntro 
+     * @param {*} tradeId 
+     * @param {*} notifyUrl 
+     */
+    async unifiedOrder(appId, openId, ip, price, productIntro, tradeId, notifyUrl) {
+        //待发送数据
+        let dat = {
+            appId: appId,
+            attach: 'GJS-ORG',                                      // 任意字符串, 会原样返回, 可以用作一个标记
+            body: productIntro,
+            mch_id: wechatcfg.mch_id,
+            nonce_str: getNonceStr(),
+            notify_url: notifyUrl,
+            openid: openId,
+            out_trade_no: tradeId,                                  //商家内部自定义的订单号
+            spbill_create_ip: ip,
+            total_fee: price,
+            trade_type: 'JSAPI',
+        };
 
-        // attach 是一个任意的字符串, 会原样返回, 可以用作一个标记
-        const attach = 'GJS-ORG'
-        // 一个随机字符串
-        const nonceStr = getNonceStr()
-        // 用户的 openId
-        //const openId = 'user openId'
-        // 生成商家内部自定义的订单号, 商家内部的系统用的, 不用 attach 加入也是可以的
-        //const tradeId = getTradeId(attach)
-        // 生成签名
-        const sign = getPrePaySign(appId, attach, productIntro, wechatcfg.mch_id, nonceStr, wechatcfg.notifyUrl, openId, tradeId, ip, price)
         // 这里是在 express 获取用户的 ip, 因为使用了 nginx 的反向代理, 所以这样获取
         //let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
         //ip = ip.match(/\d+\.\d+\.\d+\.\d+/)[0]
-        //将微信需要的数据拼成 xml 发送出去
-        const sendData = wxSendData(appId, attach, productIntro, wechatcfg.mch_id, nonceStr, wechatcfg.notifyUrl, openId, tradeId, ip, price, sign)
-    
+
         let result = await new Promise(function(resolve, reject){
-            axios.post('https://api.mch.weixin.qq.com/pay/unifiedorder', sendData).then(wxResponse => {
+            axios.post('https://api.mch.weixin.qq.com/pay/unifiedorder', getSendData(dat)).then(wxResponse => {
                 // 微信返回的数据也是 xml, 使用 xmlParser 将它转换成 js 的对象
                     xmlParser.parseString(wxResponse.data, (err, success) => {
                         if (err) {
                             reject(err)
                         } else {
-                            console.log(success);
                             if (success.xml.return_code[0] === 'SUCCESS') {
                                 const prepayId = success.xml.prepay_id[0]
-                                const payParamsObj = getPayParams(appId, prepayId, tradeId)
-                                // 返回给前端, 这里是 express 的写法
-                                //res.json(payParamsObj)
+
+                                const nonceStr = getNonceStr();
+                                const timeStamp = new Date().getTime().toString();
+                                const package = 'prepay_id=' + prepayId;
+
+                                // 前端需要的所有数据, 都从这里返回过去
+                                const payParamsObj = getSignedData({
+                                    appId: appId,
+                                    timeStamp: timeStamp,
+                                    nonceStr: nonceStr,
+                                    package: package,
+                                    signType: 'MD5',
+                                    paySign: paySign,
+                                });
                                 console.log('payParamsObj', payParamsObj);
                                 resolve(payParamsObj);
                             } else {
                                 if (err) {
                                     console.log(err);
                                     reject(err)
-                                    //res.sendStatus(502)
                                 } else if (success.xml.return_code[0] !== 'SUCCESS') {
-                                    //res.sendStatus(403)
                                     reject(success.xml.return_msg[0])
                                 }
                             }
@@ -407,6 +421,10 @@ class weChat extends facade.Service
         return result;
     }
     
+    /**
+     * 生成内部订单号
+     * @param {*} attach 
+     */
     getTradeId(attach) {
         var date = new Date().getTime().toString()
         var text = ""
@@ -417,7 +435,7 @@ class weChat extends facade.Service
         var tradeId = 'ty_' + attach + '_' + date + text
         return tradeId
     }    
-
+    
     /**
      * 获取openid
      * @param {*} code 

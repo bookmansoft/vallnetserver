@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType, TableField} = facade.const;
+let {TableType, TableField, IndexType} = facade.const;
 
 /**
  * 节点控制器--订单
@@ -35,25 +35,65 @@ class order extends facade.Control
     }
 
     /**
+     * 凭证一级市场购买
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async CrowdPurchase(user, params) {
+        // `uid` INT(8) UNSIGNED NOT NULL DEFAULT '0' COMMENT '用户编号',
+        // `order_sn` VARCHAR(128) NOT NULL COMMENT '订单编号',
+        // `order_num` INT(8) UNSIGNED NULL DEFAULT '0' COMMENT '支付金额',
+        // `product_id` INT(8) UNSIGNED NULL DEFAULT '0' COMMENT '产品编号',
+        // `product_info` VARCHAR(32) NULL DEFAULT NULL COMMENT '产品名称',
+        // `order_status` INT(1) UNSIGNED NULL DEFAULT '0' COMMENT '订单状态',
+        // `pay_status` INT(1) UNSIGNED NULL DEFAULT '0' COMMENT '支付状态',
+        // `create_time` INT(8) UNSIGNED NULL DEFAULT '0' COMMENT '创建时间',
+        // `update_time` INT(8) UNSIGNED NULL DEFAULT '0' COMMENT '更新时间',
+        // `quantity` INT(4) NULL DEFAULT '1' COMMENT '数量',
+        // `attach` VARCHAR(128) NULL DEFAULT NULL COMMENT '附件',
+    
+        let type = params.type;                         //众筹项目编号，索引到配置表'crowd'中的项目，类似商品编号
+        let item = this.core.fileMap['crowd'][type];    //从配置表取对应的众筹项目
+        let order_num = item.price * params.quantity;
+        let current_time = parseInt(new Date().getTime() / 1000);
+        let tradeId = this.core.service.wechat.getTradeId('vallnet');
+
+        let cpObj = this.core.GetObject(TableType.blockgame, params.cid, IndexType.Foreign);
+        if(cpObj) { 
+            let orderItem = {
+                uid: user.id,                                   //此处存疑，使用单服内用户编号，无法跨服识别
+                order_sn: tradeId,                              //订单编号
+                order_num: order_num,                           //订单支付总额
+                product_id: item.pid,                           //产品编号，原始的的定义是：小于等于10的时候，代表VIP等级，大于10的时候，代表 our_block_stock 的主键
+                product_info: item.desc,                        //产品描述
+                attach: params.cid,                             //附加信息 - 此处填写凭证编号，即CP编号
+                quantity: item.stock,                           //附加信息 - 此处填写凭证数量
+                order_status: 0,
+                pay_status: 0,
+                create_time: current_time,
+                update_time: 0,
+            };
+            await this.core.GetMapping(TableType.order).Create(orderItem);
+            return {code: 0, data: {tradeId: tradeId, order:orderItem}};
+        }
+        
+        return {code: -1};
+    }
+
+    /**
      * 普通订单下单
      */
     async CommonOrderRepay(user, params) {
-        let uid = user.id
-        let price = params.price
-        let productId = params.productId
-        let productIntro = params.productIntro
-        let attach = params.attach
-        let quantity = params.quantity
         let current_time = parseInt(new Date().getTime() / 1000)
-        let tradeId = this.core.service.wechat.getTradeId('bgw')
+        let tradeId = this.core.service.wechat.getTradeId('vallnet')
         let orderItem = {
-            uid: uid,
+            uid: use.id,
             order_sn: tradeId,
-            order_num: price,
-            product_id: productId,
-            product_info: productIntro,
-            attach: attach,
-            quantity: quantity,
+            order_num: params.price,
+            product_id: params.productId,
+            product_info: params.productIntro,
+            attach: params.attach,
+            quantity: params.quantity,
             order_status: 0,
             pay_status: 0,
             create_time: current_time,
@@ -80,7 +120,6 @@ class order extends facade.Control
      * @param {*} params 
      */
     async OrderPayResult(user, params) {
-        let uid = user.id
         let tradeId = params.tradeId
         let status = params.status
 
@@ -93,6 +132,8 @@ class order extends facade.Control
             if(status==1) { //支付成功 
                 if (order.orm.product_id < 10) {
                     let vip_level =  order.orm.product_id;
+                    let current_time = parseInt(new Date().getTime() / 1000)
+                    let month_time =  3600 * 24 * 30;
 
                     // `vip_level` INT(4) 'VIP等级',
                     // `vip_start_time` INT(8) 'VIP开始时间',
@@ -101,8 +142,6 @@ class order extends facade.Control
                     // `is_expired` INT(1) '是否过期',
                     // `vip_last_get_count` INT(8) 'VIP获取数量',
                     // `vip_usable_count` INT(8) 'VIP可用游戏金',
-                    let current_time = parseInt(new Date().getTime() / 1000)
-                    let month_time =  3600 * 24 * 30;
             
                     if(user.baseMgr.info.getAttr('is_expired') == 1) {   //过期，重新开卡
                         user.baseMgr.info.setAttr('vip_start_time', current_time);

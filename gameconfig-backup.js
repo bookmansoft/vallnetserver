@@ -87,7 +87,6 @@ let vallnet = {
  * 微信社交网络连接信息
  */
 let wechat = {
-    notifyUrl: '',
     grant_type: '',
     mch_id: '',
     mch_key: '',

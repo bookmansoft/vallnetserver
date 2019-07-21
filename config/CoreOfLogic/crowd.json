@@ -1,32 +1,42 @@
 {
     "0": {
+        "pid"       : 1001,
         "payType"   :0,
         "name":     "打赏型",
         "price":    1, 
+        "stock": 0,
         "desc":     ""
     },
     "1": {
+        "pid"       : 1002,
         "payType"   :1,
         "name":     "五十型",
         "price":    10, 
+        "stock": 50,
         "desc":     "获赠五十代练宝宝及可爱毛公仔一只"
     },
     "2": {
+        "pid"       : 1003,
         "payType"   :2,
         "name":     "一百型",
         "price":    10, 
+        "stock": 100,
         "desc":     "获赠一百代练宝宝及可爱毛公仔一只"
     },
     "4": {
+        "pid"       : 1004,
         "payType"   :4,
         "name":     "两百型",
         "price":    100, 
+        "stock": 200,
         "desc":     "获赠两百代练宝宝及可爱毛公仔一只"
     },
     "10": {
+        "pid"       : 1005,
         "payType"   :10,
         "name":     "五百型",
         "price":    200, 
+        "stock": 500,
         "desc":     "获赠五百代练宝宝及可爱毛公仔一只"
     }
 }
