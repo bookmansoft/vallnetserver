@@ -195,7 +195,7 @@ facade.boot({
                 await core.notifyEvent('wallet.cp.register', {msg:items[cid]});
             }
 
-            ret = await core.service.gamegoldHelper.execute('stock.offer.list', [[[size, -1]]]);
+            ret = await core.service.gamegoldHelper.execute('stock.offer.list', [[['size', -1]]]);
             if(!!ret && ret.code == 0) {
                 let cids = core.GetMapping(TableType.StockBase).groupOf().excludeProperty(ret.result.list.map(it=>it.cid), 'cid');
                 if(cids.length > 0) {
