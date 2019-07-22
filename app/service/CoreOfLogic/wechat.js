@@ -9,154 +9,6 @@ let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 let fs = require('fs')
 let https = require('https')
 
-/**
- * 生成随机字符串
- */
-function getNonceStr() {
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    for (var i = 0; i < 16; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length))
-    }
-    return text
-}
-
-/**
- * 构建传入对象相应的XML
- * @param {*} json 
- */
-function fnCreateXml(json) {
-    let _xml = '';
-    for (let key in json) {
-        _xml += '<' + key + '>' + json[key] + '</' + key + '>';
-    }
-    return _xml;
-};
-
-/**
- * 将数据对象封装成微信要求的上行参数字符串
- * @param {*} json 
- */
-function getSendData(json) {
-    return `<xml>${fnCreateXml(getSignedData(json))}</xml>`;
-}
-
-function getSignedData(json) {
-    let stringA = Object.keys(json).sort().reduce((sofar, cur) => {
-        sofar += (sofar=='') ? `${cur}=${json[cur]}` : `&${cur}=${json[cur]}`;
-        return sofar;
-    }, '');
-    let stringSignTemp = stringA + "&key=" + wechatcfg.mch_key;
-    json.sign = md5(stringSignTemp).toUpperCase();
-    return json;
-}
- 
-/**
- * 生成微信红包数据
- * @param {*} option 
- * @param {*} redPackConfig 
- */
-function fnGetWeixinBonus(option, redPackConfig) {
-    let total_amount = option.total_amount || 10, 	//红包总金额
-        re_openid = option.re_openid, 				//红包发送的目标用户
-        total_num = option.total_num || 1; 			//红包个数
-
-    let now = new Date();
-    let showName = redPackConfig.showName;			//红包名字
-    let clientIp = redPackConfig.clientIp;			//客户端IP
-    let wishing = redPackConfig.wishing;			//红包上显示的祝福语
-    let remark = redPackConfig.remark;              //备注
-    let mch_id = wechatcfg.mch_id;					//商户ID
-    let wxappid = wechatcfg.appid;					//微信公众号APPID
-    let date_time = now.getFullYear() + '' + (now.getMonth() + 1) + '' + now.getDate();
-    let date_no = (now.getTime() + '').substr(-8); //生成8为日期数据，精确到毫秒
-    let random_no = Math.floor(Math.random() * 99);
-    if (random_no < 10) { //生成位数为2的随机码
-        random_no = '0' + random_no;
-    }
-
-    let muc_id = mch_id;
-    let contentJson = {};
-    contentJson.act_name = showName;
-    contentJson.client_ip = clientIp;
-    contentJson.mch_billno = redPackConfig.mch_billno; // muc_id + date_time + date_no + random_no; //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字; //+201502041234567893';
-    contentJson.mch_id = muc_id;
-    contentJson.nick_name = showName;
-    contentJson.nonce_str = Math.random().toString(36).substr(2, 15);
-    contentJson.re_openid = re_openid;
-    contentJson.remark = remark;
-    contentJson.send_name = showName;
-    contentJson.total_amount = total_amount;
-    contentJson.total_num = total_num;
-    contentJson.wishing = wishing;
-    contentJson.wxappid = wxappid;
-
-    return getSendData(contentJson);
-};
-
-/**
- * 生成微信红包数据
- * @param {*} mch_billno 
- */
-function fnGetHBInfo(mch_billno) {
-    let mch_id = wechatcfg.mch_id;					//商户ID
-    let wxappid = wechatcfg.appid;					//微信公众号APPID
-    let muc_id = mch_id;
-    let contentJson = {};
-
-    contentJson.appid = wxappid;
-    contentJson.bill_type = 'MCHT';
-    contentJson.mch_billno = mch_billno;
-    contentJson.mch_id = muc_id;
-    contentJson.nonce_str = Math.random().toString(36).substr(2, 15);
-
-    return getSendData(contentJson);
-};
-
-async function  redpackApi(host, path, sendData) {
-    let ret = new Promise((resolve, reject) => {
-        let opt = {
-            host: host,
-            port: '443',
-            method: 'POST',
-            path: path,
-            key: fs.readFileSync(process.cwd() + '/config/certwx/apiclient_key.pem', 'utf8'),     //将微信生成的证书放入 cert目录
-            cert: fs.readFileSync(process.cwd() + '/config/certwx/apiclient_cert.pem', 'utf8')
-        };
-
-        let body = '';
-        opt.agent = new https.Agent(opt);
- 
-        var req = https.request(opt, function (res) {
-            res.on('data', function (d) {
-                body += d;
-            }).on('end', function () {
-                let parser = new xml2js.Parser({trim: true, explicitArray: false, explicitRoot: false});//解析签名结果xml转json
-                parser.parseString(body, function (err, result) {
-                    /*
-                    if (result["result_code"] === "SUCCESS") {
-                        resolve({"code": result["result_code"], "mch_billno": result["mch_billno"]});
-                    } else {
-                        console.log(result["return_msg"]);
-                        resolve({"code": result["result_code"]});
-                    }
-                    */
-                   //resolve({return_msg: result["return_msg"]})
-                   resolve(result)
-                });
-            });
- 
-        }).on('error', function (e) {
-            console.log("Got error: " + e.message);
-            reject(e)
-        });
-        req.write(sendData);
-        req.end();
-    });
-
-    return ret
-}
-
 class AccessToken {
     constructor(accessToken, expireTime) {
       this.accessToken = accessToken;
@@ -224,9 +76,46 @@ class weChat extends facade.Service
         this.wxaPrefix = 'https://api.weixin.qq.com/wxa/';
         //查询订单接口
         this.orderquery = 'https://api.mch.weixin.qq.com/pay/orderquery';
+        this.unifiedorderUrl = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
 
         this.defaults = {};
         this.tokenFromCustom = tokenFromCustom;
+    }
+
+    /**
+     * 以HTTPS协议发送数据
+     */
+    async send(host, path, sendData) {
+        return new Promise((resolve, reject) => {
+            let opt = {
+                host: host,
+                port: '443',
+                method: 'POST',
+                path: path,
+                key: fs.readFileSync(process.cwd() + '/config/certwx/apiclient_key.pem', 'utf8'),     //将微信生成的证书放入 cert目录
+                cert: fs.readFileSync(process.cwd() + '/config/certwx/apiclient_cert.pem', 'utf8')
+            };
+    
+            let body = '';
+            opt.agent = new https.Agent(opt);
+     
+            var req = https.request(opt, function (res) {
+                res.on('data', function (d) {
+                    body += d;
+                }).on('end', function () {
+                    let parser = new xml2js.Parser({trim: true, explicitArray: false, explicitRoot: false});//解析签名结果xml转json
+                    parser.parseString(body, function (err, result) {
+                       resolve(result);
+                    });
+                });
+     
+            }).on('error', function (e) {
+                console.log("Got error: " + e.message);
+                reject(e)
+            });
+            req.write(sendData);
+            req.end();
+        });
     }
 
     /**
@@ -250,7 +139,7 @@ class weChat extends facade.Service
         };
 
         let result = await new Promise((resolve, reject) => {
-            axios.post(this.orderquery, getSendData(ori)).then(wxResponse => {
+            axios.post(this.orderquery, this.toXml(ori)).then(wxResponse => {
                 xmlParser.parseString(wxResponse.data, (err, success) => {
                     if (err) {
                         reject(err)
@@ -377,8 +266,8 @@ class weChat extends facade.Service
         //let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
         //ip = ip.match(/\d+\.\d+\.\d+\.\d+/)[0]
 
-        let result = await new Promise(function(resolve, reject){
-            axios.post('https://api.mch.weixin.qq.com/pay/unifiedorder', getSendData(dat)).then(wxResponse => {
+        let result = await new Promise((resolve, reject) => {
+            axios.post(this.unifiedorderUrl, this.toXml(dat)).then(wxResponse => {
                 // 微信返回的数据也是 xml, 使用 xmlParser 将它转换成 js 的对象
                     xmlParser.parseString(wxResponse.data, (err, success) => {
                         if (err) {
@@ -392,16 +281,14 @@ class weChat extends facade.Service
                                 const package = 'prepay_id=' + prepayId;
 
                                 // 前端需要的所有数据, 都从这里返回过去
-                                const payParamsObj = getSignedData({
+                                resolve(this.sign({
                                     appId: appId,
                                     timeStamp: timeStamp,
                                     nonceStr: nonceStr,
                                     package: package,
                                     signType: 'MD5',
                                     paySign: paySign,
-                                });
-                                console.log('payParamsObj', payParamsObj);
-                                resolve(payParamsObj);
+                                }));
                             } else {
                                 if (err) {
                                     console.log(err);
@@ -532,24 +419,54 @@ class weChat extends facade.Service
      * @param {*} re_openid     发送用户
      */
     async sendRedPacket(total_amount, total_num, re_openid, redPackConfig) {
+        total_amount = total_amount || 10;
+        total_num = total_num || 1;
+
         let host = 'api.mch.weixin.qq.com';
         let path = '/mmpaymkttransfers/sendredpack';
-        let option = {total_amount, re_openid, total_num};
-        let sendData = fnGetWeixinBonus(option, redPackConfig);
-        let result = await redpackApi(host, path, sendData);
-        return {return_msg: result["return_msg"]}
+        let now = new Date();
+        let date_time = now.getFullYear() + '' + (now.getMonth() + 1) + '' + now.getDate();
+        let date_no = (now.getTime() + '').substr(-8); //生成8为日期数据，精确到毫秒
+        let random_no = Math.floor(Math.random() * 99);
+        if (random_no < 10) { //生成位数为2的随机码
+            random_no = '0' + random_no;
+        }
+
+        let result = await this.send(host, path, this.toXml({
+            act_name: redPackConfig.showName,      //红包名字
+            nick_name: redPackConfig.showName,
+            send_name: redPackConfig.showName,
+            client_ip: redPackConfig.clientIp,     //客户端IP
+            mch_billno: redPackConfig.mch_billno,  // muc_id + date_time + date_no + random_no; //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字; //+201502041234567893';
+            mch_id: wechatcfg.mch_id,
+            nonce_str: Math.random().toString(36).substr(2, 15),
+            re_openid: re_openid,
+            remark: redPackConfig.remark,          //备注                     
+            total_amount: total_amount,
+            total_num: total_num,
+            wishing: redPackConfig.wishing,        //红包上显示的祝福语
+            wxappid: wechatcfg.appid,
+        }));
+
+        return {return_msg: result["return_msg"]};
     }
 
     /**
     * 
     * @param {*} mch_billno  商户订单号
     */
-    async getHBinfo(mch_billno) {
+    async getRecPackInfo(mch_billno) {
         let host = 'api.mch.weixin.qq.com';
         let path = '/mmpaymkttransfers/gethbinfo';
-        let sendData = fnGetHBInfo(mch_billno);
-        let result = await redpackApi(host, path, sendData);
-        return result
+
+        let result = await this.send(host, path, this.toXml({
+            appid: wechatcfg.appid,
+            bill_type: 'MCHT',
+            mch_billno: mch_billno,
+            mch_id: wechatcfg.mch_id,
+            nonce_str: getNonceStr(),
+        }));
+        return result;
     }
 
     getSign(url, callback) {
@@ -589,6 +506,58 @@ class weChat extends facade.Service
             })
         }
     }
+
+    /**
+     * 为指定对象添加签名项
+     * @param {*} json 
+     */
+    sign(json) {
+        //排序、拼接
+        let stringA = Object.keys(json).sort().reduce((sofar, cur) => {
+            sofar += (sofar=='') ? `${cur}=${json[cur]}` : `&${cur}=${json[cur]}`;
+            return sofar;
+        }, '');
+
+        //附加密钥
+        let stringSignTemp = stringA + "&key=" + wechatcfg.mch_key;
+
+        //添加MD5签名项
+        json.sign = md5(stringSignTemp).toUpperCase();
+
+        return json;
+    }
+
+    /**
+     * 将数据对象封装成微信要求的上行参数字符串
+     * @param {*} json 
+     */
+    toXml(json) {
+        return `<xml>${fnCreateXml(this.sign(json))}</xml>`;
+    }
 }
+
+/**
+ * 生成随机字符串
+ */
+function getNonceStr() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    for (var i = 0; i < 16; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length))
+    }
+    return text
+}
+
+/**
+ * 构建传入对象相应的XML
+ * @param {*} json 
+ */
+function fnCreateXml(json) {
+    let _xml = '';
+    for (let key in json) {
+        _xml += '<' + key + '>' + json[key] + '</' + key + '>';
+    }
+    return _xml;
+};
 
 module.exports = weChat;

@@ -112,8 +112,8 @@ class wechat extends facade.Control {
     }
 
     async GetRecPackInfo(user, params) {
-        let mch_billno = params.mch_billno
-        let ret = await this.core.service.wechat.getHBinfo(mch_billno)
+        let mch_billno = params.mch_billno;
+        let ret = await this.core.service.wechat.getRecPackInfo(mch_billno)
         return { code: 0, data: ret }
     }
 }
