@@ -22,7 +22,7 @@ class blockGameEntity extends BaseEntity
     IndexOf(type){
         switch(type){
             case IndexType.Foreign:
-                return this.cid;
+                return this.orm.cpid;
             default:
                 return this.orm.id;
         }

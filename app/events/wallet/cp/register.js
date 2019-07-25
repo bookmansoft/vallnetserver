@@ -7,10 +7,12 @@ let fetch = require("node-fetch");
  * CP成功注册事件
  * 主网下发CP注册通知，此时应该将CP记录插入数据库
  * @param {Object} data.msg { cid, name, url, address, ip, cls, grate, wid, account }
+ * 
+ * @description 如果不返回 Promise 的话，事件将不能充当同步事件使用，即使外围使用 await 也起不到阻塞作用
  */
 function handle(data) {
-    //收到CP注册事件
-    CreateRecord(data.msg, this).catch(e => {
+    //收到CP注册事件，在本地数据库注册CP信息
+    return CreateRecord(data.msg, this).catch(e => {
         console.error(e);
     });
 }

@@ -116,48 +116,8 @@ class manage extends facade.Control
                 return {code: -1, msg: '红包已领取'};
             }
 
-            /*
-            let amount = userRedPact.orm.amount
-            let now = new Date();
-            let date_time = now.getFullYear() + '' + (now.getMonth() + 1) + '' + now.getDate();
-            let date_no = (now.getTime() + '').substr(-8); //生成8为日期数据，精确到毫秒
-            let random_no = Math.floor(Math.random() * 99);
-            if (random_no < 10) { //生成位数为2的随机码
-                random_no = '0' + random_no;
-            }
-    
-            let redPackConfig = {
-                showName: '游戏金',
-                clientIp: params.userip,
-                wishing: '新年快乐，大吉大利',
-                remark: '分享越多，快乐越多，游戏金越多',
-                mch_billno: wechatcfg.mch_id + date_time + date_no + random_no //订单号为 mch_id + yyyymmdd+10位一天内不能重复的数字;
-            }
-
-            let total_amount = amount
-            let total_num = 1
-            let ret = await this.core.service.wechat.sendRedPacket(total_amount, total_num, openid, redPackConfig)
-            let redpackItem = {
-                user_redpack_id
-                uid
-                act_id
-                act_name: redPackConfig.showName,
-                mch_billno: redPackConfig.mch_billno,
-                nick_name: redPackConfig.showName,
-                re_openid: openid,
-                remark: redPackConfig.remark,
-                send_name: redPackConfig.showName,
-                total_amount: total_amount,
-                total_num: total_num,
-                wishing: redPackConfig.wishing,
-                return_msg: ret.return_msg,
-                order_status: 0,
-            }
-            
-            this.core.GetMapping(TableType.redpack).Create(redpackItem);
-            */
-           let cid = userRedPact.orm.cid;
-           let sn = stringRandom(32)
+            let cid = userRedPact.orm.cid;
+            let sn = stringRandom(32)
 
             userRedPact.setAttr('status', 1)
             userRedPact.setAttr('order_sn', sn)

@@ -387,29 +387,6 @@ CREATE TABLE IF NOT EXISTS `our_block_notify` (
 
 -- 数据导出被取消选择。
 
-
--- 导出  表 wechat-wallet.our_block_order 结构
-CREATE TABLE IF NOT EXISTS `our_block_order` (
-  `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
-  `uid` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '用户编号',
-  `order_sn` varchar(128) NOT NULL COMMENT '订单编号',
-  `order_num` int(8) unsigned DEFAULT '0' COMMENT '支付金额',
-  `product_id` int(8) unsigned DEFAULT '0' COMMENT '产品编号',
-  `product_info` varchar(32) DEFAULT NULL COMMENT '产品名称',
-  `order_status` int(1) unsigned DEFAULT '0' COMMENT '订单状态',
-  `pay_status` int(1) unsigned DEFAULT '0' COMMENT '支付状态',
-  `create_time` int(8) unsigned DEFAULT '0' COMMENT '创建时间',
-  `update_time` int(8) unsigned DEFAULT '0' COMMENT '更新时间',
-  `quantity` int(4) DEFAULT '1' COMMENT '数量',
-  `attach` varchar(128) DEFAULT NULL COMMENT '附件',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `order_sn` (`order_sn`),
-  KEY `uid` (`uid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 数据导出被取消选择。
-
-
 -- 导出  表 wechat-wallet.our_block_redpack 结构
 CREATE TABLE IF NOT EXISTS `our_block_redpack` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
@@ -751,17 +728,10 @@ CREATE TABLE IF NOT EXISTS `our_many_red_send` (
 CREATE TABLE IF NOT EXISTS `our_stock_base` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cid` varchar(50) NOT NULL COMMENT '链数据库cid',
-  `cp_name` varchar(255) NOT NULL COMMENT '游戏简称',
-  `cp_text` varchar(255) NOT NULL COMMENT '游戏中文名',
   `total_num` bigint(20) DEFAULT NULL COMMENT '流通凭证总数量',
   `sell_stock_amount` bigint(20) DEFAULT NULL COMMENT '最新挂单价格（游戏金）',
   `sell_stock_num` int(11) DEFAULT NULL COMMENT '挂单数量（15单在售）',
   `base_amount` int(11) DEFAULT NULL COMMENT '发行价格（游戏金，作为比较基准替代昨日价格）',
-  `large_img_url` varchar(255) DEFAULT NULL COMMENT '游戏主图',
-  `small_img_url` varchar(255) DEFAULT NULL COMMENT '游戏小图',
-  `icon_url` varchar(255) DEFAULT NULL COMMENT '游戏图标',
-  `pic_urls` varchar(2000) DEFAULT NULL COMMENT '游戏组图JSON',
-  `cp_desc` varchar(2000) DEFAULT NULL COMMENT '游戏详情',
   `funding_text` varchar(500) DEFAULT NULL COMMENT '众筹简介',
   `funding_project_text` varchar(2000) DEFAULT NULL COMMENT '项目介绍',
   `stock_money` int(11) DEFAULT NULL COMMENT '众筹单份价格（人民币：分）',
@@ -770,7 +740,6 @@ CREATE TABLE IF NOT EXISTS `our_stock_base` (
   `funding_residue_day` int(11) DEFAULT NULL COMMENT '剩余天数',
   `funding_target_amount` bigint(20) DEFAULT NULL COMMENT '众筹目标金额',
   `funding_done_amount` bigint(20) DEFAULT NULL COMMENT '众筹已完成金额',
-  `provider` varchar(255) DEFAULT NULL COMMENT '游戏开发商',
   `history_text` varchar(2000) DEFAULT '' COMMENT '历史业绩信息JSON数组',
   `now_sale` varchar(2000) DEFAULT NULL COMMENT '现在挂单卖出的JSON字符串',
   PRIMARY KEY (`id`)

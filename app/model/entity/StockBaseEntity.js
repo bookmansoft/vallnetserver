@@ -23,7 +23,7 @@ class StockBaseEntity extends BaseEntity
      */
     static async onCreate(db, item) {
         try{
-            let it = await order(db).create(item);
+            let it = await StockBase(db).create(item);
             await it.save();
     
             return it;

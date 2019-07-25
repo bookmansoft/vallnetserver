@@ -97,7 +97,7 @@ class shop extends facade.Control
         }
 
         //设置首充标记,单笔金额必须大于等于60
-        if(total_fee >= 60){
+        if(total_fee >= 60) {
             if(!pUser.baseMgr.info.CheckStatus(UserStatus.isFirstPurchase)){
                 pUser.baseMgr.info.SetStatus(UserStatus.isFirstPurchase);
                 pUser.baseMgr.info.UnsetStatus(UserStatus.isFirstPurchaseBonus);
@@ -115,4 +115,5 @@ class shop extends facade.Control
         return ReturnCode.Success;
     }
 }
+
 exports = module.exports = shop;

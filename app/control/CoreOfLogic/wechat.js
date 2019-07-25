@@ -6,7 +6,7 @@ let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 
 /**
  * 微信接口
- * Create by gamegold Fuzhou on 2018-11-27
+ * Create on 2018-11-27
  */
 class wechat extends facade.Control {
     /**
@@ -14,47 +14,23 @@ class wechat extends facade.Control {
       * @param {*} user 
       * @param {*} params
       */
-    async WechatConfig(user, params) {
+     async WechatConfig(user, params) {
         let url = params.uri;
         let self = this;
         let res = await new Promise(function (resolve, reject) {
             self.core.service.wechat.getSign(url, function (data) {
-                console.log({ signature: data });
                 let wxconfig = {
                     //debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
                     appId: wechatcfg.appid, // 必填，公众号的唯一标识
+                    jsApiList: wechatcfg.jsApiList,
                     timestamp: data.timestamp, // 必填，生成签名的时间戳
                     nonceStr: data.noncestr, // 必填，生成签名的随机串
                     signature: data.signature,// 必填，签名，见附录1
-                    jsApiList: wechatcfg.jsApiList,
                 }
                 resolve(wxconfig);
             });
         })
         return { code: 0, data: res };
-    }
-
-    /**
-     * 统一下单
-     * @param {*} user 
-     * @param {*} params
-    */
-    async UnifiedOrder(user, params) {
-        let openid = params.openid
-        let ip = params.userip
-        let price = params.price
-        let productInfo = params.productInfo
-        let tradeId = params.tradeId
-        let appId = params.appId
-        let notifyUrl = `${this.core.options.UrlHead}://${this.core.options.webserver.host}:${this.core.options.webserver.port}/wxnotify`;
-
-        try {
-            let res = await this.core.service.wechat.unifiedOrder(appId, openid, ip, price, productInfo, tradeId, notifyUrl);
-            return { code: 0, data: {unifiedOrder: res} };
-        } catch (e) {
-            console.log(e);
-            return { code: -1, msg: e.message };
-        }
     }
 
     async GetToken(user, params) {

@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let {TableType, TableField} = facade.const;
+let {TableType, TableField, IndexType} = facade.const;
 
 /**
  * 管理后台
@@ -20,13 +20,6 @@ class stock extends facade.Control
         }
         //构造查询条件
         let paramArray = [];
-        if (!!objData.cp_text) {
-            paramArray.push(['cp_text', objData.cp_text]);
-        }
-        if (!!objData.audit_state_id) {
-            paramArray.push(['audit_state_id', objData.audit_state_id]);
-        }
-
         let muster = this.core.GetMapping(TableType.StockBase)
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .where(paramArray)
@@ -37,6 +30,19 @@ class stock extends facade.Control
         let $idx = (muster.pageCur - 1) * muster.pageSize;
         for (let $value of muster.records(TableField.StockBase)) {
             $value['rank'] = $idx++;
+            //查询CP基本信息，补充显示内容
+            let cpObj = this.core.GetObject(TableType.blockgame, $value.cid, IndexType.Foreign);
+            if(!!cpObj) { 
+                $value.cp_name = cpObj.orm.cp_name;
+                $value.cp_text = cpObj.orm.game_desc;
+                $value.large_img_url = cpObj.orm.game_resource_uri;
+                $value.small_img_url = cpObj.orm.game_resource_uri;
+                $value.icon_url = cpObj.orm.game_ico_uri;
+                $value.pic_urls = JSON.stringify(cpObj.orm.game_screenshots.split(','));
+                $value.cp_desc = cpObj.orm.game_desc;
+                $value.provider = cpObj.orm.developer;
+            }
+
             list.push($value);
         }
 

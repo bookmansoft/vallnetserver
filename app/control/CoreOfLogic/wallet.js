@@ -58,8 +58,8 @@ class wallet extends facade.Control
      * @param {*} params 
      */
     async GetNotify(user, params) {
-        //查询用户帐户下是否有系统通知. todo: sys.listNotify 需要改造，当前不具备根据账户查询的功能
-        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [user.domainId]);
+        //查询用户帐户下是否有系统通知
+        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [[['account', user.domainId]]]);
         if(!!ret && ret.result.length > 0) {
             //为每条通知匹配订单
             ret.result.forEach(element => {

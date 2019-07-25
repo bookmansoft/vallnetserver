@@ -10,7 +10,6 @@ const TableType ={
     "cporder": 112,
     'usergame': 113,
     'userprop': 114,
-    'order': 115,
     'vipdraw': 116,
     'blockNotify': 118,
     'redpack': 119,
@@ -152,20 +151,6 @@ let cporder = [
     'update_time'
 ];
 
-let order = [ 
-    'uid',
-    'order_sn',
-    'order_num',
-    'product_id',
-    'product_info',
-    'attach',
-    'quantity',
-    'order_status',
-    'pay_status',
-    'create_time',
-    'update_time',
-]
-
 let vipdraw = [ 
     'uid',
     'draw_count',
@@ -303,9 +288,8 @@ let userstocklog = [
 ]
 
 let StockBase = [
-    'id', 'cid', 'cp_name', 'cp_text', 'total_num', 'sell_stock_amount',
-    'sell_stock_num','base_amount','large_img_url','small_img_url','icon_url','pic_urls','cp_desc','funding_text','funding_project_text',
-    'stock_money','supply_people_num','supply_money','funding_residue_day','funding_target_amount','funding_done_amount','provider','history_text','now_sale'
+    'id', 'cid', 'total_num', 'sell_stock_amount', 'sell_stock_num','base_amount','funding_text','funding_project_text',
+    'stock_money','supply_people_num','supply_money','funding_residue_day','funding_target_amount','funding_done_amount', 'history_text','now_sale'
 ]
 
 let Prize = ['id', 'act_name', 'mch_billno', 'nick_name', 're_openid', 'remark', 'send_name', 'total_amount', 'total_num', 'wishing', 'return_msg', 'order_status']
@@ -330,6 +314,8 @@ let Mail = ['id', 'src', 'dst', 'content', 'time', 'state']
 
 let manyreceive = ['id', 'send_id', 'receive_amount', 'send_uid', 'send_nickname', 'send_headimg', 'receive_uid', 'receive_nickname', 'receive_headimg', 'modify_date']
 
+let BuyLog = ['id', 'domainid', 'trade_no', 'third_no', 'product', 'product_desc', 'total_fee', 'fee_type', 'result', 'createdAt', 'updatedAt'];
+
 /**
  * 选择对象的指定属性，构造新对象并返回
  * @param {*} obj 
@@ -349,7 +335,7 @@ exports = module.exports = {
     TableField: {
         blockgame, blockgamecate, blockgameprop, blockgameprovider, StockBulletin, Mail,
         userwallet, redpack, redpackact, StockBase, Prize, Cp, CpType, CpFunding, CpStock, RedPacket,
-        cpuser, cpprop, cporder, usergame, userprop, order, vipdraw, blockNotify, Prop, manysend, manyreceive,
+        cpuser, cpprop, cporder, usergame, userprop, vipdraw, blockNotify, Prop, manysend, manyreceive, BuyLog,
         userredpack, userredpackact, blockgamecomment, mobileverify, stock, userstock, userstocklog, record,
     },
 }
