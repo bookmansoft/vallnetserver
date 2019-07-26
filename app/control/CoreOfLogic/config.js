@@ -11,7 +11,6 @@ class config extends facade.Control {
      */
     get router() {
         return [
-            [`/wxnotify`, 'wxnotify'],       //微信支付回调路由
             ['/txpay', 'txpay'],             //腾讯支付回调路由
         ];
     }
@@ -23,73 +22,6 @@ class config extends facade.Control {
         return ['parseParams', 'commonHandle'];
     }
 
-    /**
-     * 收到微信支付的回调通知，进行相应的处理
-     * 支付完成后，微信会把相关支付结果及用户信息通过数据流的形式发送给商户，商户需要接收处理，并按文档规范返回应答，注意：
-     * 1、同样的通知可能会多次发送给商户系统。商户系统必须能够正确处理重复的通知。
-     * 2、后台通知交互时，如果微信收到商户的应答不符合规范或超时，微信会判定本次通知失败，重新发送通知，直到成功为止（在通知一直不成功的情况下，微信总共会发起10次通知，通知频率为15s/15s/30s/3m/10m/20m/30m/30m/30m/60m/3h/3h/3h/6h/6h - 总计 24h4m），但微信不保证通知最终一定能成功。
-     * 3、在订单状态不明或者没有收到微信支付结果通知的情况下，建议商户主动调用微信支付【查询订单API】确认订单状态。
-     * @param {*} params 
-     */
-    async wxnotify(params) {
-        try {
-            //分析回调信息
-            // <xml>
-            //     <sign><![CDATA[B552ED6B279343CB493C5DD0D78AB241]]></sign>                        //签名
-            //     <sign_type><![CDATA[HMAC-SHA256]]></sign_type>                                   //签名类型，默认 MD5，可能值包括 HMAC-SHA256/MD5
-            //     <return_code><![CDATA[SUCCESS]]></return_code>                                   //返回状态码	String(16)
-            //     <result_code><![CDATA[SUCCESS]]></result_code>                                   //业务结果
-            //     <mch_id><![CDATA[10000100]]></mch_id>                                            //商户号
-            //     <appid><![CDATA[wx2421b1c4370ec43b]]></appid>                                    //公众账号ID
-            //     <openid><![CDATA[oUpF8uMEb4qRXf22hE3X68TekukE]]></openid>                        //用户标识
-            //     <total_fee>1</total_fee>                                                         //订单金额
-            //     <cash_fee>100</cash_fee>                                                         //现金支付金额
-            //     <transaction_id><![CDATA[1004400740201409030005092168]]></transaction_id>        //微信支付订单号
-            //     <out_trade_no><![CDATA[1409811653]]></out_trade_no>                              //商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，且在同一个商户号下唯一
-            //     <attach><![CDATA[支付测试]]></attach>                                             //商家数据包 String(128) 原样返回
-            //     <nonce_str><![CDATA[5d2b6c2a8db53831f7eda20af46e531c]]></nonce_str>              //随机字符串
-            //     <bank_type><![CDATA[CFT]]></bank_type>                                           //付款银行
-            //     <fee_type><![CDATA[CNY]]></fee_type>                                             //货币种类 默认 CNY
-            //     <cash_fee_type><![CDATA[CNY]]></cash_fee_type>                                   //现金支付货币类型
-            //     <is_subscribe><![CDATA[Y]]></is_subscribe>                                       //是否关注公众账号
-            //     <sub_mch_id><![CDATA[10000100]]></sub_mch_id>                                    //子商户号
-            //     <time_end><![CDATA[20140903131540]]></time_end>                                  //支付完成时间
-            //     <coupon_fee_0><![CDATA[10]]></coupon_fee_0>                                      //优惠券支付金额 有下标
-            //     <coupon_count><![CDATA[1]]></coupon_count>                                       //代金券使用数量
-            //     <coupon_type_0><![CDATA[CASH]]></coupon_type_0>                                  //代金券类型 有下标
-            //     <coupon_id_0><![CDATA[10000]]></coupon_id_0>                                     //代金券ID 有下标
-            //     <trade_type><![CDATA[JSAPI]]></trade_type>                                       //交易类型
-            // </xml>
-            let data = await this.core.service.wechat.verifyXml(params); //验证签名、解析字段
-            if(!data) {
-                throw new Error('error sign code');
-            }
-
-            //验证通过，开始对指定订单进行相应处理
-            //data.result_code;         //订单状态
-            //data.appid;               //公众号ID
-            //data.mch_id;              //商户ID
-            //data.openid;              //用户ID
-            //data.transaction_id;      //微信订单号
-            //data.out_trade_no;        //商户自定义订单号
-            //data.total_fee;           //订单金额，单位为分
-            //data.cash_fee;            //现金支付金额，单位为分
-            //data.attach;              //附加字段，原样返回
-            // const PurchaseStatus = {
-            //     create: 0,          //订单已生成
-            //     prepay: 1,          //订单已支付 - client
-            //     commit: 2,          //订单已支付 - server
-            //     cancel: 3,          //订单已取消
-            // };
-            this.core.notifyEvent('wallet.payCash', {data: data});
-
-            //给微信送回应答
-            return `<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>`;
-        } catch (e) {
-            console.log('wxnotify', e.message);
-        }
-    }
-    
     /**
      * TX发货回调，属于腾讯支付流程中的第 7 步
      *

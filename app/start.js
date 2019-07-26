@@ -166,7 +166,24 @@ if(env.constructor == String) {
             TableType.StockBase,
         ],
         static: [
+            //添加静态资源型路由
             ['/', './web/client'],
+            //添加微信支付回调路由，当然这种函数型路由也可以配置于任意控制器的 router 中
+            ['/wxnotify', async params => {
+                try {
+                    let data = await this.service.wechat.verifyXml(params); //验证签名、解析字段
+                    if(!data) {
+                        throw new Error('error sign code');
+                    }
+        
+                    this.notifyEvent('wallet.payCash', {data: data});
+        
+                    //给微信送回应答
+                    return `<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>`;
+                } catch (e) {
+                    console.log('wxnotify', e.message);
+                }
+            }],
         ], 
     }, async core => {
         while(true) {
@@ -258,9 +275,8 @@ if(env.constructor == String) {
         //订单状态定时查询
         core.autoTaskMgr.addMonitor(new orderMonitor(), 10*1000);
 
-        //登记特殊物品处理句柄
-        core.RegisterResHandle('stock', (user, bonus) => {
-            //参与众筹
+        //登记商品处理句柄 - 参与众筹
+        core.RegisterResHandle('stock', async (user, bonus) => {
             let stock = core.GetObject(TableType.StockBase, bonus.id);
             if(!!stock) {
                 core.service.gamegoldHelper.execute('stock.purchase', [stock.getAttr('cid'), bonus.num, user.domainId]);
