@@ -257,5 +257,14 @@ if(env.constructor == String) {
 
         //订单状态定时查询
         core.autoTaskMgr.addMonitor(new orderMonitor(), 10*1000);
+
+        //登记特殊物品处理句柄
+        core.RegisterResHandle('stock', (user, bonus) => {
+            //参与众筹
+            let stock = core.GetObject(TableType.StockBase, bonus.id);
+            if(!!stock) {
+                core.service.gamegoldHelper.execute('stock.purchase', [stock.getAttr('cid'), bonus.num, user.domainId]);
+            }
+        });
     });
 })();

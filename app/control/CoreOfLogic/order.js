@@ -114,12 +114,12 @@ class order extends facade.Control
         // };
 
         let order = this.core.GetObject(EntityType.BuyLog, params.tradeId, IndexType.Domain);
-        if(!!order && order.orm.domainid == user.domainId) {
-            if(order.orm.result == PurchaseStatus.create || order.orm.result == PurchaseStatus.prepay) {
+        if(!!order && order.orm.domainid == user.domainId) { //必须验证订单所有者信息
+            if(order.orm.result == PurchaseStatus.create) {
                 order.setAttr('result', PurchaseStatus.prepay);
             }
 
-            //此处并不处理订单，要等到微信回调，触发 config.wxnotify 才会真正处理订单内容
+            //此处并不处理订单，要等到微信回调，触发 config.wxnotify 才会真正处理订单内容，或者由定时程序反向问询微信
         } else {
             return {code: -1, msg: 'no order'};
         }
