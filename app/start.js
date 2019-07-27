@@ -1,8 +1,9 @@
 const facade = require('gamecloud')
 //加载用户自定义模块 - 这句必须紧跟在模块引入语句之后
 facade.addition = true;
+facade.addResType(99000, 'stock');
 
-let {IndexType, TableType} = facade.const
+let {IndexType, TableType, ResType} = facade.const
 
 let orderMonitor = require('./util/autoExec/orderMonitor');
 
@@ -165,25 +166,9 @@ if(env.constructor == String) {
             TableType.StockBulletin, 
             TableType.StockBase,
         ],
+        //额外的路由配置，也可以写在启动回调函数中( core.addRouter('/', './web/client') )，也可以配置于任意控制器的 router 中
         static: [
-            //添加静态资源型路由
             ['/', './web/client'],
-            //添加微信支付回调路由，当然这种函数型路由也可以配置于任意控制器的 router 中
-            ['/wxnotify', async params => {
-                try {
-                    let data = await this.service.wechat.verifyXml(params); //验证签名、解析字段
-                    if(!data) {
-                        throw new Error('error sign code');
-                    }
-        
-                    this.notifyEvent('wallet.payCash', {data: data});
-        
-                    //给微信送回应答
-                    return `<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>`;
-                } catch (e) {
-                    console.log('wxnotify', e.message);
-                }
-            }],
         ], 
     }, async core => {
         while(true) {
@@ -272,15 +257,37 @@ if(env.constructor == String) {
             core.notifyEvent('wallet.orderPay', {data:msg});
         }, 'order.pay');
 
-        //订单状态定时查询
-        core.autoTaskMgr.addMonitor(new orderMonitor(), 10*1000);
+        //#region 订单处理相关流程
+        
+        //1. 添加微信支付回调路由(也可以选择配置于 facade.boot/static 数组或者 control/router 中，集中置于此处是为了提高代码聚合度)
+        core.addRouter('/wxnotify', async params => {
+            try {
+                //验证签名、解析字段
+                let data = await this.service.wechat.verifyXml(params); 
+                if(!data) {
+                    throw new Error('error sign code');
+                }
 
-        //登记商品处理句柄 - 参与众筹
-        core.RegisterResHandle('stock', async (user, bonus) => {
-            let stock = core.GetObject(TableType.StockBase, bonus.id);
-            if(!!stock) {
-                core.service.gamegoldHelper.execute('stock.purchase', [stock.getAttr('cid'), bonus.num, user.domainId]);
+                //触发 wallet.payCash 事件，执行订单确认、商品发放流程
+                this.notifyEvent('wallet.payCash', {data: data});
+    
+                //给微信送回应答
+                return `<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>`;
+            } catch (e) {
+                console.log('wxnotify', e.message);
             }
         });
+
+        //2. 添加订单状态定时检测器(每5分钟检测一轮)，具体查询工作由 orderMonitor.execute 承载
+        core.autoTaskMgr.addMonitor(new orderMonitor(), 10*1000);
+
+        //3. 添加商品发放流程，配合 wallet.payCash 的工作流程。商品参数保存于 buylogs.product 字段中，格式为复合格式字符串 "type, id, num[;type, id, num]"
+        //@warning 对于异步发放、可能最终发放失败的商品，需要先放入背包，然后由用户从背包中选兑，以降低事务处理的复杂性
+
+        //3.1 购买VIP服务 todo
+        core.RegisterResHandle('vip', async (user, bonus) => {
+        });
+
+        //#endregion
     });
 })();

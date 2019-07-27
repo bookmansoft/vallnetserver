@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
-let {em_Effect_Comm, ResType, NotifyType,ActivityType, ReturnCode} = facade.const
-let LargeNumberCalculator = facade.Util.LargeNumberCalculator
+let {em_Effect_Comm, ResType, NotifyType,ActivityType, ReturnCode, GetResType} = facade.const
 
 /**
  * 判断字符串是否整数
@@ -10,19 +9,6 @@ function isNumber( s ){
     var regu = "^[0-9]+$";
     var re = new RegExp(regu);
     return re.test(s);
-}
-
-/**
- * 从复合索引推导出资源类型
- * @param {*} val 
- */
-function GetResType(val) {
-    return Object.keys(ResType).reduce((sofar,cur)=>{
-        if(ResType[cur] <= val) {
-            sofar = ResType[cur];
-        }
-        return sofar;
-    }, 0);
 }
 
 /**
