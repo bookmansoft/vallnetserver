@@ -22,13 +22,16 @@ async function handle(data) {
             }
         } else { //查询成功
             //test only
-            // let user = this.GetObject(EntityType.User, order.getAttr('domainid'), IndexType.Domain);
-            // if(user) {
-            //     //道具入库
-            //     user.getBonus(order.getAttr('product'), true);
-            //     order.setAttr('result', PurchaseStatus.commit); //将订单设置为报废，不会再次查询该订单后续状态
-            //     order.orm.save(); //强制保存到数据库，确保不会重复处理
-            // }
+            let user = this.GetObject(EntityType.User, order.getAttr('domainid'), IndexType.Domain);
+            if(user) {
+                //道具入库
+                user.getBonus(order.getAttr('product'), true);
+                order.setAttr('result', PurchaseStatus.commit); //将订单设置为报废，不会再次查询该订单后续状态
+                order.orm.save(); //强制保存到数据库，确保不会重复处理
+
+                user.notify({type: 911002, info: JSON.parse(user.baseMgr.info.getData())});
+            }
+            return;
             //end
 
             if(record.trade_state == 'SUCCESS') {

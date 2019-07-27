@@ -1,7 +1,8 @@
 const facade = require('gamecloud')
 //加载用户自定义模块 - 这句必须紧跟在模块引入语句之后
 facade.addition = true;
-facade.addResType(99000, 'stock');
+facade.addResType(99000, 'crowd');
+facade.addResType(98000, 'stock');
 
 let {IndexType, TableType, ResType} = facade.const
 
@@ -151,7 +152,6 @@ if(env.constructor == String) {
             TableType.cporder, 
             TableType.usergame, 
             TableType.userprop, 
-            TableType.vipdraw, 
             TableType.blockNotify, 
             TableType.redpack, 
             TableType.redpackact, 
@@ -284,8 +284,24 @@ if(env.constructor == String) {
         //3. 添加商品发放流程，配合 wallet.payCash 的工作流程。商品参数保存于 buylogs.product 字段中，格式为复合格式字符串 "type, id, num[;type, id, num]"
         //@warning 对于异步发放、可能最终发放失败的商品，需要先放入背包，然后由用户从背包中选兑，以降低事务处理的复杂性
 
-        //3.1 购买VIP服务 todo
+        //3.1 购买VIP服务
         core.RegisterResHandle('vip', async (user, bonus) => {
+            let vip_level =  bonus.num;
+            let current_time = parseInt(new Date().getTime() / 1000)
+            let month_time =  3600 * 24 * 30;
+
+            let is_expired = user.baseMgr.info.getAttr('vs');
+            if(typeof is_expired == 'undefined' || is_expired == 1) {   //过期，重新开卡
+                user.baseMgr.info.setAttr('vst', current_time);
+                user.baseMgr.info.setAttr('vet', current_time + month_time);
+                user.baseMgr.info.setAttr('vlg', current_time);
+                user.baseMgr.info.setAttr('vl', vip_level);
+                user.baseMgr.info.setAttr('vs', 0);
+            } else if(user.baseMgr.info.getAttr('vl') == vip_level) {     //续费
+                user.baseMgr.info.setAttr('vet', user.baseMgr.info.getAttr('vet' + month_time));
+            } else if(user.baseMgr.info.getAttr('vl') < vip_level) {      //升级
+                user.baseMgr.info.setAttr('vl', vip_level);
+            }
         });
 
         //#endregion

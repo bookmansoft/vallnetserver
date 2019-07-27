@@ -59,7 +59,7 @@ class profile extends facade.Control
      */
     async VipDraw(user, params)  {
         let draw_count = params.draw_count;
-        let vip_usable_count = user.baseMgr.info.getAttr('vip_usable_count');
+        let vip_usable_count = user.baseMgr.info.getAttr('vcur');
         if( draw_count < 10 * 100000) {
             return {code: -1, msg: 'draw is not enouth'};
         }
@@ -76,44 +76,9 @@ class profile extends facade.Control
             return {code: -1, msg: 'txsend fail'};
         } else {
             let remainder = vip_usable_count - draw_count;
-            let current_time = parseInt(new Date().getTime() / 1000);
-            let drawItem = {
-                uid: user.uid,
-                draw_count: draw_count,
-                remainder: remainder,
-                draw_at: current_time,
-            }
-            this.core.GetMapping(TableType.vipdraw).Create(drawItem);
-            user.baseMgr.info.setAttr('vip_usable_count', remainder);
-
+            user.baseMgr.info.setAttr('vcur', remainder);
             return {code: 0, data: drawItem};
         }
-    }
-
-    /**
-     * 提币记录
-     * @param {*} user 
-     * @param {*} params 
-     */
-    async VipDrawLog(user, params)  {
-        //提取记录
-        let uid = user.id
-        let last = params.last
-        let vipDrawLog = null; 
-        if(last==1) {
-            vipDrawLog = await this.core.GetMapping(TableType.vipdraw)
-            .groupOf().where([['uid','==',uid]])
-            .orderby('draw_at', 'desc')
-            .paginate(5, 1)
-            .records(TableField.vipdraw)
-        } else {
-            vipDrawLog = await this.core.GetMapping(TableType.vipdraw)
-            .groupOf().where([['uid','==',uid]])
-            .orderby('draw_at', 'desc')
-            .records(TableField.vipdraw);
-        }
-
-        return {code: 0, data:vipDrawLog};
     }
 }
 

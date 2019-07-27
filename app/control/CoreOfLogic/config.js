@@ -121,42 +121,6 @@ class config extends facade.Control {
         pUser.notify({type: NotifyType.buyItem, info:{tradeNo:item.orm.trade_no, product_id: item.orm.product_id}});
 
         return ReturnCode.Success;
-
-        // 以下代码为旧有的兑付订单内容的部分代码，待改造
-        // 购买VIP
-        // let vip_level =  order.orm.product_id;
-        // let current_time = parseInt(new Date().getTime() / 1000)
-        // let month_time =  3600 * 24 * 30;
-
-        // // `vip_level` INT(4) 'VIP等级',
-        // // `vip_start_time` INT(8) 'VIP开始时间',
-        // // `vip_end_time` INT(8) 'VIP结束时间',
-        // // `vip_last_get_time` INT(8) 'VIP获取福利时间',
-        // // `is_expired` INT(1) '是否过期',
-        // // `vip_last_get_count` INT(8) 'VIP获取数量',
-        // // `vip_usable_count` INT(8) 'VIP可用游戏金',
-
-        // if(user.baseMgr.info.getAttr('is_expired') == 1) {   //过期，重新开卡
-        //     user.baseMgr.info.setAttr('vip_start_time', current_time);
-        //     user.baseMgr.info.setAttr('vip_end_time', current_time + month_time);
-        //     user.baseMgr.info.setAttr('vip_last_get_time', current_time);
-        //     user.baseMgr.info.setAttr('vip_last_get_count', 0);
-        //     user.baseMgr.info.setAttr('vip_level', vip_level);
-        //     user.baseMgr.info.setAttr('is_expired', 0);
-        // } else if(user.baseMgr.info.getAttr('vip_level') == vip_level) {     //续费
-        //     user.baseMgr.info.setAttr('vip_end_time', user.baseMgr.info.getAttr('vip_end_time' + month_time));
-        // } else if(user.baseMgr.info.getAttr('vip_level') < vip_level) {      //升级
-        //     user.baseMgr.info.setAttr('vip_level', vip_level);
-        // }
-
-        // 购买凭证
-        // let obj = JSON.parse(order.orm.attach);
-        // let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(user, cid);
-        // await this.core.service.gamegoldHelper.execute('stock.send', [obj.cid, obj.quantity, addr, 'alice']);
-
-        // //此时的 order.orm.product_id 是 our_block_stock 记录的主键，目前 our_block_stock 已经与 our_stock_base 整合，该字段包含信息已失去价值
-        // //原流程中，此处会实时将凭证购买情况记录入库，但只能记录到本网站用户的购买记录
-        // //目前已经调整为根据系统启动时查询主网，或者收到主网通知消息时入库
     }
 
     /**

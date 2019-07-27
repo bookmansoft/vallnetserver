@@ -51,11 +51,18 @@ class info extends baseMgr
      * 返回客户端需要展示的数据
      */
     getData() {
-        if(this.getAttr('is_expired') == 0) {
-            let vip_usable_count = this.getAttr('vip_usable_count');
+        // `is_expired`             vs      '是否过期',
+        // `vip_level`              vl      'VIP等级',
+        // `vip_start_time`         vst     'VIP开始时间',
+        // `vip_end_time`           vet     'VIP结束时间',
+        // `vip_last_get_time`      vlg     'VIP获取福利时间',
+        // `vip_usable_count`       vcur    'VIP可用游戏金',
+
+        if(this.getAttr('vs') == 0) {
+            let vip_usable_count = this.getAttr('vcur');
 
             let time_get_count = 0;
-            switch(this.getAttr('vip_level')) {
+            switch(this.getAttr('vl')) {
                 case 1:
                     time_get_count = 10;
                     break;
@@ -70,20 +77,18 @@ class info extends baseMgr
             if(time_get_count > 0) {
                 let current_time = parseInt(new Date().getTime() / 1000);
                 let delta_time = 0;
-                if(current_time > this.getAttr('vip_end_time')) {
-                    delta_time = this.getAttr('vip_end_time') - this.getAttr('vip_last_get_time');
+                if(current_time > this.getAttr('vet')) {
+                    delta_time = this.getAttr('vet') - this.getAttr('vlg');
                     //设置过期
-                    this.setAttr('is_expired', 1);
+                    this.setAttr('vs', 1);
                 } else {
-                    delta_time = current_time - userVip.orm.vip_last_get_time;
+                    delta_time = current_time - this.getAttr('vlg');
                 }
 
                 if(delta_time > 0) {
-                    let vip_last_get_count = delta_time * time_get_count;
-                    vip_usable_count =  userVip.orm.vip_usable_count + vip_last_get_count;
-                    this.setAttr('vip_last_get_time', current_time);
-                    this.setAttr('vip_last_get_count', vip_last_get_count);
-                    this.setAttr('vip_usable_count', vip_usable_count);
+                    vip_usable_count =  this.getAttr('vcur') + delta_time * time_get_count;
+                    this.setAttr('vlg', current_time);
+                    this.setAttr('vcur', vip_usable_count);
                 }
             }
         }

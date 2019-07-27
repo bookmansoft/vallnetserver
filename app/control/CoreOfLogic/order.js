@@ -44,6 +44,9 @@ class order extends facade.Control
             }
 
             case 'vip': {
+                price = params.order.price;           //订单金额
+                product = `vip,${params.order.id}`;   //订单内容：VIP升级
+                product_desc = params.order.desc;          //订单描述
                 break;
             }
         }
@@ -120,6 +123,16 @@ class order extends facade.Control
             }
 
             //此处并不处理订单，要等到微信回调，触发 config.wxnotify 才会真正处理订单内容，或者由定时程序反向问询微信
+
+            //test only 此处为模拟测试流程，直接结算订单
+            this.core.notifyEvent('wallet.payCash', {data: {
+                return_code: 'SUCCESS',
+                out_trade_no: params.tradeId,
+                result_code: 'SUCCESS',
+            }});
+            //end
+
+            return {code: 0};
         } else {
             return {code: -1, msg: 'no order'};
         }

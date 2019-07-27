@@ -10,7 +10,6 @@ const TableType ={
     "cporder": 112,
     'usergame': 113,
     'userprop': 114,
-    'vipdraw': 116,
     'blockNotify': 118,
     'redpack': 119,
     'redpackact': 120,
@@ -150,14 +149,6 @@ let cporder = [
     'create_time',
     'update_time'
 ];
-
-let vipdraw = [ 
-    'uid',
-    'draw_count',
-    'pay_status',
-    'remainder',
-    'draw_at',
-]
 
 let blockNotify = [
     'sn',
@@ -335,7 +326,7 @@ exports = module.exports = {
     TableField: {
         blockgame, blockgamecate, blockgameprop, blockgameprovider, StockBulletin, Mail,
         userwallet, redpack, redpackact, StockBase, Prize, Cp, CpType, CpFunding, CpStock, RedPacket,
-        cpuser, cpprop, cporder, usergame, userprop, vipdraw, blockNotify, Prop, manysend, manyreceive, BuyLog,
+        cpuser, cpprop, cporder, usergame, userprop, blockNotify, Prop, manysend, manyreceive, BuyLog,
         userredpack, userredpackact, blockgamecomment, mobileverify, stock, userstock, userstocklog, record,
     },
 }

@@ -653,27 +653,6 @@ CREATE TABLE IF NOT EXISTS `our_block_user_wechat` (
 
 -- 数据导出被取消选择。
 
-
--- 导出  表 wechat-wallet.our_block_vip 结构
-CREATE TABLE IF NOT EXISTS `our_block_vip` (
-  `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
-  `uid` int(8) unsigned NOT NULL COMMENT '用户编号',
-  `is_expired` int(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否过期',
-  `vip_level` int(4) unsigned NOT NULL DEFAULT '0' COMMENT 'VIP等级',
-  `vip_start_time` int(8) unsigned NOT NULL DEFAULT '0' COMMENT 'VIP开始时间',
-  `vip_end_time` int(8) unsigned NOT NULL DEFAULT '0' COMMENT 'VIP结束时间',
-  `vip_last_get_time` int(8) unsigned NOT NULL DEFAULT '0' COMMENT 'VIP获取福利时间',
-  `vip_last_get_count` int(8) unsigned NOT NULL DEFAULT '0' COMMENT 'VIP获取数量',
-  `vip_usable_count` int(8) unsigned NOT NULL DEFAULT '0' COMMENT 'VIP可用游戏金',
-  `create_at` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `update_at` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  KEY `uid` (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 数据导出被取消选择。
-
-
 -- 导出  表 wechat-wallet.our_block_vip_draw_gold 结构
 CREATE TABLE IF NOT EXISTS `our_block_vip_draw_gold` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',

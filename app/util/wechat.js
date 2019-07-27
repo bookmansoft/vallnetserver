@@ -274,18 +274,22 @@ class weChat extends facade.Service
         let result = await new Promise((resolve, reject) => {
             axios.post(this.unifiedorderUrl, this.toXml(dat)).then(wxResponse => {
                 this.verifyXml(wxResponse.data).then(data=>{
-                    const timeStamp = new Date().getTime().toString();
-
-                    if(data.return_code === 'SUCCESS' && data.result_code === 'SUCCESS') {
-                        resolve(this.sign({
-                            appId: wechatcfg.appid,
-                            timeStamp: timeStamp,
-                            nonceStr: getNonceStr(),
-                            package: `prepay_id=${data.prepay_id}`,
-                            signType: 'MD5',
-                        }));
+                    if(!data) {
+                        reject(new Error('Sign Error'));
                     } else {
-                        reject(new Error(`${data.return_msg}/${data.err_code}/${data.err_code_des}`));
+                        const timeStamp = new Date().getTime().toString();
+
+                        if(data.return_code === 'SUCCESS' && data.result_code === 'SUCCESS') {
+                            resolve(this.sign({
+                                appId: wechatcfg.appid,
+                                timeStamp: timeStamp,
+                                nonceStr: getNonceStr(),
+                                package: `prepay_id=${data.prepay_id}`,
+                                signType: 'MD5',
+                            }));
+                        } else {
+                            reject(new Error(`${data.return_msg}/${data.err_code}/${data.err_code_des}`));
+                        }
                     }
                 });
             }).catch(err => {
