@@ -81,13 +81,7 @@ class profile extends facade.Control
         if(!ret) {
             return {code: -3, msg: 'txsend fail'};
         } else {
-            let remainder = vip_usable_count - draw_count;
-            user.baseMgr.info.setAttr('vcur', remainder);
-            user.orm.save(); //强制保存
-
-            //推送通知给客户端，告知VIP相关信息发生了变化
-            user.notify({type: 911002, info: JSON.parse(user.baseMgr.info.getData())});
-
+            user.baseMgr.info.subVipCur(draw_count);
             return {code: 0};
         }
     }

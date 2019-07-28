@@ -293,14 +293,15 @@ if(env.constructor == String) {
             let is_expired = !user.baseMgr.info.getAttr('vet') || (user.baseMgr.info.getAttr('vet') < current_time);
             if(is_expired) { //非VIP/VIP已过期，重新开卡
                 user.baseMgr.info.setAttr('vst', current_time);                 //VIP开始时间
-                user.baseMgr.info.setAttr('vet', current_time + month_time);    //VIP结束时间
                 user.baseMgr.info.setAttr('vlg', current_time);                 //VIP提取收益时间
+                user.baseMgr.info.setAttr('vet', current_time + month_time);    //VIP结束时间
                 user.baseMgr.info.setAttr('vl', vip_level);                     //VIP当前级别
             } else if(user.baseMgr.info.getAttr('vl') == vip_level) {           //续费
                 user.baseMgr.info.setAttr('vet', user.baseMgr.info.getAttr('vet') + month_time);
             } else if(user.baseMgr.info.getAttr('vl') < vip_level) {            //升级
                 user.baseMgr.info.setAttr('vl', vip_level);
             }
+            user.notify({type: 911002, info: JSON.parse(user.baseMgr.info.getData())});
         });
 
         //#endregion

@@ -48,6 +48,18 @@ class info extends baseMgr
     }
 
     /**
+     * 提取福利，推送变更消息
+     * @param {*} draw_count 
+     */
+    subVipCur(draw_count) {
+        this.setAttr('vcur', this.getAttr('vcur') - draw_count);
+        this.parent.orm.save(); //强制保存
+
+        //推送通知给客户端，告知VIP相关信息发生了变化
+        this.parent.notify({type: 911002, info: JSON.parse(this.getData())});
+    }
+
+    /**
      * 返回客户端需要展示的数据
      * @param {*} force 强制刷新，忽略10秒间隔的限制，这是为了避免C/S间数据误差造成误判
      */
