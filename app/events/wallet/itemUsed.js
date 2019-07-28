@@ -29,7 +29,7 @@ async function handle(event) {
                 return ret;
             }
 
-            // 待整合代码 - 购买凭证
+            // todo 待整合代码 - 购买凭证
             // let obj = JSON.parse(order.orm.attach);
             // let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(user, cid);
             // await this.core.service.gamegoldHelper.execute('stock.send', [obj.cid, obj.quantity, addr, 'alice']);

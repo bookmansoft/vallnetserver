@@ -44,9 +44,26 @@ class order extends facade.Control
             }
 
             case 'vip': {
-                price = params.order.price;           //订单金额
-                product = `vip,${params.order.id}`;   //订单内容：VIP升级
-                product_desc = params.order.desc;          //订单描述
+                let vl = user.baseMgr.info.getAttr('vl') || 0;
+                let vst = user.baseMgr.info.getAttr('vst');
+                let vet = user.baseMgr.info.getAttr('vet');
+                let cfg = this.core.fileMap['vip'];
+
+                product = `vip,${params.order.id}`;                                         //订单内容：VIP升级
+                product_desc = cfg[params.order.id].label;                                  //订单描述
+
+                //如下是三种互斥的场景，分别计算各自价格。支付完成后，由 `RegisterResHandle('vip'...` 登记的句柄完成VIP属性的修改
+                if(!vl) { 
+                    //新开通，支付全额，新增有效期30天
+                    price = cfg[params.order.id].price;                                     //订单金额
+                } else if(params.order.id == vl) { 
+                    //同级延期，支付全额，延展有效期30天
+                    price = cfg[params.order.id].price;                                     //订单金额
+                } else if(params.order.id > vl) { 
+                    //升级，支付差额，有效期不变
+                    let days = ((vet - vst) / (24 * 3600)) | 0;
+                    price = (cfg[params.order.id].price - cfg[vl].price) / 30 * days;       //订单金额
+                }
                 break;
             }
         }
@@ -55,6 +72,8 @@ class order extends facade.Control
             let tradeId = this.core.service.wechat.getTradeId('vallnet');
             let res = await this.core.service.wechat.unifiedOrder(user.openidOri, user.userip, price, product_desc, tradeId);
             res.tradeId = tradeId;
+
+            console.log('支付', `${user.domainId}`, tradeId, product, product_desc, price);
     
             await this.core.GetMapping(EntityType.BuyLog).Create(`${user.domainId}`, tradeId, product, product_desc, price);
 

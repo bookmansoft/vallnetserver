@@ -287,19 +287,18 @@ if(env.constructor == String) {
         //3.1 购买VIP服务
         core.RegisterResHandle('vip', async (user, bonus) => {
             let vip_level =  bonus.num;
-            let current_time = parseInt(new Date().getTime() / 1000)
             let month_time =  3600 * 24 * 30;
 
-            let is_expired = user.baseMgr.info.getAttr('vs');
-            if(typeof is_expired == 'undefined' || is_expired == 1) {   //过期，重新开卡
-                user.baseMgr.info.setAttr('vst', current_time);
-                user.baseMgr.info.setAttr('vet', current_time + month_time);
-                user.baseMgr.info.setAttr('vlg', current_time);
-                user.baseMgr.info.setAttr('vl', vip_level);
-                user.baseMgr.info.setAttr('vs', 0);
-            } else if(user.baseMgr.info.getAttr('vl') == vip_level) {     //续费
-                user.baseMgr.info.setAttr('vet', user.baseMgr.info.getAttr('vet' + month_time));
-            } else if(user.baseMgr.info.getAttr('vl') < vip_level) {      //升级
+            let current_time = Date.parse(new Date())/1000;
+            let is_expired = !user.baseMgr.info.getAttr('vet') || (user.baseMgr.info.getAttr('vet') < current_time);
+            if(is_expired) { //非VIP/VIP已过期，重新开卡
+                user.baseMgr.info.setAttr('vst', current_time);                 //VIP开始时间
+                user.baseMgr.info.setAttr('vet', current_time + month_time);    //VIP结束时间
+                user.baseMgr.info.setAttr('vlg', current_time);                 //VIP提取收益时间
+                user.baseMgr.info.setAttr('vl', vip_level);                     //VIP当前级别
+            } else if(user.baseMgr.info.getAttr('vl') == vip_level) {           //续费
+                user.baseMgr.info.setAttr('vet', user.baseMgr.info.getAttr('vet') + month_time);
+            } else if(user.baseMgr.info.getAttr('vl') < vip_level) {            //升级
                 user.baseMgr.info.setAttr('vl', vip_level);
             }
         });

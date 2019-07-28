@@ -49,49 +49,53 @@ class info extends baseMgr
 
     /**
      * 返回客户端需要展示的数据
+     * @param {*} force 强制刷新，忽略10秒间隔的限制，这是为了避免C/S间数据误差造成误判
      */
-    getData() {
-        // `is_expired`             vs      '是否过期',
+    getData(force=false) {
+        //#region 处理 VIP 信息
+
         // `vip_level`              vl      'VIP等级',
         // `vip_start_time`         vst     'VIP开始时间',
         // `vip_end_time`           vet     'VIP结束时间',
-        // `vip_last_get_time`      vlg     'VIP获取福利时间',
-        // `vip_usable_count`       vcur    'VIP可用游戏金',
+        // `vip_last_get_time`      vlg     '最新提取福利时间',
+        // `vip_usable_count`       vcur    '可提取余额',
 
-        if(this.getAttr('vs') == 0) {
-            let vip_usable_count = this.getAttr('vcur');
-
-            let time_get_count = 0;
-            switch(this.getAttr('vl')) {
-                case 1:
-                    time_get_count = 10;
-                    break;
-                case 2:
-                    time_get_count = 110;
-                    break;
-                case 3:
-                    time_get_count = 330;
-                    break;
-            }
-
-            if(time_get_count > 0) {
-                let current_time = parseInt(new Date().getTime() / 1000);
-                let delta_time = 0;
+        if(!!this.getAttr('vet')) {
+            let cfg = this.parent.core.fileMap['vip'][this.getAttr('vl')];
+            if(!!cfg && cfg.time_get_count > 0) {
+                let current_time = Date.parse(new Date())/1000;
+                let vlg = Math.max(this.getAttr('vlg'), this.getAttr('vst'));
                 if(current_time > this.getAttr('vet')) {
-                    delta_time = this.getAttr('vet') - this.getAttr('vlg');
-                    //设置过期
-                    this.setAttr('vs', 1);
-                } else {
-                    delta_time = current_time - this.getAttr('vlg');
-                }
+                    //发放尚未提取的福利
+                    let delta_time = this.getAttr('vet') - vlg;
+                    if(delta_time > 0) {
+                        this.setAttr('vcur', this.getAttr('vcur') + delta_time * cfg.time_get_count);
+                    }
 
-                if(delta_time > 0) {
-                    vip_usable_count =  this.getAttr('vcur') + delta_time * time_get_count;
+                    this.setAttr('vst', current_time);
                     this.setAttr('vlg', current_time);
-                    this.setAttr('vcur', vip_usable_count);
+
+                    this.setAttr('vl', 0);
+                } else {
+                    let delta_time = current_time - vlg;
+                    if(force || delta_time > 10) { //控制刷新频率
+                        this.setAttr('vcur', this.getAttr('vcur') + delta_time * cfg.time_get_count);
+                        this.setAttr('vlg', current_time);
+                    }
                 }
+            } else {
+                this.setAttr('vl', 0);
             }
+        } else {
+            this.setAttr('vl', 0);
         }
+
+        //填充下缺省值
+        if(!this.getAttr('vcur')) {
+            this.setAttr('vcur', 0);
+        }
+
+        //#endregion
 
         return JSON.stringify(this.v);
     }
