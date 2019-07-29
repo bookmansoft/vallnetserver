@@ -5,10 +5,8 @@ const TableType ={
     "blockgame": 107,
     "blockgameprop": 108,
     "blockgameprovider": 109,
-    "cpuser": 110,
     "cpprop": 111,
     "cporder": 112,
-    'usergame': 113,
     'userprop': 114,
     'blockNotify': 118,
     'redpack': 119,
@@ -18,10 +16,7 @@ const TableType ={
     'blockgamecomment': 123,
     'manysend':131,
     'manyreceive':132,
-    'mobileverify': 133,
     'stock': 134,
-    'userstock': 135,
-    'userstocklog': 136,
     'Cp': 202,
     'Prop': 203,
     'CpType': 206,
@@ -72,24 +67,9 @@ let blockgameprovider = [
 
 let userwallet = [
     'id',
-    'uid',
     'cid',
     'addr',
-    'account',
     'user_id',
-    'mnemonic_word',
-    'wallet_service_uri',
-    'remaining_coin',
-    'gift',
-    'donate_count',
-    'buy_count'
-];
-
-let usergame = [
-    'id',
-    'uid',
-    'openid',
-    'game_id'
 ];
 
 let userprop = [
@@ -109,15 +89,6 @@ let userprop = [
     'cp_url',
     'cp_name',
     'cp_ip'
-];
-
-let cpuser = [
-    'id',
-    'openid',
-    'addr',
-    'nick',
-    'avatar_uri',
-    'created_at'
 ];
 
 let cpprop = [
@@ -231,14 +202,6 @@ let blockgamecomment = [
     'content',
 ]
 
-let mobileverify = [
-    'mobile',
-    'code',
-    'daystamp',
-    'last_time',
-    'send_num'
-]
-
 let stock = [
     'id',
     'cid',
@@ -253,29 +216,6 @@ let stock = [
     'desc',
     'status',
     'support'
-]
-
-let userstock = [
-    'id',
-    'uid',
-    'cid',
-    'gamegold',
-    'amount',
-    'quantity',
-    'pay_at',
-    'order_sn',
-    'status',
-    'title',
-    'src'
-]
-
-let userstocklog = [
-    'id',
-    'uid',
-    'cid',
-    'quantity',
-    'pay_at',
-    'status'
 ]
 
 let StockBase = [
@@ -326,7 +266,7 @@ exports = module.exports = {
     TableField: {
         blockgame, blockgamecate, blockgameprop, blockgameprovider, StockBulletin, Mail,
         userwallet, redpack, redpackact, StockBase, Prize, Cp, CpType, CpFunding, CpStock, RedPacket,
-        cpuser, cpprop, cporder, usergame, userprop, blockNotify, Prop, manysend, manyreceive, BuyLog,
-        userredpack, userredpackact, blockgamecomment, mobileverify, stock, userstock, userstocklog, record,
+        cpprop, cporder, userprop, blockNotify, Prop, manysend, manyreceive, BuyLog,
+        userredpack, userredpackact, blockgamecomment, stock, record,
     },
 }

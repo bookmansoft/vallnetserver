@@ -33,13 +33,9 @@ class order extends facade.Control
 
                 //填充订单信息
                 price = item.price * params.order.num;                                  //订单金额
-                product = `stock,${params.order.cid},${item.stock*params.order.num}`;   //订单内容：一级市场凭证若干
+                product = `crowd,${params.order.cid},${item.stock*params.order.num}`;   //订单内容：一级市场凭证若干
                 product_desc = item.desc;                                               //订单描述
         
-                break;
-            }
-
-            case 'stock': {
                 break;
             }
 

@@ -21,19 +21,7 @@ async function handle(event) {
                 let ret = await this.service.gamegoldHelper.execute('stock.purchase', [stock.getAttr('cid'), event.data.value, user.domainId]);
                 return ret;
             }
-        } else if(resType == ResType['stock']) { //二级凭证
-            let stockId = event.data.type - resType;
-            let stock = this.GetObject(TableType.StockBase, stockId);
-            if(!!stock) {
-                let ret = await this.service.gamegoldHelper.execute('stock.purchase', [stock.getAttr('cid'), event.data.value, user.domainId]);
-                return ret;
-            }
-
-            // todo 待整合代码 - 购买凭证
-            // let obj = JSON.parse(order.orm.attach);
-            // let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(user, cid);
-            // await this.core.service.gamegoldHelper.execute('stock.send', [obj.cid, obj.quantity, addr, 'alice']);
-        }
+        } 
     } catch(e) {
         return {code: -1, msg: e.message};
     }

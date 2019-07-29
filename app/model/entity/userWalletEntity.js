@@ -66,12 +66,12 @@ class userWalletEntity extends BaseEntity
      * 
      * @note 集成Ranking接口时，也必须拥有此函数
      */
-    IndexOf(type){
-        switch(type){
+    IndexOf(type) {
+        switch(type) {
             case IndexType.Domain:
-                return this.cid;
+                return `${this.orm.cid}.${this.orm.user_id}`;
             case IndexType.Foreign:
-                return this.addr;
+                return this.orm.addr;
             default:
                 return this.orm.id;
         }

@@ -15,8 +15,7 @@ class cporder extends facade.Control
         let addr = params.addr;
         let openid = params.openid;
         let cpprops = this.core.GetMapping(TableType.cpprop).groupOf().where([['id','==',prop_id]]).records(TableField.cpprop);
-        let cpusers = this.core.GetMapping(TableType.cpuser).groupOf().where([['id','==',uid]]).records(TableField.cpuser);
-        if(cpprops.length> 0 && cpusers.length > 0 ) {
+        if(cpprops.length> 0) {
             let cpprop = cpprops[0];
             let created_at = new Date().getTime();
             let random = new randomHelp();

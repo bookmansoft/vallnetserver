@@ -47,7 +47,7 @@ class cp extends facade.Control
 
     //申请令牌
     async UserToken(user, params) {
-        let addr = await this.core.service.userhelp.getAddrFromUserIdAndCid(user, params.cid);
+        let addr = await this.core.service.gamegoldHelper.getAddrFromUserIdAndCid(user, params.cid);
         return {code: 0, data: addr};
     }
 }
