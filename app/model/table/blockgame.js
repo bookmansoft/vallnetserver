@@ -9,9 +9,9 @@ let {Sequelize, seqconn} = facade.tools;
 let blockgame = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
     'blockgame',
     {
-        game_code: Sequelize.STRING,
         game_title: Sequelize.STRING,
         game_resource_uri: Sequelize.STRING,
+        small_img_url: Sequelize.STRING,
         game_ico_uri: Sequelize.STRING,
         game_link_url: Sequelize.STRING,
         game_desc: Sequelize.STRING,
@@ -36,7 +36,13 @@ let blockgame = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.p
         cpid: Sequelize.STRING,
         cpurl: Sequelize.STRING,
         cp_addr: Sequelize.STRING,
-        cp_name: Sequelize.STRING
+        cp_name: Sequelize.STRING,
+        stock_price: Sequelize.INTEGER,
+        stock_sum: Sequelize.INTEGER,
+        grate: Sequelize.INTEGER,
+        hHeight: Sequelize.INTEGER,
+        hBonus: Sequelize.INTEGER,
+        hAds: Sequelize.INTEGER,
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段

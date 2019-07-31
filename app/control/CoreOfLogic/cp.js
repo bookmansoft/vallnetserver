@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType} = facade.const;
+let {TableType, TableField, IndexType} = facade.const;
 
 /**
  * 游戏的控制器
@@ -13,15 +13,19 @@ class cp extends facade.Control
      * @param {*} params
      */
     async List(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('cp.remoteQuery', [[['page', params.page], ['size', 10]]]);
-        if(ret.code==0) {
-            ret.result.list.forEach(element => {
-                this.core.remoteCall("kv", {k: element.cid, v: JSON.stringify(element)});
-            });
-            return {code: 0, data: ret.result};
+        let muster = this.core.GetMapping(TableType.blockgame).groupOf().paginate(10, params.page || 1);
+
+        let $data = { 
+            list: [], 
+            page: muster.pageNum,
+            cur: muster.pageCur,
+        };
+
+        for (let $value of muster.records(TableField.blockgame)) {
+            $data.list.push($value);
         }
 
-        return {code: -1};
+        return {code: 0, data: $data};
     }
 
     /**

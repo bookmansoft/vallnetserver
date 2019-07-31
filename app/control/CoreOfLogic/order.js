@@ -20,8 +20,13 @@ class order extends facade.Control
         //根据订单类型分别处理
         switch(params.order.type) {
             case 'crowd': { //凭证一级市场购买
-                let cpObj = this.core.GetObject(TableType.blockgame, params.order.cid, IndexType.Foreign);
-                if(!cpObj) { 
+                let stockList = this.core.GetMapping(TableType.StockBase).groupOf()
+                    .where([['cid', params.order.cid]])
+                    .orderby('height', 'desc')
+                    .records(TableField.StockBase);
+
+                let stock = stockList[0]
+                if(!stock) { 
                     return { code: -1 };
                 }
 
@@ -33,7 +38,7 @@ class order extends facade.Control
 
                 //填充订单信息
                 price = item.price * params.order.num;                                  //订单金额
-                product = `crowd,${params.order.cid},${item.stock*params.order.num}`;   //订单内容：一级市场凭证若干
+                product = `crowd, ${stock.id}, ${item.stock*params.order.num}`;       //订单内容：一级市场凭证若干
                 product_desc = item.desc;                                               //订单描述
         
                 break;
@@ -66,7 +71,12 @@ class order extends facade.Control
 
         if(!!price && !!product) {
             let tradeId = this.core.service.wechat.getTradeId('vallnet');
-            let res = await this.core.service.wechat.unifiedOrder(user.openidOri, user.userip, price, product_desc, tradeId);
+
+            //test only
+            //let res = await this.core.service.wechat.unifiedOrder(user.openidOri, user.userip, price, product_desc, tradeId);
+            let res = {};
+            //end
+
             res.tradeId = tradeId;
 
             console.log('支付', `${user.domainId}`, tradeId, product, product_desc, price);

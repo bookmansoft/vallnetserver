@@ -18,12 +18,12 @@ class item extends facade.Control
             info.num = parseInt(info.num);
         }
 
-        if(pUser.getPocket().GetRes(info.id) >= info.num) {
+        if(pUser.getPocket().GetRes(info.type, info.id) >= info.num) {
             //触发特殊道具消耗事件
-            let rt = await this.core.notifyEvent('wallet.itemUsed', {user:pUser, data:{type:info.id, value:info.num}});
+            let rt = await this.core.notifyEvent('wallet.itemUsed', {user:pUser, data:info});
             if(!!rt && rt.code == 0) {
                 //执行成功，扣减道具数量
-                pUser.getPocket().AddRes(-info.num, true, info.id);
+                pUser.getPocket().AddRes(-info.num, true, info.type, info.id);
                 return {code: ReturnCode.Success, data: pUser.getPocket().getList()};
             }
         } else {

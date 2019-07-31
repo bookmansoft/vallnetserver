@@ -40,9 +40,10 @@ class CoreOfResource extends CoreOfBase {
     /**
      * 启动函数
      * @param {*} app express 对象
-     * @note 该函数并未调用父类方法，因为不需要承载父类的相关功能
      */
     async Start(app) {
+        super.Start(app);
+
         //#region 设置各类路由的路径和句柄
         this.listenCP(app);
         this.listenQrCode(app);
@@ -346,6 +347,10 @@ class CoreOfResource extends CoreOfBase {
                 ];
                 // 编组cpInfo
                 let cpInfo = {
+                    "crowd": {
+                        "funding_text": "有可能是最好玩的游戏",
+                        "funding_project_text": "希望大家支持我们一哈",
+                    },
                     "game": {
                         "cp_name": req.params.cp_name,
                         "game_title": `${arrayGameTitle[groupNum]}(${req.params.cp_name})`,

@@ -13,12 +13,6 @@ class game extends facade.Control
         return {code: 0, data: {length:gamecateList.length, data:gamecateList}};
     };
 
-    //游戏列表
-    async GameList(user, params)  {
-        let gameList = this.core.GetMapping(TableType.blockgame).groupOf().records(TableField.blockgame);
-        return {code: 0, data: {length:gameList.length, data:gameList}};
-    }
-
     //所有游戏
     async GameAll(user, params)  {
         let gameList = this.core.GetMapping(TableType.blockgame).groupOf().records(TableField.blockgame);

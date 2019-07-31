@@ -383,6 +383,45 @@ CREATE TABLE IF NOT EXISTS `operator` (
 
 -- 数据导出被取消选择。
 
+-- 导出  表 wechat-wallet.our_block_game_provider 结构
+CREATE TABLE IF NOT EXISTS `our_block_game_provider` (
+  `id` int(4) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
+  `provider_id` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '供应商ID',
+  `provider_name` varchar(32) DEFAULT '' COMMENT '供应商名',
+  `contact` varchar(32) DEFAULT '' COMMENT '联系人',
+  `phone` varchar(32) DEFAULT '' COMMENT '联系人电话',
+  `addr` varchar(255) DEFAULT '' COMMENT '地址',
+  `uri` varchar(255) DEFAULT '' COMMENT '网址',
+  `game_number` int(2) unsigned NOT NULL DEFAULT '0' COMMENT '游戏数量',
+  `comprehensive_grade` int(2) unsigned NOT NULL DEFAULT '0' COMMENT '综合等级',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `provider_name` (`provider_name`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 数据导出被取消选择。
+
+-- ----------------------------
+-- Table structure for `our_block_game_prop`
+-- ----------------------------
+DROP TABLE IF EXISTS `our_block_game_prop`;
+CREATE TABLE `our_block_game_prop` (
+  `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
+  `cpid` varchar(64) NOT NULL COMMENT 'cpid',
+  `oid` varchar(32) DEFAULT '' COMMENT '道具原始ID',
+  `prop_id` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '道具id',
+  `prop_name` varchar(64) DEFAULT '' COMMENT '名称',
+  `icon_small` varchar(255) DEFAULT '' COMMENT '图标',
+  `icon_large` varchar(255) DEFAULT NULL,
+  `prop_info` varchar(255) DEFAULT NULL COMMENT '详情',
+  `create_time` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `prop_price` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '道具价格',
+  `prop_value` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '道具含金量',
+  `nstatus` int(1) unsigned NOT NULL DEFAULT '0' COMMENT '状态',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `cpid` (`cpid`),
+  KEY `oid` (`oid`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
 
 -- 导出  表 gamegold-mgr.our_block_redpack 结构
 CREATE TABLE IF NOT EXISTS `our_block_redpack` (

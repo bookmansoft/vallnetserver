@@ -11,17 +11,8 @@ let EventData = facade.Util.EventData
  */
 async function handle(event) { 
     try {
-        let user = event.user;
-
-        let resType = GetResType(event.data.type);
-        if(resType == ResType['crowd']) { //一级凭证
-            let stockId = event.data.type - resType;
-            let stock = this.GetObject(TableType.StockBase, stockId);
-            if(!!stock) {
-                let ret = await this.service.gamegoldHelper.execute('stock.purchase', [stock.getAttr('cid'), event.data.value, user.domainId]);
-                return ret;
-            }
-        } 
+        //根据 event.data.type 进行分支判断，分别处理, 参数包括 event.user event.data{type, id, num}
+        //...
     } catch(e) {
         return {code: -1, msg: e.message};
     }

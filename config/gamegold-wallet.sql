@@ -226,7 +226,6 @@ CREATE TABLE IF NOT EXISTS `our_block_cp_user` (
 -- 导出  表 wechat-wallet.our_block_games 结构
 CREATE TABLE IF NOT EXISTS `our_block_games` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
-  `game_code` varchar(32) NOT NULL COMMENT '编码',
   `sort` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   `category_id` int(2) unsigned NOT NULL DEFAULT '0' COMMENT '游戏类别',
   `category_title` varchar(32) DEFAULT '' COMMENT '类别名',
@@ -243,6 +242,12 @@ CREATE TABLE IF NOT EXISTS `our_block_games` (
   `create_time` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_time` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `store_status` int(1) unsigned NOT NULL DEFAULT '0' COMMENT '状态',
+  `stock_price` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '资产价格',
+  `stock_sum` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '资产数量',
+	`grate` int(8) NULL DEFAULT '0' COMMENT '媒体分成',
+	`hHeight` int(8) NULL DEFAULT '0' COMMENT '初次高度',
+	`hBonus` int(11) NULL DEFAULT '0' COMMENT '历史分红',
+	`hAds` int(11) NULL DEFAULT '0' COMMENT '历史分成',
   `cpid` varchar(64) DEFAULT NULL COMMENT 'cpid',
   `cpurl` varchar(255) DEFAULT NULL COMMENT 'cpurl',
   `cp_addr` varchar(64) DEFAULT NULL COMMENT 'cp地址',
@@ -252,6 +257,7 @@ CREATE TABLE IF NOT EXISTS `our_block_games` (
   `game_ico_uri` varchar(255) DEFAULT '' COMMENT '图标URI',
   `update_desc` varchar(255) DEFAULT NULL COMMENT '更新描述',
   `game_resource_uri` varchar(255) DEFAULT '' COMMENT '资源URI',
+  `small_img_url` varchar(255) DEFAULT '' COMMENT '资源URI',
   `game_screenshots` varchar(255) DEFAULT NULL COMMENT '游戏截图',
   `game_desc` varchar(255) DEFAULT '' COMMENT '描述',
   PRIMARY KEY (`id`) USING BTREE,
@@ -293,63 +299,6 @@ CREATE TABLE IF NOT EXISTS `our_block_game_comment` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `cid` (`cid`) USING BTREE,
   KEY `reply_id` (`reply_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 数据导出被取消选择。
-
-
--- 导出  表 wechat-wallet.our_block_game_cp 结构
-CREATE TABLE IF NOT EXISTS `our_block_game_cp` (
-  `id` int(4) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
-  `cid` varchar(64) DEFAULT '' COMMENT 'cid',
-  `name` varchar(32) DEFAULT '' COMMENT '名称',
-  `url` varchar(128) DEFAULT '' COMMENT '网址',
-  `ip` varchar(32) DEFAULT '' COMMENT 'ip地址',
-  `address` varchar(64) DEFAULT '' COMMENT '地址',
-  `hash` varchar(128) DEFAULT '' COMMENT 'hash',
-  `status` int(1) DEFAULT '1' COMMENT '状态',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `cid` (`cid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 数据导出被取消选择。
-
-
--- 导出  表 wechat-wallet.our_block_game_prop 结构
-CREATE TABLE IF NOT EXISTS `our_block_game_prop` (
-  `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
-  `cpid` varchar(64) NOT NULL COMMENT 'cpid',
-  `oid` varchar(32) DEFAULT '' COMMENT '道具原始ID',
-  `prop_id` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '道具id',
-  `prop_name` varchar(64) DEFAULT '' COMMENT '名称',
-  `icon_small` varchar(255) DEFAULT '' COMMENT '图标',
-  `icon_large` varchar(255) DEFAULT NULL,
-  `prop_info` varchar(255) DEFAULT NULL COMMENT '详情',
-  `create_time` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `prop_price` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '道具价格',
-  `prop_value` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '道具含金量',
-  `nstatus` int(1) unsigned NOT NULL DEFAULT '0' COMMENT '状态',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `cpid` (`cpid`),
-  KEY `oid` (`oid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- 数据导出被取消选择。
-
-
--- 导出  表 wechat-wallet.our_block_game_provider 结构
-CREATE TABLE IF NOT EXISTS `our_block_game_provider` (
-  `id` int(4) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
-  `provider_id` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '供应商ID',
-  `provider_name` varchar(32) DEFAULT '' COMMENT '供应商名',
-  `contact` varchar(32) DEFAULT '' COMMENT '联系人',
-  `phone` varchar(32) DEFAULT '' COMMENT '联系人电话',
-  `addr` varchar(255) DEFAULT '' COMMENT '地址',
-  `uri` varchar(255) DEFAULT '' COMMENT '网址',
-  `game_number` int(2) unsigned NOT NULL DEFAULT '0' COMMENT '游戏数量',
-  `comprehensive_grade` int(2) unsigned NOT NULL DEFAULT '0' COMMENT '综合等级',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `provider_name` (`provider_name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 数据导出被取消选择。
@@ -415,45 +364,6 @@ CREATE TABLE IF NOT EXISTS `our_block_redpack_act` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 数据导出被取消选择。
-
--- 导出  表 wechat-wallet.our_block_user_game 结构
-CREATE TABLE IF NOT EXISTS `our_block_user_game` (
-  `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
-  `uid` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '用户编号',
-  `openid` varchar(64) NOT NULL COMMENT 'openid',
-  `game_id` int(8) unsigned NOT NULL COMMENT 'game_id',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `uid` (`uid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 数据导出被取消选择。
-
--- 导出  表 wechat-wallet.our_block_user_prop 结构
-CREATE TABLE IF NOT EXISTS `our_block_user_prop` (
-  `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
-  `uid` int(8) unsigned NOT NULL DEFAULT '0' COMMENT 'uid',
-  `openid` varchar(64) DEFAULT NULL COMMENT 'openid',
-  `cid` varchar(64) NOT NULL COMMENT 'cpid',
-  `oid` varchar(64) DEFAULT '' COMMENT '道具原始ID',
-  `pid` varchar(64) DEFAULT '0' COMMENT 'pid',
-  `oper` varchar(32) DEFAULT '' COMMENT '操作码',
-  `current_hash` varchar(64) DEFAULT NULL COMMENT '当前交易',
-  `current_index` int(2) unsigned NOT NULL DEFAULT '0' COMMENT '当前交易索引',
-  `current_rev` varchar(64) DEFAULT '' COMMENT '当前交易反转',
-  `current_height` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '当前块高度',
-  `time` int(12) unsigned NOT NULL DEFAULT '0',
-  `gold` bigint(18) unsigned NOT NULL DEFAULT '0' COMMENT '含金量',
-  `status` int(1) NOT NULL DEFAULT '0' COMMENT '状态',
-  `cp_url` varchar(255) DEFAULT NULL COMMENT 'cp_url',
-  `cp_name` varchar(64) DEFAULT NULL COMMENT 'cp_name',
-  `cp_ip` varchar(255) DEFAULT NULL COMMENT 'cp_ip',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `cpid` (`cid`),
-  KEY `pid` (`pid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
--- 数据导出被取消选择。
-
 
 -- 导出  表 wechat-wallet.our_block_user_redpack 结构
 CREATE TABLE IF NOT EXISTS `our_block_user_redpack` (
@@ -543,18 +453,13 @@ CREATE TABLE IF NOT EXISTS `our_many_red_send` (
 CREATE TABLE IF NOT EXISTS `our_stock_base` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cid` varchar(50) NOT NULL COMMENT '链数据库cid',
-  `total_num` bigint(20) DEFAULT NULL COMMENT '流通凭证总数量',
-  `sell_stock_amount` bigint(20) DEFAULT NULL COMMENT '最新挂单价格（游戏金）',
-  `sell_stock_num` int(11) DEFAULT NULL COMMENT '挂单数量（15单在售）',
-  `base_amount` int(11) DEFAULT NULL COMMENT '发行价格（游戏金，作为比较基准替代昨日价格）',
   `funding_text` varchar(500) DEFAULT NULL COMMENT '众筹简介',
   `funding_project_text` varchar(2000) DEFAULT NULL COMMENT '项目介绍',
-  `stock_money` int(11) DEFAULT NULL COMMENT '众筹单份价格（人民币：分）',
   `supply_people_num` int(11) DEFAULT NULL COMMENT '支持人数',
-  `supply_money` int(11) DEFAULT NULL COMMENT '支持金额(分)',
-  `funding_residue_day` int(11) DEFAULT NULL COMMENT '剩余天数',
-  `funding_target_amount` bigint(20) DEFAULT NULL COMMENT '众筹目标金额',
-  `funding_done_amount` bigint(20) DEFAULT NULL COMMENT '众筹已完成金额',
+  `height` int(11) DEFAULT NULL COMMENT '发行高度',
+	`sum` int(11) NULL DEFAULT NULL COMMENT '发行数量',
+	`sum_left` int(11) NULL DEFAULT NULL COMMENT '剩余数量',
+	`price` int(11) NULL DEFAULT NULL COMMENT '发行价格',
   `history_text` varchar(2000) DEFAULT '' COMMENT '历史业绩信息JSON数组',
   `now_sale` varchar(2000) DEFAULT NULL COMMENT '现在挂单卖出的JSON字符串',
   PRIMARY KEY (`id`)

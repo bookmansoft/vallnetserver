@@ -1,8 +1,6 @@
 const facade = require('gamecloud')
 //加载用户自定义模块 - 这句必须紧跟在模块引入语句之后
 facade.addition = true;
-facade.addResType(99000, 'crowd');
-facade.addResType(98000, 'stock');
 
 let {IndexType, TableType, ResType} = facade.const
 
@@ -83,6 +81,8 @@ if(env.constructor == String) {
             TableType.Prize,
             TableType.CpFunding,
             TableType.CpStock,
+            TableType.blockgameprovider, 
+            TableType.blockgameprop, 
         ],
         static: [
             ['/', './web/dist'],
@@ -144,12 +144,10 @@ if(env.constructor == String) {
             TableType.blockgamecate,
             TableType.blockgame, 
             TableType.blockgameprop, 
-            TableType.blockgameprovider, 
             TableType.blockgamecomment, 
             TableType.blockNotify, 
             TableType.cpprop, 
             TableType.cporder, 
-            TableType.userprop, 
             TableType.userwallet, 
             TableType.userredpack, 
             TableType.userredpackact, 
@@ -166,6 +164,8 @@ if(env.constructor == String) {
             ['/', './web/client'],
         ], 
     }, async core => {
+        console.log(`${core.options.serverType}.${core.options.serverId}'s startup start`);
+
         while(true) {
             //单独维护一个到公链的长连接，进行消息监控
             core.chain = {height: 0};
@@ -178,38 +178,23 @@ if(env.constructor == String) {
             }
         }
 
-        let ret = await core.service.gamegoldHelper.execute('cp.remoteQuery', [[['size', -1]]]);
-        if(!!ret && ret.code == 0) {
-            //将未入库的CP条目写入数据库
-            let cids = core.GetMapping(TableType.blockgame).groupOf().excludeProperty(ret.result.list.map(it=>it.cid), 'cpid');
-            if(cids.length > 0) {
-                let items = ret.result.list.reduce((sofar, cur)=>{
-                    sofar[cur.cid] = cur;
-                    return sofar;
-                }, {});
+        //从主网查询全部CP信息
+        let pageTotal = 1, pageCur = 0, ret = null; //设定总页数、当前页数的初始值
+        while(pageCur < pageTotal) {
+            ret = await core.service.gamegoldHelper.execute('cp.remoteQuery', [[['size', 100], ['page', ++pageCur]]]);
+            if(!!ret && ret.code == 0) {
+                pageTotal = ret.page;
+                pageCur = ret.cur;
 
-                for(let cid of cids) {
+                for(let item of ret.result.list) {
                     //调整协议字段，满足创建CP接口的需要
-                    items[cid].address = items[cid].current.address; 
-                    await core.notifyEvent('wallet.cp.register', {msg:items[cid]});
-                }
+                    item.address = item.current.address; 
 
-                ret = await core.service.gamegoldHelper.execute('stock.offer.list', [[['size', -1]]]);
-                if(!!ret && ret.code == 0) {
-                    let cids = core.GetMapping(TableType.StockBase).groupOf().excludeProperty(ret.result.list.map(it=>it.cid), 'cid');
-                    if(cids.length > 0) {
-                        let items = ret.result.list.reduce((sofar, cur)=>{
-                            sofar[cur.cid] = cur;
-                            return sofar;
-                        }, {});
-
-                        for(let cid of cids) {
-                            //调整协议字段，满足创建CP接口的需要
-                            items[cid].address = items[cid].current.address; 
-                            await core.notifyEvent('wallet.cp.stock', {msg:items[cid]});
-                        }
-                    }
+                    //完成CP信息的入库和更新，同时也包括对凭证和道具信息的入库
+                    await core.notifyEvent('wallet.cp.register', {msg: item});
                 }
+            } else {
+                console.log('failed to connect to vallnet.');
             }
         }
 
@@ -218,10 +203,11 @@ if(env.constructor == String) {
             core.chain.height = msg.height;
         }, 'block/tips').execute('subscribe', 'block/tips');
 
-        //订阅 cp/register 消息，登记处理句柄
+        //订阅CP注册消息，登记处理句柄
         core.service.monitor.remote.watch(msg => {
             core.notifyEvent('wallet.cp.register', {msg:msg});
         }, 'cp/register').execute('subscribe', 'cp/register');
+        //订阅CP众筹消息，登记处理句柄
         core.service.monitor.remote.watch(msg => {
             core.notifyEvent('wallet.cp.stock', {msg:msg});
         }, 'cp/stock').execute('subscribe', 'cp/stock');
@@ -274,12 +260,25 @@ if(env.constructor == String) {
         });
 
         //2. 添加订单状态定时检测器(每5分钟检测一轮)，具体查询工作由 orderMonitor.execute 承载
-        core.autoTaskMgr.addMonitor(new orderMonitor(), 10*1000);
+
+        // test only 调测阶段，暂时封闭
+        //core.autoTaskMgr.addMonitor(new orderMonitor(), 10*1000);
+        //
 
         //3. 添加商品发放流程，配合 wallet.payCash 的工作流程。商品参数保存于 buylogs.product 字段中，格式为复合格式字符串 "type, id, num[;type, id, num]"
         //@warning 对于异步发放、可能最终发放失败的商品，需要先放入背包，然后由用户从背包中选兑，以降低事务处理的复杂性
 
-        //3.1 购买VIP服务
+        //3.1 参与众筹
+        core.RegisterResHandle('crowd', async (user, bonus) => {
+            let stock = core.GetObject(TableType.StockBase, parseInt(bonus.id));
+            if(!!stock) {
+                //由于订单已经支付，此处由系统为用户代购
+                ret = await core.service.gamegoldHelper.execute('stock.purchaseTo', [stock.getAttr('cid'), bonus.num, user.domainId]);
+                return ret;
+            }
+        });
+
+        //3.2 购买VIP服务
         core.RegisterResHandle('vip', async (user, bonus) => {
             let vip_level =  bonus.num;
             let month_time =  3600 * 24 * 30;
@@ -299,6 +298,7 @@ if(env.constructor == String) {
             user.notify({type: 911002, info: JSON.parse(user.baseMgr.info.getData())});
         });
 
+        console.log(`${core.options.serverType}.${core.options.serverId}'s startup finished!`);
         //#endregion
     });
 })();

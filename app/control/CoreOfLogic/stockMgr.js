@@ -113,19 +113,24 @@ class cpstockbase extends facade.Control {
 
         if(ret.code == 0) {
             let $data = { list: [] };
-            $data.pagination = { "total": ret.result.count, "pageSize": ret.result.countCur, "current": ret.result.cur };
             $data.total = ret.result.page;
             $data.page = ret.result.cur;
             for(let item of ret.result.list) {
-                $data.list.push({
-                    cid: item.cid,
-                    addr: item.addr,
-                    sum: item.sum,
-                    price: item.price,
-                    sell_price: item.stock.price,
-                    sell_sum: item.stock.sum,
-                    period: item.stock.period,
-                });
+                let cpObj = this.core.GetObject(TableType.blockgame, item.cid, IndexType.Foreign);
+                if(!!cpObj) { 
+                    $data.list.push({
+                        provider: cpObj.orm.developer,
+                        icon_url: cpObj.orm.game_ico_uri,
+                        cp_text: cpObj.orm.game_desc,
+                        cid: item.cid,
+                        addr: item.addr,
+                        sum: item.sum,
+                        price: item.price,
+                        sell_price: item.stock.price,
+                        sell_sum: item.stock.sum,
+                        period: item.stock.period,
+                    });
+                }
             }
 
             return {code: 0, data:$data}
@@ -139,19 +144,15 @@ class cpstockbase extends facade.Control {
      * @param {*} user 
      * @param {*} objData 查询及翻页参数
      */
-    ListRecord(user, objData) {
+    getCrowdList(user, objData) {
         objData = objData || {};
-        let currentPage = objData.currentPage;
-        if (Number.isNaN(parseInt(currentPage))) {
-            currentPage = 1;
-        }
-        //构造查询条件
-        let paramArray = [];
+        objData.currentPage = objData.currentPage || 1;
+
         let muster = this.core.GetMapping(TableType.StockBase)
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
-            .where(paramArray)
+            .where([])
             .orderby('id', 'desc') //根据id字段倒叙排列
-            .paginate(10, currentPage);
+            .paginate(10, objData.currentPage);
 
         let list = [];
         let $idx = (muster.pageCur - 1) * muster.pageSize;
@@ -161,13 +162,13 @@ class cpstockbase extends facade.Control {
             let cpObj = this.core.GetObject(TableType.blockgame, $value.cid, IndexType.Foreign);
             if(!!cpObj) { 
                 $value.cp_name = cpObj.orm.cp_name;
-                $value.cp_text = cpObj.orm.game_desc;
                 $value.large_img_url = cpObj.orm.game_resource_uri;
-                $value.small_img_url = cpObj.orm.game_resource_uri;
+                $value.small_img_url = cpObj.orm.small_img_url;
                 $value.icon_url = cpObj.orm.game_ico_uri;
                 $value.pic_urls = JSON.stringify(cpObj.orm.game_screenshots.split(','));
                 $value.cp_desc = cpObj.orm.game_desc;
                 $value.provider = cpObj.orm.developer;
+                $value.funding_residue_day = ((14*24*60 - (this.core.chain.height - $value.height)*10)/60/24)|0;
             }
 
             list.push($value);
@@ -176,7 +177,8 @@ class cpstockbase extends facade.Control {
         return {code: 0, data: {
             total: muster.pageNum,
             page: muster.pageCur,
-            list: list}};
+            list: list}
+        };
     }
 
     /**

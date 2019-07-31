@@ -50,9 +50,9 @@ class prop extends facade.Control
         let props = Array()
         for(let i=0; i<ret.result.list.length; i++) {
             let element = ret.result.list[i]
-            //#region 从索引服务器取数
-            element.cp = await this.core.remoteCall("kv", {k:element.cid}, msg=>{return JSON.parse(msg);});
-            //#endregion
+            //todo 附加CP信息
+            element.cp = {};
+            //end
             props.push(element);
         }
         return {code: 0, data : {props: props, count: ret.result.count}};

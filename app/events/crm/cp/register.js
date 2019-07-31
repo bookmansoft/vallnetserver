@@ -71,6 +71,7 @@ async function CreateRecord(user, cpinfo, core) {
     data.operator_id = user.id;
 
     //写入数据库
+    console.log('register cp start', data);
     await core.GetMapping(TableType.Cp).Create(
         data.cp_id,
         data.cp_name,
@@ -89,6 +90,7 @@ async function CreateRecord(user, cpinfo, core) {
         data.invite_share,
         data.operator_id,
     );
+    console.log('register cp end');
     return { code: 0, msg: "创建CP成功" };
 }
 

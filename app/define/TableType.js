@@ -7,7 +7,6 @@ const TableType ={
     "blockgameprovider": 109,
     "cpprop": 111,
     "cporder": 112,
-    'userprop': 114,
     'blockNotify': 118,
     'redpack': 119,
     'redpackact': 120,
@@ -28,9 +27,9 @@ const TableType ={
     'StockBase': 303,
 };
 
-let blockgame = ['id','game_code','game_title','game_resource_uri','game_ico_uri','game_link_url','game_desc','sort','category_id',
+let blockgame = ['id','game_title','small_img_url','game_resource_uri','game_ico_uri','game_link_url','game_desc','sort','category_id',
     'category_title','provider_id','provider_name','ad_title','ranking','star_level','down_count','comment_count',
-    'create_time','update_time','store_status','game_version',
+    'create_time','update_time','store_status','game_version', 'stock_price', 'stock_sum', 'grate', 'hHeight', 'hBonus', 'hAds',
     'developer','update_desc','game_screenshots','player_count','cpid','cpurl','cp_addr','cp_name'
 ];
 
@@ -70,25 +69,6 @@ let userwallet = [
     'cid',
     'addr',
     'user_id',
-];
-
-let userprop = [
-    'uid',
-    'openid',
-    'cid',
-    'oid',
-    'pid',
-    'oper',
-    'current_hash',
-    'current_index',
-    'current_rev',
-    'current_height',
-    'time',
-    'gold',
-    'status',
-    'cp_url',
-    'cp_name',
-    'cp_ip'
 ];
 
 let cpprop = [
@@ -219,8 +199,7 @@ let stock = [
 ]
 
 let StockBase = [
-    'id', 'cid', 'total_num', 'sell_stock_amount', 'sell_stock_num','base_amount','funding_text','funding_project_text',
-    'stock_money','supply_people_num','supply_money','funding_residue_day','funding_target_amount','funding_done_amount', 'history_text','now_sale'
+    'id', 'cid', 'funding_text','funding_project_text', 'supply_people_num', 'height', 'sum', 'sum_left', 'price', 'history_text','now_sale'
 ]
 
 let Prize = ['id', 'act_name', 'mch_billno', 'nick_name', 're_openid', 'remark', 'send_name', 'total_amount', 'total_num', 'wishing', 'return_msg', 'order_status']
@@ -266,7 +245,7 @@ exports = module.exports = {
     TableField: {
         blockgame, blockgamecate, blockgameprop, blockgameprovider, StockBulletin, Mail,
         userwallet, redpack, redpackact, StockBase, Prize, Cp, CpType, CpFunding, CpStock, RedPacket,
-        cpprop, cporder, userprop, blockNotify, Prop, manysend, manyreceive, BuyLog,
+        cpprop, cporder, blockNotify, Prop, manysend, manyreceive, BuyLog,
         userredpack, userredpackact, blockgamecomment, stock, record,
     },
 }

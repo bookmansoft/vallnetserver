@@ -34,7 +34,7 @@ class cpfunding extends facade.Control {
         await this.core.GetMapping(TableType.CpFunding).Create(
             objData.stock_num,
             objData.stock_num * objData.stock_amount,
-            objData.stock_amount,
+            objData.stock_amount*100000,
             objData.stock_rmb,
             objData.audit_state_id,
             objData.audit_text,
@@ -60,27 +60,33 @@ class cpfunding extends facade.Control {
     async UpdateRecord(user, objData) {
         if(user.cid == remoteSetup.cid) { //只能超级管理员执行
             let cpfunding = this.core.GetObject(TableType.CpFunding, parseInt(objData.id));
-            if (!!cpfunding) {
+            if (!!cpfunding && cpfunding.getAttr('audit_state_id')==1) {
                 //获取发行众筹的发起者
                 let operator = this.core.GetObject(EntityType.User, cpfunding.getAttr('user_id'));
                 if(!!operator) {
-                    //以发起者身份，向主链广播众筹报文
-                    let ret = await this.core.service.RemoteNode.conn(operator.cid).execute('stock.offer', [
-                        cpfunding.getAttr('cid'),              //CP编码
-                        cpfunding.getAttr('stock_num'),        //发行总量
-                        cpfunding.getAttr('stock_amount'),     //发行单价
-                    ]);
-
-                    if(ret.code == 0) {
-                        //广播成功，更新本地数据库
-                        cpfunding.setAttr('stock_rmb', objData.stock_rmb);
-                        cpfunding.setAttr('audit_state_id', objData.audit_state_id);
-                        cpfunding.setAttr('audit_text', objData.audit_text);
-                        cpfunding.setAttr('modify_date', new Date().getTime() / 1000);
+                    if(objData.audit_state_id == 3) { //拒绝
+                        cpfunding.setAttr('audit_state_id', 3);
                         cpfunding.setAttr('operator_id', user.id);
-                    }
+                        return { code: ret.code };
+                    } else {
+                        //以发起者身份，向主链广播众筹报文
+                        let ret = await this.core.service.RemoteNode.conn(operator.cid).execute('stock.offer', [
+                            cpfunding.getAttr('cid'),                   //CP编码
+                            cpfunding.getAttr('stock_num'),             //发行总量
+                            cpfunding.getAttr('stock_amount'),          //发行单价
+                        ]);
 
-                    return { code: ret.code, data: ret.result };
+                        if(ret.code == 0) {
+                            //广播成功，更新本地数据库
+                            cpfunding.setAttr('audit_state_id', 2);
+                            cpfunding.setAttr('stock_rmb', objData.stock_rmb);
+                            cpfunding.setAttr('audit_text', objData.audit_text);
+                            cpfunding.setAttr('modify_date', new Date().getTime() / 1000);
+                            cpfunding.setAttr('operator_id', user.id);
+                        }
+
+                        return { code: ret.code, data: ret.result };
+                    }
                 }
             }
         }

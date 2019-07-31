@@ -5,7 +5,10 @@
 const facade = require('gamecloud');
 let {Sequelize, seqconn} = facade.tools;
 
-//建立数据库ORM模型
+/**
+ * CP可售道具列表，从CP标准接口定期拉取刷新
+ * @param {*} db 
+ */
 let blockgameprop = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).define(
     'blockgameprop',
     {
