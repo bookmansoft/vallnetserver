@@ -459,7 +459,7 @@ CREATE TABLE IF NOT EXISTS `our_stock_base` (
   `height` int(11) DEFAULT NULL COMMENT '发行高度',
 	`sum` int(11) NULL DEFAULT NULL COMMENT '发行数量',
 	`sum_left` int(11) NULL DEFAULT NULL COMMENT '剩余数量',
-	`price` int(11) NULL DEFAULT NULL COMMENT '发行价格',
+	`price` int(11) NULL DEFAULT NULL COMMENT '发行价格, 单位尘',
   `history_text` varchar(2000) DEFAULT '' COMMENT '历史业绩信息JSON数组',
   `now_sale` varchar(2000) DEFAULT NULL COMMENT '现在挂单卖出的JSON字符串',
   PRIMARY KEY (`id`)

@@ -31,31 +31,33 @@ class cpstockbase extends facade.Control {
      * @param {*} objData 
      */
     async MyStock(user, objData) {
-        let type = objData.type || 0;
         let conditions = [
             ['page', objData.page],
             ['size', 10],
             ['account', user.domainId],
         ];
 
-        if(!!type) { //挑选有挂单的记录
-            conditions.push(['stock.sum', '>', 0]);
-        }
-
         let ret = await this.core.service.gamegoldHelper.execute('stock.list.wallet', [conditions]);
         if(ret.code == 0) {
             let $data = { list: [] };
             $data.total = ret.result.page;
             $data.page = ret.result.cur;
+            $data.height = this.core.chain.height; //添加当前主网高度，作为时间基点使用
             for(let item of ret.result.list) {
-                $data.list.push({
-                    cid: item.cid,
-                    addr: item.addr,
-                    sum: item.sum,
-                    price: item.price,
-                    sell_price: item.stock.price,
-                    sell_sum: item.stock.sum,
-                });
+                let cpObj = this.core.GetObject(TableType.blockgame, item.cid, IndexType.Foreign);
+                if(!!cpObj) { 
+                    $data.list.push({
+                        src: cpObj.orm.game_ico_uri,
+                        title: cpObj.orm.game_title,
+                        cid: item.cid,
+                        addr: item.addr,
+                        sum: item.sum,
+                        price: item.price,
+                        sell_price: item.stock.price,
+                        sell_sum: item.stock.sum,
+                        period: item.stock.period,
+                    });
+                }
             }
 
             return {code: 0, data:$data}
@@ -66,7 +68,7 @@ class cpstockbase extends facade.Control {
 
     /**
      * 我拍卖凭证
-     * @param {*} user      当前操作员，注意如果是系统管理员，要将账户切换为'game'
+     * @param {*} user
      * @param {*} objData 
      */
     async bidStock(user, objData) {
@@ -75,7 +77,7 @@ class cpstockbase extends facade.Control {
             objData.params.num, 
             objData.params.price, 
             user.domainId, 
-            objData.params.addr,
+            objData.params.addr, //主网有校验 addr 是否归属 user.domainId
         ]);
 
         return {code: ret.code};
@@ -182,14 +184,17 @@ class cpstockbase extends facade.Control {
     }
 
     /**
-     * 我针对指定 cid 的买入卖出记录
+     * 查询指定CP、指定地址上的交易记录 - 可以统计当前地址上的凭证买入、卖出、累计分成信息
      * @param {*} user 
      * @param {*} params 
      */
     async UserStockLogs(user, params) {
-        let cid = params.cid;
-        //todo ...
-        return {code: 0, data: []};
+        let ret = await this.core.service.gamegoldHelper.execute('stock.record.wallet', [0, params.cid, 0, [['addr', params.addr]]]);
+        ret.result.height = this.core.chain.height; //添加当前主网高度，作为时间基点使用
+        return {
+            code: ret.code,
+            data: ret.result,
+        };
     }    
 }
 

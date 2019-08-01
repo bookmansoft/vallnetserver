@@ -36,10 +36,22 @@ class order extends facade.Control
                     return { code: -1 };
                 }
 
+                let baseConfig = this.core.fileMap['base'];
+
                 //填充订单信息
-                price = item.price * params.order.num;                                  //订单金额
+                if(item.stock == 0) {
+                    price = params.order.num;
+                } else {
+                    price = parseFloat(
+                        stock.price / baseConfig.kg     //atom化为KG
+                        * item.stock                    //选项包含的凭证数量
+                        * params.order.num              //选项数量
+                        * baseConfig.kgprice            //KG单价
+                      ).toFixed(2);
+                }
+
                 product = `crowd, ${stock.id}, ${item.stock*params.order.num}`;       //订单内容：一级市场凭证若干
-                product_desc = item.desc;                                               //订单描述
+                product_desc = item.desc;                                             //订单描述
         
                 break;
             }

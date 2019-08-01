@@ -271,11 +271,12 @@ if(env.constructor == String) {
         //3.1 参与众筹
         core.RegisterResHandle('crowd', async (user, bonus) => {
             let stock = core.GetObject(TableType.StockBase, parseInt(bonus.id));
-            if(!!stock) {
-                //由于订单已经支付，此处由系统为用户代购
+            if(!!stock && bonus.num > 0) {
+                //由于订单已经支付，此处由系统为用户代购, 义务捐赠模式下 bonus.num 为零，不需处理
                 ret = await core.service.gamegoldHelper.execute('stock.purchaseTo', [stock.getAttr('cid'), bonus.num, user.domainId]);
                 return ret;
             }
+            return {code:0};
         });
 
         //3.2 购买VIP服务

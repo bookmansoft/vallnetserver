@@ -15,7 +15,7 @@ let StockBase = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.p
         supply_people_num: Sequelize.INTEGER,
         sum: Sequelize.INTEGER,
         sum_left: Sequelize.INTEGER,
-        price: Sequelize.INTEGER,
+        price: Sequelize.INTEGER,                   //发行价格, 单位尘
         height: Sequelize.INTEGER,
         history_text: Sequelize.STRING,
         now_sale: Sequelize.STRING,
