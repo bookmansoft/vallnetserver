@@ -8,6 +8,42 @@ let facade = require('gamecloud');
 let CoreOfBase = facade.CoreOfBase;
 let { stringify } = require('../util/stringUtil');
 
+//#region 供模拟系统使用的属性配置数组
+let arrayPropName = [
+    'M416自动步枪',
+    '北极50地狱行者',
+    '超级跑车',
+    'T10自行反坦克车',
+];
+let arrayPropDesc = [
+    'M4虽然是很多的玩家喜爱的步枪，但是随着版本的改动现在已经垫底了，配件也是非常的多，没有配件的M4基本就是个烧火棍，但是满配了以后还是可以玩的，EatChicken的最佳武器之一',
+    '北极50拥有极高的准确度，栓动射击大大的保证了武器的精度。狙击枪的盲射是所有武器中最差的，弹道散射大，即便贴身了，也难以击中。',
+    '极其稀有的超级跑车，一旦拥有，便能上天入地。W12四涡轮增压喷气式引擎，配合极度流畅的车身线条，可以直接使角色上天与太阳肩并肩，轻松完成任何任务。',
+    '仅支持金币购买的超值坦克，性价比超高，配合AP弹，轻松击穿同级其他坦克。需要配备驾驶成员4名，支持AP弹和HE弹。',
+];
+let arrayGameTitle = [
+    'Code of War',
+    'Mercs of Boom',
+    '孤胆车神',
+    '坦克大战',
+];
+let arrayCpTye = [
+    'ACT', 'SHT', 'ACT', 'WAR',
+];
+let arrayGameDesc = [
+    '指挥在线枪战 – 纯粹的动作游戏！ Code of War是一款在线枪战游戏，拥有最佳3D图形、真实物理引擎以及海量真实枪支供您选择。 在与来自世界各地的其他玩家对战的动态在线动作游戏内试试您的技能和精通！',
+    'Supply elite soldiers with tons of equipment: hi-tech armor, deadly weapons, implants, and gadgets. ? Upgrade your base and research futuristic technology to gain access to advanced war',
+    '开放沙盒式动作冒险游戏金牌标杆系列之作霸气归来。前往迷人的新奥尔良，打下一片新天地。在这座巨大的城市中，驾驶数百种交通工具、坐拥数量惊人的武器装备，来往自如，无法无天！ 在这里万事俱备，您也可以成为黑道传奇人物！',
+    '终于等到了！全新世界征服战资料片震撼开启！三大阵营重兵集结，打响国战第一炮！万千坦克同屏对决，铸造最热血的坦克手游！集合策略和国战经典玩法于一体的全民坦克游戏，传奇将领，万人国战，占领世界疆土，成就世界霸主梦',
+];
+let arrayProvider = [
+    'Extreme Developers Action & adventure',
+    'GAME INSIGHT UAB Strategy',
+    'Gameloft. Action & adventure',
+    'Strategy、Role playing',
+];
+//#endregion
+
 /**
  * 资源服对应的门面类
  */
@@ -78,7 +114,7 @@ class CoreOfResource extends CoreOfBase {
         //【订单】游戏客户端下单的post方法；除了cp_name以外，其他参数以JSON格式在request-body中提交
         app.post('/mock/:cp_name/order', this.order.bind(this));
 
-        //【认证】回调通知
+        //【订单】回调通知
         app.post('/mock/:cp_name/testnet/order/confirm', this.orderConfirm.bind(this));
     }
 
@@ -281,6 +317,51 @@ class CoreOfResource extends CoreOfBase {
     }
 
     /**
+     * 创建一个模拟游戏道具，其属性对 propid 具备确定性
+     * @param {*} propid
+     */
+    createProp(propid) {
+        let propIndexArray = propid.split('_prop_');
+        let cp_name = propIndexArray[0];
+        let propIndex = propIndexArray[propIndexArray.length - 1];
+
+        let groupNum = 0;//默认为0
+        try {
+            groupNum = parseInt(cp_name.substr(4)) % 4;
+            if (groupNum != 0 && groupNum != 1 && groupNum != 2 && groupNum != 3) {
+                groupNum = 0;
+            }
+        } catch (error1) {
+            groupNum = 0;
+        }
+
+        let prop = {
+            "id": propid,
+            "props_name": `${arrayPropName[groupNum]}-${propIndex}`,
+            "icon": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_icon.jpg",
+            "large_icon": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_large_icon.jpg",
+            "more_icon": [`http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_pic1.jpg",
+            `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_pic2.jpg",
+            `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_pic3.jpg"],
+            "props_type": "装备",
+            "props_desc": arrayPropDesc[groupNum],
+            "props_price": (parseInt(propIndex)+1)*100000,
+            "props_createtime": "2018-12-22 16:22:30",
+            "props_rank": 3,
+            "props_status": 1,
+            "state": 1,
+            "props_extra": [
+                {
+                    "attr1": "属性1",
+                    "attr2": "属性2",
+                }
+            ]
+        };
+
+        return prop;
+    }
+
+    /**
      * 获取第4个字母起的所有数字（即规定只能有最多4个字母，不允许超过）。
      * 对该字符串parseInt 后 %4，取出的模，作为分组号
      * @param {*} req 
@@ -298,54 +379,15 @@ class CoreOfResource extends CoreOfBase {
                 } catch (error1) {
                     groupNum = 0;
                 }
-                let arrayPropName = [
-                    'M416自动步枪',
-                    '北极50地狱行者',
-                    '超级跑车',
-                    'T10自行反坦克车',
-                ];
-                //定义道具列表的一项（即模板）
-                let propTemplate = {
-                    "id": null,
-                    "props_name": arrayPropName[groupNum],
-                }
+
                 //随机生成若干道具并添加到数组中
                 let propArray = new Array();
                 let propCount = 5;
                 for (let i = 0; i < propCount; i++) {
-                    let prop = {};
-                    Object.assign(prop, propTemplate);
-                    prop.id = req.params.cp_name + "_prop_" + i;
-                    prop.props_name = prop.props_name + "-" + i;
-                    prop.props_price = 100001 + parseInt(i) * 10000,//非标准参数，仅供模拟cp客户端使用
-                        prop.icon = `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_icon.jpg",//非标准参数，仅供模拟cp客户端使用
-                        prop.props_rank = 3,//非标准参数，仅供模拟cp客户端使用
-                        propArray.push(prop);
+                    propArray.push(this.createProp(`${req.params.cp_name}_prop_${i}`));
                 }
 
-                //分组
-                let arrayGameTitle = [
-                    'Code of War',
-                    'Mercs of Boom',
-                    '孤胆车神',
-                    '坦克大战',
-                ];
-                let arrayCpTye = [
-                    'ACT', 'SHT', 'ACT', 'WAR',
-                ];
-                let arrayDesc = [
-                    '指挥在线枪战 – 纯粹的动作游戏！ Code of War是一款在线枪战游戏，拥有最佳3D图形、真实物理引擎以及海量真实枪支供您选择。 在与来自世界各地的其他玩家对战的动态在线动作游戏内试试您的技能和精通！',
-                    'Supply elite soldiers with tons of equipment: hi-tech armor, deadly weapons, implants, and gadgets. ? Upgrade your base and research futuristic technology to gain access to advanced war',
-                    '开放沙盒式动作冒险游戏金牌标杆系列之作霸气归来。前往迷人的新奥尔良，打下一片新天地。在这座巨大的城市中，驾驶数百种交通工具、坐拥数量惊人的武器装备，来往自如，无法无天！ 在这里万事俱备，您也可以成为黑道传奇人物！',
-                    '终于等到了！全新世界征服战资料片震撼开启！三大阵营重兵集结，打响国战第一炮！万千坦克同屏对决，铸造最热血的坦克手游！集合策略和国战经典玩法于一体的全民坦克游戏，传奇将领，万人国战，占领世界疆土，成就世界霸主梦',
-                ];
-                let arrayProvider = [
-                    'Extreme Developers Action & adventure',
-                    'GAME INSIGHT UAB Strategy',
-                    'Gameloft. Action & adventure',
-                    'Strategy、Role playing',
-                ];
-                // 编组cpInfo
+                //编组cpInfo
                 let cpInfo = {
                     "crowd": {
                         "funding_text": "有可能是最好玩的游戏",
@@ -361,7 +403,7 @@ class CoreOfResource extends CoreOfBase {
                         "pic_urls": [`http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic1.jpg",
                         `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic2.jpg",
                         `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic3.jpg"],
-                        "desc": arrayDesc[groupNum],
+                        "desc": arrayGameDesc[groupNum],
                         "provider": arrayProvider[groupNum],
                         "version": "V1.0",
                         "publish_time": 1545606613,
@@ -399,55 +441,7 @@ class CoreOfResource extends CoreOfBase {
 
     responseProp(req, res) {
         try {
-            let groupNum = 0;//默认为0
-            try {
-                groupNum = parseInt(req.params.cp_name.substr(4)) % 4;
-                if (groupNum != 0 && groupNum != 1 && groupNum != 2 && groupNum != 3) {
-                    groupNum = 0;
-                }
-            } catch (error1) {
-                groupNum = 0;
-            }
-            let propIndexArray = req.params.id.split('_prop_');
-            let propIndex = propIndexArray[propIndexArray.length - 1];
-            //设置数组
-            let arrayPropName = [
-                'M416自动步枪',
-                '北极50地狱行者',
-                '超级跑车',
-                'T10自行反坦克车',
-            ];
-            let arrayDesc = [
-                'M4虽然是很多的玩家喜爱的步枪，但是随着版本的改动现在已经垫底了，配件也是非常的多，没有配件的M4基本就是个烧火棍，但是满配了以后还是可以玩的，EatChicken的最佳武器之一',
-                '北极50拥有极高的准确度，栓动射击大大的保证了武器的精度。狙击枪的盲射是所有武器中最差的，弹道散射大，即便贴身了，也难以击中。',
-                '极其稀有的超级跑车，一旦拥有，便能上天入地。W12四涡轮增压喷气式引擎，配合极度流畅的车身线条，可以直接使角色上天与太阳肩并肩，轻松完成任何任务。',
-                '仅支持金币购买的超值坦克，性价比超高，配合AP弹，轻松击穿同级其他坦克。需要配备驾驶成员4名，支持AP弹和HE弹。',
-
-            ];
-
-            let prop = {
-                "id": req.params.id,
-                "props_name": arrayPropName[groupNum] + propIndex,
-                "icon": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_icon.jpg",
-                "large_icon": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_large_icon.jpg",
-                "more_icon": [`http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_pic1.jpg",
-                `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_pic2.jpg",
-                `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/prop_pic3.jpg"],
-                "props_type": "装备",
-                "props_desc": arrayDesc[groupNum],
-                "props_price": 100001 + parseInt(propIndex) * 10000,
-                "props_createtime": "2018-12-22 16:22:30",
-                "props_rank": 3,
-                "props_status": 1,
-                "state": 1,
-                "props_extra": [
-                    {
-                        "attr1": "属性1",
-                        "attr2": "属性2",
-                    }
-                ]
-            };
-            res.json(prop);
+            res.json(this.createProp(req.params.id));
         }
         catch (e) {
             console.error(e);

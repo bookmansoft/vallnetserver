@@ -164,50 +164,6 @@ CREATE TABLE IF NOT EXISTS `m_player` (
 
 -- 数据导出被取消选择。
 
-
--- 导出  表 wechat-wallet.our_block_cp_order 结构
-CREATE TABLE IF NOT EXISTS `our_block_cp_order` (
-  `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
-  `uid` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '用户编号',
-  `openid` varchar(128) NOT NULL COMMENT 'openid',
-  `user_addr` varchar(128) NOT NULL COMMENT '用户地址',
-  `order_sn` varchar(128) NOT NULL COMMENT '订单编号',
-  `order_num` int(8) DEFAULT '0' COMMENT '支付金额',
-  `prop_id` int(8) DEFAULT '0' COMMENT '道具编号',
-  `prop_name` varchar(32) DEFAULT NULL COMMENT '道具名称',
-  `prop_oid` varchar(32) DEFAULT NULL COMMENT '道具原始编号',
-  `prop_value` varchar(32) DEFAULT NULL COMMENT '道具含金量',
-  `prop_icon` varchar(255) DEFAULT '0' COMMENT '道具图标',
-  `order_status` int(1) unsigned DEFAULT '0' COMMENT '订单状态',
-  `prop_status` int(1) DEFAULT NULL COMMENT '道具发送状态',
-  `pay_status` int(1) unsigned DEFAULT '0' COMMENT '支付状态',
-  `create_time` bigint(12) unsigned DEFAULT '0' COMMENT '创建时间',
-  `update_time` bigint(12) unsigned DEFAULT '0' COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `order_sn` (`order_sn`),
-  KEY `uid` (`uid`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 数据导出被取消选择。
-
-
--- 导出  表 wechat-wallet.our_block_cp_prop 结构
-CREATE TABLE IF NOT EXISTS `our_block_cp_prop` (
-  `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户编号',
-  `gold` bigint(18) unsigned NOT NULL DEFAULT '0' COMMENT 'gold',
-  `price` bigint(18) unsigned NOT NULL DEFAULT '0' COMMENT 'price',
-  `oid` varchar(128) DEFAULT NULL COMMENT 'oid',
-  `prop_id` varchar(128) DEFAULT NULL COMMENT 'prop_id',
-  `prop_name` varchar(64) DEFAULT NULL COMMENT 'prop_name',
-  `prop_icon` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT 'prop_icon',
-  `prop_info` varchar(255) DEFAULT NULL COMMENT 'prop_info',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `oid` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 数据导出被取消选择。
-
-
 -- 导出  表 wechat-wallet.our_block_cp_user 结构
 CREATE TABLE IF NOT EXISTS `our_block_cp_user` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户编号',
@@ -269,18 +225,6 @@ CREATE TABLE IF NOT EXISTS `our_block_games` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 数据导出被取消选择。
-
-
--- 导出  表 wechat-wallet.our_block_game_category 结构
-CREATE TABLE IF NOT EXISTS `our_block_game_category` (
-  `id` int(4) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
-  `category_id` int(2) unsigned NOT NULL DEFAULT '0' COMMENT '类别ID',
-  `category_title` varchar(32) DEFAULT '' COMMENT '类别名',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 数据导出被取消选择。
-
 
 -- 导出  表 wechat-wallet.our_block_game_comment 结构
 CREATE TABLE IF NOT EXISTS `our_block_game_comment` (

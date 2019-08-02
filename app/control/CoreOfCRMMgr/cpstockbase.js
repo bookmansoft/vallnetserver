@@ -96,7 +96,10 @@ class cpstockbase extends facade.Control {
         }
 
         let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.auction', [
-            objData.params.cid, objData.params.srcAddr, objData.params.num, objData.params.price,
+            objData.params.cid, 
+            objData.params.srcAddr, 
+            objData.params.num, 
+            objData.params.price,
         ]);
 
         return {code: ret.code}

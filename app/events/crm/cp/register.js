@@ -41,12 +41,6 @@ async function CreateRecord(user, cpinfo, core) {
         return {code: 0};
     }
 
-    //从CP登记的集采接口获取CP详细信息
-    let res = await fetch(`${cpinfo.url}/${cpinfo.name}`, { mode: 'no-cors' });
-    res = await res.json();
-    let qry = res.game;
-
-    //合并主网信息和集采信息，调整部分字段名称和数值
     let data = {};
     data.cp_name = cpinfo.name;
     data.cp_url = cpinfo.url;
@@ -54,21 +48,31 @@ async function CreateRecord(user, cpinfo, core) {
     data.invite_share = cpinfo.grate || 0;
     data.wallet_addr = cpinfo.address;
     data.cp_id = cpinfo.cid;
-
-    data.cp_text = qry.game_title;
-    data.develop_name = qry.provider;
-    data.cp_desc = qry.desc;
-    data.cp_version = qry.version;
-    data.picture_url = JSON.stringify({
-        icon_url: qry.icon_url,
-        face_url: qry.large_img_url,
-        pic_urls: qry.pic_urls,
-    });
-    data.publish_time = qry.publish_time;
-    data.update_time = qry.update_time;
-    data.update_content = qry.update_content;
-    data.cp_state = qry.state;
     data.operator_id = user.id;
+
+    try {
+        //从CP登记的集采接口获取CP详细信息
+        let res = await fetch(`${cpinfo.url}`, { mode: 'no-cors' });
+        res = await res.json();
+        let qry = res.game;
+
+        //合并主网信息和集采信息，调整部分字段名称和数值
+        data.cp_text = qry.game_title;
+        data.develop_name = qry.provider;
+        data.cp_desc = qry.desc;
+        data.cp_version = qry.version;
+        data.picture_url = JSON.stringify({
+            icon_url: qry.icon_url,
+            face_url: qry.large_img_url,
+            pic_urls: qry.pic_urls,
+        });
+        data.publish_time = qry.publish_time;
+        data.update_time = qry.update_time;
+        data.update_content = qry.update_content;
+        data.cp_state = qry.state;
+    } catch(e) {
+        console.log('CRM - 访问CP公众接口失败', e.message);
+    }
 
     //写入数据库
     console.log('register cp start', data);

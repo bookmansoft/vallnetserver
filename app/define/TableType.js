@@ -1,12 +1,7 @@
 const TableType ={
     "Test": 101,
     "userwallet": 104,
-    "blockgamecate": 106,
     "blockgame": 107,
-    "blockgameprop": 108,
-    "blockgameprovider": 109,
-    "cpprop": 111,
-    "cporder": 112,
     'blockNotify': 118,
     'redpack': 119,
     'redpackact': 120,
@@ -18,7 +13,6 @@ const TableType ={
     'stock': 134,
     'Cp': 202,
     'Prop': 203,
-    'CpType': 206,
     'RedPacket': 207,
     'Prize': 208,
     'CpFunding': 209,
@@ -33,72 +27,11 @@ let blockgame = ['id','game_title','small_img_url','game_resource_uri','game_ico
     'developer','update_desc','game_screenshots','player_count','cpid','cpurl','cp_addr','cp_name'
 ];
 
-let blockgamecate = [
-    'id','category_id','category_title'
-];
-
-let blockgameprop = [ 
-    'id',
-    'cpid',
-    'prop_id',
-    'oid',
-    'prop_name',
-    'icon_small',
-    'icon_large',
-    'prop_info',
-    'create_time',
-    'prop_price',
-    'prop_value',
-    'nstatus'
-];
-
-let blockgameprovider = [
-    'id',
-    'provider_id',
-    'provider_name',
-    'contact',
-    'phone',
-    'addr',
-    'uri',
-    'game_number',
-    'comprehensive_grade'
-];
-
 let userwallet = [
     'id',
     'cid',
     'addr',
     'user_id',
-];
-
-let cpprop = [
-    'id',
-    'oid',
-    'prop_id',
-    'prop_name',
-    'prop_icon',
-    'prop_info',
-    'gold',
-    'price'
-];
-
-let cporder = [
-    'id',
-    'uid',
-    'openid',
-    'user_addr',
-    'order_sn',
-    'order_num',
-    'prop_id',
-    'prop_name',
-    'prop_oid',
-    'prop_value',
-    'prop_icon',
-    'order_status',
-    'prop_status',
-    'pay_status',
-    'create_time',
-    'update_time'
 ];
 
 let blockNotify = [
@@ -206,8 +139,6 @@ let Prize = ['id', 'act_name', 'mch_billno', 'nick_name', 're_openid', 'remark',
 
 let Cp = ['id', 'cp_id', 'cp_text', 'cp_type', 'cp_state', 'publish_time', 'operator_id']
 
-let CpType =  ['id', 'cp_type_id', 'cp_type_name']
-
 let CpFunding = ['id', 'stock_num', 'total_amount', 'stock_amount', 'stock_rmb', 'audit_state_id', 'audit_text', 'modify_date', 'cp_name', 'cp_text', 'cp_type', 'cp_url', 'develop_name', 'develop_text', 'user_id', 'cid', 'operator_id']
 
 let Prop = ['id', 'props_name', 'props_type', 'props_desc', 'icon_url', 'icon_preview', 'status', 'props_price', 'props_rank', 'propsAt', 'cid', 'props_id']
@@ -243,9 +174,9 @@ function record(obj, attrs) {
 exports = module.exports = {
     TableType: TableType,
     TableField: {
-        blockgame, blockgamecate, blockgameprop, blockgameprovider, StockBulletin, Mail,
-        userwallet, redpack, redpackact, StockBase, Prize, Cp, CpType, CpFunding, CpStock, RedPacket,
-        cpprop, cporder, blockNotify, Prop, manysend, manyreceive, BuyLog,
+        blockgame, StockBulletin, Mail,
+        userwallet, redpack, redpackact, StockBase, Prize, Cp, CpFunding, CpStock, RedPacket,
+        blockNotify, Prop, manysend, manyreceive, BuyLog,
         userredpack, userredpackact, blockgamecomment, stock, record,
     },
 }

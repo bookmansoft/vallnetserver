@@ -23,14 +23,6 @@ describe('游戏（cp）', function() {
         }
     });
 
-    it('cp.ListCpType 列表', async () => {
-        let msg = await remote.login({openid: `${Math.random()*1000000000 | 0}`});
-        if(remote.isSuccess(msg)) {
-            let msg = await remote.fetching({func: "cp.ListCpType",userinfo:{id:1}});
-            console.log(msg);
-        }
-    });
-
     it('cp.create', async () => {
         let msg = await remote.login({openid: `${Math.random()*1000000000 | 0}`});
         if(remote.isSuccess(msg)) {

@@ -100,6 +100,7 @@ class order extends facade.Control
 
         return { code: -1 };
     }
+
     /**
      * 使用游戏金支付订单
      * @param {*} user 
@@ -124,7 +125,6 @@ class order extends facade.Control
             return {code: 0, data: ret.result};
         }
     }
-
 
     /**
      * 查询订单信息

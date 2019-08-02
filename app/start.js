@@ -76,13 +76,10 @@ if(env.constructor == String) {
             TableType.Test, 
             TableType.Cp,
             TableType.Prop,
-            TableType.CpType,
             TableType.RedPacket,
             TableType.Prize,
             TableType.CpFunding,
             TableType.CpStock,
-            TableType.blockgameprovider, 
-            TableType.blockgameprop, 
         ],
         static: [
             ['/', './web/dist'],
@@ -141,13 +138,9 @@ if(env.constructor == String) {
         env: env,
         //指示加载自定义数据库表
         loading: [
-            TableType.blockgamecate,
             TableType.blockgame, 
-            TableType.blockgameprop, 
             TableType.blockgamecomment, 
             TableType.blockNotify, 
-            TableType.cpprop, 
-            TableType.cporder, 
             TableType.userwallet, 
             TableType.userredpack, 
             TableType.userredpackact, 
@@ -209,7 +202,7 @@ if(env.constructor == String) {
         }, 'cp/register').execute('subscribe', 'cp/register');
         //订阅CP众筹消息，登记处理句柄
         core.service.monitor.remote.watch(msg => {
-            core.notifyEvent('wallet.cp.stock', {msg:msg});
+            core.notifyEvent('wallet.cp.register', {msg:msg});
         }, 'cp/stock').execute('subscribe', 'cp/stock');
 
         //订阅消息并登记消息处理句柄

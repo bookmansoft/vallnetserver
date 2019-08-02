@@ -9,6 +9,16 @@ let uuid = require('uuid');
  */
 class cp extends facade.Control {
     /**
+     * 获取CP类型列表
+     * 客户端直接调用此方法
+     * @param {*} user 
+     * @param {*} objData 无需参数。
+     */
+    ListCpType(user, objData) {
+        return this.core.fileMap['cptype'];
+    }
+
+    /**
      * 修改数据库记录
      * @param {*} user 
      * @param {*} objData 
@@ -256,33 +266,6 @@ class cp extends facade.Control {
         $data.list = Object.keys($data.items).map(key => $data.items[key]);
 
         return {code: 0, data: $data};
-    }
-
-    /**
-     * 从数据库中获取CpType
-     * 客户端直接调用此方法
-     * @param {*} user 
-     * @param {*} objData 无需参数。
-     */
-    ListCpType(user, objData) {
-        try {
-            //得到 Mapping 对象
-            let muster = this.core.GetMapping(TableType.CpType)
-                .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
-                .orderby('id', 'asc') //根据id字段倒叙排列
-                .paginate(10, 1); 
-
-            let $data=[];
-            for (let $value of muster.records(TableField.CpType)) {
-                let item = { id: $value['id'], cp_type_id: $value['cp_type_id'], cp_type_name: $value['cp_type_name']};
-                $data.push(item);
-            }
-            return $data;
-
-        } catch (error) {
-            console.log(error);
-            return null;
-        }
     }
 
     /**

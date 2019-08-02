@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1, 
+        "cp_type_id": "RPG", 
+        "cp_type_name": "角色扮演"
+    },
+    {
+        "id": 2, 
+        "cp_type_id": "SLG", 
+        "cp_type_name": "策略攻略"
+    },
+    {
+        "id": 3, 
+        "cp_type_id": "SHT", 
+        "cp_type_name": "SHT"
+    },
+    {
+        "id": 4, 
+        "cp_type_id": "WAR", 
+        "cp_type_name": "WAR"
+    }
+]

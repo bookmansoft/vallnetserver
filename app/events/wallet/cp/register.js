@@ -33,17 +33,8 @@ async function CreateRecord(cpInfo, core) {
         return {code: 0};
     }
 
-    //从CP登记的集采接口获取CP详细信息
-    let res = await fetch(`${cpInfo.url}/${cpInfo.name}`, { mode: 'cors' });
-    res = await res.json();
+    cpInfo.stock = cpInfo.stock || {}; //主网CP注册消息中，不包含 stock 信息
 
-    let pics = ''
-    if(typeof res.game.pic_urls == 'string') {
-        res.game.pic_urls = JSON.parse(res.game.pic_urls);
-    }
-    if(Array.isArray(res.game.pic_urls)) {
-        pics = res.game.pic_urls.reduce((sofar,cur)=>{sofar = sofar==''? cur : sofar+','+cur; return sofar;},'');
-    }
     let content = {
         sort: 1, // `sort` int(4)  '排序',
         category_id: 1001, // `category_id` int(2)  '游戏类别',
@@ -61,26 +52,43 @@ async function CreateRecord(cpInfo, core) {
         cpurl: cpInfo.url, // `cpurl` varchar(255)  'cpurl',
         cp_addr: cpInfo.address, // `cp_addr` varchar(64)  'cp地址',
         cp_name: cpInfo.name, // `cp_name` varchar(32)  'cp_name',
-        stock_price: cpInfo.stock.hPrice, // 凭证持有均价
-        stock_sum: cpInfo.stock.hSum, // 凭证流通总量
         grate: cpInfo.grate, // 媒体分成比例
-        hHeight: cpInfo.stock.hHeight, //初次众筹高度
-        hBonus: cpInfo.stock.hBonus, //历史分红
-        hAds: cpInfo.stock.hAds, //历史分成
-
-        game_version: res.game.version, // `game_version` varchar(16)  '版本号',
-        developer: res.game.provider, // `developer` varchar(64)  '开发者',
-        create_time: res.game.publish_time, // `create_time` int(8)  '创建时间',
-        update_time: res.game.update_time, // `update_time` int(8)  '更新时间',
-        store_status: res.game.state, // `store_status` int(1)  '状态',
-        game_title: res.game.game_title, // `game_title` varchar(64)  '标题',
-        game_ico_uri: res.game.icon_url, // `game_ico_uri` varchar(255)  '图标URI',
-        update_desc: res.game.update_content, // `update_desc` varchar(255)  '更新描述',
-        game_resource_uri: res.game.large_img_url,  // `game_resource_uri` varchar(255)  '大图',
-        small_img_url: res.game.small_img_url,  // `small_img_url` varchar(255)  '小图',
-        game_screenshots: pics, // `game_screenshots` varchar(255)  '游戏截图',
-        game_desc: res.game.desc, // `game_desc` varchar(255)  '描述',
+        stock_price: cpInfo.stock.hPrice || 0, // 凭证持有均价
+        stock_sum: cpInfo.stock.hSum || 0, // 凭证流通总量
+        hHeight: cpInfo.stock.hHeight || -1, //初次众筹高度
+        hBonus: cpInfo.stock.hBonus || 0, //历史分红
+        hAds: cpInfo.stock.hAds || 0, //历史分成
     };
+
+    //从CP开放接口获取CP详细信息
+    let res = {};
+    try {
+        res = await fetch(`${cpInfo.url}`, { mode: 'cors' });
+        res = await res.json();
+
+        let pics = '';
+        if(typeof res.game.pic_urls == 'string') {
+            res.game.pic_urls = JSON.parse(res.game.pic_urls);
+        }
+        if(Array.isArray(res.game.pic_urls)) {
+            pics = res.game.pic_urls.reduce((sofar,cur)=>{sofar = sofar==''? cur : sofar+','+cur; return sofar;},'');
+        }
+    
+        content.game_version = res.game.version; // `game_version` varchar(16)  '版本号',
+        content.developer = res.game.provider; // `developer` varchar(64)  '开发者',
+        content.create_time = res.game.publish_time; // `create_time` int(8)  '创建时间',
+        content.update_time = res.game.update_time; // `update_time` int(8)  '更新时间',
+        content.store_status = res.game.state; // `store_status` int(1)  '状态',
+        content.game_title = res.game.game_title; // `game_title` varchar(64)  '标题',
+        content.game_ico_uri = res.game.icon_url; // `game_ico_uri` varchar(255)  '图标URI',
+        content.update_desc = res.game.update_content; // `update_desc` varchar(255)  '更新描述',
+        content.game_resource_uri = res.game.large_img_url;  // `game_resource_uri` varchar(255)  '大图',
+        content.small_img_url = res.game.small_img_url;  // `small_img_url` varchar(255)  '小图',
+        content.game_screenshots = pics; // `game_screenshots` varchar(255)  '游戏截图',
+        content.game_desc = res.game.desc; // `game_desc` varchar(255)  '描述',
+    } catch(e) {
+        console.log('CP开放接口访问错误', e.message);
+    }
 
     let cpObj = core.GetObject(TableType.blockgame, cpInfo.cid, IndexType.Foreign);
     if(!!cpObj) { //已经有相同 cid 的记录了, 更新其内容
@@ -88,7 +96,8 @@ async function CreateRecord(cpInfo, core) {
             cpObj.orm[key] = content[key];
         }
     } else { //尚无记录，创建新的条目
-        content.cpid = cpInfo.cid;
+        content.cpid = cpInfo.cid; //唯一索引是不能变更的，只能在创建时指定，更新时不做设置
+
         await core.GetMapping(TableType.blockgame).Create(content);
     }
 
@@ -110,6 +119,8 @@ async function CreateRecord(cpInfo, core) {
             content.cid = cpInfo.cid,                          //CID
             content.height = cpInfo.stock.height,              //发行高度，可据此计算剩余天数
             content.price = cpInfo.stock.price,                //发行价格,单位尘
+
+            //从CP开放接口获得的数据
             content.funding_text = res.crowd.funding_text;
             content.funding_project_text = res.crowd.funding_project_text;
 
