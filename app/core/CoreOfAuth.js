@@ -14,10 +14,9 @@ class CoreOfAuth extends CoreOfBase
     constructor($env){
         super($env);
 
-        //中间件设定
-        this.middlewareSetting = {
-            default: ['parseParams', 'commonHandle', 'afterHandle']
-        };
+        //中间件设定 - 注意不要覆盖父类构造函数已经做出的设定
+        this.middlewareSetting = this.middlewareSetting || {};
+        this.middlewareSetting.default = ['parseParams', 'commonHandle', 'afterHandle'];
         
         this.loadingList = [
         ];
@@ -25,28 +24,6 @@ class CoreOfAuth extends CoreOfBase
 
     async loadModel() {
         super.loadModel();
-
-        facade.config.filelist.mapPath(`app/control/${this.constructor.name}`).map(ctrl=>{
-            let ctrlObj = require(ctrl.path);
-            let token = ctrl.name.split('.')[0];
-            this.control[token] = new ctrlObj(this);
-
-            //读取控制器自带的中间件设置
-            if(!!this.control[token].middleware){
-                this.middlewareSetting[token] = this.control[token].middleware;
-            }
-
-            //读取控制器自带的Url路由设置
-            if(!!this.control[token].router){
-                this.$router[token] = this.control[token].router;
-            }
-        });
-
-        //载入用户自定义Service
-        facade.config.filelist.mapPath(`app/service/${this.constructor.name}`).map(srv=>{
-            let srvObj = require(srv.path);
-            this.service[srv.name.split('.')[0]] = new srvObj(this);
-        });
     }
 
     /**

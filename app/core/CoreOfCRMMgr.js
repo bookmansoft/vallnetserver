@@ -14,17 +14,6 @@ class CoreOfCRMMgr extends CoreOfBase
     constructor($env){
         super($env);
 
-        //中间件设定, 约定和类名称相同的中间件为鉴权中间件
-        this.middlewareSetting = {
-            default: ['parseParams', this.constructor.name, 'commonHandle', 'afterHandle']
-        };
-        
-        //载入用户自定义通用Service
-        facade.config.filelist.mapPackagePath(`${__dirname}/../service/${this.constructor.name}`).map(srv=>{
-            let srvObj = require(srv.path);
-            this.service[srv.name.split('.')[0]] = new srvObj(this);
-        });
-
         this.loadingList = [
             EntityType.User,            //载入用户
             EntityType.Mail,            //载入邮件
@@ -34,28 +23,6 @@ class CoreOfCRMMgr extends CoreOfBase
 
     async loadModel() {
         super.loadModel();
-
-        facade.config.filelist.mapPath(`app/control/${this.constructor.name}`).map(ctrl=>{
-            let ctrlObj = require(ctrl.path);
-            let token = ctrl.name.split('.')[0];
-            this.control[token] = new ctrlObj(this);
-
-            //读取控制器自带的中间件设置
-            if(!!this.control[token].middleware){
-                this.middlewareSetting[token] = this.control[token].middleware;
-            }
-
-            //读取控制器自带的Url路由设置
-            if(!!this.control[token].router){
-                this.$router[token] = this.control[token].router;
-            }
-        });
-
-        //载入用户自定义且当前节点专用的Service
-        facade.config.filelist.mapPath(`app/service/${this.constructor.name}`).map(srv=>{
-            let srvObj = require(srv.path);
-            this.service[srv.name.split('.')[0]] = new srvObj(this);
-        });
     }
 
     /**

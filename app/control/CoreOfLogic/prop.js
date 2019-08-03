@@ -7,6 +7,37 @@ let {TableType} = facade.const;
  */
 class prop extends facade.Control
 {
+    /**
+     * 我的道具
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async PropList(user, params) {
+        let ret = await this.core.service.gamegoldHelper.execute('prop.list', [
+            params.page || 1,
+            user.openid,
+        ]);
+
+        if(ret.code == 0) {
+            for(let i=0; i<ret.result.list.length; i++) {
+                //todo 附加CP信息
+                ret.result.list[i].cp = {};
+                //end
+            }
+        }
+        return {code: 0, data : ret.result};
+    }
+
+    /**
+     * 查询拍卖中的道具列表
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async PropListMarket(user, params) {
+        let ret = await this.core.service.gamegoldHelper.execute('prop.remoteQuery', [[['pst', 2]]]);
+        return {code: ret.code, data: ret.result};
+    }
+
     //道具发送
     async PropOrder(user, params)  {
         let cid = params.cid;
@@ -38,24 +69,6 @@ class prop extends facade.Control
         let ret = await this.core.service.gamegoldHelper.execute('prop.list', [1, user.openid]);
         user.baseMgr.info.setAttr('prop_count', ret.result.count);
         return {code: 0, data: {count: ret.result.count}};
-    }
-
-    //我的道具
-    async PropList(user, params) {
-        let page = params.page;
-        let ret = await this.core.service.gamegoldHelper.execute('prop.list', [
-            page, //游戏编号
-            user.openid
-        ]);
-        let props = Array()
-        for(let i=0; i<ret.result.list.length; i++) {
-            let element = ret.result.list[i]
-            //todo 附加CP信息
-            element.cp = {};
-            //end
-            props.push(element);
-        }
-        return {code: 0, data : {props: props, count: ret.result.count}};
     }
 
     //道具熔铸
@@ -112,7 +125,6 @@ class prop extends facade.Control
     }     
 
     //道具出售
-    //prop.sale hash index fixedPrice [openid]
     async PropSale(user, params) {
         let pid = params.pid;
         let fixedPrice = params.fixedPrice;
@@ -124,14 +136,7 @@ class prop extends facade.Control
         return {code: 0, data: ret.result};
     }
 
-    //道具市场
-    async PropListMarket(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('prop.remoteQuery', [[['pst', 2]]]);
-        return {code: 0, data: ret.result.list};
-    }
-
     //道具购买
-    //prop.buy pid, price, openid
     async PropBuy(user, params) {
         let pid = params.pid;
         let price = params.price;

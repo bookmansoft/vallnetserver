@@ -8,44 +8,8 @@ let facade = require('gamecloud');
 let CoreOfBase = facade.CoreOfBase;
 let { stringify } = require('../util/stringUtil');
 
-//#region 供模拟系统使用的属性配置数组
-let arrayPropName = [
-    'M416自动步枪',
-    '北极50地狱行者',
-    '超级跑车',
-    'T10自行反坦克车',
-];
-let arrayPropDesc = [
-    'M4虽然是很多的玩家喜爱的步枪，但是随着版本的改动现在已经垫底了，配件也是非常的多，没有配件的M4基本就是个烧火棍，但是满配了以后还是可以玩的，EatChicken的最佳武器之一',
-    '北极50拥有极高的准确度，栓动射击大大的保证了武器的精度。狙击枪的盲射是所有武器中最差的，弹道散射大，即便贴身了，也难以击中。',
-    '极其稀有的超级跑车，一旦拥有，便能上天入地。W12四涡轮增压喷气式引擎，配合极度流畅的车身线条，可以直接使角色上天与太阳肩并肩，轻松完成任何任务。',
-    '仅支持金币购买的超值坦克，性价比超高，配合AP弹，轻松击穿同级其他坦克。需要配备驾驶成员4名，支持AP弹和HE弹。',
-];
-let arrayGameTitle = [
-    'Code of War',
-    'Mercs of Boom',
-    '孤胆车神',
-    '坦克大战',
-];
-let arrayCpTye = [
-    'ACT', 'SHT', 'ACT', 'WAR',
-];
-let arrayGameDesc = [
-    '指挥在线枪战 – 纯粹的动作游戏！ Code of War是一款在线枪战游戏，拥有最佳3D图形、真实物理引擎以及海量真实枪支供您选择。 在与来自世界各地的其他玩家对战的动态在线动作游戏内试试您的技能和精通！',
-    'Supply elite soldiers with tons of equipment: hi-tech armor, deadly weapons, implants, and gadgets. ? Upgrade your base and research futuristic technology to gain access to advanced war',
-    '开放沙盒式动作冒险游戏金牌标杆系列之作霸气归来。前往迷人的新奥尔良，打下一片新天地。在这座巨大的城市中，驾驶数百种交通工具、坐拥数量惊人的武器装备，来往自如，无法无天！ 在这里万事俱备，您也可以成为黑道传奇人物！',
-    '终于等到了！全新世界征服战资料片震撼开启！三大阵营重兵集结，打响国战第一炮！万千坦克同屏对决，铸造最热血的坦克手游！集合策略和国战经典玩法于一体的全民坦克游戏，传奇将领，万人国战，占领世界疆土，成就世界霸主梦',
-];
-let arrayProvider = [
-    'Extreme Developers Action & adventure',
-    'GAME INSIGHT UAB Strategy',
-    'Gameloft. Action & adventure',
-    'Strategy、Role playing',
-];
-//#endregion
-
 /**
- * 资源服对应的门面类
+ * 资源节点类
  */
 class CoreOfResource extends CoreOfBase {
     /**
@@ -55,22 +19,11 @@ class CoreOfResource extends CoreOfBase {
     constructor($env){
         super($env);
         this.orderMap = new Map();
-
-        //载入用户自定义通用Service
-        facade.config.filelist.mapPackagePath(`${__dirname}/../service/${this.constructor.name}`).map(srv=>{
-            let srvObj = require(srv.path);
-            this.service[srv.name.split('.')[0]] = new srvObj(this);
-        });
+        this.cpToken = new Map();
     }
 
     async loadModel() {
         super.loadModel();
-
-        //载入用户自定义Service
-        facade.config.filelist.mapPath(`app/service/${this.constructor.name}`).map(srv=>{
-            let srvObj = require(srv.path);
-            this.service[srv.name.split('.')[0]] = new srvObj(this);
-        });
     }
 
     /**
@@ -116,6 +69,63 @@ class CoreOfResource extends CoreOfBase {
 
         //【订单】回调通知
         app.post('/mock/:cp_name/testnet/order/confirm', this.orderConfirm.bind(this));
+    }
+
+    /**
+     * 来自链的回调接口【认证】
+     * @param {*} req 
+     * @param {*} res 
+     */
+    async orderConfirm(req, res) {
+        try {
+            let {data, sig} = req.body;
+
+            if(!this.cpToken[data.cid]) {
+                let retAuth = await this.service.gamegoldHelper.execute('sys.createAuthToken', [data.cid]);
+                if(retAuth.code == 0) {
+                    let {aeskey, aesiv} = this.service.gamegoldHelper.remote.getAes();
+                    this.cpToken[data.cid] = this.service.gamegoldHelper.remote.decrypt(aeskey, aesiv, retAuth.result[0].encry);
+                } else {
+                    res.json({ code: 0 });
+                    return;
+                }
+            }
+    
+            let dstr = stringify(data);
+            let sim = crypto.createHmac('sha256', dstr).update(this.cpToken[data.cid]).digest('hex');
+            //将计算令牌和传递令牌进行比对
+            if (sim != sig) {
+                res.json({ code: 0 });
+                return;
+            }
+
+            //特殊处理：从订单号中获取道具原始编码
+            let prop_oid = 'prop_' + req.params.cp_name + '01';    //oid: prop_cp12270101
+            let arraySN = data.sn.split('-new-');
+            if (arraySN.length > 1) {
+                prop_oid = arraySN[0];
+            } else {
+                //对于没有-new-分隔符的情况下，尝试从内部Map获得订单号
+                let theOrder = this.orderMap.get(data.sn);
+                if (theOrder != null) {
+                    prop_oid = theOrder.oid;
+                    console.log("成功获取订单:", JSON.stringify(theOrder));
+                }
+            }
+            //调用prop.order 订购该道具，即创建道具并发送到指定地址
+            let paramArray = [
+                data.cid,
+                prop_oid,
+                parseInt(data.sum * 0.2),//统一当成等级 3 ，含金量20%处理
+                data.addr
+            ];
+            let ret = await this.service.gamegoldHelper.execute('prop.order', paramArray);
+            res.json({ code: ret.code });
+        }
+        catch (e) {
+            console.error(e);
+            res.end();
+        }
     }
 
     /**
@@ -492,87 +502,42 @@ class CoreOfResource extends CoreOfBase {
         console.log(ret);
         res.json({ code: 0 });
     }
-
-    /**
-     * 来自链的回调接口【认证】
-     * @param {*} req 
-     * @param {*} res 
-     */
-    async orderConfirm(req, res) {
-        try {
-            console.log(new Date());
-            //根据cp_name获取cpid
-            let cpid = '';
-            let token = '';
-            if (req.params.cp_name == 'cp0326') {
-                cpid = '229a4970-4f77-11e9-b118-e3d1ba95e1a5';
-                token = '0300234a91e4fad6b42d9ed7adeeac4d830a79ffe95c4520554e6265f317a154f8';
-            }
-
-            console.log('token: ', token);
-            //解构路由上传来的数据
-            let { data, sig } = req.body;
-            console.log('回调的数据和令牌: ', data, sig);
-            //利用业务数据作为令牌随机量，结合本地缓存的令牌固定量计算令牌
-            const hmac = crypto.createHmac('sha256', stringify(data));
-            let sim = hmac.update(token).digest('hex');
-            console.log('line 36:', sim, ':', sig);
-            //将计算令牌和传递令牌进行比对
-            if (sim != sig) {
-                console.log('令牌和期望值竟然不一样！此消息异常，忽略不处理');
-                res.json({ code: 0 });
-            }
-            console.log("通知的数据：", data);
-            //通知指定订单已经获得了几个确认，-1表示交易被清除
-            // orderManager.confirm(data);
-            // { oper: 'pay',
-            // cid: 'c2162df0-0983-11e9-8a74-7b4599ff25f5',
-            // uid: 'uid',
-            // sn: '123456880000000000000000000000000000',
-            // sum: 110000000,
-            // addr: 'tb1qwlxgutpcgkvf9lhut6wac3s4xrgfl8yxhah93l',
-            // gaddr: null,
-            // hash: 'bdb56ea2912ac21281d76894a916be0dbcd79618840d8581c98858ea44332dd6',
-            // height: 23113,
-            // confirm: 0 } 
-            console.log('发起道具制备等处理，根据收到的数据进一步开发');
-
-            //特殊处理：从订单号中获取道具原始编码
-            let prop_oid = 'prop_' + req.params.cp_name + '01';    //oid: prop_cp12270101
-            let arraySN = data.sn.split('-new-');
-            if (arraySN.length > 1) {
-                prop_oid = arraySN[0];
-            }
-            else {
-                //对于没有-new-分隔符的情况下，尝试从内部Map获得订单号
-                console.log("orderMap集合的大小:", this.orderMap.size);
-                let theOrder = this.orderMap.get(data.sn);
-                if (theOrder != null) {
-                    console.log("成功获取订单:", JSON.stringify(theOrder));
-                    prop_oid = theOrder.oid;
-                }
-            }
-            console.log('prop_oid', prop_oid);
-            //步骤2：调用prop.order 订购该道具，即创建道具并发送到指定地址
-            console.log("prop.order cid oid gold address: 创建道具 厂商编码 道具原始码 含金量 地址：");
-            console.log('此处的默认使用default账户付款，需要更改！');
-            let paramArray = [
-                cpid,
-                prop_oid,
-                parseInt(data.sum * 0.2),//统一当成等级 3 ，含金量20%处理
-                data.addr
-            ];
-            console.log('prop.order 的参数:', paramArray);
-            let ret = await this.service.gamegoldHelper.execute('prop.order', paramArray);
-            console.log('prop.order 的返回值:', ret);
-
-            res.json({ code: 0 });
-        }
-        catch (e) {
-            console.error(e);
-            res.end();
-        }
-    }
 }
+
+//#region 供模拟系统使用的属性配置数组
+let arrayPropName = [
+    'M416自动步枪',
+    '北极50地狱行者',
+    '超级跑车',
+    'T10自行反坦克车',
+];
+let arrayPropDesc = [
+    'M4虽然是很多的玩家喜爱的步枪，但是随着版本的改动现在已经垫底了，配件也是非常的多，没有配件的M4基本就是个烧火棍，但是满配了以后还是可以玩的，EatChicken的最佳武器之一',
+    '北极50拥有极高的准确度，栓动射击大大的保证了武器的精度。狙击枪的盲射是所有武器中最差的，弹道散射大，即便贴身了，也难以击中。',
+    '极其稀有的超级跑车，一旦拥有，便能上天入地。W12四涡轮增压喷气式引擎，配合极度流畅的车身线条，可以直接使角色上天与太阳肩并肩，轻松完成任何任务。',
+    '仅支持金币购买的超值坦克，性价比超高，配合AP弹，轻松击穿同级其他坦克。需要配备驾驶成员4名，支持AP弹和HE弹。',
+];
+let arrayGameTitle = [
+    'Code of War',
+    'Mercs of Boom',
+    '孤胆车神',
+    '坦克大战',
+];
+let arrayCpTye = [
+    'ACT', 'SHT', 'ACT', 'WAR',
+];
+let arrayGameDesc = [
+    '指挥在线枪战 – 纯粹的动作游戏！ Code of War是一款在线枪战游戏，拥有最佳3D图形、真实物理引擎以及海量真实枪支供您选择。 在与来自世界各地的其他玩家对战的动态在线动作游戏内试试您的技能和精通！',
+    'Supply elite soldiers with tons of equipment: hi-tech armor, deadly weapons, implants, and gadgets. ? Upgrade your base and research futuristic technology to gain access to advanced war',
+    '开放沙盒式动作冒险游戏金牌标杆系列之作霸气归来。前往迷人的新奥尔良，打下一片新天地。在这座巨大的城市中，驾驶数百种交通工具、坐拥数量惊人的武器装备，来往自如，无法无天！ 在这里万事俱备，您也可以成为黑道传奇人物！',
+    '终于等到了！全新世界征服战资料片震撼开启！三大阵营重兵集结，打响国战第一炮！万千坦克同屏对决，铸造最热血的坦克手游！集合策略和国战经典玩法于一体的全民坦克游戏，传奇将领，万人国战，占领世界疆土，成就世界霸主梦',
+];
+let arrayProvider = [
+    'Extreme Developers Action & adventure',
+    'GAME INSIGHT UAB Strategy',
+    'Gameloft. Action & adventure',
+    'Strategy、Role playing',
+];
+//#endregion
 
 exports = module.exports = CoreOfResource;
