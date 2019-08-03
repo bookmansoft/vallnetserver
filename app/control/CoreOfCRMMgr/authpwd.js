@@ -51,7 +51,7 @@ class authpwd extends facade.Control
 
     /**
      * 验证密码函数
-     * @description 该函数并非外部控制器方法，而是由鉴权中间件(authCRMMgr)自动调用的内部接口，提供基于用户名/密码校验模式的身份校验
+     * @description 该函数并非外部控制器方法，而是由鉴权中间件(authHandle)自动调用的内部接口，提供基于用户名/密码校验模式的身份校验
      * @param {Object} params
      */
     check(params) {
@@ -75,7 +75,7 @@ class authpwd extends facade.Control
     
     /**
      * 为新增用户提供默认的用户档案
-     * @description 该函数并非外部控制器方法，而是由鉴权中间件(authCRMMgr)自动调用的内部接口
+     * @description 该函数并非外部控制器方法，而是由鉴权中间件(authHandle)自动调用的内部接口
      * @param {*} params 
      */
     async getProfile(params) {

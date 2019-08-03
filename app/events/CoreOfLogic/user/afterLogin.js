@@ -15,6 +15,9 @@ async function handle(data){
     if(!!rt && rt.code == 0) {
         data.user.baseMgr.info.setAttr('confirmed', rt.result.confirmed);
         data.user.baseMgr.info.setAttr('unconfirmed', rt.result.unconfirmed);
+    } else {
+        data.user.baseMgr.info.setAttr('confirmed', 0);
+        data.user.baseMgr.info.setAttr('unconfirmed', 0);
     }
 }
 

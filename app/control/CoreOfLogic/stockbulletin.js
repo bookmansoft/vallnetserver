@@ -6,31 +6,6 @@ let { ReturnCode, NotifyType, TableType, TableField } = facade.const
  * Updated on 2018-11-19.
  */
 class stockbulletin extends facade.Control {
-    get router() {
-        return [
-            ['/stockbulletin/delete', 'delete'], //指定发放签名功能的路由、函数名
-            ['/stockbulletin/update', 'update'],
-            ['/stockbulletin/save', 'save'],
-            ['/stockbulletin/get', 'get'],
-            ['/stockbulletin/page','page'],
-        ];
-    }
-    async delete(data) {
-        return this.DeleteRecord(null, data);
-    }
-    async update(data) {
-        return this.UpdateRecord(null, data);
-    }
-    async save(data) {
-        return this.CreateRecord(null, data);
-    }
-    async get(data) {
-        return this.Retrieve(null, data);
-    }
-    async page(data) {
-        return this.ListRecord(null, data);
-    }
-
     /**
      * 中间件设置
      */

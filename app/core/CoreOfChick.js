@@ -9,15 +9,6 @@ let CoreOfLogic = facade.CoreOfLogic
  */
 class CoreOfChick extends CoreOfLogic
 {
-    constructor($env){
-        super($env);
-
-        //中间件设定
-        this.middlewareSetting = {
-            default: ['parseParams', 'authChick', 'commonHandle', 'afterHandle']
-        };
-    }
-
     /**
      * 映射自己的服务器类型数组，提供给核心类的类工厂使用
      * @returns {Array}

@@ -97,7 +97,7 @@ class cpstockbase extends facade.Control {
             user.domainId,
         ]);
 
-        return {code: ret.code}
+        return {code: ret.code, msg: !!ret.error ? ret.error.message : ''};
     }
 
     /**

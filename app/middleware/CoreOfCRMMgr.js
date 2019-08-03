@@ -1,21 +1,23 @@
 let facade = require('gamecloud')
 let {MiddlewareParam, ReturnCode, EntityType, IndexType, UserStatus} = facade.const
 let CommonFunc = facade.util
-let extendObj = facade.tools.extend
+let {extendObj} = require('../util/util')
 
 /**
  * 用户认证鉴权中间件
  * @param {MiddlewareParam} sofar
+ * 
+ * @description  注意: 该中间件覆盖了系统同名中间件
  */
 async function handle(sofar) {
     try {
         //根据访问令牌(oemInfo.token)进行鉴权, 直接获得用于业务操作的用户对象
         //令牌在签发后两个小时内有效，如果失效，将重新进行身份认证
-        if(!sofar.socket.user){
+        if(!sofar.socket.user) {
             sofar.socket.user = await sofar.facade.GetObject(EntityType.User, sofar.msg.oemInfo.token, IndexType.Token);
         }
         
-        if (!sofar.socket.user || sofar.msg.func == "login" || sofar.msg.func == "1000"/*如果是login则强制重新验证*/) {
+        if (!sofar.socket.user) {
             //针对各类第三方平台，执行一些必要的验证流程：
             let unionid = '';
             let domainType = sofar.msg.oemInfo.domain.split('.')[0];
@@ -44,6 +46,12 @@ async function handle(sofar) {
             
             let usr = sofar.facade.GetObject(EntityType.User, sofar.msg.domainId, IndexType.Domain);
             if (!!usr) {//老用户登录
+                if(usr.baseMgr.info.getAttr('state') == 0) { //检测是否被禁用
+                    sofar.fn({ code: ReturnCode.authThirdPartFailed });
+                    sofar.recy = false;
+                    return;
+                }
+
                 usr.socket = sofar.socket; //更新通讯句柄
                 usr.userip = sofar.msg.userip;
                 sofar.socket.user = usr;
@@ -53,53 +61,53 @@ async function handle(sofar) {
                     //禁止多点登录
                     sofar.facade.notifyEvent('socket.userKick', {sid:usr.socket});
                 }
-            }
-            else if(!!unionid) {//新玩家注册
+            } else if(!!unionid) {//新玩家注册
                 let profile = await sofar.facade.control[domainType].getProfile(sofar.msg.oemInfo);
-                usr = await sofar.facade.GetMapping(EntityType.User).Create(profile.nickname, sofar.msg.oemInfo.domain, unionid);
+                if(!profile.openid || !profile.openkey) { //用户名和用户密码是必填项
+                    sofar.fn({ code: ReturnCode.authThirdPartFailed });
+                    sofar.recy = false;
+                    return;
+                }
+
+                usr = await sofar.facade.GetMapping(EntityType.User).Create(
+                    profile.nickname, 
+                    sofar.msg.oemInfo.domain, 
+                    unionid, 
+                    true,/*指示跳过负载均衡相关的预注册检测*/
+                );
                 if (!!usr) {
                     usr.socket = sofar.socket; //更新通讯句柄
                     usr.userip = sofar.msg.userip;
                     sofar.socket.user = usr;
 
                     Object.keys(profile).map(key=>{
-                        usr.baseMgr.info.SetRecord(key, profile[key]);
+                        if(key == 'openkey') {
+                            usr.SetAttr('password', profile[key]);
+                        } else if(key == 'openid' || key == 'unionid' || key == 'uuid') { //这些属性不必存储
+                        } else {
+                            usr.baseMgr.info.setAttr(key, profile[key]);
+                        }
                     });
-                    sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
-                    sofar.facade.notifyEvent('user.afterRegister', {user:usr});
 
-                    //在用户创建成功后，再绑定手机号码
-                    if(!!sofar.msg.oemInfo.address && !!sofar.msg.oemInfo.addrType) {
-                        sofar.facade.notifyEvent('user.bind', {user: usr, params:{addrType: sofar.msg.oemInfo.addrType, address: sofar.msg.oemInfo.address}});
-                    }
+                    sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
+                    sofar.facade.service.mail.send({
+                        addr: usr.openid, 
+                        subject:'Congratulations', 
+                        content:'You have registered successfully', 
+                        html:'<b>Congratulations!</b>You have registered successfully, Visit <a href="www.vallnet.cn">Vallnet</a> for more info.'
+                    });
+
+                    usr.Save();
                 }
             }
 
             if (!!usr) {
-                usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌
-                usr.time = CommonFunc.now();                //记录标识令牌有效期的时间戳
-
-                if(!!usr.baseMgr.info.GetRecord('phone')) {
-                    sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.GetRecord('phone'), usr.id], IndexType.Phone);
-                }
-
-                //检测并生成一个专用的钱包地址
-                if(!usr.baseMgr.info.GetRecord('block_addr')) {
-                    try {
-                        let rt = await sofar.facade.service.gamegoldHelper.execute('token.user', ['first-acc-01', usr.domainId, null, usr.domainId]);
-                        usr.baseMgr.info.SetRecord('block_addr', !!rt && rt.code == 0 ? rt.result.data.addr : '');
-                    } catch(e) {
-                        console.log('create block_addr', e.message);
-                    }
-                }
-
-                sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token);   //添加一定有效期的令牌类型的反向索引
-                if(!!usr.baseMgr.info.GetRecord('phone')) {
-                    sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.GetRecord('phone'), usr.id], IndexType.Phone);
-                }
-
-                //触发并实时执行"登录后"事件, 注意将事件触发置于此可以：1. 用户持密码或两节点登录时触发 2. 用户持 token 登录时不触发，避免了频繁触发带来的性能问题
-                await sofar.facade.notifyEvent('wallet.afterLogin', {user:usr, objData:sofar.msg});
+                usr.sign = sofar.msg.oemInfo.token;     //记录登录令牌
+                usr.time = CommonFunc.now();           //记录标识令牌有效期的时间戳
+                sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id], IndexType.Token);  //添加一定有效期的令牌类型的反向索引
+        
+                //同步完成事件的调用
+                await sofar.facade.notifyEvent('user.afterLogin', {user:usr, msg:sofar.msg}); //发送"登录后"事件. 注意使用 token 登录不会触发该事件
             }
         }
 
@@ -109,8 +117,6 @@ async function handle(sofar) {
         }
         else {
             console.log(`鉴权成功: ${sofar.socket.user.domainId}`);
-            //分发用户上行报文的消息，可以借此执行一些刷新操作
-            sofar.facade.notifyEvent('user.packetIn', {user: sofar.socket.user});
         }
     }
     catch (e) {

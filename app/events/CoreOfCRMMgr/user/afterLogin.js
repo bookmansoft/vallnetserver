@@ -16,16 +16,6 @@ async function handle(data){
 
         data.curTime = new Date();//记录当前时间，为后续流程提供统一的时间标尺
     
-        //记录用户登录行为
-        if(data.user.getActionMgr().Execute(ActionExecuteType.AE_Login, 1, true)){
-            //记录累计登录
-            this.notifyEvent('user.task', {user:data.user, data:{type:em_Condition_Type.totalLogin, value:1}});
-            if(Date.parse(data.curTime)/1000 - Date.parse(d2)/1000 < 3600*48){
-                //记录连续登录
-                this.notifyEvent('user.task', {user:data.user, data:{type:em_Condition_Type.loginContinue, value:1}});
-            }
-        }
-
         data.user.baseMgr.info.SetStatus(UserStatus.online, false);
 
         //检测操作员CID是否已经正确设置
@@ -78,7 +68,7 @@ async function handle(data){
                         items[cid].address = items[cid].current.address; 
                         items[cid].account = account;
                         
-                        this.notifyEvent('crm.cp.register', {msg:items[cid]});
+                        this.notifyEvent('cp.register', {msg:items[cid]});
                     }
                 }
             }

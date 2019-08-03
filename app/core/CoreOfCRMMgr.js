@@ -14,9 +14,9 @@ class CoreOfCRMMgr extends CoreOfBase
     constructor($env){
         super($env);
 
-        //中间件设定
+        //中间件设定, 约定和类名称相同的中间件为鉴权中间件
         this.middlewareSetting = {
-            default: ['parseParams', 'authCRMMgr', 'commonHandle', 'afterHandle']
+            default: ['parseParams', this.constructor.name, 'commonHandle', 'afterHandle']
         };
         
         //载入用户自定义通用Service
@@ -97,7 +97,7 @@ class CoreOfCRMMgr extends CoreOfBase
 
         //todo 定期刷新凭证信息, 形成历史快照
         // this.autoTaskMgr.addCommonMonitor(() => {
-        //     this.notifyEvent('crm.stock.refresh', {msg:{}});
+        //     this.notifyEvent('stock.refresh', {msg:{}});
         //     return false;
         // }, 60000);
     }

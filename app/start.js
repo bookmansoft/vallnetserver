@@ -109,13 +109,13 @@ if(env.constructor == String) {
 
         //订阅 cp/register 消息，登记处理句柄
         core.service.monitor.remote.watch(msg => {
-            core.notifyEvent('crm.cp.register', {msg:msg});
+            core.notifyEvent('cp.register', {msg:msg});
         }, 'cp/register').execute('subscribe', 'cp/register');
 
         //直接登记消息处理句柄，因为 tx.client/balance.account.client/order.pay 这样的消息是默认发送的，不需要订阅
         core.service.monitor.remote.watch(msg => {
             //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/user/balanceChange.js
-            core.notifyEvent('crm.balance.change', {data:msg});
+            core.notifyEvent('balance.change', {data:msg});
         }, 'balance.account.client');
         core.service.monitor.remote.watch(msg => {
         }, 'tx.client');
@@ -184,7 +184,7 @@ if(env.constructor == String) {
                     item.address = item.current.address; 
 
                     //完成CP信息的入库和更新，同时也包括对凭证和道具信息的入库
-                    await core.notifyEvent('wallet.cp.register', {msg: item});
+                    await core.notifyEvent('cp.register', {msg: item});
                 }
             } else {
                 console.log('failed to connect to vallnet.');
@@ -198,11 +198,11 @@ if(env.constructor == String) {
 
         //订阅CP注册消息，登记处理句柄
         core.service.monitor.remote.watch(msg => {
-            core.notifyEvent('wallet.cp.register', {msg:msg});
+            core.notifyEvent('cp.register', {msg:msg});
         }, 'cp/register').execute('subscribe', 'cp/register');
         //订阅CP众筹消息，登记处理句柄
         core.service.monitor.remote.watch(msg => {
-            core.notifyEvent('wallet.cp.register', {msg:msg});
+            core.notifyEvent('cp.register', {msg:msg});
         }, 'cp/stock').execute('subscribe', 'cp/stock');
 
         //订阅消息并登记消息处理句柄
@@ -218,7 +218,7 @@ if(env.constructor == String) {
 
         core.service.monitor.remote.watch(msg => {
             //收到通告，抛出内部事件, 处理流程定义于 app/events/wallet/receiveNotify.js
-            core.notifyEvent('wallet.receiveNotify', {data:msg});
+            core.notifyEvent('user.receiveNotify', {data:msg});
         }, 'notify/receive').execute('subscribe', 'notify/receive');
 
         core.service.monitor.remote.watch(msg => {

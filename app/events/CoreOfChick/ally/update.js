@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let allyAutoSave = require('../../util/autoExec/allyAutoSave');
+let allyAutoSave = require('../../../util/autoExec/allyAutoSave');
 
 /**
  * Created by admin on 2017-05-26.
