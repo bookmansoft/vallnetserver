@@ -217,11 +217,11 @@ CREATE TABLE IF NOT EXISTS `our_block_games` (
   `game_screenshots` varchar(255) DEFAULT NULL COMMENT '游戏截图',
   `game_desc` varchar(255) DEFAULT '' COMMENT '描述',
   PRIMARY KEY (`id`) USING BTREE,
-  KEY `sort` (`sort`) USING BTREE,
-  KEY `game_title` (`game_title`) USING BTREE,
-  KEY `category_id` (`category_id`) USING BTREE,
-  KEY `provider_id` (`provider_id`) USING BTREE,
-  KEY `cpid` (`cpid`) USING BTREE
+	UNIQUE INDEX `cpid` (`cpid`) USING BTREE,
+  INDEX `sort` (`sort`) USING BTREE,
+  INDEX `game_title` (`game_title`) USING BTREE,
+  INDEX `category_id` (`category_id`) USING BTREE,
+  INDEX `provider_id` (`provider_id`) USING BTREE,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 数据导出被取消选择。
@@ -423,9 +423,13 @@ CREATE TABLE IF NOT EXISTS `our_stock_bulletin` (
   `stock_close` int(11) DEFAULT NULL COMMENT '收盘价',
   `stock_high` int(11) DEFAULT NULL COMMENT '最高价',
   `stock_low` int(11) DEFAULT NULL COMMENT '最低价',
-  `total_num` bigint(20) DEFAULT NULL COMMENT '总成交数量（凭证数量）',
+  `total_num` bigint(20) DEFAULT NULL COMMENT '总成交数量',
   `total_amount` bigint(20) DEFAULT NULL COMMENT '总成交金额（游戏金）',
-  PRIMARY KEY (`id`)
+  `sum` bigint(20) DEFAULT NULL COMMENT '总流通量',
+  `price` bigint(20) DEFAULT NULL COMMENT ' 持有成本（游戏金）',
+  `bonus` bigint(20) DEFAULT NULL COMMENT '总分成（游戏金）',
+	PRIMARY KEY (`id`),
+	UNIQUE INDEX `uniq` (`cid`, `stock_day`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 数据导出被取消选择。

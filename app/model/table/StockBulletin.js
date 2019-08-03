@@ -16,6 +16,9 @@ let StockBulletin = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, 
         stock_low: Sequelize.INTEGER,
         total_num: Sequelize.INTEGER,
         total_amount: Sequelize.INTEGER,
+        sum: Sequelize.INTEGER,
+        price: Sequelize.INTEGER,
+        bonus: Sequelize.INTEGER,
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段

@@ -149,7 +149,7 @@ let RedPacket = ['id', 'act_name', 'act_sequence', 'total_gamegold', 'each_gameg
 
 let manysend = ['id', 'total_amount', 'actual_amount', 'total_num', 'send_uid', 'send_nickname', 'send_headimg', 'wishing', 'modify_date']
 
-let StockBulletin = ['id', 'cid', 'cp_name', 'cp_text', 'stock_day', 'stock_open', 'stock_close', 'stock_high', 'stock_low', 'total_num', 'total_amount']
+let StockBulletin = ['id', 'cid', 'stock_day', 'stock_open', 'stock_close', 'stock_high', 'stock_low', 'total_num', 'total_amount', 'sum', 'bonus', 'price']
 
 let Mail = ['id', 'src', 'dst', 'content', 'time', 'state']
 
@@ -169,6 +169,7 @@ function record(obj, attrs) {
             ret[attr] = obj[attr];
         }
     }
+    return ret;
 }
 
 exports = module.exports = {

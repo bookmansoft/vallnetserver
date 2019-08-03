@@ -1,181 +1,86 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType, TableType, TableField } = facade.const
+let { IndexType, ReturnCode, TableType, TableField } = facade.const
 
 /**
- * 游戏的控制器
+ * 凭证看板控制器
  * Updated on 2018-11-19.
  */
 class stockbulletin extends facade.Control {
     /**
-     * 中间件设置
-     */
-    get middleware() {
-        return ['parseParams', 'commonHandle'];
-    }
-    /**
-     * 删除记录
+     * 查询当日统计数据
      * @param {*} user 
-     * @param {*} objData 
+     * @param {*} params
      */
-    async DeleteRecord(user, objData) {
-        try {
-            this.core.GetMapping(TableType.StockBulletin).Delete(objData.id, true);
-            return { code: ReturnCode.Success, data: null };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, msg: "stockbulletin.DeleteRecord方法出错" };
-        }
-    }
-    /**
-     * 修改数据库记录
-     * @param {*} user 
-     * @param {*} objData 
-     */
-    async UpdateRecord(user, objData) {
-        try {
-            console.log("46:更新数据",objData.id);
-            let stockbulletin = this.core.GetObject(TableType.StockBulletin, parseInt(objData.id));
-            if (!!stockbulletin) {
-                stockbulletin.setAttr('cid', objData.cid);
-                stockbulletin.setAttr('cp_name', objData.cp_name);
-                stockbulletin.setAttr('cp_text', objData.cp_text);
-                stockbulletin.setAttr('stock_day', objData.stock_day);
-                stockbulletin.setAttr('stock_open', objData.stock_open);
-                stockbulletin.setAttr('stock_close', objData.stock_close);
-                stockbulletin.setAttr('stock_high', objData.stock_high);
-                stockbulletin.setAttr('stock_low', objData.stock_low);
-                stockbulletin.setAttr('total_num', objData.total_num);
-                stockbulletin.setAttr('total_amount', objData.total_amount);
-
-                stockbulletin.Save();
-                return { code: ReturnCode.Success };
-            }
-            return { code: -2, msg:"找不到记录" };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, msg: "cp.UpdateRecord方法出错" };
-        }
-    }
-
-    /**
-     * 增加数据库记录。此方法被从页面入口的Create方法所调用
-     * 众筹申请写数据库的部分
-     * @param {*} user 
-     * @param {*} objData 
-     */
-    async CreateRecord(user, objData) {
-        try {
-            let stockbulletin = await this.core.GetMapping(TableType.StockBulletin).Create(
-                objData.cid,
-                objData.cp_name,
-                objData.cp_text,
-                objData.stock_day,
-                objData.stock_open,
-                objData.stock_close,
-                objData.stock_high,
-                objData.stock_low,
-                objData.total_num,
-                objData.total_amount,
-            );
-            let ret = { code: ReturnCode.Success, msg: "stockbulletin.CreateRecord成功" };
-            console.log(ret);
-            return ret;
-        } catch (error) {
-            console.log(error);
-            return { code: -1, msg: "stockbulletin.CreateRecord方法出错" };
+    async Retrieve(user, params) {
+        if (params == null) {
+            params = {};
         }
 
-    }
-
-    /**
-     * 查看单个记录
-     * @param {*} user 
-     * @param {*} objData 
-     */
-    async Retrieve(user, objData) {
-        console.log(158,objData.id);
-        try {
-            let stockbulletin = this.core.GetObject(TableType.StockBulletin, parseInt(objData.id));
-            if (!!stockbulletin) {
-
-                return {
-                    code: ReturnCode.Success,
-                    data: {
-                        id: parseInt(objData.id),
-                        cid: stockbulletin.getAttr('cid'),
-                        cp_name: stockbulletin.getAttr('cp_name'),
-                        cp_text: stockbulletin.getAttr('cp_text'),
-                        stock_day: stockbulletin.getAttr('stock_day'),
-                        stock_open: stockbulletin.getAttr('stock_open'),
-                        stock_close: stockbulletin.getAttr('stock_close'),
-                        stock_high: stockbulletin.getAttr('stock_high'),
-                        stock_low: stockbulletin.getAttr('stock_low'),
-                        total_num: stockbulletin.getAttr('total_num'),
-                        total_amount: stockbulletin.getAttr('total_amount'),
-                    },
-
-                };
-            }
-            else {
-                return { code: -2, msg: "该stockbulletin不存在" };
-            }
-        } catch (error) {
-            console.log(error);
-            return { code: -1, msg: "stockbulletin.Retrieve方法出错" };
+        if (!params.stock_day) {
+            var date = new Date();
+            params.stock_day = `${date.getFullYear()}-${(date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1)}-${(date.getDate() < 10 ? '0' + date.getDate() : date.getDate())}`;
         }
 
-    }
+        let record = this.core.GetObject(TableType.StockBulletin, `${params.cid}-${params.stock_day}`, IndexType.Domain);
+        if(!!record) {
+            record = TableField.record(record.orm, TableField.StockBulletin);
+        } else {
+            record = {
+                cid: params.cid,
+                stock_day: params.stock_day,
+                sum: 0,                             //流通总量
+                price: 0,                           //平均成本
+                bonus: 0,                           //分成总量
+                total_num: 0,                       //总成交数量
+                total_amount: 0,                    //总成交金额
+            };
 
-    /**
-     * 从数据库中获取列表
-     * 客户端直接调用此方法
-     * @param {*} user 
-     * @param {*} objData 查询及翻页参数，等整体调通以后再细化。
-     */
-    ListRecord(user, objData) {
-        try {
-            if (objData == null) {
-                objData = {};
-            }
-            let currentPage = objData.currentPage;
-            // console.log(Number.isNaN(parseInt(currentPage)));
-            if (Number.isNaN(parseInt(currentPage))) {
-                currentPage = 1;
-            }
-            //构造查询条件
-            let paramArray = [];
-            if (!!objData.stock_day) {
-                paramArray.push(['stock_day', objData.stock_day]);
-            }
-            if (!!objData.cid) {
-                paramArray.push(['cid', objData.cid]);
-            }
-            //得到 Mapping 对象
-            let muster = this.core.GetMapping(TableType.StockBulletin)
-                .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
-                .where(paramArray)
-                .orderby('id', 'desc') //根据id字段倒叙排列
-                .paginate(10, currentPage);
-            let $data = { items: {}, list: [], pagination: {} };
-            //扩展分页器对象
-            $data.pagination = { "total": muster.pageNum * 10, "pageSize": 10, "current": muster.pageCur };
-            $data.total = muster.pageNum;
-            $data.page = muster.pageCur;
+            //交易类型 GLOBAL.RecordType
+            // {
+            //     1: '发行凭证', sum 发行数量 addr 凭证发行者(交易发起者) to 没有意义   price 发行价格
+            //     2: '购买凭证', sum 买入数量 addr 凭证买入者(交易发起者) to 凭证拥有者 price 无意义
+            //     3: '转让凭证', sum 转让数量 addr 凭证拥有者(交易发起者) to 凭证接收者 price 无意义
+            //     4: '凭证分成', sum 没有意义 addr 分成受益者(分成诉求方) to 没有意义   price 分成数量
+            //     5: '媒体分成', sum 没有意义 addr 分成受益者(分成诉求方) to 没有意义   price 分成数量
+            //     6: '拍卖凭证', sum 拍卖数量 addr 凭证拍卖者(交易发起者) to 无意义     price 拍卖价格
+            //     7: '竞买凭证', sum 买入数量 addr 凭证买入者(交易发起者) to 凭证拥有者 price 买入价格
+            // }            
+            let ret = await this.core.service.gamegoldHelper.execute('stock.record.wallet', [0, params.cid, Math.max(0, this.core.chain.height - 144)]);
+            if(ret.code == 0) {
+                let qry = new facade.Collection(ret.result.list.reduce((sofar, cur) => {
+                    sofar.push([cur.sn, cur]);
+                    return sofar;
+                },[]));
 
-            let $idx = (muster.pageCur - 1) * muster.pageSize;
-            for (let $value of muster.records(TableField.StockBulletin)) {
-                $data.items[$idx] = $value;
-                $value['rank'] = $idx++;
+                let result = qry.where([['type', 'include', [2,7]]]).orderby('seq', 'asc').records();
+                if(result.length > 0) {
+                    record.stock_open = result[0].price; //开盘价
+                    record.stock_close = result[result.length-1].price; //收盘价
+
+                    for(let it of result) {
+                        record.total_num += it.sum;                        
+                        record.total_amount += it.sum * it.price;
+                        if(!record.stock_high || record.stock_high < it.price) {
+                            record.stock_high = it.price;
+                        }
+                        if(!record.stock_low || record.stock_low > it.price) {
+                            record.stock_low = it.price;
+                        }
+                    }
+                }
+            }
+    
+            let cpObj = this.core.GetObject(TableType.blockgame, params.cid, IndexType.Foreign);
+            if(!!cpObj) { 
+                record.sum = cpObj.orm.stock_sum;
+                record.price = cpObj.orm.stock_price;
+                record.bonus = cpObj.orm.hBonus;
             }
 
-            //转化并设置数组属性
-            $data.list = Object.keys($data.items).map(key => $data.items[key]);
-
-            return {code: 0, data: $data};
-        } catch (error) {
-            console.log(error);
+            this.core.GetMapping(TableType.StockBulletin).Create(record);
         }
-        return {code: 0, data: { items: {}, list: [], pagination: {} }};
+
+        return {code: 0, data: record};
     }
 }
 

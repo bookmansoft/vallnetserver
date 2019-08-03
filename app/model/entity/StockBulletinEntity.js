@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
+let {TableType, IndexType} = facade.const;
 let BaseEntity = facade.BaseEntity
 let StockBulletin = facade.models.StockBulletin
 
@@ -15,26 +15,25 @@ class StockBulletinEntity extends BaseEntity
             etype: TableType.StockBulletin,          //表类型
             model: StockBulletin,                    //表映射类
             entity: StockBulletinEntity,             //ORM映射类
+            group: 'cid',                            //分组键
         };
+    }
+
+    IndexOf(type){
+        switch(type){
+            case IndexType.Domain:
+                return `${this.orm.cid}-${this.orm.stock_day}`;
+            default:
+                return this.orm.id;
+        }
     }
 
     /**
      * 创建记录时的钩子函数
      */
-    static async onCreate(db, cid,cp_name,cp_text,stock_day,stock_open,stock_close,stock_high,stock_low,total_num,total_amount) {
+    static async onCreate(db, item) {
         try{
-            let it = await StockBulletin(db).create({
-                'cid': cid,
-                'cp_name': cp_name,
-                'cp_text': cp_text,
-                'stock_day': stock_day,
-                'stock_open': stock_open,
-                'stock_close': stock_close,
-                'stock_high': stock_high,
-                'stock_low': stock_low,
-                'total_num': total_num,
-                'total_amount': total_amount,
-            });
+            let it = await StockBulletin(db).create(item);
             await it.save();
     
             return it;
