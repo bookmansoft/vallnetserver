@@ -37,8 +37,45 @@ class prop extends facade.Control
      * @param {*} params 
      */
     async PropListMarket(user, params) {
+        // pst: enum propStatus {
+        //     Sale: 2,        //拍卖中    - 发起了拍卖交易，等待竞价结束
+        //     Borrow: 3,      //已借出    - 道具已经借出
+        //     Delete: 4,      //已删除    - 道具已经彻底失效、不可恢复
+        //     Ready: 9,       //已确认    - 道具处于确认状态
+        // }
         let ret = await this.core.service.gamegoldHelper.execute('prop.remoteQuery', [[['pst', 2]]]);
+        if(ret.code == 0) {
+            for(let prop of ret.result.list) {
+                let cp = this.core.GetObject(TableType.blockgame, prop.cid, IndexType.Domain);
+                if(cp) {
+                    prop.cpurl = cp.orm.cpurl;
+                    prop.cp_name = cp.orm.cp_name;
+                }
+            }
+        }
+
         return {code: ret.code, data: ret.result};
+    }
+
+    /**
+     * 道具购买
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async PropBuy(user, params) {
+        let pid = params.pid;
+        let price = params.price;
+        let ret = await this.core.service.gamegoldHelper.execute('prop.buy', [
+            pid,
+            price,
+            user.domainId
+        ]);     
+
+        if(!!ret && ret.code == 0) {
+            return {code: 0, data: ret.result}; 
+        } else {
+            return {code: -1, msg: 'prop.buy:ok'};
+        }
     }
 
     //道具发送
@@ -69,7 +106,7 @@ class prop extends facade.Control
 
     //道具数量
     async PropCount(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('prop.list', [1, user.openid]);
+        let ret = await this.core.service.gamegoldHelper.execute('prop.list', [1, user.domainId]);
         user.baseMgr.info.setAttr('prop_count', ret.result.count);
         return {code: 0, data: {count: ret.result.count}};
     }
@@ -89,40 +126,44 @@ class prop extends facade.Control
      * @param {*} params 
      */
     async PropDonate(user, params) {
-        let txid = this.core.service.gamegoldHelper.revHex(params.txid);
-        let pid = params.pid;
-        let index = params.index;
        let ret = await this.core.service.gamegoldHelper.execute('prop.donate', [
-            pid,
-            user.openid
+            params.pid,
+            user.domainId,
         ]);
 
         if(!!!ret || ret.code != 0) {
-            return {code: -1, msg: 'fail'};
+            return {code: ret.code, msg: 'fail'};
         } else {
             return {code: 0, data: ret.result};
         }
     }
 
-    //道具接收
-    //prop.receive raw [openid]
+    /**
+     * 道具接收
+     * @param {*} user 
+     * @param {*} params 
+     */
     async PropReceive(user, params) {
         let raw = params.raw;
         let ret = await this.core.service.gamegoldHelper.execute('prop.receive', [
             raw, 
-            user.openid,
+            user.domainId,
         ]);    
         return {code: 0, msg: 'prop.receive:ok', data: ret.result};
     }  
 
-    //道具转移
+    /**
+     * 道具转移
+     * @param {*} user 
+     * @param {*} params 
+     */
     async PropSend(user, params) {
         let addr = params.addr;
         let pid = params.pid;
         let ret = await this.core.service.gamegoldHelper.execute('prop.send', [
             addr, 
             pid,
-            user.openid
+            user.domainId
         ]); 
         return {code: 0, data: ret.result};
     }     
@@ -134,26 +175,9 @@ class prop extends facade.Control
         let ret = await this.core.service.gamegoldHelper.execute('prop.sale', [
             pid,
             fixedPrice,
-            user.openid
+            user.domainId
         ]);
         return {code: 0, data: ret.result};
-    }
-
-    //道具购买
-    async PropBuy(user, params) {
-        let pid = params.pid;
-        let price = params.price;
-        let ret = await this.core.service.gamegoldHelper.execute('prop.buy', [
-            pid,
-            price,
-            user.openid
-        ]);     
-
-        if(!!ret && ret.code == 0) {
-            return {code: 0, data: ret.result}; 
-        } else {
-            return {code: -1, msg: 'prop.buy:ok'};
-        }
     }
 }
 

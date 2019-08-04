@@ -14,7 +14,7 @@ class profile extends facade.Control
      */
     async UserProp(user, params)  {
         let page = params.page;
-        let ret = await remote.execute('prop.list', [page, user.openid]);
+        let ret = await remote.execute('prop.list', [page, user.domainId]);
         user.baseMgr.info.setAttr('prop_count', ret.result.count);
         return {code: 0, data: ret.result.list};
     }

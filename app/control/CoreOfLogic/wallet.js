@@ -35,7 +35,7 @@ class wallet extends facade.Control
         let ret = await this.core.service.gamegoldHelper.execute('tx.send', [
             addr,
             amount,
-            user.openid,
+            user.domainId,
         ]); 
         return {code: 0, data: ret.result};
     }
@@ -47,7 +47,7 @@ class wallet extends facade.Control
      * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
      */
     async TxLogs(user, params) {                      
-        let ret = await this.core.service.gamegoldHelper.execute('tx.list', [user.openid,]);    
+        let ret = await this.core.service.gamegoldHelper.execute('tx.list', [user.domainId]);    
         assert(ret.result[0].account);
         return {code: 0, data: {list: ret.result}};
     }

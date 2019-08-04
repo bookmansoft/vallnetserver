@@ -224,7 +224,7 @@ class manysend extends facade.Control {
             let retSend = await this.core.service.gamegoldHelper.execute('tx.send', [
                 ret.result.data.addr,
                 objData.total_amount,
-                user.openid,
+                user.domainId,
             ]); 
             // 接收表
             for (var i=0;i<receive_amount.length;i++) {

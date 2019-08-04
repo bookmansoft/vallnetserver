@@ -240,7 +240,7 @@ class manyreceive extends facade.Control {
                             receiveData.setAttr("receive_headimg",user.baseMgr.info.getAttr("avatar_uri"));
                             receiveData.setAttr("modify_date",new Date().getTime()/1000);
                             receiveData.Save();
-                            let retAddr=await this.core.service.gamegoldHelper.execute('address.receive', [user.openid]);
+                            let retAddr=await this.core.service.gamegoldHelper.execute('address.receive', [user.domainId]);
                             let retSend = await this.core.service.gamegoldHelper.execute('tx.send', [
                                 retAddr.result,
                                 parseInt(receiveData.getAttr("receive_amount")),
