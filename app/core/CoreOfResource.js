@@ -360,12 +360,10 @@ class CoreOfResource extends CoreOfBase {
             "props_rank": 3,
             "props_status": 1,
             "state": 1,
-            "props_extra": [
-                {
-                    "attr1": "属性1",
-                    "attr2": "属性2",
-                }
-            ]
+            "props_extra": {
+                "attr1": "属性1",
+                "attr2": "属性2",
+            },
         };
 
         return prop;

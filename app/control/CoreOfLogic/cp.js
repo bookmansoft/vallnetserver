@@ -69,7 +69,7 @@ class cp extends facade.Control
     async getProps(user, objData) {
         let proplist = [];
 
-        let cpObj = this.core.GetObject(TableType.blockgame, objData.cid, IndexType.Foreign);
+        let cpObj = this.core.GetObject(TableType.blockgame, objData.cid, IndexType.Domain);
         if(!!cpObj) { 
             let res = await fetch(`${cpObj.orm.cpurl}`, { mode: 'cors' });
             res = await res.json();

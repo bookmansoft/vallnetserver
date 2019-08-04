@@ -44,7 +44,7 @@ class cpstockbase extends facade.Control {
             $data.page = ret.result.cur;
             $data.height = this.core.chain.height; //添加当前主网高度，作为时间基点使用
             for(let item of ret.result.list) {
-                let cpObj = this.core.GetObject(TableType.blockgame, item.cid, IndexType.Foreign);
+                let cpObj = this.core.GetObject(TableType.blockgame, item.cid, IndexType.Domain);
                 if(!!cpObj) { 
                     $data.list.push({
                         src: cpObj.orm.game_ico_uri,
@@ -118,7 +118,7 @@ class cpstockbase extends facade.Control {
             $data.total = ret.result.page;
             $data.page = ret.result.cur;
             for(let item of ret.result.list) {
-                let cpObj = this.core.GetObject(TableType.blockgame, item.cid, IndexType.Foreign);
+                let cpObj = this.core.GetObject(TableType.blockgame, item.cid, IndexType.Domain);
                 if(!!cpObj) { 
                     $data.list.push({
                         provider: cpObj.orm.developer,
@@ -161,7 +161,7 @@ class cpstockbase extends facade.Control {
         for (let $value of muster.records(TableField.StockBase)) {
             $value['rank'] = $idx++;
             //查询CP基本信息，补充显示内容
-            let cpObj = this.core.GetObject(TableType.blockgame, $value.cid, IndexType.Foreign);
+            let cpObj = this.core.GetObject(TableType.blockgame, $value.cid, IndexType.Domain);
             if(!!cpObj) { 
                 $value.cp_name = cpObj.orm.cp_name;
                 $value.large_img_url = cpObj.orm.game_resource_uri;

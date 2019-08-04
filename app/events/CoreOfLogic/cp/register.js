@@ -90,7 +90,7 @@ async function CreateRecord(cpInfo, core) {
         console.log('CP开放接口访问错误', e.message);
     }
 
-    let cpObj = core.GetObject(TableType.blockgame, cpInfo.cid, IndexType.Foreign);
+    let cpObj = core.GetObject(TableType.blockgame, cpInfo.cid, IndexType.Domain);
     if(!!cpObj) { //已经有相同 cid 的记录了, 更新其内容
         for(let key of Object.keys(content)) {
             cpObj.orm[key] = content[key];

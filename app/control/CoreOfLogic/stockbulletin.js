@@ -70,7 +70,7 @@ class stockbulletin extends facade.Control {
                 }
             }
     
-            let cpObj = this.core.GetObject(TableType.blockgame, params.cid, IndexType.Foreign);
+            let cpObj = this.core.GetObject(TableType.blockgame, params.cid, IndexType.Domain);
             if(!!cpObj) { 
                 record.sum = cpObj.orm.stock_sum;
                 record.price = cpObj.orm.stock_price;

@@ -21,7 +21,7 @@ class blockGameEntity extends BaseEntity
 
     IndexOf(type){
         switch(type){
-            case IndexType.Foreign:
+            case IndexType.Domain:
                 return this.orm.cpid;
             default:
                 return this.orm.id;

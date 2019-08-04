@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType} = facade.const;
+let {TableType, IndexType} = facade.const;
 
 /**
  * 节点控制器--道具
@@ -15,17 +15,20 @@ class prop extends facade.Control
     async PropList(user, params) {
         let ret = await this.core.service.gamegoldHelper.execute('prop.list', [
             params.page || 1,
-            user.openid,
+            user.domainId,
         ]);
 
         if(ret.code == 0) {
-            for(let i=0; i<ret.result.list.length; i++) {
-                //todo 附加CP信息
-                ret.result.list[i].cp = {};
-                //end
+            for(let prop of ret.result.list) {
+                let cp = this.core.GetObject(TableType.blockgame, prop.cid, IndexType.Domain);
+                if(cp) {
+                    prop.cpurl = cp.orm.cpurl;
+                    prop.cp_name = cp.orm.cp_name;
+                }
             }
         }
-        return {code: 0, data : ret.result};
+
+        return {code: ret.code, data : ret.result};
     }
 
     /**
