@@ -149,7 +149,6 @@ class manysend extends facade.Control {
 
             let $data = { items: {}, list: [], pagination: {} };
             //扩展分页器对象
-            $data.pagination = { "total": muster.pageNum * 10, "pageSize": 10, "current": muster.pageCur };
             $data.total = muster.pageNum;
             $data.page = muster.pageCur;
 

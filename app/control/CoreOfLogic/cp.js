@@ -18,8 +18,8 @@ class cp extends facade.Control
 
         let $data = { 
             list: [], 
-            page: muster.pageNum,
-            cur: muster.pageCur,
+            total: muster.pageNum,
+            page: muster.pageCur,
         };
 
         for (let $value of muster.records(TableField.blockgame)) {
