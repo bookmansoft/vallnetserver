@@ -1,10 +1,9 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let userredpackact = facade.models.userredpackact
+let sharedredpack = facade.models.sharedredpack
 
-//用户微信账号(openid)
-class userRedPackActEntity extends BaseEntity
+class SharedRedPackEntity extends BaseEntity
 {
     //region 集合功能
 
@@ -13,9 +12,9 @@ class userRedPackActEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.userredpackact,                     //表类型
-            model: userredpackact,               //表映射类
-            entity: userRedPackActEntity,        //ORM映射类
+            etype: TableType.sharedredpack,     //表类型
+            model: sharedredpack,               //表映射类
+            entity: SharedRedPackEntity,        //ORM映射类
         };
     }
 
@@ -23,13 +22,20 @@ class userRedPackActEntity extends BaseEntity
      * 创建记录时的钩子函数
      */
     static async onCreate(db, item) {
-        try{
-            let it = await userredpackact(db).create(item);
+        try {
+            let it = await sharedredpack(db).create({
+                'total_amount': item.total_amount,
+                'actual_amount': item.actual_amount,
+                'total_num': item.total_num,
+                'send_uid': item.send_uid,
+                'wishing': item.wishing,
+                'modify_date': item.modify_date,
+                'state_id': item.state_id
+            });
             await it.save();
     
             return it;
-        }
-        catch(e){
+        } catch(e) {
             console.error(e);
         }
         return null;
@@ -40,7 +46,7 @@ class userRedPackActEntity extends BaseEntity
      * @param {*} record 
      */
     static onMapping(record, core) {
-        return new userRedPackActEntity(record, core);
+        return new SharedRedPackEntity(record, core);
     }
 
     /**
@@ -50,7 +56,7 @@ class userRedPackActEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await userredpackact(db).findAll();
+            let ret = await sharedredpack(db).findAll();
             ret.map(it=>{
                 callback(it);
             });
@@ -62,4 +68,4 @@ class userRedPackActEntity extends BaseEntity
     //endregion
 }
 
-exports = module.exports = userRedPackActEntity;
+exports = module.exports = SharedRedPackEntity;

@@ -357,17 +357,12 @@ CREATE TABLE IF NOT EXISTS `our_block_user_wallet` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 wechat-wallet.our_many_red_receive 结构
-CREATE TABLE IF NOT EXISTS `our_many_red_receive` (
+-- 导出  表 wechat-wallet.our_shared_redpack_receive 结构
+CREATE TABLE IF NOT EXISTS `our_shared_redpack_receive` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '接收id',
   `send_id` int(11) NOT NULL COMMENT '对应的红包组id，即发送时留存的记录',
   `receive_amount` int(11) NOT NULL COMMENT '接收金额',
-  `send_uid` int(11) NOT NULL COMMENT '发送人uid，冗余用于查询',
-  `send_nickname` varchar(255) NOT NULL COMMENT '发送人昵称，冗余用于查询',
-  `send_headimg` varchar(255) NOT NULL COMMENT '头像',
   `receive_uid` int(11) DEFAULT NULL COMMENT '接收人uid',
-  `receive_nickname` varchar(255) DEFAULT NULL COMMENT '接收人昵称',
-  `receive_headimg` varchar(255) DEFAULT NULL COMMENT '接收人头像',
   `modify_date` int(11) DEFAULT NULL COMMENT '发送时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -375,15 +370,13 @@ CREATE TABLE IF NOT EXISTS `our_many_red_receive` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.our_many_red_send 结构
-CREATE TABLE IF NOT EXISTS `our_many_red_send` (
+-- 导出  表 wechat-wallet.our_shared_redpack 结构
+CREATE TABLE IF NOT EXISTS `our_shared_redpack` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '红包id',
   `total_amount` int(11) NOT NULL DEFAULT '0' COMMENT '红包总金额',
   `actual_amount` int(11) NOT NULL DEFAULT '0' COMMENT '已领取的实际金额',
   `total_num` int(3) NOT NULL DEFAULT '1' COMMENT '红包总个数',
   `send_uid` int(11) NOT NULL COMMENT '发送人uid',
-  `send_nickname` varchar(255) NOT NULL COMMENT '发送人昵称',
-  `send_headimg` varchar(255) NOT NULL COMMENT '头像',
   `wishing` varchar(255) NOT NULL COMMENT '祝福语',
   `modify_date` int(11) DEFAULT NULL COMMENT '发送时间',
   `state_id` int(1) NOT NULL DEFAULT '1' COMMENT '1-正常 2-已抢完 3-已过期',

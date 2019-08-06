@@ -1,10 +1,9 @@
 let facade = require('gamecloud');
 let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
-let userredpackact = facade.models.userredpackact
+let sharedredpack_receive = facade.models.sharedredpack_receive
 
-//用户微信账号(openid)
-class userRedPackActEntity extends BaseEntity
+class SharedRedPackReceiveEntity extends BaseEntity
 {
     //region 集合功能
 
@@ -13,20 +12,21 @@ class userRedPackActEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.userredpackact,                     //表类型
-            model: userredpackact,               //表映射类
-            entity: userRedPackActEntity,        //ORM映射类
+            etype: TableType.sharedredpack_receive,     //表类型
+            model: sharedredpack_receive,               //表映射类
+            entity: SharedRedPackReceiveEntity,         //ORM映射类
         };
     }
 
-    /**
-     * 创建记录时的钩子函数
-     */
     static async onCreate(db, item) {
         try{
-            let it = await userredpackact(db).create(item);
+            let it = await sharedredpack_receive(db).create({
+                'send_id': item.send_id,
+                'receive_amount': item.receive_amount,
+                'receive_uid': item.receive_uid,
+                'modify_date': item.modify_date,
+            });
             await it.save();
-    
             return it;
         }
         catch(e){
@@ -40,7 +40,7 @@ class userRedPackActEntity extends BaseEntity
      * @param {*} record 
      */
     static onMapping(record, core) {
-        return new userRedPackActEntity(record, core);
+        return new SharedRedPackReceiveEntity(record, core);
     }
 
     /**
@@ -50,7 +50,7 @@ class userRedPackActEntity extends BaseEntity
      */
     static async onLoad(db, callback){
         try {
-            let ret = await userredpackact(db).findAll();
+            let ret = await sharedredpack_receive(db).findAll();
             ret.map(it=>{
                 callback(it);
             });
@@ -62,4 +62,4 @@ class userRedPackActEntity extends BaseEntity
     //endregion
 }
 
-exports = module.exports = userRedPackActEntity;
+exports = module.exports = SharedRedPackReceiveEntity;

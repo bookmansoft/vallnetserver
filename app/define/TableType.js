@@ -8,8 +8,8 @@ const TableType ={
     'userredpack': 121,
     'userredpackact': 122,
     'blockgamecomment': 123,
-    'manysend':131,
-    'manyreceive':132,
+    'sharedredpack':131,
+    'sharedredpack_receive':132,
     'stock': 134,
     'Cp': 202,
     'Prop': 203,
@@ -147,13 +147,12 @@ let CpStock = ['id', 'cid', 'cp_name', 'cp_text', 'stock_day', 'stock_open', 'st
 
 let RedPacket = ['id', 'act_name', 'act_sequence', 'total_gamegold', 'each_gamegold', 'total_num', 'each_num', 'act_desc', 'act_start_at']
 
-let manysend = ['id', 'total_amount', 'actual_amount', 'total_num', 'send_uid', 'send_nickname', 'send_headimg', 'wishing', 'modify_date']
-
 let StockBulletin = ['id', 'cid', 'stock_day', 'stock_open', 'stock_close', 'stock_high', 'stock_low', 'total_num', 'total_amount', 'sum', 'bonus', 'price']
 
 let Mail = ['id', 'src', 'dst', 'content', 'time', 'state']
 
-let manyreceive = ['id', 'send_id', 'receive_amount', 'send_uid', 'send_nickname', 'send_headimg', 'receive_uid', 'receive_nickname', 'receive_headimg', 'modify_date']
+let sharedredpack = ['id', 'total_amount', 'actual_amount', 'total_num', 'send_uid', 'wishing', 'modify_date', 'state_id']
+let sharedredpack_receive = ['id', 'receive_amount', 'receive_uid', 'modify_date']
 
 let BuyLog = ['id', 'domainid', 'trade_no', 'third_no', 'product', 'product_desc', 'total_fee', 'fee_type', 'result', 'createdAt', 'updatedAt'];
 
@@ -165,6 +164,8 @@ let BuyLog = ['id', 'domainid', 'trade_no', 'third_no', 'product', 'product_desc
 function record(obj, attrs) {
     let ret = {};
     for(let attr of attrs) {
+        obj = !!obj.orm ? obj.orm : obj; //兼容ORM对象
+
         if(!!obj[attr]) {
             ret[attr] = obj[attr];
         }
@@ -177,7 +178,7 @@ exports = module.exports = {
     TableField: {
         blockgame, StockBulletin, Mail,
         userwallet, redpack, redpackact, StockBase, Prize, Cp, CpFunding, CpStock, RedPacket,
-        blockNotify, Prop, manysend, manyreceive, BuyLog,
+        blockNotify, Prop, sharedredpack, sharedredpack_receive, BuyLog,
         userredpack, userredpackact, blockgamecomment, stock, record,
     },
 }

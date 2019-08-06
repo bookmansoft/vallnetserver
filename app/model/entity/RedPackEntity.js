@@ -60,14 +60,6 @@ class RedPackEntity extends BaseEntity
     }
 
     //endregion
-
-    /**
-     * 记录更新函数，可省略而直接使用基类方法(调用 this.Save() 直接写数据库)
-     */
-    onUpdate() {
-        //抛出更新事件，可以将短时间内的频繁更新合并为单条数据库写
-        //this.core.notifyEvent('blockuser.update', {test:this})
-    }
 }
 
 exports = module.exports = RedPackEntity;

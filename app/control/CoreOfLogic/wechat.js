@@ -48,6 +48,11 @@ class wechat extends facade.Control {
         return { code: 0, data: token };
     }
 
+    /**
+     * 发送红包 - 企业为个人发送红包？ todo 待确认
+     * @param {*} user 
+     * @param {*} params 
+     */
     async SendRecPack(user, params) {
         let openid = user.openid;
 
