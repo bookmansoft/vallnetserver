@@ -18,8 +18,7 @@ class CoreOfAuth extends CoreOfBase
         this.middlewareSetting = this.middlewareSetting || {};
         this.middlewareSetting.default = ['parseParams', 'commonHandle', 'afterHandle'];
         
-        this.loadingList = [
-        ];
+        this.loadingList = [];
     }
 
     async loadModel() {

@@ -13,6 +13,7 @@ let sharedredpack_receive = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, d
         receive_amount: Sequelize.INTEGER,
         receive_uid: Sequelize.INTEGER,
         modify_date: Sequelize.INTEGER,
+        hash: Sequelize.STRING,
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段

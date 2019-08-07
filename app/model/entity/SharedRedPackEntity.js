@@ -25,7 +25,6 @@ class SharedRedPackEntity extends BaseEntity
         try {
             let it = await sharedredpack(db).create({
                 'total_amount': item.total_amount,
-                'actual_amount': item.actual_amount,
                 'total_num': item.total_num,
                 'send_uid': item.send_uid,
                 'wishing': item.wishing,

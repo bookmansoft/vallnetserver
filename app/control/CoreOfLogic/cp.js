@@ -14,7 +14,37 @@ class cp extends facade.Control
      * @param {*} params
      */
     async List(user, params) {
-        let muster = this.core.GetMapping(TableType.blockgame).groupOf().paginate(10, params.page || 1);
+        let query = [];
+        if(!!params.category) {
+            query.push(['category_id', params.category]);
+        }
+        let muster = this.core.GetMapping(TableType.blockgame).groupOf().where(query).paginate(10, params.page || 1);
+
+        let $data = { 
+            list: [], 
+            total: muster.pageNum,
+            page: muster.pageCur,
+        };
+
+        for (let $value of muster.records(TableField.blockgame)) {
+            $data.list.push($value);
+        }
+
+        return {code: 0, data: $data};
+    }
+
+    /**
+     * 查询我的游戏列表
+     * todo 功能待实现，建议在辅助对象中添加玩过的游戏ID列表，然后查询 blockgame 获得详细信息
+     * @param {*} user 
+     * @param {*} params
+     */
+    async Mine(user, params) {
+        let query = [];
+        if(!!params.category) {
+            query.push(['category_id', params.category]);
+        }
+        let muster = this.core.GetMapping(TableType.blockgame).groupOf().where(query).paginate(10, params.page || 1);
 
         let $data = { 
             list: [], 

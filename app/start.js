@@ -47,7 +47,11 @@ if(env.constructor == String) {
             env:{
                 serverType: "Index",
                 serverId: 1
-            }
+            },
+            loading: [
+                TableType.sharedredpack, 
+                TableType.sharedredpack_receive, 
+            ],
         });
     }
 

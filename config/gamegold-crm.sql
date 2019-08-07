@@ -10,12 +10,11 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- 导出 gamegold-mgr 的数据库结构
-CREATE DATABASE IF NOT EXISTS `gamegold-mgr` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `gamegold-mgr`;
+-- 导出 gamegold-crm 的数据库结构
+CREATE DATABASE IF NOT EXISTS `gamegold-crm` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `gamegold-crm`;
 
-
--- 导出  表 gamegold-mgr.activity 结构
+-- 导出  表 gamegold-crm.activity 结构
 CREATE TABLE IF NOT EXISTS `activity` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `lastTime` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -30,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `activity` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.ally_news 结构
+-- 导出  表 gamegold-crm.ally_news 结构
 CREATE TABLE IF NOT EXISTS `ally_news` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `aid` int(11) DEFAULT '0',
@@ -43,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `ally_news` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.ally_object 结构
+-- 导出  表 gamegold-crm.ally_object 结构
 CREATE TABLE IF NOT EXISTS `ally_object` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `experience` int(11) DEFAULT '0',
@@ -62,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `ally_object` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.buylogs 结构
+-- 导出  表 gamegold-crm.buylogs 结构
 CREATE TABLE IF NOT EXISTS `buylogs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `content` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -86,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `buylogs` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.cp 结构
+-- 导出  表 gamegold-crm.cp 结构
 CREATE TABLE IF NOT EXISTS `cp` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '数字索引',
   `cp_id` varchar(500) CHARACTER SET utf8mb4 NOT NULL COMMENT '游戏再链上的id',
@@ -111,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `cp` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.cp_funding 结构
+-- 导出  表 gamegold-crm.cp_funding 结构
 CREATE TABLE IF NOT EXISTS `cp_funding` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `stock_num` int(11) NOT NULL COMMENT '凭证数量',
@@ -136,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `cp_funding` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.cp_stock 结构
+-- 导出  表 gamegold-crm.cp_stock 结构
 CREATE TABLE IF NOT EXISTS `cp_stock` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cid` varchar(255) DEFAULT NULL COMMENT 'cp在区块链上的唯一识别码',
@@ -154,7 +153,7 @@ CREATE TABLE IF NOT EXISTS `cp_stock` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 gamegold-mgr.cp_type 结构
+-- 导出  表 gamegold-crm.cp_type 结构
 CREATE TABLE IF NOT EXISTS `cp_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `cp_type_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -164,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `cp_type` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 gamegold-mgr.login 结构
+-- 导出  表 gamegold-crm.login 结构
 CREATE TABLE IF NOT EXISTS `login` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) DEFAULT NULL,
@@ -176,7 +175,7 @@ CREATE TABLE IF NOT EXISTS `login` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.mails 结构
+-- 导出  表 gamegold-crm.mails 结构
 CREATE TABLE IF NOT EXISTS `mails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `src` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -190,7 +189,7 @@ CREATE TABLE IF NOT EXISTS `mails` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.migrations 结构
+-- 导出  表 gamegold-crm.migrations 结构
 CREATE TABLE IF NOT EXISTS `migrations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -201,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.m_player 结构
+-- 导出  表 gamegold-crm.m_player 结构
 CREATE TABLE IF NOT EXISTS `m_player` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'official',
@@ -243,7 +242,7 @@ CREATE TABLE IF NOT EXISTS `m_player` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.operator 结构
+-- 导出  表 gamegold-crm.operator 结构
 CREATE TABLE IF NOT EXISTS `operator` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '操作员流水',
   `login_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '登录名',
@@ -258,7 +257,7 @@ CREATE TABLE IF NOT EXISTS `operator` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 gamegold-mgr.our_block_redpack 结构
+-- 导出  表 gamegold-crm.our_block_redpack 结构
 CREATE TABLE IF NOT EXISTS `our_block_redpack` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `act_name` varchar(32) DEFAULT NULL COMMENT '红包名称',
@@ -280,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `our_block_redpack` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.our_block_redpack_act 结构
+-- 导出  表 gamegold-crm.our_block_redpack_act 结构
 CREATE TABLE IF NOT EXISTS `our_block_redpack_act` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `act_name` varchar(32) DEFAULT NULL COMMENT '活动名称',
@@ -299,7 +298,7 @@ CREATE TABLE IF NOT EXISTS `our_block_redpack_act` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.our_block_user_redpack 结构
+-- 导出  表 gamegold-crm.our_block_user_redpack 结构
 CREATE TABLE IF NOT EXISTS `our_block_user_redpack` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `uid` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '用户编号',
@@ -316,7 +315,7 @@ CREATE TABLE IF NOT EXISTS `our_block_user_redpack` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.our_block_user_redpack_act 结构
+-- 导出  表 gamegold-crm.our_block_user_redpack_act 结构
 CREATE TABLE IF NOT EXISTS `our_block_user_redpack_act` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `uid` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '用户编号',
@@ -333,7 +332,7 @@ CREATE TABLE IF NOT EXISTS `our_block_user_redpack_act` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.prop 结构
+-- 导出  表 gamegold-crm.prop 结构
 CREATE TABLE IF NOT EXISTS `prop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `props_id` varchar(200) DEFAULT '0' COMMENT '游戏道具返回的原始id',
@@ -356,7 +355,7 @@ CREATE TABLE IF NOT EXISTS `prop` (
 -- 数据导出被取消选择。
 
 
--- 导出  过程 gamegold-mgr.survive 结构
+-- 导出  过程 gamegold-crm.survive 结构
 DELIMITER //
 CREATE DEFINER=`gamecloud`@`%` PROCEDURE `survive`(IN `time` VARCHAR(50), OUT `r1` FLOAT, OUT `r3` FLOAT, OUT `r7` FLOAT)
 BEGIN 
@@ -382,7 +381,7 @@ END//
 DELIMITER ;
 
 
--- 导出  表 gamegold-mgr.system 结构
+-- 导出  表 gamegold-crm.system 结构
 CREATE TABLE IF NOT EXISTS `system` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `activity` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -393,7 +392,7 @@ CREATE TABLE IF NOT EXISTS `system` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-mgr.test 结构
+-- 导出  表 gamegold-crm.test 结构
 CREATE TABLE IF NOT EXISTS `test` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `item` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,

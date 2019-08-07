@@ -10,12 +10,12 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- 导出 wechat-wallet 的数据库结构
-CREATE DATABASE IF NOT EXISTS `wechat-wallet` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
-USE `wechat-wallet`;
+-- 导出 gamegold-wallet 的数据库结构
+CREATE DATABASE IF NOT EXISTS `gamegold-wallet` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+USE `gamegold-wallet`;
 
 
--- 导出  表 wechat-wallet.activity 结构
+-- 导出  表 gamegold-wallet.activity 结构
 CREATE TABLE IF NOT EXISTS `activity` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `lastTime` varchar(50) DEFAULT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `activity` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.ally_news 结构
+-- 导出  表 gamegold-wallet.ally_news 结构
 CREATE TABLE IF NOT EXISTS `ally_news` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `aid` int(11) DEFAULT '0',
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `ally_news` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.ally_object 结构
+-- 导出  表 gamegold-wallet.ally_object 结构
 CREATE TABLE IF NOT EXISTS `ally_object` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `experience` int(11) DEFAULT '0',
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `ally_object` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.buylogs 结构
+-- 导出  表 gamegold-wallet.buylogs 结构
 CREATE TABLE IF NOT EXISTS `buylogs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `content` varchar(255) DEFAULT NULL,
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `buylogs` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.login 结构
+-- 导出  表 gamegold-wallet.login 结构
 CREATE TABLE IF NOT EXISTS `login` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) DEFAULT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `login` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.mails 结构
+-- 导出  表 gamegold-wallet.mails 结构
 CREATE TABLE IF NOT EXISTS `mails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `src` varchar(100) DEFAULT NULL,
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `mails` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.migrations 结构
+-- 导出  表 gamegold-wallet.migrations 结构
 CREATE TABLE IF NOT EXISTS `migrations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.m_player 结构
+-- 导出  表 gamegold-wallet.m_player 结构
 CREATE TABLE IF NOT EXISTS `m_player` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain` varchar(50) DEFAULT 'official',
@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `m_player` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 wechat-wallet.our_block_cp_user 结构
+-- 导出  表 gamegold-wallet.our_block_cp_user 结构
 CREATE TABLE IF NOT EXISTS `our_block_cp_user` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户编号',
   `openid` varchar(128) DEFAULT NULL COMMENT 'openid',
@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS `our_block_cp_user` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.our_block_games 结构
+-- 导出  表 gamegold-wallet.our_block_games 结构
 CREATE TABLE IF NOT EXISTS `our_block_games` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `sort` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
@@ -226,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `our_block_games` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 wechat-wallet.our_block_game_comment 结构
+-- 导出  表 gamegold-wallet.our_block_game_comment 结构
 CREATE TABLE IF NOT EXISTS `our_block_game_comment` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `cid` varchar(64) NOT NULL DEFAULT '' COMMENT 'cid',
@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `our_block_game_comment` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 wechat-wallet.our_block_notify 结构
+-- 导出  表 gamegold-wallet.our_block_notify 结构
 CREATE TABLE IF NOT EXISTS `our_block_notify` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `sn` varchar(128) NOT NULL COMMENT '通知编号',
@@ -264,7 +264,7 @@ CREATE TABLE IF NOT EXISTS `our_block_notify` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 wechat-wallet.our_block_redpack 结构
+-- 导出  表 gamegold-wallet.our_block_redpack 结构
 CREATE TABLE IF NOT EXISTS `our_block_redpack` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `uid` int(8) unsigned DEFAULT '0' COMMENT '用户编号',
@@ -289,7 +289,7 @@ CREATE TABLE IF NOT EXISTS `our_block_redpack` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.our_block_redpack_act 结构
+-- 导出  表 gamegold-wallet.our_block_redpack_act 结构
 CREATE TABLE IF NOT EXISTS `our_block_redpack_act` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `act_name` varchar(32) DEFAULT NULL COMMENT '活动名称',
@@ -309,7 +309,7 @@ CREATE TABLE IF NOT EXISTS `our_block_redpack_act` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 wechat-wallet.our_block_user_redpack 结构
+-- 导出  表 gamegold-wallet.our_block_user_redpack 结构
 CREATE TABLE IF NOT EXISTS `our_block_user_redpack` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `uid` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '用户编号',
@@ -329,7 +329,7 @@ CREATE TABLE IF NOT EXISTS `our_block_user_redpack` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.our_block_user_redpack_act 结构
+-- 导出  表 gamegold-wallet.our_block_user_redpack_act 结构
 CREATE TABLE IF NOT EXISTS `our_block_user_redpack_act` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `uid` int(4) unsigned NOT NULL DEFAULT '0' COMMENT '用户编号',
@@ -345,7 +345,7 @@ CREATE TABLE IF NOT EXISTS `our_block_user_redpack_act` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 wechat-wallet.our_block_user_wallet 结构
+-- 导出  表 gamegold-wallet.our_block_user_wallet 结构
 CREATE TABLE IF NOT EXISTS `our_block_user_wallet` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自动编号',
   `cid` varchar(64) NOT NULL COMMENT 'cid',
@@ -357,36 +357,37 @@ CREATE TABLE IF NOT EXISTS `our_block_user_wallet` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 wechat-wallet.our_shared_redpack_receive 结构
+-- 导出  表 gamegold-wallet.our_shared_redpack_receive 结构
 CREATE TABLE IF NOT EXISTS `our_shared_redpack_receive` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '接收id',
   `send_id` int(11) NOT NULL COMMENT '对应的红包组id，即发送时留存的记录',
   `receive_amount` int(11) NOT NULL COMMENT '接收金额',
   `receive_uid` int(11) DEFAULT NULL COMMENT '接收人uid',
   `modify_date` int(11) DEFAULT NULL COMMENT '发送时间',
+  `hash` char(64) NULL COMMENT '交易哈希',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.our_shared_redpack 结构
+-- 导出  表 gamegold-wallet.our_shared_redpack 结构
 CREATE TABLE IF NOT EXISTS `our_shared_redpack` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '红包id',
   `total_amount` int(11) NOT NULL DEFAULT '0' COMMENT '红包总金额',
-  `actual_amount` int(11) NOT NULL DEFAULT '0' COMMENT '已领取的实际金额',
   `total_num` int(3) NOT NULL DEFAULT '1' COMMENT '红包总个数',
   `send_uid` int(11) NOT NULL COMMENT '发送人uid',
   `wishing` varchar(255) NOT NULL COMMENT '祝福语',
   `modify_date` int(11) DEFAULT NULL COMMENT '发送时间',
   `state_id` int(1) NOT NULL DEFAULT '1' COMMENT '1-正常 2-已抢完 3-已过期',
+  `hash` char(64) NULL COMMENT '交易哈希',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.our_stock_base 结构
+-- 导出  表 gamegold-wallet.our_stock_base 结构
 CREATE TABLE IF NOT EXISTS `our_stock_base` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cid` varchar(50) NOT NULL COMMENT '链数据库cid',
@@ -405,7 +406,7 @@ CREATE TABLE IF NOT EXISTS `our_stock_base` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.our_stock_bulletin 结构
+-- 导出  表 gamegold-wallet.our_stock_bulletin 结构
 CREATE TABLE IF NOT EXISTS `our_stock_bulletin` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cid` varchar(255) DEFAULT NULL COMMENT 'cp在区块链上的唯一识别码',
@@ -428,7 +429,7 @@ CREATE TABLE IF NOT EXISTS `our_stock_bulletin` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.system 结构
+-- 导出  表 gamegold-wallet.system 结构
 CREATE TABLE IF NOT EXISTS `system` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `activity` varchar(500) DEFAULT NULL,
@@ -439,7 +440,7 @@ CREATE TABLE IF NOT EXISTS `system` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 wechat-wallet.test 结构
+-- 导出  表 gamegold-wallet.test 结构
 CREATE TABLE IF NOT EXISTS `test` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
   `item` varchar(255) DEFAULT NULL,

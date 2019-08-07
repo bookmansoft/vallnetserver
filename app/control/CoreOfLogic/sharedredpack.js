@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let { ReturnCode, NotifyType, TableType, TableField } = facade.const;
+let { EntityType, ReturnCode, TableType, TableField } = facade.const;
 
 /**
  * 游戏的控制器
@@ -38,6 +38,11 @@ class sharedredpack extends facade.Control {
         let $idx = (muster.pageCur - 1) * muster.pageSize;
         $idx = $idx + 5;
         for (let $value of muster.records(TableField.sharedredpack)) {
+            let sender = this.core.GetObject(EntityType.User, $value.send_uid);
+            if(!!sender) {
+                $value.send_headimg = sender.baseMgr.info.getAttr("avatar_uri");
+                $value.send_nickname = sender.name;
+            }
             $value['rank'] = $idx++;
             $data.list.push($value);
         }
@@ -52,7 +57,12 @@ class sharedredpack extends facade.Control {
      */
     Retrieve(user, objData) {
         let rps = TableField.record(this.core.GetObject(TableType.sharedredpack, parseInt(objData.id)), TableField.sharedredpack);
-        if (!!rps && rps.send_uid == user.id) { //只允许查看自己的记录，这是为了避免被过度爬取数据
+        if (!!rps) {
+            let sender = this.core.GetObject(EntityType.User, rps.send_uid);
+            if(!!sender) {
+                rps.send_headimg = sender.baseMgr.info.getAttr("avatar_uri");
+                rps.send_nickname = sender.name;
+            }
             return {
                 code: ReturnCode.Success,
                 data: rps,
@@ -73,7 +83,6 @@ class sharedredpack extends facade.Control {
         //生成红包记录
         let srp = await this.core.GetMapping(TableType.sharedredpack).Create({
             total_amount: objData.total_amount,
-            actual_amount: objData.total_amount,
             total_num: objData.total_num,
             send_uid: user.id,
             wishing: objData.wishing,
@@ -81,12 +90,12 @@ class sharedredpack extends facade.Control {
             state_id: 0, //表示业务尚未成功 - todo 对不成功的记录，要增加事后追溯的能力
         });
 
-        if (srp == null) {
+        if (!srp) {
             return { code: -1 }
         }
 
         //发送到指定账号
-        let ret = await this.core.service.gamegoldHelper.execute('token.user', ['rpsAgent', srp.ormAttr("id"), null,'rpsAgent']);
+        let ret = await this.core.service.gamegoldHelper.execute('token.user', ['rpsAgent', srp.orm.id, null,'rpsAgent']);
         if(ret.code == 0) {
             ret = await this.core.service.gamegoldHelper.execute('tx.send', [
                 ret.result.data.addr,
@@ -97,8 +106,8 @@ class sharedredpack extends facade.Control {
             if(ret.code != 0) {
                 return { code: -3 }
             }
-
             srp.setAttr('state_id', 1);
+            srp.setAttr('hash', ret.result.hash);
         } else {
             return { code: -2 }
         }
@@ -116,14 +125,14 @@ class sharedredpack extends facade.Control {
             }
 
             await this.core.GetMapping(TableType.sharedredpack_receive).Create({
-                send_id: srp.ormAttr("id"),
-                receive_amount: receive_amount[i],
+                send_id: srp.orm.id,
+                receive_amount: (receive_amount[i]*0.98)|0, //扣除2%手续费
                 modify_date: Date.parse(new Date())/1000,
             });
         }
         //#endregion
 
-        return { code: 0, data: srp.ormAttr("id") };
+        return { code: 0, data: srp.orm.id };
     }
 }
 

@@ -10,12 +10,12 @@ let sharedredpack = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, 
     'sharedredpack',
     {
         total_amount: Sequelize.INTEGER,
-        actual_amount: Sequelize.INTEGER,
         total_num: Sequelize.INTEGER,
         send_uid: Sequelize.INTEGER,
         wishing: Sequelize.STRING,
         modify_date: Sequelize.INTEGER,
         state_id: Sequelize.INTEGER,
+        hash: Sequelize.STRING,
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段

@@ -151,8 +151,8 @@ let StockBulletin = ['id', 'cid', 'stock_day', 'stock_open', 'stock_close', 'sto
 
 let Mail = ['id', 'src', 'dst', 'content', 'time', 'state']
 
-let sharedredpack = ['id', 'total_amount', 'actual_amount', 'total_num', 'send_uid', 'wishing', 'modify_date', 'state_id']
-let sharedredpack_receive = ['id', 'receive_amount', 'receive_uid', 'modify_date']
+let sharedredpack = ['id', 'total_amount', 'total_num', 'send_uid', 'wishing', 'modify_date', 'state_id', 'hash'];
+let sharedredpack_receive = ['id', 'send_id', 'receive_amount', 'receive_uid', 'modify_date', 'hash'];
 
 let BuyLog = ['id', 'domainid', 'trade_no', 'third_no', 'product', 'product_desc', 'total_fee', 'fee_type', 'result', 'createdAt', 'updatedAt'];
 
@@ -162,10 +162,10 @@ let BuyLog = ['id', 'domainid', 'trade_no', 'third_no', 'product', 'product_desc
  * @param {*} attrs 
  */
 function record(obj, attrs) {
+    obj = !!obj.orm ? obj.orm : obj; //兼容ORM对象
+
     let ret = {};
     for(let attr of attrs) {
-        obj = !!obj.orm ? obj.orm : obj; //兼容ORM对象
-
         if(!!obj[attr]) {
             ret[attr] = obj[attr];
         }
