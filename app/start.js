@@ -295,7 +295,16 @@ if(env.constructor == String) {
             user.notify({type: 911002, info: JSON.parse(user.baseMgr.info.getData())});
         });
 
-        console.log(`${core.options.serverType}.${core.options.serverId}'s startup finished!`);
         //#endregion
+
+        //查询通告
+        let qryNotify = await core.service.gamegoldHelper.execute('sys.listNotify', [[['page', 1], ['size', -1]],]);
+        if(qryNotify.code == 0) {
+            for(let it of qryNotify.result.list) {
+                core.notifyEvent('user.receiveNotify', {data: it});
+            }
+        }
+
+        console.log(`${core.options.serverType}.${core.options.serverId}'s startup finished!`);
     });
 })();

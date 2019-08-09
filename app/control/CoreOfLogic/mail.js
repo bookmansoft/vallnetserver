@@ -14,20 +14,25 @@ class mail extends facade.Control
      * @param {*} objData 
      */
     async getList(user, objData) {
-        if(!objData.pageSize){
+        if(!objData.pageSize) {
             objData.pageSize = 10;
         }
         if(!objData.page){
             objData.page = 1;
         }
 
-        let list = this.core.GetMapping(EntityType.Mail)
+        let muster = this.core.GetMapping(EntityType.Mail)
             .groupOf(user.openid)
             .orderby('time', 'desc')
-            .paginate(objData.pageSize, objData.page)
-            .records(TableField.Mail);
+            .paginate(objData.pageSize, objData.page);
 
-        return { code: ReturnCode.Success, data: list,};
+        let data = {
+            total : muster.pageNum,
+            page: muster.pageCur,
+        }
+        data.list = muster.records(TableField.Mail);
+
+        return { code: ReturnCode.Success, data: data };
     }
 
     /**
@@ -36,11 +41,7 @@ class mail extends facade.Control
      * @param {*} objData 
      */
     async send(user, objData) {
-        //考虑到用户可能跨服，这里使用好友间的notify转发下
-        user.socialNotify(
-            {type: NotifyType.mail, info: {src: user.openid, dst: objData.openid, con:objData.con}},
-            objData.openid
-        );
+        this.core.GetMapping(EntityType.Mail).Create(user, objData.con, user.openid, objData.openid);
         return {code: ReturnCode.Success};
     }
 
@@ -51,20 +52,24 @@ class mail extends facade.Control
      */
     async del(user, objData)
     {
-        await this.core.GetMapping(EntityType.Mail).Delete(objData.idx);
-        user.CheckMailboxState();
-        return {code: ReturnCode.Success, data:{idx:objData.idx}};
+        let mail = this.core.GetObject(EntityType.Mail, objData.idx);
+        if(!!mail && (mail.src == user.openid || mail.dst == user.openid)) {
+            await this.core.GetMapping(EntityType.Mail).Delete(objData.idx);
+            user.CheckMailboxState();
+            return {code: ReturnCode.Success, data:{idx:objData.idx}};
+        }
+        return {code: -1};
     }
 
     /**
-     * 阅读了一篇邮件
+     * 阅读一篇邮件
      * @param {UserEntity} user 
      * @param {*} objData 
      */
     async read(user, objData)
     {
         let mail = this.core.GetObject(EntityType.Mail, objData.idx);
-        if(!!mail){
+        if(!!mail && (mail.src == user.openid || mail.dst == user.openid)) {
             await mail.read(user);
             user.CheckMailboxState();
         }

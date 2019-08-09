@@ -1,9 +1,35 @@
 let gh = require('../../util/gamegoldHelper')
 let facade = require('gamecloud')
-let {TableType, IndexType} = facade.const
+let {EntityType, TableType, IndexType, NotifyType} = facade.const
 
 class gamegoldHelper extends gh
 {
+    /**
+     * 向用户发送系统通知
+     * @param {*} user 
+     * @param {*} content 
+     * @param {*} bonus 
+     */
+    sendSysNotify(user, content, bonus, time) {
+        let data = {
+            type: NotifyType.mail, 
+            info: {
+                content: content,
+            }
+        };
+        if(!!bonus) {
+            data.info.bonus = bonus;
+        }
+
+        this.core.GetMapping(EntityType.Mail).Create(
+            user, 
+            data, 
+            "system", 
+            user.openid,
+            time,
+        );
+    }
+
     /**
      * 查询用户对应特定CP的专用地址
      * @param {*} user  用户对象

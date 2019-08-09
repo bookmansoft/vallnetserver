@@ -56,31 +56,6 @@ class wallet extends facade.Control
     }
 
     /**
-     * 查询用户帐户下是否有系统通知
-     * @param {*} user 
-     * @param {*} params 
-     */
-    async GetNotify(user, params) {
-        let qry = [
-            ['account', user.domainId],
-            ['page', params.page || 1],
-        ];
-        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [qry,]);
-        if(ret.code == 0) {
-            ret.result.total = ret.result.page;
-            ret.result.page = ret.result.cur;
-            ret.result.list = ret.result.list.map(it=>{
-                it.create_time = (Date.now()/1000 - (this.core.chain.height - it.h)*600)|0;
-                return it;
-            })
-
-            return {code : 0, data: ret.result};
-        }
-
-        return {code : -1};
-    }
-
-    /**
      * 消息列表
      * @param {*} user 
      * @param {*} params 
