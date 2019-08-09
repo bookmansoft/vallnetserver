@@ -10,7 +10,7 @@
 	<link rel="stylesheet" href="css/amazeui.css"/>
     <link rel="stylesheet" href="css/style.css"/>
     <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
-	<title>CP例子</title>
+	<title>模拟游戏</title>
 	<style>
 		.card {
 			/*height:200px;*/
@@ -196,7 +196,7 @@
 
                 // 返回钱包
                 onBackTowallet: function() {
-                    window.location.href = "http://localhost:9101";
+                    window.location.href = "http://wallet.vallnet.cn/home";
                 }
             }
     });
@@ -254,7 +254,6 @@
                     game_ico_uri = game_ico_uri.substring(1);
                     mainVue.gameInfo.gameIcon = 'https://mini.gamegold.xin/wallet/' + game_ico_uri;
                     console.log(mainVue.gameInfo.gameIcon);
-                    //$("title").html(mainVue.gameInfo.game_title);
                     document.title = mainVue.gameInfo.game_title;
                 }
 			}

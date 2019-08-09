@@ -12,7 +12,7 @@ class prop extends facade.Control
      * @param {*} user 
      * @param {*} params 
      */
-    async PropList(user, params) {
+    async list(user, params) {
         let ret = await this.core.service.gamegoldHelper.execute('prop.list', [
             params.page || 1,
             user.domainId,
@@ -26,6 +26,9 @@ class prop extends facade.Control
                     prop.cp_name = cp.orm.cp_name;
                 }
             }
+            //弥补下协议定义上的差别
+            ret.result.total = ret.result.page;
+            ret.result.page = ret.result.cur;
         }
 
         return {code: ret.code, data : ret.result};
@@ -36,7 +39,7 @@ class prop extends facade.Control
      * @param {*} user 
      * @param {*} params 
      */
-    async PropListMarket(user, params) {
+    async listMarket(user, params) {
         // pst: enum propStatus {
         //     Sale: 2,        //拍卖中    - 发起了拍卖交易，等待竞价结束
         //     Borrow: 3,      //已借出    - 道具已经借出
@@ -52,6 +55,9 @@ class prop extends facade.Control
                     prop.cp_name = cp.orm.cp_name;
                 }
             }
+            //弥补下协议定义上的差别
+            ret.result.total = ret.result.page;
+            ret.result.page = ret.result.cur;
         }
 
         return {code: ret.code, data: ret.result};
@@ -157,7 +163,7 @@ class prop extends facade.Control
      * @param {*} user 
      * @param {*} params 
      */
-    async PropSend(user, params) {
+    async send(user, params) {
         let addr = params.addr;
         let pid = params.pid;
         let ret = await this.core.service.gamegoldHelper.execute('prop.send', [
@@ -169,7 +175,7 @@ class prop extends facade.Control
     }     
 
     //道具出售
-    async PropSale(user, params) {
+    async sale(user, params) {
         let pid = params.pid;
         let fixedPrice = params.fixedPrice;
         let ret = await this.core.service.gamegoldHelper.execute('prop.sale', [

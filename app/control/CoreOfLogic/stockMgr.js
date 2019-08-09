@@ -40,9 +40,6 @@ class cpstockbase extends facade.Control {
         let ret = await this.core.service.gamegoldHelper.execute('stock.list.wallet', [conditions]);
         if(ret.code == 0) {
             let $data = { list: [] };
-            $data.total = ret.result.page;
-            $data.page = ret.result.cur;
-            $data.height = this.core.chain.height; //添加当前主网高度，作为时间基点使用
             for(let item of ret.result.list) {
                 let cpObj = this.core.GetObject(TableType.blockgame, item.cid, IndexType.Domain);
                 if(!!cpObj) { 
@@ -59,6 +56,11 @@ class cpstockbase extends facade.Control {
                     });
                 }
             }
+            //弥补下协议上的差异
+            $data.total = ret.result.page;
+            $data.page = ret.result.cur;
+            //添加当前主网高度，作为时间基点使用
+            $data.height = this.core.chain.height; 
 
             return {code: 0, data:$data}
         } else {
@@ -115,8 +117,6 @@ class cpstockbase extends facade.Control {
 
         if(ret.code == 0) {
             let $data = { list: [] };
-            $data.total = ret.result.page;
-            $data.page = ret.result.cur;
             for(let item of ret.result.list) {
                 let cpObj = this.core.GetObject(TableType.blockgame, item.cid, IndexType.Domain);
                 if(!!cpObj) { 
@@ -134,6 +134,9 @@ class cpstockbase extends facade.Control {
                     });
                 }
             }
+            //弥补下协议上的差异
+            $data.total = ret.result.page;
+            $data.page = ret.result.cur;
 
             return {code: 0, data:$data}
         } else {
@@ -190,11 +193,22 @@ class cpstockbase extends facade.Control {
      */
     async UserStockLogs(user, params) {
         let ret = await this.core.service.gamegoldHelper.execute('stock.record.wallet', [0, params.cid, 0, [['addr', params.addr]]]);
-        ret.result.height = this.core.chain.height; //添加当前主网高度，作为时间基点使用
-        return {
-            code: ret.code,
-            data: ret.result,
-        };
+        if(ret.code == 0) {
+            //弥补下协议上的差异
+            $data.total = ret.result.page;
+            $data.page = ret.result.cur;
+            //添加当前主网高度，作为时间基点使用
+            ret.result.height = this.core.chain.height; 
+
+            return {
+                code: ret.code,
+                data: ret.result,
+            };
+        } else {
+            return {
+                code: ret.code,
+            };
+        }
     }    
 }
 
