@@ -144,7 +144,6 @@ if(env.constructor == String) {
         loading: [
             TableType.blockgame, 
             TableType.blockgamecomment, 
-            TableType.blockNotify, 
             TableType.userwallet, 
             TableType.userredpack, 
             TableType.userredpackact, 

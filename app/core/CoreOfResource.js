@@ -20,10 +20,15 @@ class CoreOfResource extends CoreOfBase {
         super($env);
         this.orderMap = new Map();
         this.cpToken = new Map();
+        this.userMap = new Map();
     }
 
-    async loadModel() {
-        super.loadModel();
+    /**
+     * 节点类型定义函数 - 映射自己的服务器类型数组，提供给核心类的类工厂使用
+     */
+    static get mapping() {
+        this.$mapping = ['Resource'];
+        return this.$mapping;
     }
 
     /**
@@ -46,23 +51,17 @@ class CoreOfResource extends CoreOfBase {
         });
     }
 
-    /**
-     * 节点类型定义函数 - 映射自己的服务器类型数组，提供给核心类的类工厂使用
-     */
-    static get mapping() {
-        this.$mapping = ['Resource'];
-        return this.$mapping;
-    }
-
     listenCP(app) {
         //模拟CP服务
         app.get('/mock/:cp_name', this.responseCPName.bind(this));
+
+        app.get('/mock/:cp_name/user/:uid', this.responseUser.bind(this));
 
         //属性详情处理
         app.get('/mock/:cp_name/prop/:id', this.responseProp.bind(this));
 
         //我的道具列表【确权】
-        app.get('/mock/:cp_name/myprops/:address', this.myProps.bind(this));
+        app.get('/mock/:cp_name/myprops/:uid', this.myProps.bind(this));
         
         //【订单】游戏客户端下单的post方法；除了cp_name以外，其他参数以JSON格式在request-body中提交
         app.post('/mock/:cp_name/order', this.order.bind(this));
@@ -273,7 +272,7 @@ class CoreOfResource extends CoreOfBase {
     }
 
     /**
-     * 我的道具列表【确权】 /mock/:cp_name/myprops/:address
+     * 我的道具列表【确权】 /mock/:cp_name/myprops/:uid
      */
     async myProps(req, res) {
         try {
@@ -281,7 +280,6 @@ class CoreOfResource extends CoreOfBase {
             let cpParamArray = [
                 req.params.cp_name,
             ];
-            console.log('cp.byName 的参数:', cpParamArray);
             let cpInfo = await this.service.gamegoldHelper.execute('cp.byName', cpParamArray);
             if (!cpInfo) {
                 res.json({ code: -200, msg: '查询我的道具失败，CP不存在' });
@@ -290,32 +288,29 @@ class CoreOfResource extends CoreOfBase {
 
             //通过url取道具列表等数据
             let propMap = new Map();
-            let json = await (await fetch(cpInfo.url)).json();
-            console.log("129:in", json.proplist);
+            let json = await (await fetch(cpInfo.result.url)).json();
             for (let i = 0; i < json.proplist.length; i++) {
                 propMap.set(json.proplist[i].id, json.proplist[i]);
             }
 
-            //查询指定地址上指定cp的道具
-            let paramArray = [
-                cpInfo.cid,
-                req.params.address,
-            ];
-            let retProps = await this.service.gamegoldHelper.execute('queryProps', paramArray);
+            let user = this.userMap[req.params.uid];
+            let retProps = await this.service.gamegoldHelper.execute('prop.list', [0, user.domainId, null, cpInfo.result.cid]);
 
             //将来自CP的商品列表信息，和链上数据信息进行拼装
             let retData = [];
-            for (let i = 0; i < retProps.length; i++) {
-                let prop = propMap.get(retProps[i].oid);
-                retData.push({
-                    pid: retProps[i].pid,
-                    oid: retProps[i].oid,
-                    gold: retProps[i].gold,
-                    props_price: prop.props_price,
-                    props_name: prop.props_name,
-                    props_rank: prop.props_rank,
-                    icon: prop.icon,
-                });
+            for (let item of retProps.result.list) {
+                let prop = propMap.get(item.oid);
+                if(prop) {
+                    retData.push({
+                        pid: item.pid,
+                        oid: item.oid,
+                        gold: item.gold,
+                        props_price: prop.props_price,
+                        props_name: prop.props_name,
+                        props_rank: prop.props_rank,
+                        icon: prop.icon,
+                    });
+                }
             }
 
             //返回最终的数据
@@ -376,82 +371,98 @@ class CoreOfResource extends CoreOfBase {
      * @param {*} res 
      */
     responseCPName(req, res) {
-        if (!!req.params.cp_name) {
-            try {
-                let groupNum = 0;//默认为0
-                try {
-                    groupNum = parseInt(req.params.cp_name.substr(4)) % 4;
-                    if (groupNum != 0 && groupNum != 1 && groupNum != 2 && groupNum != 3) {
-                        groupNum = 0;
-                    }
-                } catch (error1) {
-                    groupNum = 0;
-                }
-
-                //随机生成若干道具并添加到数组中
-                let propArray = new Array();
-                let propCount = 5;
-                for (let i = 0; i < propCount; i++) {
-                    propArray.push(this.createProp(`${req.params.cp_name}_prop_${i}`));
-                }
-
-                //编组cpInfo
-                let cpInfo = {
-                    "crowd": {
-                        "funding_text": "有可能是最好玩的游戏",
-                        "funding_project_text": "希望大家支持我们一哈",
-                    },
-                    "game": {
-                        "cp_name": req.params.cp_name,
-                        "game_title": `${arrayGameTitle[groupNum]}(${req.params.cp_name})`,
-                        "cp_type": arrayCpTye[groupNum],
-                        "icon_url": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/${groupNum}/icon_img.jpg`,
-                        "small_img_url": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/small_img.jpg",
-                        "large_img_url": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/large_img.jpg",
-                        "pic_urls": [`http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic1.jpg",
-                        `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic2.jpg",
-                        `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic3.jpg"],
-                        "desc": arrayGameDesc[groupNum],
-                        "provider": arrayProvider[groupNum],
-                        "version": "V1.0",
-                        "publish_time": 1545606613,
-                        "update_time": 1545706613,
-                        "update_content": "更新了最新场景和新的地图",
-                        "state": 1,
-                    },
-                    "proplist": propArray,
-                    "apps": {
-                        "wechat": {
-                            "app_name": "{app_name}",
-                            "appid": "{appid}",
-                            "path": "{path}",
-                            "version": "{version}",
-                        },
-                        "h5": {
-                            "url": "{url}",
-                        },
-                        "android": {
-                            "appid": "{appid}"
-                        },
-                        "ios": {
-
-                        }
-                    },
-                };
-                res.json(cpInfo);
-            }
-            catch (e) {
-                console.error(e);
+        try {
+            if (!req.params.cp_name) {
                 res.end();
             }
+
+            let groupNum = 0;//默认为0
+            try {
+                groupNum = parseInt(req.params.cp_name.substr(4)) % 4;
+                if (groupNum != 0 && groupNum != 1 && groupNum != 2 && groupNum != 3) {
+                    groupNum = 0;
+                }
+            } catch (error1) {
+                groupNum = 0;
+            }
+
+            //随机生成若干道具并添加到数组中
+            let propArray = new Array();
+            let propCount = 5;
+            for (let i = 0; i < propCount; i++) {
+                propArray.push(this.createProp(`${req.params.cp_name}_prop_${i}`));
+            }
+
+            //编组cpInfo
+            let cpInfo = {
+                "crowd": {
+                    "funding_text": "有可能是最好玩的游戏",
+                    "funding_project_text": "希望大家支持我们一哈",
+                },
+                "game": {
+                    "cp_name": req.params.cp_name,
+                    "game_title": `${arrayGameTitle[groupNum]}(${req.params.cp_name})`,
+                    "cp_type": arrayCpTye[groupNum],
+                    "icon_url": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/${groupNum}/icon_img.jpg`,
+                    "small_img_url": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/small_img.jpg",
+                    "large_img_url": `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/large_img.jpg",
+                    "pic_urls": [`http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic1.jpg",
+                    `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic2.jpg",
+                    `http://${this.options.webserver.mapping}:${this.options.webserver.port}/image/` + groupNum + "/pic3.jpg"],
+                    "desc": arrayGameDesc[groupNum],
+                    "provider": arrayProvider[groupNum],
+                    "version": "V1.0",
+                    "publish_time": 1545606613,
+                    "update_time": 1545706613,
+                    "update_content": "更新了最新场景和新的地图",
+                    "state": 1,
+                },
+                "proplist": propArray,
+                "apps": {
+                    "wechat": {
+                        "app_name": "{app_name}",
+                        "appid": "{appid}",
+                        "path": "{path}",
+                        "version": "{version}",
+                    },
+                    "h5": {
+                        "url": "{url}",
+                    },
+                    "android": {
+                        "appid": "{appid}"
+                    },
+                    "ios": {
+
+                    }
+                },
+            };
+            res.json(cpInfo);
         }
+        catch (e) {
+            console.error(e);
+            res.end();
+        }
+    }
+
+    async responseUser(req, res) {
+        try {
+            let rt = await this.service.gamegoldHelper.execute('token.user', [req.params.cp_name, req.params.uid, null, req.params.uid]);
+            if(rt.code == 0) {
+                this.userMap[req.params.uid] = {
+                    domainId: req.params.uid,
+                    address: rt.result.data.addr,
+                };
+            }
+        } catch (e) {
+            console.error(e);
+            res.end();
+        }        
     }
 
     responseProp(req, res) {
         try {
             res.json(this.createProp(req.params.id));
-        }
-        catch (e) {
+        } catch (e) {
             console.error(e);
             res.end();
         }        
@@ -463,42 +474,33 @@ class CoreOfResource extends CoreOfBase {
      * @param {*} res 
      */
     async order(req, res) {
-        console.log("游戏下单 order 时间:", new Date());
-        //根据cp_name设置cpid备用
-        let cpid = '';
-        if (req.params.cp_name == 'cp0326') {
-            cpid = '229a4970-4f77-11e9-b118-e3d1ba95e1a5';
+        let user = this.userMap[req.body.uid];
+        if(!!user) {
+            //生成订单并缓存
+            let data = {
+                cid: req.body.cid,                  //CP编码
+                oid: req.body.oid,                  //道具厂商编码
+                price: req.body.price,              //价格，单位尘
+                url: req.body.url,                  //道具图标URL
+                props_name: req.body.props_name,    //道具名称
+                sn: uuid.v1(),                      //订单编号
+                address: user.address,              //用户地址
+            };
+            this.orderMap.set(data.sn, data);
+            
+            //发送消息
+            let paramArray = [
+                user.address,
+                JSON.stringify(data),
+            ];
+            let ret = await this.service.gamegoldHelper.execute('sys.notify', paramArray);
+            if(ret.code == 0) {
+                res.json({ code: ret.code });
+                return;
+            }
         }
-        //获取其他参数
-        let oid = req.body.oid;//道具原始id
-        let price = req.body.price;//道具价格
-        let address = req.body.address;
-        let url = req.body.url;//道具图标url
-        let props_name = req.body.props_name;
-        //生成订单sn并在本类中缓存订单数据
-        let sn = uuid.v1();
-        //订单即通知的内容
-        let data = {
-            cid: cpid,
-            oid: oid,
-            price: price,
-            url: url,
-            props_name: props_name,
-            sn: sn,
-            address: address
-        };
-        //添加到订单map中
-        this.orderMap.set(sn, data);
-        console.log("订单Map对象的长度：", this.orderMap.size);
-        //发送消息
-        let paramArray = [
-            address,
-            JSON.stringify(data),//此处必须是字符串
-        ];
-        console.log('sys.notify 的参数:', paramArray);
-        let ret = await this.service.gamegoldHelper.execute('sys.notify', paramArray);
-        console.log(ret);
-        res.json({ code: 0 });
+
+        res.json({ code: -1 });
     }
 }
 

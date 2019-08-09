@@ -2,7 +2,6 @@ const TableType ={
     "Test": 101,
     "userwallet": 104,
     "blockgame": 107,
-    'blockNotify': 118,
     'redpack': 119,
     'redpackact': 120,
     'userredpack': 121,
@@ -33,17 +32,6 @@ let userwallet = [
     'addr',
     'user_id',
 ];
-
-let blockNotify = [
-    'sn',
-    'h',
-    'status',
-    'content',
-    'type',
-    'uid',
-    'create_time',
-    'update_time'
-]
 
 let redpack = [
     'user_redpack_id',
@@ -178,7 +166,7 @@ exports = module.exports = {
     TableField: {
         blockgame, StockBulletin, Mail,
         userwallet, redpack, redpackact, StockBase, Prize, Cp, CpFunding, CpStock, RedPacket,
-        blockNotify, Prop, sharedredpack, sharedredpack_receive, BuyLog,
+        Prop, sharedredpack, sharedredpack_receive, BuyLog,
         userredpack, userredpackact, blockgamecomment, stock, record,
     },
 }

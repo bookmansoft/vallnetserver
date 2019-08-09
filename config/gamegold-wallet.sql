@@ -247,23 +247,6 @@ CREATE TABLE IF NOT EXISTS `our_block_game_comment` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 gamegold-wallet.our_block_notify 结构
-CREATE TABLE IF NOT EXISTS `our_block_notify` (
-  `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
-  `sn` varchar(128) NOT NULL COMMENT '通知编号',
-  `uid` int(8) DEFAULT '0' COMMENT 'uid',
-  `h` int(8) DEFAULT '0' COMMENT '高度',
-  `status` int(8) DEFAULT '0' COMMENT '状态',
-  `content` varchar(500) DEFAULT NULL COMMENT '内容',
-  `type` varchar(32) DEFAULT '0' COMMENT '类型',
-  `create_time` int(8) unsigned DEFAULT '0' COMMENT '创建时间',
-  `update_time` int(8) unsigned DEFAULT '0' COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `order_sn` (`sn`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 数据导出被取消选择。
-
 -- 导出  表 gamegold-wallet.our_block_redpack 结构
 CREATE TABLE IF NOT EXISTS `our_block_redpack` (
   `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',

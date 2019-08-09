@@ -99,20 +99,9 @@ class prop extends facade.Control
         return {code: 0, data: ret.result};
     }
 
-    //道具确权
-    async QueryProps(user, params) {
-        let cid = params.cid;
-        let user_addr = params.user_addr;
-        let ret = await this.core.service.gamegoldHelper.execute('queryProps', [
-            cid, //游戏编号
-            user_addr //游戏内玩家的有效地址
-        ]);
-        return {code: 0, data: ret.result};
-    }
-
     //道具数量
     async PropCount(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('prop.list', [1, user.domainId]);
+        let ret = await this.core.service.gamegoldHelper.execute('prop.list', [0, user.domainId]);
         user.baseMgr.info.setAttr('prop_count', ret.result.count);
         return {code: 0, data: {count: ret.result.count}};
     }

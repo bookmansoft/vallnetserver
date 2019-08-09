@@ -56,64 +56,28 @@ class wallet extends facade.Control
     }
 
     /**
-     * 系统通知
+     * 查询用户帐户下是否有系统通知
      * @param {*} user 
      * @param {*} params 
      */
     async GetNotify(user, params) {
-        //查询用户帐户下是否有系统通知
-        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [[['account', user.domainId]]]);
-        if(!!ret && ret.result.length > 0) {
-            //为每条通知匹配订单
-            ret.result.forEach(element => {
-                let blockNotifys = this.core.GetMapping(TableType.blockNotify).groupOf().where([['sn', '==', element.sn]]).records();
-                if(blockNotifys.length == 0) {
-                    //没有匹配到订单，生成新的待支付订单
-                    let current_time = parseInt(new Date().getTime() / 1000)
-                    let notifyItem = {
-                        sn: element.sn,
-                        h: element.h,
-                        status: element.status,
-                        content: element.body.content,
-                        type: element.body.type,
-                        uid: use.id,
-                        create_time: current_time,
-                        update_time: 0
-                    }
-                    this.core.GetMapping(TableType.blockNotify).Create(notifyItem);
-                }
-            });
+        let qry = [
+            ['account', user.domainId],
+            ['page', params.page || 1],
+        ];
+        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [qry,]);
+        if(ret.code == 0) {
+            ret.result.total = ret.result.page;
+            ret.result.page = ret.result.cur;
+            ret.result.list = ret.result.list.map(it=>{
+                it.create_time = (Date.now()/1000 - (this.core.chain.height - it.h)*600)|0;
+                return it;
+            })
+
+            return {code : 0, data: ret.result};
         }
 
-        //查询当前待支付订单
-        let blockNotifys = this.core.GetMapping(TableType.blockNotify).groupOf().where([
-            ['uid', '==', user.id],
-            ['status', '==', 1]
-        ]).records();
-
-        return {code : 0, data: {count: blockNotifys.length}};
-    }
-
-    /**
-     * 消息列表
-     * @param {*} user 
-     * @param {*} params 
-     */
-    async NotifyList(user, params) {
-        let openid = params.openid
-        let blockNotifys = this.core.GetMapping(TableType.blockNotify).groupOf().where([
-            ['openid', '==', openid]
-        ]).records();
-        let data = new Array()
-        if(blockNotifys.length >0 ) {
-            blockNotifys.forEach(element => {
-                if(element.orm.status == 1) {
-                    element.setAttr('status', 2);
-                }
-                data.push(TableField.record(element.orm, TableField.blockNotify))
-            });
-        }
-        return {code: 0, msg: 'notify.list:ok', data: data}; 
+        return {code : -1};
     }
 
     /**
@@ -122,42 +86,32 @@ class wallet extends facade.Control
      * @param {*} params 
      */
     async NotifyOrderPay(user, params) {
-        let openid = params.openid
-        let sn = params.sn
-        let blockNotifys = this.core.GetMapping(TableType.blockNotify).groupOf().where([
-            ['openid', '==', openid],
-            ['sn', '==', sn]
-        ]).records();
-        if(blockNotifys.length > 0) {
-            let blockNotify = blockNotifys[0];
-            let obj = JSON.parse(blockNotify.orm.content);
-            if(!!obj && obj.hasOwnProperty('cid') && obj.hasOwnProperty('price') && obj.hasOwnProperty('sn')) { 
-                let cid = obj.cid;
-                let uid = openid;
-                let sn = obj.sn;
-                let price = obj.price;
-                let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
-                    cid, //game_id
-                    uid, //user_id
-                    sn, //order_sn订单编号
-                    price, //order_sum订单金额
-                    openid  //指定结算的钱包账户，一般为微信用户的openid
-                ]);
-
-                if(ret != null) {
-                  blockNotify.setAttr('status', 3);
-                  return {code: 0, data:ret.result}; 
-                }  else {
-                  return {code: -1, msg: 'pay error'}; 
+        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [[['sn', params.sn]]]);
+        if(ret.code == 0 && ret.result.list.length > 0) {
+            let blockNotify = ret.result.list[0];
+            if(blockNotify.account == user.domainId) {
+                let obj = (typeof blockNotify.body.content == 'string') ? JSON.parse(blockNotify.body.content) : blockNotify.body.content;
+                if(!!obj && obj.hasOwnProperty('cid') && obj.hasOwnProperty('price') && obj.hasOwnProperty('sn')) { 
+                    let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
+                        obj.cid,        //game_id
+                        user.domainId,  //user_id
+                        obj.sn,         //order_sn订单编号
+                        obj.price,      //order_sum订单金额
+                        user.domainId,  //指定结算的钱包账户，一般为微信用户的openid
+                    ]);
+    
+                    if(ret.code == 0) {
+                      return {code: 0, data:ret.result}; 
+                    }  else {
+                      return {code: -1, msg: 'pay error'}; 
+                    }
+                } else {
+                    return {code: -1, msg: 'invalid order'}; 
                 }
-            } else {
-                return {code: -1, msg: 'invalid order'}; 
             }
-        } else {
-            return {code: -2, msg: 'notify not exist'}; 
         }
+        return {code: -2, msg: 'notify not exist'}; 
     }
-
 }
 
 exports = module.exports = wallet;

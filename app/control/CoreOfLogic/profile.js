@@ -8,18 +8,6 @@ let {TableType, TableField} = facade.const;
 class profile extends facade.Control
 {
     /**
-     * 我的道具
-     * @param {*} user 
-     * @param {*} params 
-     */
-    async UserProp(user, params)  {
-        let page = params.page;
-        let ret = await remote.execute('prop.list', [page, user.domainId]);
-        user.baseMgr.info.setAttr('prop_count', ret.result.count);
-        return {code: 0, data: ret.result.list};
-    }
-
-    /**
      * 提取VIP福利
      * @param {*} user 
      * @param {*} params 

@@ -17,7 +17,7 @@ class login extends facade.Control
         let ret = {code:ReturnCode.Success};
 
         try {
-            let rt = await this.core.service.gamegoldHelper.execute('prop.list', [1, user.domainId]);
+            let rt = await this.core.service.gamegoldHelper.execute('prop.list', [0, user.domainId]);
             if(!!rt) {
                 user.baseMgr.info.setAttr('current_prop_count', rt.result.count);
             }
