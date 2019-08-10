@@ -19,14 +19,18 @@ function handle(event) {
     //     account,            //账户名称
     //     wid,                //钱包编号
     // }
-    let user = this.GetObject(EntityType.User, event.data.account, IndexType.Domain);
-    if(!!user) {
-        this.service.gamegoldHelper.sendSysNotify(
-            user, 
-            event.data, 
-            null, 
-            (Date.now()/1000 - (this.chain.height - event.data.h)*600)|0
-        );
+
+    let mail = this.GetObject(EntityType.Mail, event.data.sn, IndexType.Domain);
+    if(!mail) {
+        let user = this.GetObject(EntityType.User, event.data.account, IndexType.Domain);
+        if(!!user) {
+            this.service.gamegoldHelper.sendSysNotify(
+                user, 
+                event.data, 
+                null, 
+                (Date.now()/1000 - (this.chain.height - event.data.h)*600)|0
+            );
+        }
     }
 }
 

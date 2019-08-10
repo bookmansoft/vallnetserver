@@ -137,7 +137,7 @@ let RedPacket = ['id', 'act_name', 'act_sequence', 'total_gamegold', 'each_gameg
 
 let StockBulletin = ['id', 'cid', 'stock_day', 'stock_open', 'stock_close', 'stock_high', 'stock_low', 'total_num', 'total_amount', 'sum', 'bonus', 'price']
 
-let Mail = ['id', 'src', 'dst', 'content', 'time', 'state']
+let Mail = ['id', 'src', 'dst', 'content', 'time', 'state', 'sn']
 
 let sharedredpack = ['id', 'total_amount', 'total_num', 'send_uid', 'wishing', 'modify_date', 'state_id', 'hash'];
 let sharedredpack_receive = ['id', 'send_id', 'receive_amount', 'receive_uid', 'modify_date', 'hash'];

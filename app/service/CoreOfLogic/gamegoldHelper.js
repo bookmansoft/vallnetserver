@@ -27,6 +27,7 @@ class gamegoldHelper extends gh
             "system", 
             user.openid,
             time,
+            content.sn,
         );
     }
 
