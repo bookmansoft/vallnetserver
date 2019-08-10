@@ -43,9 +43,22 @@ class contract extends facade.Control
         return {code: 0, data: ret.result};
     }
 
-    async ContractList(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('contract.list', [1, 1]);
-        return {code: 0, msg: 'contract.list:ok', data: ret.result};
+    /**
+     * 查询交易对列表
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async list(user, params) {
+        let ret = await this.core.service.gamegoldHelper.execute('contract.list', [1, params.page||1]);
+        if(ret.code == 0) {
+            return {code: 0, msg: 'contract.list:ok', data: {
+                total: ret.result.pageNum,
+                page: ret.result.pageCur,
+                list: ret.result.list,
+            }};
+        } else {
+            return {code: ret.code};
+        }
     }
 
 }
