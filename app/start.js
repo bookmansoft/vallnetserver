@@ -2,13 +2,18 @@ const facade = require('gamecloud')
 //加载用户自定义模块 - 这句必须紧跟在模块引入语句之后
 facade.addition = true;
 
-let {IndexType, TableType, ResType} = facade.const
+let {NotifyType, IndexType, TableType, ResType} = facade.const
 
 let orderMonitor = require('./util/autoExec/orderMonitor');
 
 //#region 新增索引类型，需要在 UserEntity.prototype.IndexOf 函数中增加字段映射
 IndexType.Phone = 1001;
 IndexType.Terminal = 1002;
+//#endregion
+
+//#region 新增通告类型，大于10000的值都可以使用
+NotifyType.balance = 10001;     //账户变更日志
+NotifyType.notify = 10002;      //主网通告，例如用来通知一笔待支付订单
 //#endregion
 
 let env = !!process.env.sys ? JSON.parse(process.env.sys) : {

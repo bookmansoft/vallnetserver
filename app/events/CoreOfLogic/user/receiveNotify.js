@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {EntityType, IndexType} = facade.const
+let {EntityType, IndexType, NotifyType} = facade.const
 
 /**
  * 收到主网通告(notify/receive)
@@ -27,7 +27,7 @@ function handle(event) {
             this.service.gamegoldHelper.sendSysNotify(
                 user, 
                 event.data, 
-                null, 
+                NotifyType.notify, 
                 (Date.now()/1000 - (this.chain.height - event.data.h)*600)|0
             );
         }

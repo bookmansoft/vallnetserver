@@ -6,13 +6,15 @@ class gamegoldHelper extends gh
 {
     /**
      * 向用户发送系统通知
-     * @param {*} user 
-     * @param {*} content 
-     * @param {*} bonus 
+     * @param {*} user      收件人对象
+     * @param {*} content   邮件内容
+     * @param {*} type      邮件类型
+     * @param {*} time      发生时间
+     * @param {*} bonus     附加奖励
      */
-    sendSysNotify(user, content, bonus, time) {
+    sendSysNotify(user, content, type, time, bonus) {
         let data = {
-            type: NotifyType.mail, 
+            type: type || NotifyType.mail, 
             info: {
                 content: content,
             }

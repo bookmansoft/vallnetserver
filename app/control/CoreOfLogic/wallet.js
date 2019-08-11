@@ -1,4 +1,3 @@
-const assert = require('assert')
 let facade = require('gamecloud')
 let {TableType, TableField} = facade.const;
 
@@ -8,21 +7,6 @@ let {TableType, TableField} = facade.const;
  */
 class wallet extends facade.Control
 {
-    /**
-     * 查询交易记录
-     * tx.list openid [number]
-     * @param {*} user        
-     * @param {*} params 其中的成员 items 是传递给区块链全节点的参数数组
-     */
-    async TxLogs(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('tx.list', [user.domainId]);
-        if(ret.code == 0) {
-            return {code: 0, data: {list: ret.result}};
-        } else {
-            return {code: ret.code};
-        }
-    }
-
     /**
      * 创建一个收款地址：address.create 不需要参数
      * 
