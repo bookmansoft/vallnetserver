@@ -95,7 +95,7 @@ let wechat = {
     noncestr: '',
     accessTokenUrl:'https://api.weixin.qq.com/cgi-bin/token',
     ticketUrl:'https://api.weixin.qq.com/cgi-bin/ticket/getticket',
-    cache_duration:1000*60*60*24, //缓存时长为24小时
+    cache_duration: 3600*2, //缓存时长为2小时
     miniAppId: '',
     miniAppSecret: '',
     miniBgwAppId: '',

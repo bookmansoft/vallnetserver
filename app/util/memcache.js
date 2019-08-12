@@ -13,7 +13,7 @@ class memcache
         }
 
         let item = this.map.get(key);
-        if(!!item.time && ((Date.now() / 1000) - item.now > item.time)) {
+        if(!!item.time && ((Date.now()/1000) - item.now > item.time)) {
             this.map.delete(key);
             return false;
         }
@@ -29,7 +29,7 @@ class memcache
     }
 
     set(key, value, time=0) {
-        this.map.set(key, {value: value, time: time, now: Date.now() / 1000});
+        this.map.set(key, {value: value, time: time, now: Date.now()/1000});
     }
 }
 

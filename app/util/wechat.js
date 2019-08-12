@@ -432,6 +432,17 @@ class weChat extends facade.Service
      * @param {*} callback 
      */
     getSign(url, callback) {
+        /**
+        noncestr=Wm3WZYTPz0wzccnW
+        jsapi_ticket=sM4AOVdWfPE4DxkXGEs8VMCPGGVi4C3VM0P37wVUCFvkVAy_90u5h9nbSlYy3-Sl-HhTdfl2fzFy1AOcHKP7qg
+        timestamp=1414587457
+        url=http://mp.weixin.qq.com?params=value
+
+        jsapi_ticket=sM4AOVdWfPE4DxkXGEs8VMCPGGVi4C3VM0P37wVUCFvkVAy_90u5h9nbSlYy3-Sl-HhTdfl2fzFy1AOcHKP7qg&noncestr=Wm3WZYTPz0wzccnW&timestamp=1414587457&url=http://mp.weixin.qq.com?params=value
+
+        0f9de62fce790f9a083d5c99e95740ceb90c27ed
+        */
+        url = url.split('#')[0];
         var noncestr = wechatcfg.noncestr, timestamp = Math.floor(Date.now()/1000), jsapi_ticket;
         if(cache.has('ticket')) {
             jsapi_ticket = cache.get('ticket'); //直接从缓存中获取
@@ -451,16 +462,20 @@ class weChat extends facade.Service
                     request(`${wechatcfg.ticketUrl}?access_token=${tokenMap.access_token}&type=jsapi`, function(err, resp, json){
                         if (!err && resp.statusCode == 200) {
                             var ticketMap = JSON.parse(json);
-                            cache.set('ticket', ticketMap.ticket, wechatcfg.cache_duration);  //加入缓存
+                            if(tickMap.errcode ==0) {
+                                cache.set('ticket', ticketMap.ticket, wechatcfg.cache_duration);  //加入缓存
 
-                            //回传参数
-                            callback({
-                                noncestr: noncestr,
-                                timestamp: timestamp,
-                                url: url,
-                                jsapi_ticket: ticketMap.ticket,
-                                signature: sha1(`jsapi_ticket=${ticketMap.ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`),
-                            });
+                                //回传参数
+                                callback({
+                                    noncestr: noncestr,
+                                    timestamp: timestamp,
+                                    url: url,
+                                    jsapi_ticket: ticketMap.ticket,
+                                    signature: sha1(`jsapi_ticket=${ticketMap.ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`),
+                                });
+                            } else {
+                                callback({});
+                            }
                         }
                     })
                 }
