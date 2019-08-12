@@ -49,7 +49,7 @@ let masterConfig = [
 ];
 
 /**
- * 数据库连接信息：用于 gamegold-wechat-server
+ * 数据库连接信息：用于 vallnetserver
  */
 let sqlOfWallet = {
     "logging" : false,                  //记录日志

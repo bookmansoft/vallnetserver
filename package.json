@@ -36,12 +36,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bookmansoft/gamegold-wechat-server.git"
+    "url": "git+https://github.com/bookmansoft/vallnetserver.git"
   },
   "bugs": {
-    "url": "https://github.com/bookmansoft/gamegold-wechat-server/issues"
+    "url": "https://github.com/bookmansoft/vallnetserver/issues"
   },
-  "homepage": "https://github.com/bookmansoft/gamegold-wechat-server#readme",
+  "homepage": "https://github.com/bookmansoft/vallnetserver#readme",
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^6.2.0",
@@ -51,7 +51,7 @@
     "db-migrate": "^0.11.4",
     "db-migrate-mysql": "^1.1.10",
     "redis": "^2.8.0",
-    "gamegold": "^1.6.17"
+    "gamegold": "^1.6.19"
   },
   "dependencies": {
     "axios": "^0.19.0",
