@@ -462,7 +462,7 @@ class weChat extends facade.Service
                     request(`${wechatcfg.ticketUrl}?access_token=${tokenMap.access_token}&type=jsapi`, function(err, resp, json){
                         if (!err && resp.statusCode == 200) {
                             var ticketMap = JSON.parse(json);
-                            if(tickMap.errcode ==0) {
+                            if(ticketMap.errcode ==0) {
                                 cache.set('ticket', ticketMap.ticket, wechatcfg.cache_duration);  //加入缓存
 
                                 //回传参数
