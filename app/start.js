@@ -91,7 +91,7 @@ if(env.constructor == String) {
             TableType.CpStock,
         ],
         static: [
-            ['/', './web/dist'],
+            ['/', './web/crm'],
         ], 
     }, async core => {
         while(true) {
