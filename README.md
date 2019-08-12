@@ -1,9 +1,9 @@
-# 后台管理系统服务端(gamegold-mgr-server)
+# 后台管理系统服务端(vallnetserver)
 
 ## 概述
 
-gamegold-mgr-server 是一个基于游戏云服务器(gamecloud, https://github.com/bookmansoft/gamecloud)的脚手架项目，一个基于 Restful / Websocket 的服务端系统
-gamegold-mgr-server 可作为单页应用 gamegold-mgr (https://github.com/bookmansoft/gamegold-mgr) 的配套服务端，共同实现一个全功能后台管理系统
+vallnetserver 是一个基于游戏云服务器(gamecloud, https://github.com/bookmansoft/gamecloud)的脚手架项目，一个基于 Restful / Websocket 的服务端系统
+vallnetserver 可作为单页应用 gamegold-mgr (https://github.com/bookmansoft/gamegold-mgr) 的配套服务端，共同实现一个全功能后台管理系统
 
 补充说明文档请参见 ./docs 目录
 
@@ -34,8 +34,8 @@ npm i -g --production windows-build-tools
 2. 下载脚手架、安装依赖包
 
 ```bash
-git clone https://github.com/bookmansoft/gamegold-mgr-server
-cd gamegold-mgr-server
+git clone https://github.com/bookmansoft/vallnetserver
+cd vallnetserver
 npm i
 ```
 
@@ -168,7 +168,7 @@ npm run test
 
 ## 部署网站
 
-gamegold-mgr-server 作为游戏服务端引擎的同时，也可以承担静态网站服务器功能：
+vallnetserver 作为游戏服务端引擎的同时，也可以承担静态网站服务器功能：
 
 ```js
 //在启动节点的同时，设置静态资源映射
@@ -180,7 +180,7 @@ facade.boot({
 服务器启动后，可以通过浏览器访问 http://localhost:9901/client 访问工作目录的子目录 web/client 中的静态资源
 
 典型的工作场景为：
-1. 架设 gamegold-mgr-server 作为 JSONP 服务器，并设置静态资源映射
+1. 架设 vallnetserver 作为 JSONP 服务器，并设置静态资源映射
 2. 使用 React / AngularJs / VUE / CocosCreator 开发单页面应用，打包并拷贝到已映射目录中，即可对外提供服务
 
 ## 对 HTTPS 的支持

@@ -160,9 +160,9 @@ if(env.constructor == String) {
             TableType.StockBase,
             TableType.Test, 
         ],
-        //额外的路由配置，也可以写在启动回调函数中( core.addRouter('/', './web/client') )，也可以配置于任意控制器的 router 中
+        //额外的路由配置，也可以写在启动回调函数中( core.addRouter('/', './web/wallet') )，也可以配置于任意控制器的 router 中
         static: [
-            ['/', './web/client'],
+            ['/', './web/wallet'],
         ], 
     }, async core => {
         console.log(`${core.options.serverType}.${core.options.serverId}'s startup start`);

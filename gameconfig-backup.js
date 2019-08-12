@@ -3,7 +3,7 @@
  */
 
 /**
- * 数据库连接信息：用于 gamegold-mgr-server
+ * 数据库连接信息：用于 vallnetserver
  */
 let sqlOfCRM = {
     "logging" : false,                  //记录日志
