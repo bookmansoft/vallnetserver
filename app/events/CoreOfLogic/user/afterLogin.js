@@ -10,18 +10,8 @@ let {EntityType, IndexType, NotifyType} = facade.const
  * @param data
  */
 async function handle(data){
-    //查询账户余额
-    let rt = await this.service.gamegoldHelper.execute('balance.all', [data.user.domainId]);
-    if(!!rt && rt.code == 0) {
-        data.user.baseMgr.info.setAttr('confirmed', rt.result.confirmed);
-        data.user.baseMgr.info.setAttr('unconfirmed', rt.result.unconfirmed);
-    } else {
-        data.user.baseMgr.info.setAttr('confirmed', 0);
-        data.user.baseMgr.info.setAttr('unconfirmed', 0);
-    }
-
     //查询过去一天内的账号变更日志
-    rt = await this.service.gamegoldHelper.execute('balance.log', [data.user.domainId, this.chain.height - 144]);
+    rt = await this.service.gamegoldHelper.execute('balance.log', [data.user.domainId, Math.max(0, this.chain.height - 144)]);
     if(!!rt && rt.code == 0) {
         for(let log of rt.result) {
             // {
@@ -55,7 +45,7 @@ async function handle(data){
                     data.user,
                     log, 
                     NotifyType.balance,
-                    (Date.now()/1000 - (this.chain.height - log.height)*600)|0
+                    (Date.now()/1000 - Math.max(0, this.chain.height - log.height)*600)|0
                 );
             }
         }

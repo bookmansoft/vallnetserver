@@ -173,7 +173,7 @@ class cpstockbase extends facade.Control {
                 $value.pic_urls = JSON.stringify(cpObj.orm.game_screenshots.split(','));
                 $value.cp_desc = cpObj.orm.game_desc;
                 $value.provider = cpObj.orm.developer;
-                $value.funding_residue_day = ((14*24*60 - (this.core.chain.height - $value.height)*10)/60/24)|0;
+                $value.funding_residue_day = ((14*24*60 - Math.max(0, this.core.chain.height - $value.height)*10)/60/24)|0;
             }
 
             list.push($value);

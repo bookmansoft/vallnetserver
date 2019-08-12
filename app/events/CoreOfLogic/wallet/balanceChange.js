@@ -36,7 +36,7 @@ function handle(payload) {
         ui.notify({type: 911001, info: {confirmed: log.balance.confirmed, unconfirmed: log.balance.unconfirmed}});
 
         log.sn = `${log.aname}.${log.hash}`;
-        let tm = (log.height > 0) ? ((Date.now()/1000 - (this.chain.height - log.height)*600)|0) : ((Date.now()/1000)|0);
+        let tm = (log.height > 0) ? ((Date.now()/1000 - Math.max(0, this.chain.height - log.height)*600)|0) : ((Date.now()/1000)|0);
         let mail = this.GetObject(EntityType.Mail, log.sn, IndexType.Domain);
         if(!mail) {
             this.service.gamegoldHelper.sendSysNotify(

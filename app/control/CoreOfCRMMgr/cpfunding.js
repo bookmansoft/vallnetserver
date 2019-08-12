@@ -194,7 +194,7 @@ class cpfunding extends facade.Control {
                     hisPrice: it.stock.hPrice,
                     price: it.stock.price,
                     audit_state_id: 2,
-                    sell_limit_date: Date.now()/1000 - (this.core.chain.height - it.stock.height)*600 + 3600*24*14,
+                    sell_limit_date: Date.now()/1000 - Math.max(0, this.core.chain.height - it.stock.height)*600 + 3600*24*14,
                 };
                 $data.list.push(stock);
             }

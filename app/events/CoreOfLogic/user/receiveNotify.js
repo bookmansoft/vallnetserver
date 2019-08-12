@@ -28,7 +28,7 @@ function handle(event) {
                 user, 
                 event.data, 
                 NotifyType.notify, 
-                (Date.now()/1000 - (this.chain.height - event.data.h)*600)|0
+                (Date.now()/1000 - Math.max(0, this.chain.height - event.data.h)*600)|0
             );
         }
     }

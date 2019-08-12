@@ -98,8 +98,18 @@ async function handle(sofar) {
                     sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.GetRecord('phone'), usr.id], IndexType.Phone);
                 }
 
+                //查询账户余额, 这样用户登录后就能看到最新的余额信息
+                let rt = await sofar.facade.service.gamegoldHelper.execute('balance.all', [usr.domainId]);
+                if(!!rt && rt.code == 0) {
+                    usr.baseMgr.info.setAttr('confirmed', rt.result.confirmed);
+                    usr.baseMgr.info.setAttr('unconfirmed', rt.result.unconfirmed);
+                } else {
+                    usr.baseMgr.info.setAttr('confirmed', 0);
+                    usr.baseMgr.info.setAttr('unconfirmed', 0);
+                }
+
                 //触发并实时执行"登录后"事件, 注意将事件触发置于此可以：1. 用户持密码或两节点登录时触发 2. 用户持 token 登录时不触发，避免了频繁触发带来的性能问题
-                await sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});
+                sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});
             }
         }
 
