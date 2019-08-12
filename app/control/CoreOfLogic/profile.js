@@ -12,7 +12,7 @@ class profile extends facade.Control
      * @param {*} user 
      * @param {*} params 
      * 
-     * @todo 综合考虑后，下一步还是需要将先前的提取日志恢复起来，记录诸如TXID等信息备查
+     * @todo 可以将提取日志写入邮件系统，记录诸如TXID等信息备查
      */
     async VipDraw(user, params)  {
         let draw_count = params.draw_count;

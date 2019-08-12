@@ -20,17 +20,10 @@ function handle(data){
     }
     let d1 = data.curTime.toDateString();
     let d2 = data.user.getRefreshDate(); //缓存用户最近登录日期, 因为checkDailyData会修改该数值，而该数值后续判断还需要使用
-    //todo:判断是否开启七夕活动
-    this.remoteCall('dailyactivity.CheckButtonStatus',[data.user.domain, data.user.openid], msg=>{return msg});
 
     //如果跨天推送一条消息
     if(d1 != d2){
         data.user.notify({type:NotifyType.DailyEvent});
-    }
-
-    //赠送重生次数
-    if(data.user.getActionMgr().Execute(ActionExecuteType.AE_Revival, 1, true)){
-        data.user.getTollgateMgr().addRevivalLeftNum();
     }
 
     //检测用户跨天数据
@@ -48,12 +41,6 @@ function handle(data){
 
     try {
         data.user.baseMgr.info.SetStatus(UserStatus.online, false);
-
-        //刷新资源、体力值
-        data.user.baseMgr.vip.checkActivityStatus();//检测并修复排名活动的相关信息
-        data.user.baseMgr.item.AutoAddAP();//	刷新体力
-
-        data.user.notify({type: NotifyType.actions, info: data.user.getActionMgr().getInfo()});
     } catch(e){
         console.error(e);
     }
