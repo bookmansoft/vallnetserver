@@ -29,7 +29,7 @@ class profile extends facade.Control
 
         //以管理员账户为指定用户转账，这需要管理员账户上余额充足，未来还需要考虑一定的风控机制
         let ret = await this.core.service.gamegoldHelper.execute('tx.send', [
-            user.baseMgr.info.getAttr('block_addr'),
+            user.baseMgr.info.getAttr('acaddr'),
             draw_count,
         ]);   
 

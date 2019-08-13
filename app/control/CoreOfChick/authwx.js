@@ -55,11 +55,10 @@ class authwx extends facade.Control
             province: profile.province,
             city: profile.city,
             avatar_uri: profile.headimgurl || './static/img/icon/mine_no.png',
-            block_addr: profile.block_addr || '',
             prop_count: 0,
             current_prop_count: 0,
             unionid: profile.unionid,
-            block_addr: oemInfo.block_addr,                                         //经认证的用户地址
+            acaddr: oemInfo.acaddr,                                         //经认证的用户地址
         }
     }
 
@@ -112,7 +111,7 @@ class authwx extends facade.Control
             province: profile.province,
             city: profile.city,
             avatar_uri: profile.headimgurl || './static/img/icon/mine_no.png',
-            block_addr: profile.block_addr || '',
+            acaddr: profile.acaddr || '',
             prop_count: 0,
             current_prop_count: 0,
             unionid: profile.unionid,                                               

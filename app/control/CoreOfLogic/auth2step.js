@@ -139,7 +139,7 @@ class auth2step extends facade.Control
             province: '',
             city: '',
             avatar_uri: oemInfo.headimgurl || './static/img/icon/mine_no.png',
-            block_addr: oemInfo.block_addr || '',
+            acaddr: oemInfo.acaddr || '',
             prop_count: 0,
             current_prop_count: 0,
             unionid: oemInfo.openid,

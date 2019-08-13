@@ -83,13 +83,18 @@ async function handle(sofar) {
                     sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.GetRecord('phone'), usr.id], IndexType.Phone);
                 }
 
-                //检测并生成一个专用的钱包地址
-                if(!usr.baseMgr.info.GetRecord('block_addr')) {
+                //检测并生成专用账户、专用地址
+                if(!usr.baseMgr.info.getAttr('acid')) {
                     try {
-                        let rt = await sofar.facade.service.gamegoldHelper.execute('token.user', ['first-acc-01', usr.domainId, null, usr.domainId]);
-                        usr.baseMgr.info.SetRecord('block_addr', !!rt && rt.code == 0 ? rt.result.data.addr : '');
+                        let rt = await sofar.facade.service.gamegoldHelper.execute('account.create', [{name: usr.domainId}]);
+                        if(rt.code == 0) {
+                            usr.baseMgr.info.setAttr('acaddr', rt.result.receiveAddress);
+                            usr.baseMgr.info.setAttr('acid', rt.result.accountIndex); //记录用户帐户索引值备查
+
+                            accountIndex
+                        }
                     } catch(e) {
-                        console.log('create block_addr', e.message);
+                        console.log(`create account ${usr.domainId}`, e.message);
                     }
                 }
 

@@ -120,7 +120,7 @@ class sharedredpack_receive extends facade.Control {
                         let receiveData = this.core.GetObject(TableType.sharedredpack_receive, parseInt(srp_receive.list[i].id));
 
                         let rt = await this.core.service.gamegoldHelper.execute('tx.send', [
-                            user.baseMgr.info.getAttr('block_addr'), //发送到用户默认地址
+                            user.baseMgr.info.getAttr('acaddr'), //发送到用户默认地址
                             parseInt(receiveData.getAttr("receive_amount")),
                             'rpsAgent'
                         ]); 
