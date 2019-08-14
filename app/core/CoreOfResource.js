@@ -281,7 +281,7 @@ class CoreOfResource extends CoreOfBase {
                 req.params.cp_name,
             ];
             let cpInfo = await this.service.gamegoldHelper.execute('cp.byName', cpParamArray);
-            if (!cpInfo) {
+            if (!cpInfo || !cpInfo.result) {
                 res.json({ code: -200, msg: '查询我的道具失败，CP不存在' });
                 return;
             }

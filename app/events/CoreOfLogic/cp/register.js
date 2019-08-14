@@ -48,6 +48,7 @@ async function CreateRecord(cpInfo, core) {
         comment_count: 1, // `comment_count` int(4)  '评论数',
         game_link_url: '', // `game_link_url` varchar(255)  '游戏链接',
 
+        cpid: cpInfo.cid, // `cpid` 'CP编码',
         category_title: cpInfo.cls, // `category_title` varchar(32)  '类别名',
         cpurl: cpInfo.url, // `cpurl` varchar(255)  'cpurl',
         cp_addr: cpInfo.address, // `cp_addr` varchar(64)  'cp地址',
@@ -61,6 +62,7 @@ async function CreateRecord(cpInfo, core) {
     };
 
     //从CP开放接口获取CP详细信息
+    //@warning 如果开放接口访问异常，会导致中台CP注册流程提前终止
     let res = {};
     try {
         res = await fetch(`${cpInfo.url}`, { mode: 'cors' });
@@ -88,6 +90,7 @@ async function CreateRecord(cpInfo, core) {
         content.game_desc = res.game.desc; // `game_desc` varchar(255)  '描述',
     } catch(e) {
         console.log('CP开放接口访问错误', e.message);
+        return {code: 0};
     }
 
     let cpObj = core.GetObject(TableType.blockgame, cpInfo.cid, IndexType.Domain);
@@ -96,8 +99,6 @@ async function CreateRecord(cpInfo, core) {
             cpObj.orm[key] = content[key];
         }
     } else { //尚无记录，创建新的条目
-        content.cpid = cpInfo.cid; //唯一索引是不能变更的，只能在创建时指定，更新时不做设置
-
         await core.GetMapping(TableType.blockgame).Create(content);
     }
 

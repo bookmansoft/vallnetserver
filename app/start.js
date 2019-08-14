@@ -1,8 +1,9 @@
 const facade = require('gamecloud')
 //加载用户自定义模块 - 这句必须紧跟在模块引入语句之后
 facade.addition = true;
+let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
-let {NotifyType, IndexType, TableType, ResType} = facade.const
+let {NotifyType, IndexType, TableType, ResType, TableField} = facade.const
 
 let orderMonitor = require('./util/autoExec/orderMonitor');
 
@@ -106,6 +107,10 @@ if(env.constructor == String) {
             }
         }
 
+        //自检特约商户设定
+        let cids = core.GetMapping(TableType.Cp).groupOf().records(TableField.Cp).reduce((sofar,cur)=>{sofar += `${cur.cp_id},`; return sofar;}, '');
+        await core.service.RemoteNode.conn(remoteSetup.cid).execute('sys.changeSpecialCp', [1, cids]);
+
         //订阅 notify/receive 消息，登记处理句柄
         core.service.monitor.remote.watch(msg => {
             core.notifyEvent('user.receiveNotify', {data:msg});
@@ -120,6 +125,11 @@ if(env.constructor == String) {
         core.service.monitor.remote.watch(msg => {
             core.notifyEvent('cp.register', {msg:msg});
         }, 'cp/register').execute('subscribe', 'cp/register');
+
+        //订阅 cp/change 消息，登记处理句柄
+        core.service.monitor.remote.watch(msg => {
+            core.notifyEvent('cp.register', {msg:msg});
+        }, 'cp/change').execute('subscribe', 'cp/change');
 
         //直接登记消息处理句柄，因为 tx.client/balance.account.client/order.pay 这样的消息是默认发送的，不需要订阅
         core.service.monitor.remote.watch(msg => {
@@ -208,6 +218,12 @@ if(env.constructor == String) {
         core.service.monitor.remote.watch(msg => {
             core.notifyEvent('cp.register', {msg:msg});
         }, 'cp/register').execute('subscribe', 'cp/register');
+
+        //订阅 cp/change 消息，登记处理句柄
+        core.service.monitor.remote.watch(msg => {
+            core.notifyEvent('cp.register', {msg:msg});
+        }, 'cp/change').execute('subscribe', 'cp/change');
+
         //订阅CP众筹消息，登记处理句柄
         core.service.monitor.remote.watch(msg => {
             core.notifyEvent('cp.register', {msg:msg});

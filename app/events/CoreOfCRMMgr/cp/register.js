@@ -8,15 +8,24 @@ let fetch = require("node-fetch");
  * 主网下发CP注册通知，该通知为先前操作员发起的CP注册请求的确认应答，此时应该将CP记录插入数据库
  * @param {Object} data.msg { cid, name, url, address, ip, cls, grate, wid, account }
  */
-function handle(data) {
-    //收到CP注册事件，根据其携带的账号信息查找操作员对象
-    let cid = data.msg.account;
-    if(cid == 'default') { //对超级管理员账号进行转换
-        cid = remoteSetup.cid;
+async function handle(data) {
+    if(!data.msg || typeof data.msg != 'object') {
+        console.log('cp.register: error cp info.');
+        return {code: 0};
     }
 
-    let user = this.GetObject(EntityType.User, cid, IndexType.Terminal);
-    if(user) {
+    if(data.msg.cid == "xxxxxxxx-game-gold-boss-xxxxxxxxxxxx") { //强制跳过特殊CP
+        return {code: 0};
+    }
+
+    //收到CP注册事件，根据其携带的账号信息查找操作员对象
+    let account = data.msg.account;
+    if(account == 'default') { //对超级管理员账号进行转换
+        account = remoteSetup.cid;
+    }
+
+    let user = this.GetObject(EntityType.User, account, IndexType.Terminal);
+    if(user) { //CRM系统只记录和自己相关的CP信息
         CreateRecord(user, data.msg, this).catch(e => {
             console.error(e);
         });
@@ -32,15 +41,6 @@ function handle(data) {
  * @param {Object} cpinfo { cid, name, url, address, ip, cls, grate, wid, account }
  */
 async function CreateRecord(user, cpinfo, core) {
-    if(!cpinfo || typeof cpinfo != 'object') {
-        console.log('cp.CreateRecord: error cp info.');
-        return {code: 0};
-    }
-
-    if(cpinfo.cid == "xxxxxxxx-game-gold-boss-xxxxxxxxxxxx") { //强制跳过特殊CP
-        return {code: 0};
-    }
-
     let data = {};
     data.cp_name = cpinfo.name;
     data.cp_url = cpinfo.url;
@@ -76,24 +76,34 @@ async function CreateRecord(user, cpinfo, core) {
 
     //写入数据库
     console.log('register cp start', data);
-    await core.GetMapping(TableType.Cp).Create(
-        data.cp_id,
-        data.cp_name,
-        data.cp_text,
-        data.cp_url,
-        data.wallet_addr,
-        data.cp_type,
-        data.develop_name,
-        data.cp_desc,
-        data.cp_version,
-        data.picture_url,
-        data.cp_state,
-        data.publish_time,
-        data.update_time,
-        data.update_content,
-        data.invite_share,
-        data.operator_id,
-    );
+    let cp = this.GetObject(TableType.Cp, cpinfo.cid, IndexType.Foreign);
+    if(!cp) {
+        await core.GetMapping(TableType.Cp).Create(
+            data.cp_id,
+            data.cp_name,
+            data.cp_text,
+            data.cp_url,
+            data.wallet_addr,
+            data.cp_type,
+            data.develop_name,
+            data.cp_desc,
+            data.cp_version,
+            data.picture_url,
+            data.cp_state,
+            data.publish_time,
+            data.update_time,
+            data.update_content,
+            data.invite_share,
+            data.operator_id,
+        );
+
+        //修改特约商户配置信息, 在系统启动自检时还要再检查一遍
+        await core.service.RemoteNode.conn(remoteSetup.cid).execute('sys.specialcp', [1, `${data.cp_id},`]); //带逗号的字符串会被RPC接口解析为数组
+    } else {
+        for(let [key, value] of Object.entries(data)) {
+            cp.setAttr(key, value);
+        }
+    }
     console.log('register cp end');
     return { code: 0, msg: "创建CP成功" };
 }
