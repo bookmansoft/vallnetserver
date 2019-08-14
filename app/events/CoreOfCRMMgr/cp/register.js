@@ -76,7 +76,7 @@ async function CreateRecord(user, cpinfo, core) {
 
     //写入数据库
     console.log('register cp start', data);
-    let cp = this.GetObject(TableType.Cp, cpinfo.cid, IndexType.Foreign);
+    let cp = core.GetObject(TableType.Cp, cpinfo.cid, IndexType.Foreign);
     if(!cp) {
         await core.GetMapping(TableType.Cp).Create(
             data.cp_id,
@@ -98,7 +98,7 @@ async function CreateRecord(user, cpinfo, core) {
         );
 
         //修改特约商户配置信息, 在系统启动自检时还要再检查一遍
-        await core.service.RemoteNode.conn(remoteSetup.cid).execute('sys.specialcp', [1, `${data.cp_id},`]); //带逗号的字符串会被RPC接口解析为数组
+        await core.service.RemoteNode.conn(remoteSetup.cid).execute('sys.changeSpecialCp', [1, `${data.cp_id},`]); //带逗号的字符串会被RPC接口解析为数组
     } else {
         for(let [key, value] of Object.entries(data)) {
             cp.setAttr(key, value);
