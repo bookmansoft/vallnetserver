@@ -288,9 +288,20 @@ if(env.constructor == String) {
         //3.1 参与众筹
         core.RegisterResHandle('crowd', async (user, bonus) => {
             let stock = core.GetObject(TableType.StockBase, parseInt(bonus.id));
-            if(!!stock && bonus.num > 0) {
+            if(!!stock && bonus.num > 0 && stock.getAttr('sum_left') >= bonus.num) {
                 //由于订单已经支付，此处由系统为用户代购, 义务捐赠模式下 bonus.num 为零，不需处理
                 ret = await core.service.gamegoldHelper.execute('stock.purchaseTo', [stock.getAttr('cid'), bonus.num, user.domainId]);
+                if(ret.code == 0) {
+                    stock.setAttr('supply_people_num', ret.result.support);
+
+                    let cpObj = core.GetObject(TableType.blockgame, stock.getAttr('cid'), IndexType.Domain);
+                    if(cpObj) {
+                        stock.setAttr('sum_left', ret.result.total - ret.result.purchase);
+                    }
+
+                    stock.orm.save();
+                }
+    
                 return ret;
             }
             return {code:0};

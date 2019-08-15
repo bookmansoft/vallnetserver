@@ -126,7 +126,7 @@ async function CreateRecord(cpInfo, core) {
             content.funding_project_text = res.crowd.funding_project_text;
 
             await core.GetMapping(TableType.StockBase).Create(content);
-        } else {
+        } else if (cpInfo.stock.height == stock.orm.height) { //相同高度才更新
             for(let key of Object.keys(content)) {
                 stock.orm[key] = content[key];
             }

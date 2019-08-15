@@ -58,14 +58,13 @@
     <div class="gray-panel" v-if="tabIndex==0" style="background-color:beige;">
         <!-- 游戏主页 -->
         <div id="divHome" class="card"></div>
-        <!-- 钱包链接 -->
-        <p style="padding:8px 0px 0px 8px;"><button type="button" @click="onBackTowallet()" class="am-btn am-btn-warning am-radius">返回钱包</button></p>
     </div>
     <div id="divProp" class="gray-panel" v-if="tabIndex==1" style="background-color:beige;">
-            <!--道具商城在这里-->
+        <!--道具商城在这里-->
     </div>
     <!-- 道具背包 -->
-    <div id="divMyPropList" class="card" style="background-color:beige;" v-if="tabIndex==3"></div>
+    <div id="divMyPropList" class="card" style="background-color:beige;" v-if="tabIndex==2"></div>
+    <div id="divProp" class="gray-panel" v-if="tabIndex==3" style="background-color:beige;"></div>
 </div>
 <div id="alert"></div>
 <script>
@@ -77,7 +76,8 @@
             tabsNavs: [
                 {label:"主界面",href:"#", cls:"am-active", id:0},
                 {label:"道具商城",href:"#", cls:"", id:1},
-                {label:"我的道具",href:"#", cls:"", id:3},
+                {label:"我的道具",href:"#", cls:"", id:2},
+                {label:"钱包",href:"#", cls:"", id:3},
             ],
             tabIndex: 0,        //导航索引
             cp: {},             //CP信息
@@ -100,15 +100,13 @@
                     homeInfo();
                 } else if(that.tabIndex == 1) { //游戏商城界面
                     propInfo();
-                } else if(that.tabIndex == 3) { //我的道具
+                } else if(that.tabIndex == 2) { //我的道具
                     myPropList();
+                } else if(that.tabIndex == 3) {
+                    // 返回钱包
+                    window.location.href = `http://wallet.vallnet.cn/?openid=${mainVue.user.openid}&openkey=${mainVue.user.openkey}&token=${mainVue.user.token}`;
                 }
             },
-
-            // 返回钱包
-            onBackTowallet: function() {
-                window.location.href = `http://wallet.vallnet.cn/?openid=${mainVue.user.openid}&openkey=${mainVue.user.openkey}&token=${mainVue.user.token}`;
-            }
         }
     });
 </script>
