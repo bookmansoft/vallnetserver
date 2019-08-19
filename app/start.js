@@ -98,7 +98,35 @@ if(env.constructor == String) {
         while(true) {
             //单独维护一个到公链的长连接，进行消息监控
             core.chain = {height: 0};
-            let ret = await core.service.monitor.setlongpoll().execute('block.count', []);
+            let ret = await core.service.monitor.setlongpoll(msg=>{
+                //先退订，避免造成重复订阅
+                await core.service.monitor.remote.execute('unsubscribe', [
+                    'notify/receive',
+                    'block/tips',
+                    'cp/register', 
+                    'cp/change',
+                ]);
+
+                //订阅 notify/receive 消息，登记处理句柄
+                core.service.monitor.remote.watch(msg => {
+                    core.notifyEvent('user.receiveNotify', {data:msg});
+                }, 'notify/receive').execute('subscribe', 'notify/receive');
+
+                //订阅 block/tips 消息，更新最新块高度
+                core.service.monitor.remote.watch(msg => {
+                    core.chain.height = msg.height;
+                }, 'block/tips').execute('subscribe', 'block/tips');
+
+                //订阅 cp/register 消息，登记处理句柄
+                core.service.monitor.remote.watch(msg => {
+                    core.notifyEvent('cp.register', {msg:msg});
+                }, 'cp/register').execute('subscribe', 'cp/register');
+
+                //订阅 cp/change 消息，登记处理句柄
+                core.service.monitor.remote.watch(msg => {
+                    core.notifyEvent('cp.register', {msg:msg});
+                }, 'cp/change').execute('subscribe', 'cp/change');
+            }).execute('block.count', []);
             if(ret && ret.code == 0) {
                 core.chain.height = ret.result;
                 break;
@@ -110,26 +138,6 @@ if(env.constructor == String) {
         //自检特约商户设定
         let cids = core.GetMapping(TableType.Cp).groupOf().records(TableField.Cp).reduce((sofar,cur)=>{sofar += `${cur.cp_id},`; return sofar;}, '');
         await core.service.RemoteNode.conn(remoteSetup.cid).execute('sys.changeSpecialCp', [1, cids]);
-
-        //订阅 notify/receive 消息，登记处理句柄
-        core.service.monitor.remote.watch(msg => {
-            core.notifyEvent('user.receiveNotify', {data:msg});
-        }, 'notify/receive').execute('subscribe', 'notify/receive');
-
-        //订阅 block/tips 消息，更新最新块高度
-        core.service.monitor.remote.watch(msg => {
-            core.chain.height = msg.height;
-        }, 'block/tips').execute('subscribe', 'block/tips');
-
-        //订阅 cp/register 消息，登记处理句柄
-        core.service.monitor.remote.watch(msg => {
-            core.notifyEvent('cp.register', {msg:msg});
-        }, 'cp/register').execute('subscribe', 'cp/register');
-
-        //订阅 cp/change 消息，登记处理句柄
-        core.service.monitor.remote.watch(msg => {
-            core.notifyEvent('cp.register', {msg:msg});
-        }, 'cp/change').execute('subscribe', 'cp/change');
 
         //直接登记消息处理句柄，因为 tx.client/balance.account.client/order.pay 这样的消息是默认发送的，不需要订阅
         core.service.monitor.remote.watch(msg => {
@@ -180,7 +188,68 @@ if(env.constructor == String) {
         while(true) {
             //单独维护一个到公链的长连接，进行消息监控
             core.chain = {height: 0};
-            let ret = await core.service.monitor.setlongpoll().execute('block.count', []);
+            let ret = await core.service.monitor.setlongpoll(async msg => {
+                //先退订，避免造成重复订阅
+                await core.service.monitor.remote.execute('unsubscribe', [
+                    'block/tips',
+                    'cp/register', 
+                    'cp/change',
+                    'cp/stock',
+                    'prop/receive',
+                    'prop/auction',
+                    'notify/receive',
+                    'balance.account.client',
+                    'cp/orderPay',
+                ]);
+
+                //订阅 block/tips 消息，更新最新块高度
+                core.service.monitor.remote.watch(msg => {
+                    core.chain.height = msg.height;
+                }, 'block/tips').execute('subscribe', 'block/tips');
+    
+                //订阅CP注册消息，登记处理句柄
+                core.service.monitor.remote.watch(msg => {
+                    core.notifyEvent('cp.register', {msg:msg});
+                }, 'cp/register').execute('subscribe', 'cp/register');
+    
+                //订阅 cp/change 消息，登记处理句柄
+                core.service.monitor.remote.watch(msg => {
+                    core.notifyEvent('cp.register', {msg:msg});
+                }, 'cp/change').execute('subscribe', 'cp/change');
+    
+                //订阅CP众筹消息，登记处理句柄
+                core.service.monitor.remote.watch(msg => {
+                    core.notifyEvent('cp.register', {msg:msg});
+                }, 'cp/stock').execute('subscribe', 'cp/stock');
+    
+                //订阅消息并登记消息处理句柄
+                core.service.monitor.remote.watch(msg => {
+                    //收到新的道具，或者已有道具发生变更，抛出内部事件, 处理流程定义于 app/events/user/propReceive.js
+                    core.notifyEvent('wallet.propReceive', {data:msg});
+                }, 'prop/receive').execute('subscribe', 'prop/receive');
+    
+                core.service.monitor.remote.watch(msg => {
+                    //收到发布的道具被成功拍卖后的通知，抛出内部事件, 处理流程定义于 app/events/wallet/propAuction.js
+                    core.notifyEvent('wallet.propAuction', {data:msg});
+                }, 'prop/auction').execute('subscribe', 'prop/auction');
+    
+                core.service.monitor.remote.watch(msg => {
+                    //收到通告，抛出内部事件, 处理流程定义于 app/events/wallet/receiveNotify.js
+                    core.notifyEvent('user.receiveNotify', {data:msg});
+                }, 'notify/receive').execute('subscribe', 'notify/receive');
+    
+                core.service.monitor.remote.watch(msg => {
+                    //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/wallet/balanceChange.js
+                    core.notifyEvent('wallet.balanceChange', {data:msg});
+                }, 'balance.account.client');
+    
+                core.service.monitor.remote.watch(msg => {
+                    //用户执行 order.pay 之后，CP特约节点抛出到账通知消息, 处理流程定义于 app/events/user/orderPay.js
+                    //注意：特约节点在向钱包抛出该通知后，还会主动调用游戏服务端回调接口
+                    core.notifyEvent('user.orderPay', {data:msg});
+                }, 'cp/orderPay').execute('subscribe', 'cp/orderPay');
+            }).execute('block.count', []);
+
             if(ret && ret.code == 0) {
                 core.chain.height = ret.result;
                 break;
@@ -208,52 +277,6 @@ if(env.constructor == String) {
                 console.log('failed to connect to vallnet.');
             }
         }
-
-        //订阅 block/tips 消息，更新最新块高度
-        core.service.monitor.remote.watch(msg => {
-            core.chain.height = msg.height;
-        }, 'block/tips').execute('subscribe', 'block/tips');
-
-        //订阅CP注册消息，登记处理句柄
-        core.service.monitor.remote.watch(msg => {
-            core.notifyEvent('cp.register', {msg:msg});
-        }, 'cp/register').execute('subscribe', 'cp/register');
-
-        //订阅 cp/change 消息，登记处理句柄
-        core.service.monitor.remote.watch(msg => {
-            core.notifyEvent('cp.register', {msg:msg});
-        }, 'cp/change').execute('subscribe', 'cp/change');
-
-        //订阅CP众筹消息，登记处理句柄
-        core.service.monitor.remote.watch(msg => {
-            core.notifyEvent('cp.register', {msg:msg});
-        }, 'cp/stock').execute('subscribe', 'cp/stock');
-
-        //订阅消息并登记消息处理句柄
-        core.service.monitor.remote.watch(msg => {
-            //收到新的道具，或者已有道具发生变更，抛出内部事件, 处理流程定义于 app/events/user/propReceive.js
-            core.notifyEvent('wallet.propReceive', {data:msg});
-        }, 'prop/receive').execute('subscribe', 'prop/receive');
-
-        core.service.monitor.remote.watch(msg => {
-            //收到发布的道具被成功拍卖后的通知，抛出内部事件, 处理流程定义于 app/events/wallet/propAuction.js
-            core.notifyEvent('wallet.propAuction', {data:msg});
-        }, 'prop/auction').execute('subscribe', 'prop/auction');
-
-        core.service.monitor.remote.watch(msg => {
-            //收到通告，抛出内部事件, 处理流程定义于 app/events/wallet/receiveNotify.js
-            core.notifyEvent('user.receiveNotify', {data:msg});
-        }, 'notify/receive').execute('subscribe', 'notify/receive');
-
-        core.service.monitor.remote.watch(msg => {
-            //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/wallet/balanceChange.js
-            core.notifyEvent('wallet.balanceChange', {data:msg});
-        }, 'balance.account.client');
-
-        core.service.monitor.remote.watch(msg => {
-            //用户执行 order.pay 之后，CP特约节点发起到账通知消息，抛出内部事件, 处理流程定义于 app/events/user/orderPay.js
-            core.notifyEvent('wallet.orderPay', {data:msg});
-        }, 'order.pay');
 
         //#region 订单处理相关流程
         
@@ -333,7 +356,7 @@ if(env.constructor == String) {
         let qryNotify = await core.service.gamegoldHelper.execute('sys.listNotify', [[['page', 1], ['size', -1]],]);
         if(qryNotify.code == 0) {
             for(let it of qryNotify.result.list) {
-                core.notifyEvent('user.receiveNotify', {data: it});
+                await core.notifyEvent('user.receiveNotify', {data: it});
             }
         }
 

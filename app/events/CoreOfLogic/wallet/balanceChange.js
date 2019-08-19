@@ -1,10 +1,25 @@
 let facade = require('gamecloud');
 let {EntityType, IndexType, NotifyType} = facade.const;
 
+const Lock = require('../../../util/lock')
+const queueLock = new Lock();
+
 /**
+ * 收到主网账户变更通知，转化为邮件
  * Created by liub on 2019.06.05
  */
-function handle(payload) { 
+async function handle(payload) { 
+    const unlock = await queueLock.lock();
+    try {
+      await handlePayload.call(this, payload);
+    } catch(e) {
+      console.error(e);
+    } finally {
+      unlock();
+    }
+}
+
+async function handlePayload(payload) {
     //用户账户发生变动，对应主网事件 balance.account.client
     let log = payload.data;
     // {
@@ -39,7 +54,7 @@ function handle(payload) {
         let tm = (log.height > 0) ? ((Date.now()/1000 - Math.max(0, this.chain.height - log.height)*600)|0) : ((Date.now()/1000)|0);
         let mail = this.GetObject(EntityType.Mail, log.sn, IndexType.Domain);
         if(!mail) {
-            this.service.gamegoldHelper.sendSysNotify(
+            await this.service.gamegoldHelper.sendSysNotify(
                 ui,
                 log, 
                 NotifyType.balance, 
@@ -56,7 +71,7 @@ function handle(payload) {
                 }));
             }
         }
-    }
+    }    
 }
 
 module.exports.handle = handle;

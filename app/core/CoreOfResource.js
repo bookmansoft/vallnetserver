@@ -63,15 +63,51 @@ class CoreOfResource extends CoreOfBase {
         //我的道具列表【确权】
         app.get('/mock/:cp_name/myprops/:uid', this.myProps.bind(this));
         
-        //【订单】游戏客户端下单的post方法；除了cp_name以外，其他参数以JSON格式在request-body中提交
+        //【订单】游戏内下单
         app.post('/mock/:cp_name/order', this.order.bind(this));
 
-        //【订单】回调通知
+        //【订单】接收主网回调
         app.post('/mock/:cp_name/testnet/order/confirm', this.orderConfirm.bind(this));
     }
 
     /**
-     * 来自链的回调接口【认证】
+     * 处理客户端上行的道具购买指令，通过 sys.notify 向主网发送订单消息
+     * @param {*} req 
+     * @param {*} res 
+     */
+    async order(req, res) {
+        //通过 uid 查询用户对象
+        let user = this.userMap[req.body.uid];
+        if(!!user) {
+            //生成订单并缓存
+            let data = {
+                cid: req.body.cid,                  //CP编码
+                oid: req.body.oid,                  //道具厂商编码
+                price: req.body.price,              //价格，单位尘
+                url: req.body.url,                  //道具图标URL
+                props_name: req.body.props_name,    //道具名称
+                sn: uuid.v1(),                      //订单编号
+                address: user.address,              //用户地址
+            };
+            this.orderMap.set(data.sn, data);
+            
+            //向主网发送消息
+            let paramArray = [
+                user.address,
+                JSON.stringify(data),
+            ];
+            let ret = await this.service.gamegoldHelper.execute('sys.notify', paramArray);
+            if(ret.code == 0) {
+                res.json({ code: ret.code });
+                return;
+            }
+        }
+
+        res.json({ code: -1 });
+    }
+    
+    /**
+     * 订单支付回调接口，处理来自主网的订单支付确认通知 - todo 目前存在重复处理问题
      * @param {*} req 
      * @param {*} res 
      */
@@ -79,6 +115,18 @@ class CoreOfResource extends CoreOfBase {
         try {
             let {data, sig} = req.body;
 
+            //查询订单列表中是否存在对应记录
+            let theOrder = this.orderMap.get(data.sn);
+            if (!theOrder) {
+                console.log("订单不存在");
+                res.json({ code: 0 });
+                return;
+            }
+
+            //删除已处理订单记录
+            this.orderMap.delete(data.sn);
+
+            //确认已获取正确签名密钥
             if(!this.cpToken[data.cid]) {
                 let retAuth = await this.service.gamegoldHelper.execute('sys.createAuthToken', [data.cid]);
                 if(retAuth.code == 0) {
@@ -90,33 +138,20 @@ class CoreOfResource extends CoreOfBase {
                 }
             }
     
+            //校验签名
             let dstr = stringify(data);
             let sim = crypto.createHmac('sha256', dstr).update(this.cpToken[data.cid]).digest('hex');
-            //将计算令牌和传递令牌进行比对
             if (sim != sig) {
                 res.json({ code: 0 });
                 return;
             }
 
-            //特殊处理：从订单号中获取道具原始编码
-            let prop_oid = 'prop_' + req.params.cp_name + '01';    //oid: prop_cp12270101
-            let arraySN = data.sn.split('-new-');
-            if (arraySN.length > 1) {
-                prop_oid = arraySN[0];
-            } else {
-                //对于没有-new-分隔符的情况下，尝试从内部Map获得订单号
-                let theOrder = this.orderMap.get(data.sn);
-                if (theOrder != null) {
-                    prop_oid = theOrder.oid;
-                    console.log("成功获取订单:", JSON.stringify(theOrder));
-                }
-            }
             //调用prop.order 订购该道具，即创建道具并发送到指定地址
             let paramArray = [
                 data.cid,
-                prop_oid,
-                parseInt(data.sum * 0.2),//统一当成等级 3 ，含金量20%处理
-                data.addr
+                theOrder.oid,
+                parseInt(data.sum * 0.2),//统一当成含金量20%处理
+                data.addr,
             ];
             let ret = await this.service.gamegoldHelper.execute('prop.order', paramArray);
             res.json({ code: ret.code });
@@ -466,41 +501,6 @@ class CoreOfResource extends CoreOfBase {
             console.error(e);
             res.end();
         }        
-    }
-
-    /**
-     * 通过 sys.notify 指令发送订单消息
-     * @param {*} req 
-     * @param {*} res 
-     */
-    async order(req, res) {
-        let user = this.userMap[req.body.uid];
-        if(!!user) {
-            //生成订单并缓存
-            let data = {
-                cid: req.body.cid,                  //CP编码
-                oid: req.body.oid,                  //道具厂商编码
-                price: req.body.price,              //价格，单位尘
-                url: req.body.url,                  //道具图标URL
-                props_name: req.body.props_name,    //道具名称
-                sn: uuid.v1(),                      //订单编号
-                address: user.address,              //用户地址
-            };
-            this.orderMap.set(data.sn, data);
-            
-            //发送消息
-            let paramArray = [
-                user.address,
-                JSON.stringify(data),
-            ];
-            let ret = await this.service.gamegoldHelper.execute('sys.notify', paramArray);
-            if(ret.code == 0) {
-                res.json({ code: ret.code });
-                return;
-            }
-        }
-
-        res.json({ code: -1 });
     }
 }
 

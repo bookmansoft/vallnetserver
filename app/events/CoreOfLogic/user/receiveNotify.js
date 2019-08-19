@@ -1,11 +1,30 @@
 let facade = require('gamecloud')
 let {EntityType, IndexType, NotifyType} = facade.const
 
+const Lock = require('../../../util/lock')
+const queueLock = new Lock();
+
 /**
- * 收到主网通告(notify/receive)
+ * 收到主网账户变更通知，转化为邮件
  * Created by liub on 2019.06.05
  */
-function handle(event) { 
+async function handle(event) { 
+    const unlock = await queueLock.lock();
+    try {
+      await handlePayload.call(this, event);
+    } catch(e) {
+      console.error(e);
+    } finally {
+      unlock();
+    }
+}
+
+
+/**
+ * 收到主网通告(notify/receive)，将其转化为邮件
+ * Created by liub on 2019.06.05
+ */
+async function handlePayload(event) { 
     // 通告数据格式 event.data
     // {
     //     h,                  //块高度
@@ -24,7 +43,7 @@ function handle(event) {
     if(!mail) {
         let user = this.GetObject(EntityType.User, event.data.account, IndexType.Domain);
         if(!!user) {
-            this.service.gamegoldHelper.sendSysNotify(
+            await this.service.gamegoldHelper.sendSysNotify(
                 user, 
                 event.data, 
                 NotifyType.notify, 

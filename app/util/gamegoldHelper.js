@@ -22,8 +22,8 @@ class gamegoldHelper extends facade.Service
     /**
      * 将连接器设置为长连模式，同时完成登录、消息订阅等操作
      */
-    setlongpoll() {
-        this.remote.setmode(this.remote.CommMode.ws);
+    setlongpoll(cb) {
+        this.remote.setmode(this.remote.CommMode.ws, cb);
         return this;
     }
 

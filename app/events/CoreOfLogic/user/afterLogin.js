@@ -9,7 +9,7 @@ let {EntityType, IndexType, NotifyType} = facade.const
  * @note 事件处理函数，this由外部注入，指向Facade
  * @param data
  */
-async function handle(data){
+async function handle(data) {
     //查询过去一天内的账号变更日志
     rt = await this.service.gamegoldHelper.execute('balance.log', [data.user.domainId, Math.max(0, this.chain.height - 144)]);
     if(!!rt && rt.code == 0) {
@@ -41,7 +41,7 @@ async function handle(data){
 
             let mail = this.GetObject(EntityType.Mail, log.sn, IndexType.Domain);
             if(!mail) {
-                this.service.gamegoldHelper.sendSysNotify(
+                await this.service.gamegoldHelper.sendSysNotify(
                     data.user,
                     log, 
                     NotifyType.balance,
