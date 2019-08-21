@@ -8,6 +8,9 @@ let facade = require('gamecloud');
 let CoreOfBase = facade.CoreOfBase;
 let { stringify } = require('../util/stringUtil');
 
+//订单执行前需要达到的确认数
+const confirmNum = 1;
+
 /**
  * 资源节点类
  */
@@ -21,6 +24,54 @@ class CoreOfResource extends CoreOfBase {
         this.orderMap = new Map();
         this.cpToken = new Map();
         this.userMap = new Map();
+
+        //一个简单的定时程序，对订单进行定时检测，已确认订单进行处理后删除，未确认订单如超时则主动查询状态
+        setInterval(async () => {
+            for(let [sn, data] of this.orderMap) {
+                if(data.finish) {
+                    continue;
+                }
+
+                if(data.confirm >= confirmNum) {
+                    //调用prop.order 订购该道具，即创建道具并发送到指定地址
+                    let paramArray = [
+                        data.cid,
+                        data.oid,
+                        parseInt(data.sum * 0.5),//统一当成含金量50%处理
+                        data.addr,
+                    ];
+                    let ret = await this.service.gamegoldHelper.execute('prop.order', paramArray);
+                    if(ret.code == 0) {
+                        //标记为已处理
+                        data.finish = true;
+                    }
+                } else {
+                    if(Date.now()/1000 - data.time > 10) {
+                        let ret = await this.service.gamegoldHelper.execute('order.query', [data.cid, sn]);
+                        /*
+                            {
+                                "oper": "pay",
+                                "cid": "0be0f210-c367-11e9-88a0-976cfe77cf12",
+                                "uid": "u001",
+                                "sn": "s00100000000000000000000000000000000",
+                                "sum": 50000,
+                                "addr": "tb1q6x8tcusuhyd4f48edzvsngzfs9gc2x204gmdvy",
+                                "gaddr": null,
+                                "publish": 112,
+                                "height": 113,
+                                "hash": "85829a262e627788e018e6fe369f9cfd30da9d63085078cf87d2f886d6975cbf",
+                                "confirm": 2
+                            }                        
+                         */                        
+                        if(ret.code == 0 && !!ret.result) {
+                            Object.keys(ret.result).map(key=>{
+                                data[key] = ret.result[key];
+                            });
+                        }
+                    }
+                }
+            }
+        }, 3000);
     }
 
     /**
@@ -79,17 +130,18 @@ class CoreOfResource extends CoreOfBase {
         //通过 uid 查询用户对象
         let user = this.userMap[req.body.uid];
         if(!!user) {
-            //生成订单并缓存
+            //生成订单。对于以 sys.notify 模式发起的订单，游戏服务器不用承担订单状态监控、主动查询订单状态、再次发起订单支付的义务，简单说就是发射后不管
             let data = {
                 cid: req.body.cid,                  //CP编码
-                oid: req.body.oid,                  //道具厂商编码
+                oid: req.body.oid,                  //道具原始编码
                 price: req.body.price,              //价格，单位尘
                 url: req.body.url,                  //道具图标URL
                 props_name: req.body.props_name,    //道具名称
                 sn: uuid.v1(),                      //订单编号
                 address: user.address,              //用户地址
+                confirmed: -1,                      //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+                time: Date.now()/1000,
             };
-            this.orderMap.set(data.sn, data);
             
             //向主网发送消息
             let paramArray = [
@@ -97,7 +149,10 @@ class CoreOfResource extends CoreOfBase {
                 JSON.stringify(data),
             ];
             let ret = await this.service.gamegoldHelper.execute('sys.notify', paramArray);
-            if(ret.code == 0) {
+            if(!!ret) {
+                if(ret.code == 0) { //操作成功，本地缓存订单，以便在将来接收到回调时进行必要的比对
+                    this.orderMap.set(data.sn, data);
+                }
                 res.json({ code: ret.code });
                 return;
             }
@@ -107,7 +162,7 @@ class CoreOfResource extends CoreOfBase {
     }
     
     /**
-     * 订单支付回调接口，处理来自主网的订单支付确认通知 - todo 目前存在重复处理问题
+     * 订单支付回调接口，处理来自主网的订单支付确认通知
      * @param {*} req 
      * @param {*} res 
      */
@@ -115,16 +170,13 @@ class CoreOfResource extends CoreOfBase {
         try {
             let {data, sig} = req.body;
 
-            //查询订单列表中是否存在对应记录
+            // //查询订单列表中是否存在对应记录
             let theOrder = this.orderMap.get(data.sn);
             if (!theOrder) {
                 console.log("订单不存在");
                 res.json({ code: 0 });
                 return;
             }
-
-            //删除已处理订单记录
-            this.orderMap.delete(data.sn);
 
             //确认已获取正确签名密钥
             if(!this.cpToken[data.cid]) {
@@ -146,17 +198,16 @@ class CoreOfResource extends CoreOfBase {
                 return;
             }
 
-            //调用prop.order 订购该道具，即创建道具并发送到指定地址
-            let paramArray = [
-                data.cid,
-                theOrder.oid,
-                parseInt(data.sum * 0.2),//统一当成含金量20%处理
-                data.addr,
-            ];
-            let ret = await this.service.gamegoldHelper.execute('prop.order', paramArray);
-            res.json({ code: ret.code });
-        }
-        catch (e) {
+            //更新订单信息
+            data.time = Date.now()/1000;
+            Object.keys(data).map(key=>{
+                theOrder[key] = data[key];
+            });
+
+            this.orderMap.set(theOrder.sn, theOrder);
+
+            res.json({ code: 0 });
+        } catch (e) {
             console.error(e);
             res.end();
         }

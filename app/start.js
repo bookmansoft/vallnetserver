@@ -98,7 +98,7 @@ if(env.constructor == String) {
         while(true) {
             //单独维护一个到公链的长连接，进行消息监控
             core.chain = {height: 0};
-            let ret = await core.service.monitor.setlongpoll(msg=>{
+            let ret = await core.service.monitor.setlongpoll(async msg=>{
                 //先退订，避免造成重复订阅
                 await core.service.monitor.remote.execute('unsubscribe', [
                     'notify/receive',
@@ -139,7 +139,7 @@ if(env.constructor == String) {
         let cids = core.GetMapping(TableType.Cp).groupOf().records(TableField.Cp).reduce((sofar,cur)=>{sofar += `${cur.cp_id},`; return sofar;}, '');
         await core.service.RemoteNode.conn(remoteSetup.cid).execute('sys.changeSpecialCp', [1, cids]);
 
-        //直接登记消息处理句柄，因为 tx.client/balance.account.client/order.pay 这样的消息是默认发送的，不需要订阅
+        //直接登记消息处理句柄，因为 tx.client/balance.account.client 这样的消息是默认发送的，不需要订阅
         core.service.monitor.remote.watch(msg => {
             //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/user/balanceChange.js
             core.notifyEvent('balance.change', {data:msg});

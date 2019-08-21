@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType, TableField} = facade.const;
+let {EntityType, IndexType, TableType, TableField} = facade.const;
 
 /**
  * 钱包
@@ -40,36 +40,34 @@ class wallet extends facade.Control
     }
 
     /**
-     * 消息列表
+     * 支付待支付订单
      * @param {*} user 
      * @param {*} params 
      */
     async NotifyOrderPay(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('sys.listNotify', [[['sn', params.sn]]]);
-        if(ret.code == 0 && ret.result.list.length > 0) {
-            let blockNotify = ret.result.list[0];
-            if(blockNotify.account == user.domainId) {
-                let obj = (typeof blockNotify.body.content == 'string') ? JSON.parse(blockNotify.body.content) : blockNotify.body.content;
-                if(!!obj && obj.hasOwnProperty('cid') && obj.hasOwnProperty('price') && obj.hasOwnProperty('sn')) { 
-                    let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
-                        obj.cid,        //game_id
-                        user.domainId,  //user_id
-                        obj.sn,         //order_sn订单编号
-                        obj.price,      //order_sum订单金额
-                        user.domainId,  //指定结算的钱包账户，一般为微信用户的openid
-                    ]);
-    
-                    if(ret.code == 0) {
-                      return {code: 0, data:ret.result}; 
-                    }  else {
-                      return {code: -1, msg: 'pay error'}; 
-                    }
-                } else {
-                    return {code: -1, msg: 'invalid order'}; 
-                }
-            }
+        let mail = this.core.GetObject(EntityType.Mail, params.sn, IndexType.Domain);
+        if(!mail || mail.dst != user.openid) {
+            return {code: -2, msg: 'notify not exist'}; 
         }
-        return {code: -2, msg: 'notify not exist'}; 
+
+        let content = JSON.parse(mail.content);
+        if(content.type != 10002) {
+            return {code: -2, msg: 'notify not exist'}; 
+        }
+        let order = JSON.parse(content.info.content.body.content);
+        let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
+            order.cid,          //game_id
+            user.domainId,      //user_id
+            order.sn,           //order_sn订单编号
+            order.price,        //order_sum订单金额
+            user.domainId,      //指定结算的钱包账户，一般为微信用户的openid
+        ]);
+
+        if(ret.code == 0) {
+          return {code: 0, data:ret.result}; 
+        }  else {
+          return {code: -1, msg: 'pay error'}; 
+        }
     }
 }
 
