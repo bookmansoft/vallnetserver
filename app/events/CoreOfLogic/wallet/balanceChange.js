@@ -46,22 +46,22 @@ async function handlePayload(payload) {
 
     let ui = this.GetObject(EntityType.User, log.aname, IndexType.Domain);
     if(!!ui) {
-        ui.baseMgr.info.setAttr('confirmed', log.balance.confirmed);
-        ui.baseMgr.info.setAttr('unconfirmed', log.balance.unconfirmed);
-        ui.notify({type: 911001, info: {confirmed: log.balance.confirmed, unconfirmed: log.balance.unconfirmed}});
+        ui.baseMgr.info.setAttr('confirmed', log.balance.confirmed - log.balance.locked);
+        ui.baseMgr.info.setAttr('unconfirmed', log.balance.unconfirmed - log.balance.locked);
+        ui.notify({type: 911001, info: {confirmed: log.balance.confirmed - log.balance.locked, unconfirmed: log.balance.unconfirmed - log.balance.locked}});
 
-        log.sn = `${log.aname}.${log.hash}`;
-        let tm = (log.height > 0) ? ((Date.now()/1000 - Math.max(0, this.chain.height - log.height)*600)|0) : ((Date.now()/1000)|0);
-        let mail = this.GetObject(EntityType.Mail, log.sn, IndexType.Domain);
-        if(!mail) {
-            await this.service.gamegoldHelper.sendSysNotify(
-                ui,
-                log, 
-                NotifyType.balance, 
-                tm,
-            );
-        } else {
-            if(log.height > 0) {
+        if(log.height > 0) {
+            log.sn = `${log.aname}.${log.hash}`;
+            let tm = (log.height > 0) ? ((Date.now()/1000 - Math.max(0, this.chain.height - log.height)*600)|0) : ((Date.now()/1000)|0);
+            let mail = this.GetObject(EntityType.Mail, log.sn, IndexType.Domain);
+            if(!mail) {
+                await this.service.gamegoldHelper.sendSysNotify(
+                    ui,
+                    log, 
+                    NotifyType.balance, 
+                    tm,
+                );
+            } else {
                 mail.setAttr('time', tm);
                 mail.setAttr('content', JSON.stringify({
                     type: NotifyType.balance,

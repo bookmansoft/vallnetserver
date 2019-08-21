@@ -106,8 +106,8 @@ async function handle(sofar) {
                 //查询账户余额, 这样用户登录后就能看到最新的余额信息
                 let rt = await sofar.facade.service.gamegoldHelper.execute('balance.all', [usr.domainId]);
                 if(!!rt && rt.code == 0) {
-                    usr.baseMgr.info.setAttr('confirmed', rt.result.confirmed);
-                    usr.baseMgr.info.setAttr('unconfirmed', rt.result.unconfirmed);
+                    usr.baseMgr.info.setAttr('confirmed', rt.result.confirmed - rt.result.locked);
+                    usr.baseMgr.info.setAttr('unconfirmed', rt.result.unconfirmed - rt.result.locked);
                 } else {
                     usr.baseMgr.info.setAttr('confirmed', 0);
                     usr.baseMgr.info.setAttr('unconfirmed', 0);

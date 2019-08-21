@@ -9,7 +9,7 @@ let CoreOfBase = facade.CoreOfBase;
 let { stringify } = require('../util/stringUtil');
 
 //订单执行前需要达到的确认数
-const confirmNum = 1;
+const confirmNum = 0;
 
 /**
  * 资源节点类
