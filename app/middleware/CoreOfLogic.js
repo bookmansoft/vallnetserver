@@ -121,9 +121,12 @@ async function handle(sofar) {
         if (!sofar.socket.user) {//未通过身份校验
             sofar.fn({ code: ReturnCode.userIllegal });
             sofar.recy = false;
-        }
-        else {
+        } else {
             console.log(`鉴权成功: ${sofar.socket.user.domainId}`);
+
+            sofar.socket.user.socket = sofar.socket;        //更新通讯句柄
+            sofar.socket.user.userip = sofar.msg.userip;    //更新IP地址
+
             //分发用户上行报文的消息，可以借此执行一些刷新操作
             sofar.facade.notifyEvent('user.packetIn', {user: sofar.socket.user});
         }

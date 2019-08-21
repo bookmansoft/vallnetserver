@@ -46,9 +46,12 @@ async function handlePayload(payload) {
 
     let ui = this.GetObject(EntityType.User, log.aname, IndexType.Domain);
     if(!!ui) {
-        ui.baseMgr.info.setAttr('confirmed', log.balance.confirmed - log.balance.locked);
-        ui.baseMgr.info.setAttr('unconfirmed', log.balance.unconfirmed - log.balance.locked);
-        ui.notify({type: 911001, info: {confirmed: log.balance.confirmed - log.balance.locked, unconfirmed: log.balance.unconfirmed - log.balance.locked}});
+        let _confirmed = log.balance.confirmed - log.balance.locked;
+        let _unconfirmed = log.balance.unconfirmed - log.balance.locked;
+        ui.baseMgr.info.setAttr('confirmed', _confirmed);
+        ui.baseMgr.info.setAttr('unconfirmed', _unconfirmed);
+
+        ui.notify({type: 911001, info: {confirmed: _confirmed, unconfirmed: _unconfirmed}});
 
         if(log.height > 0) {
             log.sn = `${log.aname}.${log.hash}`;

@@ -114,8 +114,10 @@ async function handle(sofar) {
         if (!sofar.socket.user) {//未通过身份校验
             sofar.fn({ code: ReturnCode.userIllegal });
             sofar.recy = false;
-        }
-        else {
+        } else {
+            sofar.socket.user.socket = sofar.socket;        //更新通讯句柄
+            sofar.socket.user.userip = sofar.msg.userip;    //更新IP地址
+            
             console.log(`鉴权成功: ${sofar.socket.user.domainId}`);
         }
     }

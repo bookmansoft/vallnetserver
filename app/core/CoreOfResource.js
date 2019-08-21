@@ -71,7 +71,7 @@ class CoreOfResource extends CoreOfBase {
                     }
                 }
             }
-        }, 3000);
+        }, 5000);
     }
 
     /**
