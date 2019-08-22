@@ -46,7 +46,7 @@ async function handlePayload(payload) {
 
     let ui = this.GetObject(EntityType.User, log.aname, IndexType.Domain);
     if(!!ui) {
-        let _confirmed = log.balance.confirmed - log.balance.locked;
+        let _confirmed = log.balance.confirmed;
         let _unconfirmed = log.balance.unconfirmed - log.balance.locked;
         ui.baseMgr.info.setAttr('confirmed', _confirmed);
         ui.baseMgr.info.setAttr('unconfirmed', _unconfirmed);
