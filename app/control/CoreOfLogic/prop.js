@@ -13,10 +13,11 @@ class prop extends facade.Control
      * @param {*} params 
      */
     async list(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('prop.list', [
-            params.page || 1,
-            user.domainId,
-        ]);
+        let ret = await this.core.service.gamegoldHelper.execute('prop.query', [[
+            ['page', params.page||1],
+            ['account', user.domainId],
+            ['pst', 'exclude', [2]],
+        ]]);
 
         if(ret.code == 0) {
             for(let prop of ret.result.list) {
