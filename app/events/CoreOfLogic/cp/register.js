@@ -111,7 +111,6 @@ async function CreateRecord(cpInfo, core) {
 
         let content = {
             sum_left: cpInfo.stock.sum,                     //发行剩余数量
-            supply_people_num:0,                            //支持人数
         };
 
         let stock = stockList[0];

@@ -195,6 +195,7 @@ if(env.constructor == String) {
                     'cp/register', 
                     'cp/change',
                     'cp/stock',
+                    'cp/stockPurchase',
                     'prop/receive',
                     'prop/auction',
                     'notify/receive',
@@ -222,6 +223,11 @@ if(env.constructor == String) {
                     core.notifyEvent('cp.register', {msg:msg});
                 }, 'cp/stock').execute('subscribe', 'cp/stock');
     
+                //订阅CP众筹购买消息，登记处理句柄
+                core.service.monitor.remote.watch(msg => {
+                    core.notifyEvent('cp.stockPurchase', {msg:msg});
+                }, 'cp/stockPurchase').execute('subscribe', 'cp/stockPurchase');
+
                 //订阅消息并登记消息处理句柄
                 core.service.monitor.remote.watch(msg => {
                     //收到新的道具，或者已有道具发生变更，抛出内部事件, 处理流程定义于 app/events/user/propReceive.js
@@ -314,17 +320,6 @@ if(env.constructor == String) {
             if(!!stock && bonus.num > 0 && stock.getAttr('sum_left') >= bonus.num) {
                 //由于订单已经支付，此处由系统为用户代购, 义务捐赠模式下 bonus.num 为零，不需处理
                 ret = await core.service.gamegoldHelper.execute('stock.purchaseTo', [stock.getAttr('cid'), bonus.num, user.domainId]);
-                if(ret.code == 0) {
-                    stock.setAttr('supply_people_num', ret.result.support);
-
-                    let cpObj = core.GetObject(TableType.blockgame, stock.getAttr('cid'), IndexType.Domain);
-                    if(cpObj) {
-                        stock.setAttr('sum_left', ret.result.total - ret.result.purchase);
-                    }
-
-                    stock.orm.save();
-                }
-    
                 return ret;
             }
             return {code:0};
