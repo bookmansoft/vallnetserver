@@ -78,9 +78,6 @@ async function handle(data){
             //如果登记了手机号码，添加手机号码反向索引
             this.GetMapping(EntityType.User).addId([data.user.baseMgr.info.getAttr('phone'), data.user.id], IndexType.Phone);
         }
-
-        //test only: push msg to client
-        //data.user.notify({type: NotifyType.test, info: {content: 'hello world'}});
     } catch(e) {
         console.error(e);
     }
