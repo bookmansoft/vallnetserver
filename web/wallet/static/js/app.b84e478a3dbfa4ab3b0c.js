@@ -22322,7 +22322,7 @@ var plugins_confirm = __webpack_require__("NXWw");
 
 //#region 通讯设置
 var UrlHead = 'http';
-var Host = 'wallet.vallnet.cn';
+var Host = 'h5.gamegold.xin';
 var siteUri = UrlHead + '://' + Host;
 var remote = new toolkit.gameconn({
   "UrlHead": UrlHead,
@@ -22432,7 +22432,7 @@ function checkAddr(value) {
 
 //#region 通讯设置
 var Global_UrlHead = 'http';
-var Global_Host = 'wallet.vallnet.cn';
+var Global_Host = 'h5.gamegold.xin';
 var Global_siteUri = Global_UrlHead + '://' + Global_Host;
 var Global_remote = new toolkit.gameconn({
   "UrlHead": Global_UrlHead,

@@ -28,16 +28,16 @@ if(env.constructor == String) {
 }
 
 (async ()=>{
-    // //添加静态网站，开启反向代理
-    // facade.startProxy({
-    //     router: {
-    //         'test.gamegold.xin': {target: 'http://localhost:9801'},
-    //         'wallet.vallnet.cn': {target: 'http://localhost:9101'},
-    //         'crm.vallnet.cn': {target: 'http://localhost:9801'},
-    //     },
-    //     port: 80,
-    //     protocol: 'http',
-    // });
+    //添加静态网站，开启反向代理
+    facade.startProxy({
+        router: {
+            'h5.gamegold.xin': {target: 'http://localhost:9101'},
+            'chick.gamegold.xin': {target: 'http://localhost:9201'},
+            'crm.vallnet.cn': {target: 'http://localhost:9801'},
+        },
+        port: 80,
+        protocol: 'http',
+    });
 
     //新增Auth服务器，请参照 gameconfig-backup 对 gameconfig 文件进行相应配置
     await facade.boot({
@@ -149,16 +149,16 @@ if(env.constructor == String) {
     });
 
     //加载游戏管理节点
-    // facade.boot({
-    //     env: {
-    //         serverType: "Chick",
-    //         serverId: 1
-    //     },
-    //     //设置静态资源映射
-    //     static: [
-    //         ['/chick/', './web/game/chick'],
-    //     ], 
-    // });
+    facade.boot({
+        env: {
+            serverType: "Chick",
+            serverId: 1
+        },
+        //设置静态资源映射
+        static: [
+            ['/chick/', './web/game/chick'],
+        ], 
+    });
 
     //加载Wallet管理节点
     await facade.boot({
