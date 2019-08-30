@@ -156,7 +156,7 @@ if(env.constructor == String) {
         },
         //设置静态资源映射
         static: [
-            ['/chick/', './web/game/chick'],
+            ['/', './web/game/chick'],
         ], 
     });
 
