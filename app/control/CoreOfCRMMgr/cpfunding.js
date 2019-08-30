@@ -207,7 +207,7 @@ class cpfunding extends facade.Control {
         /** {
             "cid": "b47f1ab0-a246-11e9-9e6c-493029995e58",
             "name": "cp010061",
-            "url": "http://localhost:9701/mock",
+            "url": "http://h5.gamegold.xin/mock",
             "ip": "",
             "cls": "SHT",
             "grate": 15,

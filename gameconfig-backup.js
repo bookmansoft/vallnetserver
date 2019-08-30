@@ -210,16 +210,6 @@ let config = {
                 }
             }
         },
-        "Simulator":{ //新增模拟游戏服务器
-            "1":{
-                "mysql": sqlOfCRM,
-                "webserver": {
-                    "mapping": "127.0.0.1",
-                    "host": "127.0.0.1",
-                    "port": 9701
-                }
-            }
-        },
         "CRM":{ //新增CRM管理服务器
             "1":{
                 "mysql": sqlOfCRM,

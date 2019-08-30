@@ -1,5 +1,7 @@
 let facade = require('gamecloud')
 let { ReturnCode, NotifyType } = facade.const
+let rp = require('request-promise');
+let qr = require('qr-image');
 
 /**
  * 游戏的控制器
@@ -28,6 +30,29 @@ class wallet extends facade.Control {
             return { code: -1, msg: "wallet.Create方法出错" };
         }
 
+    }
+
+    /**
+     * 配置URL路由，用户可以直接经由页面访问获取签名数据集
+     */
+    get router() {
+        return [
+            ['/qrcode/:qrcode', 'qrCode'],
+        ];
+    }
+
+    /**
+     * 生成并返回二维码图像
+     * @param {*} params 
+     */
+    qrCode(params) {
+        if (!!params.qrcode) {
+            let img = qr.image(params.qrcode, { size: 10 });
+            params.res.writeHead(200, { 'Content-Type': 'image/png' });
+            img.pipe(params.res);
+        } else {
+            rp({ uri: decodeURIComponent(this.core.fileMap.DataConst.user.icon), headers: { 'User-Agent': 'Request-Promise', } }).pipe(params.res);
+        }
     }
 
     /**

@@ -147,7 +147,7 @@ describe('道具（prop）', function () {
         if (remote.isSuccess(msg)) {
             res = await remote.fetching({
                 func: "prop.getPropsByGame", userinfo: { id: 5 },
-                cp_url: 'http://127.0.0.1:9701/mock/cp122701', 
+                cp_url: 'http://h5.gamegold.xin/mock/cp122701', 
             });
             console.log(res);
         }
@@ -157,7 +157,7 @@ describe('道具（prop）', function () {
         if (remote.isSuccess(msg)) {
             res = await remote.fetching({
                 func: "prop.getCpPropsDetail", userinfo: { id: 5 },
-                cp_url: 'http://127.0.0.1:9701/mock/cp122701', 
+                cp_url: 'http://h5.gamegold.xin/mock/cp122701', 
                 pid: 'cp122801_prop0', 
             });
             console.log(res);

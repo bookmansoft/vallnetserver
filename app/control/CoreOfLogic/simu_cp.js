@@ -1,8 +1,6 @@
 let facade = require('gamecloud')
 let {EntityType, IndexType, ReturnCode} = facade.const
 let fetch = require('node-fetch');
-let rp = require('request-promise');
-let qr = require('qr-image');
 
 /**
  * 游戏提供的对外接口：查询CP基本资料
@@ -25,22 +23,7 @@ class cp extends facade.Control
             ['/mock/:cp_name/user/:uid', 'responseUser'],
             ['/mock/:cp_name/prop/:id', 'responseProp'],
             ['/mock/:cp_name/myprops/:uid', 'myProps'],
-            ['/qrcode/:qrcode', 'qrCode'],
         ];
-    }
-
-    /**
-     * 生成并返回二维码图像
-     * @param {*} params 
-     */
-    qrCode(params) {
-        if (!!params.qrcode) {
-            let img = qr.image(params.qrcode, { size: 10 });
-            params.res.writeHead(200, { 'Content-Type': 'image/png' });
-            img.pipe(params.res);
-        } else {
-            rp({ uri: decodeURIComponent(this.core.fileMap.DataConst.user.icon), headers: { 'User-Agent': 'Request-Promise', } }).pipe(params.res);
-        }
     }
 
     /**
