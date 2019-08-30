@@ -210,7 +210,7 @@ let config = {
                 }
             }
         },
-        "Resource":{ //新增资源管理服务器
+        "Simulator":{ //新增模拟游戏服务器
             "1":{
                 "mysql": sqlOfCRM,
                 "webserver": {

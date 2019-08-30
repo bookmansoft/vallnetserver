@@ -64,7 +64,7 @@ if(env.constructor == String) {
     //加载资源管理节点
     await facade.boot({
         env:{
-            serverType: "Resource",
+            serverType: "Simulator",
             serverId: 1
         },
         //设置静态资源映射
