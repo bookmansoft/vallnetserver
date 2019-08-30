@@ -3,9 +3,9 @@ let {EntityType, IndexType, ReturnCode} = facade.const
 let mysql = require('mysql');
 
 /**
- * 游戏提供的对外接口：查询CP基本资料
+ * 游戏提供的对外接口：查询K线数据
  */
-class cp extends facade.Control
+class kline extends facade.Control
 {
     /**
      * 自定义中间件序列
@@ -211,4 +211,4 @@ class cp extends facade.Control
     }
 }
 
-exports = module.exports = cp;
+exports = module.exports = kline;

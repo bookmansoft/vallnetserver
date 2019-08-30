@@ -5,9 +5,9 @@ let { stringify } = require('../../util/stringUtil');
 let uuid = require('uuid');
 
 /**
- * 游戏提供的对外接口：查询CP基本资料
+ * 游戏提供的对外接口：订单接收处理
  */
-class cp extends facade.Control
+class order extends facade.Control
 {
     /**
      * 自定义中间件序列
@@ -111,4 +111,4 @@ class cp extends facade.Control
     }
 }
 
-exports = module.exports = cp;
+exports = module.exports = order;

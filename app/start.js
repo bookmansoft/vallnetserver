@@ -69,9 +69,6 @@ if(env.constructor == String) {
         },
         //设置静态资源映射
         static: [
-            ['/image', './web/image'],
-            ['/echart', './web/echart'],
-            ['/test/', './web/game/test'],
         ], 
     });
 
@@ -93,6 +90,7 @@ if(env.constructor == String) {
         ],
         static: [
             ['/', './web/crm'],
+            ['/echart', './web/echart'],
         ], 
     }, async core => {
         while(true) {
@@ -181,6 +179,8 @@ if(env.constructor == String) {
         //额外的路由配置，也可以写在启动回调函数中( core.addRouter('/', './web/wallet') )，也可以配置于任意控制器的 router 中
         static: [
             ['/', './web/wallet'],
+            ['/image', './web/image'],
+            ['/test/', './web/game/test'],
         ], 
     }, async core => {
         console.log(`${core.options.serverType}.${core.options.serverId}'s startup start`);

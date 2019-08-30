@@ -38,7 +38,7 @@ class CoreOfSimulator extends facade.CoreOfBase {
         //启动网络监听服务
         let hrv = this.options.UrlHead == "https" ? require(this.options.UrlHead).createServer(this.credentials, app) : require(this.options.UrlHead).createServer(app);
         hrv.listen(this.options.webserver.port, this.options.webserver.host, () => {
-            console.log(`资源服务在端口 ${this.options.webserver.port} 上准备就绪`);
+            console.log(`模拟器在端口 ${this.options.webserver.port} 上准备就绪`);
         });
 
         this.autoTaskMgr.addCommonMonitor(()=>{

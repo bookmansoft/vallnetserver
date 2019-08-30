@@ -8,7 +8,7 @@
         var myChart;//全局定义唯一的myChart对象
         //初始化函数，引发回调
         function init() {
-            $("head").append("<script src='http://localhost:9701/chart/kline"+location.search+"&callback=showData'><\/script>");
+            $("head").append("<script src='http://crm.gamegold.xin/chart/kline"+location.search+"&callback=showData'><\/script>");
         }
         //将回调的数据设置到图表中，图标正常显示
         function showData(data) {
