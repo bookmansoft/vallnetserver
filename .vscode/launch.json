@@ -32,7 +32,8 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\app\\start.js"
+            "program": "${workspaceFolder}\\app\\start.js",
+            "env": {"sys": "{\"serverType\": \"Wallet\", \"serverId\": 1}"},
         }
     ]
 }
