@@ -12491,7 +12491,7 @@ var flexbox_item = __webpack_require__("3Lt7");
               }
 
               _context2.next = 11;
-              return _this2.remote.login({ domain: 'authwx', openkey: code });
+              return _this2.remote.login({ domain: 'authwx.Wallet', openkey: code });
 
             case 11:
               _context2.next = 30;
@@ -12510,7 +12510,7 @@ var flexbox_item = __webpack_require__("3Lt7");
               _this2.remote.loginMode.set(_this2.remote.CommStatus.reqLb);
               _this2.remote.status.unSet(_this2.remote.CommStatus.lb);
               _context2.next = 21;
-              return _this2.remote.setUserInfo({ domain: 'authwx', openid: openid }).setLB(true);
+              return _this2.remote.setUserInfo({ domain: 'authwx.Wallet', openid: openid }).setLB(true);
 
             case 21:
               _context2.next = 23;
@@ -12680,7 +12680,7 @@ var flexbox_item = __webpack_require__("3Lt7");
               }
 
               _context2.next = 11;
-              return _this2.remote.login({ domain: 'authwx', openkey: code });
+              return _this2.remote.login({ domain: 'authwx.Wallet', openkey: code });
 
             case 11:
               _context2.next = 30;
@@ -12699,7 +12699,7 @@ var flexbox_item = __webpack_require__("3Lt7");
               _this2.remote.loginMode.set(_this2.remote.CommStatus.reqLb);
               _this2.remote.status.unSet(_this2.remote.CommStatus.lb);
               _context2.next = 21;
-              return _this2.remote.setUserInfo({ domain: 'authwx', openid: openid }).setLB(true);
+              return _this2.remote.setUserInfo({ domain: 'authwx.Wallet', openid: openid }).setLB(true);
 
             case 21:
               _context2.next = 23;

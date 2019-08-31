@@ -11,7 +11,7 @@ class auth extends facade.Control
      */
     get router() {
         return [
-            [`/authwx`, 'authwx'],        //定义发放签名功能的路由路径和处理函数
+            [`/authwx.Wallet`, 'authwx'],        //定义发放签名功能的路由路径和处理函数
         ];
     }
 

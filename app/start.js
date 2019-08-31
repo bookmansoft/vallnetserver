@@ -18,7 +18,7 @@ NotifyType.notify = 10002;      //主网通告，例如用来通知一笔待支�
 //#endregion
 
 let env = !!process.env.sys ? JSON.parse(process.env.sys) : {
-    serverType: "IOS",      //待调测的服务器类型
+    serverType: "Wallet",      //待调测的服务器类型
     serverId: 1,            //待调测的服务器编号
     portal: true            //兼任门户（充当索引服务器），注意索引服务器只能有一台，因此该配置信息具有排他性
 };  

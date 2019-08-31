@@ -9,7 +9,7 @@ let socketClient = require('socket.io-client')
 /**
  * CRM管理后台对应的门面类
  */
-class CoreOfCRMMgr extends CoreOfBase
+class CoreOfCrm extends CoreOfBase
 {
     constructor($env){
         super($env);
@@ -126,4 +126,4 @@ class CoreOfCRMMgr extends CoreOfBase
     }
 }
 
-exports = module.exports = CoreOfCRMMgr;
+exports = module.exports = CoreOfCrm;

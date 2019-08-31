@@ -61,7 +61,7 @@ describe.only('钱包注册登录测试', () => {
 
     it('用户注册并登录 - 使用第三方授权模式', async () => {
         let ret = await remote.init().login({
-            domain: 'authwx',                           //认证模式
+            domain: 'authwx.Wallet',                           //认证模式
             openkey: `${Math.random()*1000000000 | 0}`, //中间证书，填写于 openkey 而非 openid 上，服务端转换最终的 openid 后下发给客户端
         });
         assert(ret, 'login failed');

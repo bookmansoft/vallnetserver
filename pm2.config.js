@@ -5,7 +5,7 @@ let config = {
      */
     "apps" : [
         {
-            "name"      : "IOS_1",
+            "name"      : "Wallet_1",
             "script"    : "app/start.js",
             "cwd"         : "./",  // pm2运行目录相对main.js的路径
             //"out_file"   : "./logs/ios1/app-out.log",  // 普通日志路径
@@ -13,7 +13,7 @@ let config = {
             "env": {
                 "NODE_ENV": "production",
                 "sys":{
-                    "serverType": "IOS",
+                    "serverType": "Wallet",
                     "serverId": 1,
                     "portal": true //指示该服务器兼任门户
                 }

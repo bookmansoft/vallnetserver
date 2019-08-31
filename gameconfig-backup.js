@@ -23,6 +23,18 @@ let sqlOfChick = {
     "port": 3306                        //数据库服务器端口号
 };
 
+/**
+ * 数据库连接信息：用于 vallnetserver
+ */
+let sqlOfWallet = {
+    "logging" : false,                  //记录日志
+    "db": "wechat-wallet",              //数据库名称    
+    "sa": "root",                       //数据库用户名
+    "pwd": "",                          //数据库用户密码
+    "host": "127.0.0.1",                //数据库服务器IP地址
+    "port": 3306                        //数据库服务器端口号
+};
+
 let smsConfig = {
     realUrl: 'https://api.rtc.huaweicloud.com:10443/sms/batchSendSms/v1', //APP接入地址+接口访问URI
     appKey: '', //APP_Key
@@ -47,18 +59,6 @@ let mailConfig = {
 //系统管理员设定 todo 如何对多个分服精准配置系统管理员
 let masterConfig = [
 ];
-
-/**
- * 数据库连接信息：用于 vallnetserver
- */
-let sqlOfWallet = {
-    "logging" : false,                  //记录日志
-    "db": "wechat-wallet",              //数据库名称    
-    "sa": "root",                       //数据库用户名
-    "pwd": "",                          //数据库用户密码
-    "host": "127.0.0.1",                //数据库服务器IP地址
-    "port": 3306                        //数据库服务器端口号
-};
 
 /**
  * 缓存服务器连接信息
@@ -200,7 +200,7 @@ let config = {
                 }
             }
         },
-        "IOS":{
+        "Wallet":{
             "1":{
                 "mysql": sqlOfWallet,
                 "webserver": {
