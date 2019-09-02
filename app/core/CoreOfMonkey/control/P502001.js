@@ -218,7 +218,7 @@ class P502001 extends facade.Control
                 /**
                  * @type {UserEntity}
                  */
-                let enemy = facade.GetObject(EntityType.User, input.openid, IndexType.Foreign);
+                let enemy = this.core.GetObject(EntityType.User, input.openid, IndexType.Foreign);
                 if(!enemy){
                     $code = ReturnCode.paramError;
                     break;
@@ -291,7 +291,7 @@ class P502001 extends facade.Control
                 /**
                  * @type {UserEntity}
                  */
-                let enemy = facade.GetObject(EntityType.User, input.openid, IndexType.Foreign);
+                let enemy = this.core.GetObject(EntityType.User, input.openid, IndexType.Foreign);
                 if(!enemy){
                     $code = ReturnCode.UserNotExist;
                     break;

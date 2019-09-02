@@ -32,7 +32,7 @@ class P102001 extends facade.Control
         objData.s = user.name;
         
         if (!!objData.nid) { //判断是私聊
-            let simUser = facade.GetObject(EntityType.User, parseInt(objData.nid)); //获取缓存对象
+            let simUser = this.core.GetObject(EntityType.User, parseInt(objData.nid)); //获取缓存对象
             if (!!simUser) {
                 objData.nid = simUser.id;
                 objData.n = simUser.name;

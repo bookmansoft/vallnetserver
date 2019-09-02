@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {ReturnCode, UserStatus, em_Condition_Type, em_Condition_Checkmode, NotifyType, ActivityType, RankType, em_EffectCalcType,em_Effect_Comm,mapOfTechCalcType} = facade.const
+let {ReturnCode} = facade.const
 
 /**
  * 配置管理器

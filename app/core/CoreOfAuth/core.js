@@ -3,7 +3,6 @@
  */
 let facade = require('gamecloud')
 let CoreOfBase = facade.CoreOfBase
-let {serverType, EntityType, ReturnCode, CommMode} = facade.const
 let socketClient = require('socket.io-client')
 
 /**
@@ -85,7 +84,7 @@ class CoreOfAuth extends CoreOfBase
             console.log(`${this.options.serverType}.${this.options.serverId} connected`);
             
             this.remoteCall('serverLogin', {}, msg => {
-                if(msg.code == ReturnCode.Success){
+                if(msg.code == this.const.ReturnCode.Success) {
                     console.log(`${this.options.serverType}.${this.options.serverId} logined`);
                     this.remoting.stamp = (new Date()).valueOf();
                     this.remoting.user = {stype: this.options.serverType, sid: this.options.serverId, socket: this.remoting};

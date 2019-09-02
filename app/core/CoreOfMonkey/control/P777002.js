@@ -37,7 +37,7 @@ class P777002 extends facade.Control
         let $code = ReturnCode.Success;
         switch(objData.oper){
             case em_Ally_Oper.find:
-                $ally = facade.GetObject(EntityType.Ally, objData.id);
+                $ally = this.core.GetObject(EntityType.Ally, objData.id);
                 if($ally != null){
                     $data.ally = $ally;
                     this.GetRanks($ally, user, $data);

@@ -1,13 +1,10 @@
-let facade = require('gamecloud')
 /**
+ * 第三方认证支付接口
  * Created by liub on 2017-04-06.
  */
 
-let {ReturnCode} = facade.const
+ let facade = require('gamecloud')
 
-/**
- * 第三方认证支付接口
- */
 class authPay extends facade.Control
 {
     /**

@@ -38,7 +38,7 @@ class P777003 extends facade.Control
 
         switch(objData.oper){
             case em_Ally_Oper.reqList:
-                $ally = facade.GetObject(EntityType.Ally, objData.id);
+                $ally = this.core.GetObject(EntityType.Ally, objData.id);
                 if($ally != null){
                     $data.ally = $ally;
                     $data.items = $ally.ReqGetList();

@@ -41,7 +41,7 @@ class P777001 extends facade.Control
             user.getInviteMgr().Clear(InviteType.AllyReq, user.aid);
             user.getInviteMgr().Clear(InviteType.AllyInvite, user.aid);
 
-            let $ao = facade.GetObject(EntityType.Ally, user.aid);
+            let $ao = this.core.GetObject(EntityType.Ally, user.aid);
             if(!$ao){//指定联盟不存在
                 user.aid = 0;
             }
@@ -75,7 +75,7 @@ class P777001 extends facade.Control
                 }
 
                 $code = ReturnCode.Success;
-                let $ao = facade.GetObject(EntityType.Ally, objData.id);
+                let $ao = this.core.GetObject(EntityType.Ally, objData.id);
                 let $isCheck = $ao.Check(AllySetting.AS_Battle);
                 if($isCheck && !$ao.CheckBattle(user['rank'])){//有最低战力要求
                     $code = ReturnCode.BattleNotEnough;//战力不足
@@ -99,7 +99,7 @@ class P777001 extends facade.Control
     }
 
     GetRanks($user, $data, objData){
-        let muster = facade.GetMapping(EntityType.Ally);
+        let muster = this.core.GetMapping(EntityType.Ally);
 
         $data.rank = 0;
         let $ao = muster.GetObject($user['id'], IndexType.Foreign);

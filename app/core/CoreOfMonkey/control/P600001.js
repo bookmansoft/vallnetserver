@@ -60,7 +60,7 @@ class P600001 extends facade.Control
 
         switch(input.oper){
             case em_Mail_OperType.query:
-                let mb = facade.GetMapping(EntityType.Mail)
+                let mb = this.core.GetMapping(EntityType.Mail)
                     .groupOf(user.openid)
                     .orderby('time', 'desc')
                     .paginate(input.pageSize, input.page);
@@ -68,12 +68,12 @@ class P600001 extends facade.Control
                 return { code: ReturnCode.Success, data: {cur:mb.pageCur, total:mb.pageNum, list:list}};
 
             case em_Mail_OperType.send:
-                facade.GetMapping(EntityType.Mail).Create(user, input.con, user.openid, input.openid);
+                this.core.GetMapping(EntityType.Mail).Create(user, input.con, user.openid, input.openid);
                 return {code: ReturnCode.Success};
 
             case em_Mail_OperType.del:
                 for(let id of input.idx){
-                    await facade.GetMapping(EntityType.Mail).Delete(id);
+                    await this.core.GetMapping(EntityType.Mail).Delete(id);
                 }
                 user.CheckMailboxState();
                 return {code: ReturnCode.Success, data:{idx:input.idx}};
@@ -81,7 +81,7 @@ class P600001 extends facade.Control
             case em_Mail_OperType.read:
                 let bonus = [];
                 for(let id of input.idx){
-                    let mail = facade.GetObject(EntityType.Mail, id);
+                    let mail = this.core.GetObject(EntityType.Mail, id);
                     if(!!mail){
                         bonus = bonus.concat(await mail.read(user));
                     }

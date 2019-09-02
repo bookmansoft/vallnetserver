@@ -1,11 +1,16 @@
 let facade = require('gamecloud')
+
 /**
  * 活动功能相关的控制器
  * Created by liub on 2017-07-01.
  */
+
 class activity extends facade.Control {
-    getInfo(user){
-        return {code:facade.const.ReturnCode.Success, data:this.core.service.activity.getInfo(user)};
+    getInfo(user) {
+        return {
+            code: this.core.const.ReturnCode.Success, 
+            data: this.core.service.activity.getInfo(user)
+        };
     }
 
     /**
@@ -22,12 +27,7 @@ class activity extends facade.Control {
      * 获取活动排名列表
      */
     getList(user){
-        // info.page = info.page || 1;
-        // if(typeof info.page == "string"){
-        //     info.page = parseInt(info.page);
-        // }
-        return {code:facade.const.ReturnCode.Success, data:this.core.service.activity.rankList(user.id)};
-        // return {code:facade.const.ReturnCode.Success, data:this.core.service.activity.rankList(user.id, info.page)};
+        return {code: this.core.const.ReturnCode.Success, data: this.core.service.activity.rankList(user.id)};
     }
 }
 
