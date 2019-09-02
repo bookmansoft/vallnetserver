@@ -1,111 +1,67 @@
+/**
+ * 系统启动文件
+ * @description facade.boot 为节点自启流程，可以搭载多种辅助变量，这些变量都将合并到节点的options对象中，供运行时访问
+ *      env         运行环境变量
+ *      loading     指示加载自定义数据库表
+ *      static      额外的路由配置，也可以通过 core.addRouter 加载或写入控制器的 router 中
+        
+ * @description 请参照 gameconfig-backup 对 gameconfig 文件进行相应配置
+ */
+
+//引入门面对象，并立即设置为用户定制模式(必须紧跟在模块引入语句之后设置)
 const facade = require('gamecloud')
-//加载用户自定义模块 - 这句必须紧跟在模块引入语句之后
 facade.addition = true;
-let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 let {NotifyType, IndexType, TableType, ResType, TableField} = facade.const
 
-let orderMonitor = require('./util/autoExec/orderMonitor');
-
-//#region 新增索引类型，需要在 UserEntity.prototype.IndexOf 函数中增加字段映射
+//#region 新增索引类型(大于1000)，使用时要在实体对象的 IndexOf 函数中增加字段映射
 IndexType.Phone = 1001;
 IndexType.Terminal = 1002;
 //#endregion
 
-//#region 新增通告类型，大于10000的值都可以使用
+//#region 新增通告类型(大于10000)
 NotifyType.balance = 10001;     //账户变更日志
 NotifyType.notify = 10002;      //主网通告，例如用来通知一笔待支付订单
 //#endregion
 
+//#region 解析环境变量
 let env = !!process.env.sys ? JSON.parse(process.env.sys) : {
-    serverType: "Wallet",      //待调测的服务器类型
-    serverId: 1,            //待调测的服务器编号
-    portal: true            //兼任门户（充当索引服务器），注意索引服务器只能有一台，因此该配置信息具有排他性
+    serverType: "Wallet",       //待调测的服务器类型
+    serverId: 1,                //待调测的服务器编号
+    portal: true                //指示该服务器兼任门户（索引服务器），注意索引服务器只能有一台，因此该配置信息具有排他性
 };  
-
 if(env.constructor == String) {
     env = JSON.parse(env);
 }
+//#endregion
 
-/**
- * 对订单进行检测，已确认订单进行处理后删除，未确认订单如超时则主动查询状态
- */
-async function CheckOrder(core) {
-    for(let [sn, data] of core.orderMap) {
-        if(data.finish) {
-            continue;
-        }
-
-        if(data.confirm >= core.confirmNum) {
-            //调用prop.order 订购该道具，即创建道具并发送到指定地址
-            let paramArray = [
-                data.cid,
-                data.oid,
-                parseInt(data.sum * 0.5),//统一当成含金量50%处理
-                data.addr,
-            ];
-            let ret = await core.service.gamegoldHelper.execute('prop.order', paramArray);
-            if(ret.code == 0) {
-                //标记为已处理
-                data.finish = true;
-            }
-        } else {
-            if(Date.now()/1000 - data.time > 10) {
-                let ret = await core.service.gamegoldHelper.execute('order.query', [data.cid, sn]);
-                /*
-                    {
-                        "oper": "pay",
-                        "cid": "0be0f210-c367-11e9-88a0-976cfe77cf12",
-                        "uid": "u001",
-                        "sn": "s00100000000000000000000000000000000",
-                        "sum": 50000,
-                        "addr": "tb1q6x8tcusuhyd4f48edzvsngzfs9gc2x204gmdvy",
-                        "gaddr": null,
-                        "publish": 112,
-                        "height": 113,
-                        "hash": "85829a262e627788e018e6fe369f9cfd30da9d63085078cf87d2f886d6975cbf",
-                        "confirm": 2
-                    }                        
-                */                        
-                if(ret.code == 0 && !!ret.result) {
-                    Object.keys(ret.result).map(key=>{
-                        data[key] = ret.result[key];
-                    });
-                }
-            }
-        }
-    }
-}
-
-(async ()=>{
-    //添加静态网站，开启反向代理
-    facade.startProxy({
-        router: {
-            'h5.gamegold.xin': {target: 'http://localhost:9101'},
-            'chick.gamegold.xin': {target: 'http://localhost:9201'},
-            'crm.vallnet.cn': {target: 'http://localhost:9801'},
-        },
-        port: 80,
-        protocol: 'http',
-    });
-
-    //新增Auth服务器，请参照 gameconfig-backup 对 gameconfig 文件进行相应配置
-    await facade.boot({
-        env:{
-            serverType: "Auth",
-            serverId: 1
-        }
-    });
-
-    //系统主引导流程，除了必须传递运行环境变量 env，也可以搭载任意变量，这些变量都将合并为核心类的options对象的属性，供运行时访问
-    if(env.portal) { //如果该服务器兼任门户，则启动索引服务
+(async () => {
+    if(env.portal) {
+        //开启索引服务
         await facade.boot({
-            env:{
+            env: {
                 serverType: "Index",
                 serverId: 1
             },
-            loading: [
-            ],
+        });
+
+        //开启反向代理。将反向代理和节点自身的路由配置相结合，可以实现灵活的路由策略
+        facade.startProxy({
+            router: {
+                'h5.gamegold.xin': {target: 'http://localhost:9101'},
+                'chick.gamegold.xin': {target: 'http://localhost:9201'},
+                'crm.vallnet.cn': {target: 'http://localhost:9801'},
+            },
+            port: 80,
+            protocol: 'http',
+        });
+
+        //开启Auth服务
+        await facade.boot({
+            env: {
+                serverType: "Auth",
+                serverId: 1
+            },
         });
     }
 
@@ -115,7 +71,6 @@ async function CheckOrder(core) {
             serverType: "CRM",
             serverId: 1
         },
-        //指示加载自定义数据库表
         loading: [
             TableType.Test, 
             TableType.Cp,
@@ -129,58 +84,6 @@ async function CheckOrder(core) {
             ['/', './web/crm'],
             ['/echart', './web/echart'],
         ], 
-    }, async core => {
-        while(true) {
-            //单独维护一个到公链的长连接，进行消息监控
-            core.chain = {height: 0};
-            let ret = await core.service.monitor.setlongpoll(async msg=>{
-                //先退订，避免造成重复订阅
-                await core.service.monitor.remote.execute('unsubscribe', [
-                    'notify/receive',
-                    'block/tips',
-                    'cp/register', 
-                    'cp/change',
-                ]);
-
-                //订阅 notify/receive 消息，登记处理句柄
-                core.service.monitor.remote.watch(msg => {
-                    core.notifyEvent('user.receiveNotify', {data:msg});
-                }, 'notify/receive').execute('subscribe', 'notify/receive');
-
-                //订阅 block/tips 消息，更新最新块高度
-                core.service.monitor.remote.watch(msg => {
-                    core.chain.height = msg.height;
-                }, 'block/tips').execute('subscribe', 'block/tips');
-
-                //订阅 cp/register 消息，登记处理句柄
-                core.service.monitor.remote.watch(msg => {
-                    core.notifyEvent('cp.register', {msg:msg});
-                }, 'cp/register').execute('subscribe', 'cp/register');
-
-                //订阅 cp/change 消息，登记处理句柄
-                core.service.monitor.remote.watch(msg => {
-                    core.notifyEvent('cp.register', {msg:msg});
-                }, 'cp/change').execute('subscribe', 'cp/change');
-            }).execute('block.count', []);
-            if(ret && ret.code == 0) {
-                core.chain.height = ret.result;
-                break;
-            } else {
-                await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(3000);
-            }
-        }
-
-        //自检特约商户设定
-        let cids = core.GetMapping(TableType.Cp).groupOf().records(TableField.Cp).reduce((sofar,cur)=>{sofar += `${cur.cp_id},`; return sofar;}, '');
-        await core.service.RemoteNode.conn(remoteSetup.cid).execute('sys.changeSpecialCp', [1, cids]);
-
-        //直接登记消息处理句柄，因为 tx.client/balance.account.client 这样的消息是默认发送的，不需要订阅
-        core.service.monitor.remote.watch(msg => {
-            //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/user/balanceChange.js
-            core.notifyEvent('balance.change', {data:msg});
-        }, 'balance.account.client');
-        core.service.monitor.remote.watch(msg => {
-        }, 'tx.client');
     });
 
     //加载游戏管理节点
@@ -189,16 +92,14 @@ async function CheckOrder(core) {
             serverType: "Chick",
             serverId: 1
         },
-        //设置静态资源映射
         static: [
             ['/', './web/game/chick'],
         ], 
     });
 
-    //加载Wallet管理节点
+    //加载钱包节点
     await facade.boot({
         env: env,
-        //指示加载自定义数据库表
         loading: [
             TableType.blockgame, 
             TableType.blockgamecomment, 
@@ -213,195 +114,10 @@ async function CheckOrder(core) {
             TableType.StockBase,
             TableType.Test, 
         ],
-        //额外的路由配置，也可以写在启动回调函数中( core.addRouter('/', './web/wallet') )，也可以配置于任意控制器的 router 中
         static: [
             ['/', './web/wallet'],
             ['/image', './web/image'],
             ['/test/', './web/game/test'],
         ], 
-    }, async core => {
-        console.log(`${core.options.serverType}.${core.options.serverId}'s startup start`);
-
-        while(true) {
-            //单独维护一个到公链的长连接，进行消息监控
-            core.chain = {height: 0};
-            let ret = await core.service.monitor.setlongpoll(async msg => {
-                //先退订，避免造成重复订阅
-                await core.service.monitor.remote.execute('unsubscribe', [
-                    'block/tips',
-                    'cp/register', 
-                    'cp/change',
-                    'cp/stock',
-                    'cp/stockPurchase',
-                    'prop/receive',
-                    'prop/auction',
-                    'notify/receive',
-                    'balance.account.client',
-                    'cp/orderPay',
-                ]);
-
-                //订阅 block/tips 消息，更新最新块高度
-                core.service.monitor.remote.watch(msg => {
-                    core.chain.height = msg.height;
-                }, 'block/tips').execute('subscribe', 'block/tips');
-    
-                //订阅CP注册消息，登记处理句柄
-                core.service.monitor.remote.watch(msg => {
-                    core.notifyEvent('cp.register', {msg:msg});
-                }, 'cp/register').execute('subscribe', 'cp/register');
-    
-                //订阅 cp/change 消息，登记处理句柄
-                core.service.monitor.remote.watch(msg => {
-                    core.notifyEvent('cp.register', {msg:msg});
-                }, 'cp/change').execute('subscribe', 'cp/change');
-    
-                //订阅CP众筹消息，登记处理句柄
-                core.service.monitor.remote.watch(msg => {
-                    core.notifyEvent('cp.register', {msg:msg});
-                }, 'cp/stock').execute('subscribe', 'cp/stock');
-    
-                //订阅CP众筹购买消息，登记处理句柄
-                core.service.monitor.remote.watch(msg => {
-                    core.notifyEvent('cp.stockPurchase', {msg:msg});
-                }, 'cp/stockPurchase').execute('subscribe', 'cp/stockPurchase');
-
-                //订阅消息并登记消息处理句柄
-                core.service.monitor.remote.watch(msg => {
-                    //收到新的道具，或者已有道具发生变更，抛出内部事件, 处理流程定义于 app/events/user/propReceive.js
-                    core.notifyEvent('wallet.propReceive', {data:msg});
-                }, 'prop/receive').execute('subscribe', 'prop/receive');
-    
-                core.service.monitor.remote.watch(msg => {
-                    //收到发布的道具被成功拍卖后的通知，抛出内部事件, 处理流程定义于 app/events/wallet/propAuction.js
-                    core.notifyEvent('wallet.propAuction', {data:msg});
-                }, 'prop/auction').execute('subscribe', 'prop/auction');
-    
-                core.service.monitor.remote.watch(msg => {
-                    //收到通告，抛出内部事件, 处理流程定义于 app/events/wallet/receiveNotify.js
-                    core.notifyEvent('user.receiveNotify', {data:msg});
-                }, 'notify/receive').execute('subscribe', 'notify/receive');
-    
-                core.service.monitor.remote.watch(msg => {
-                    //收到子账户余额变动通知，抛出内部事件, 处理流程定义于 app/events/wallet/balanceChange.js
-                    core.notifyEvent('wallet.balanceChange', {data:msg});
-                }, 'balance.account.client');
-    
-                core.service.monitor.remote.watch(msg => {
-                    //用户执行 order.pay 之后，CP特约节点抛出到账通知消息, 处理流程定义于 app/events/user/orderPay.js
-                    //注意：特约节点在向钱包抛出该通知后，还会主动调用游戏服务端回调接口
-                    core.notifyEvent('user.orderPay', {data:msg});
-                }, 'cp/orderPay').execute('subscribe', 'cp/orderPay');
-            }).execute('block.count', []);
-
-            if(ret && ret.code == 0) {
-                core.chain.height = ret.result;
-                break;
-            } else {
-                await (async (time) => {return new Promise(resolve => {setTimeout(resolve, time);});})(3000);
-            }
-        }
-
-        //从主网查询全部CP信息
-        let pageTotal = 1, pageCur = 0, ret = null; //设定总页数、当前页数的初始值
-        while(pageCur < pageTotal) {
-            ret = await core.service.gamegoldHelper.execute('cp.remoteQuery', [[['size', 100], ['page', ++pageCur]]]);
-            if(!!ret && ret.code == 0) {
-                pageTotal = ret.page;
-                pageCur = ret.cur;
-
-                for(let item of ret.result.list) {
-                    //调整协议字段，满足创建CP接口的需要
-                    item.address = item.current.address; 
-
-                    //完成CP信息的入库和更新，同时也包括对凭证和道具信息的入库
-                    await core.notifyEvent('cp.register', {msg: item});
-                }
-            } else {
-                console.log('failed to connect to vallnet.');
-            }
-        }
-
-        //#region 订单处理相关流程
-        
-        //1. 添加微信支付回调路由(也可以选择配置于 facade.boot/static 数组或者 control/router 中，集中置于此处是为了提高代码聚合度)
-        core.addRouter('/wxnotify', async params => {
-            try {
-                //验证签名、解析字段
-                let data = await this.service.wechat.verifyXml(params); 
-                if(!data) {
-                    throw new Error('error sign code');
-                }
-
-                //触发 wallet.payCash 事件，执行订单确认、商品发放流程
-                this.notifyEvent('wallet.payCash', {data: data});
-    
-                //给微信送回应答
-                return `<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>`;
-            } catch (e) {
-                console.log('wxnotify', e.message);
-            }
-        });
-
-        //2. 添加订单状态定时检测器(每5分钟检测一轮)，具体查询工作由 orderMonitor.execute 承载
-
-        // test only 调测阶段，暂时封闭
-        //core.autoTaskMgr.addMonitor(new orderMonitor(), 10*1000);
-        //
-
-        //3. 添加商品发放流程，配合 wallet.payCash 的工作流程。商品参数保存于 buylogs.product 字段中，格式为复合格式字符串 "type, id, num[;type, id, num]"
-        //@warning 对于异步发放、可能最终发放失败的商品，需要先放入背包，然后由用户从背包中选兑，以降低事务处理的复杂性
-
-        //3.1 参与众筹
-        core.RegisterResHandle('crowd', async (user, bonus) => {
-            let stock = core.GetObject(TableType.StockBase, parseInt(bonus.id));
-            if(!!stock && bonus.num > 0 && stock.getAttr('sum_left') >= bonus.num) {
-                //由于订单已经支付，此处由系统为用户代购, 义务捐赠模式下 bonus.num 为零，不需处理
-                ret = await core.service.gamegoldHelper.execute('stock.purchaseTo', [stock.getAttr('cid'), bonus.num, user.account]);
-                return ret;
-            }
-            return {code:0};
-        });
-
-        //3.2 购买VIP服务
-        core.RegisterResHandle('vip', async (user, bonus) => {
-            let vip_level =  bonus.num;
-            let month_time =  3600 * 24 * 30;
-
-            let current_time = Date.parse(new Date())/1000;
-            let is_expired = !user.baseMgr.info.getAttr('vet') || (user.baseMgr.info.getAttr('vet') < current_time);
-            if(is_expired) { //非VIP/VIP已过期，重新开卡
-                user.baseMgr.info.setAttr('vst', current_time);                 //VIP开始时间
-                user.baseMgr.info.setAttr('vlg', current_time);                 //VIP提取收益时间
-                user.baseMgr.info.setAttr('vet', current_time + month_time);    //VIP结束时间
-                user.baseMgr.info.setAttr('vl', vip_level);                     //VIP当前级别
-            } else if(user.baseMgr.info.getAttr('vl') == vip_level) {           //续费
-                user.baseMgr.info.setAttr('vet', user.baseMgr.info.getAttr('vet') + month_time);
-            } else if(user.baseMgr.info.getAttr('vl') < vip_level) {            //升级
-                user.baseMgr.info.setAttr('vl', vip_level);
-            }
-            user.notify({type: 911002, info: JSON.parse(user.baseMgr.info.getData())});
-        });
-
-        //#endregion
-
-        //查询通告
-        let qryNotify = await core.service.gamegoldHelper.execute('sys.listNotify', [[['page', 1], ['size', -1]],]);
-        if(qryNotify.code == 0) {
-            for(let it of qryNotify.result.list) {
-                await core.notifyEvent('user.receiveNotify', {data: it});
-            }
-        }
-
-        core.orderMap = new Map();
-        core.cpToken = new Map();
-        core.userMap = new Map();
-        //订单执行前需要达到的确认数
-        core.confirmNum = 0;
-
-        core.autoTaskMgr.addCommonMonitor(()=>{
-            CheckOrder(core);
-        }, 5000);
-
-        console.log(`${core.options.serverType}.${core.options.serverId}'s startup finished!`);
     });
 })();
