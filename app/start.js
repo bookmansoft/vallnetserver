@@ -37,40 +37,26 @@ if(env.constructor == String) {
 
 (async () => {
     if(env.portal) {
-        //开启索引服务
-        await facade.boot({
-            env: {
-                serverType: "Index",
-                serverId: 1
-            },
-        });
-
         //开启反向代理。将反向代理和节点自身的路由配置相结合，可以实现灵活的路由策略
         facade.startProxy({
             router: {
                 'h5.gamegold.xin': {target: 'http://localhost:9101'},
                 'chick.gamegold.xin': {target: 'http://localhost:9201'},
+                'monkey.gamegold.xin': {target: 'http://localhost:9202'},
                 'crm.vallnet.cn': {target: 'http://localhost:9801'},
             },
             port: 80,
             protocol: 'http',
         });
 
+        //开启索引服务
+        await facade.boot({env: {serverType: "Index", serverId: 1}});
         //开启Auth服务
-        await facade.boot({
-            env: {
-                serverType: "Auth",
-                serverId: 1
-            },
-        });
+        await facade.boot({env: {serverType: "Auth", serverId: 1}});
     }
 
     //加载CRM管理节点
-    await facade.boot({
-        env: {
-            serverType: "CRM",
-            serverId: 1
-        },
+    await facade.boot({env: {serverType: "CRM",serverId: 1},
         loading: [
             TableType.Test, 
             TableType.Cp,
@@ -87,15 +73,8 @@ if(env.constructor == String) {
     });
 
     //加载游戏管理节点
-    facade.boot({
-        env: {
-            serverType: "Chick",
-            serverId: 1
-        },
-        static: [
-            ['/', './web/game/chick'],
-        ], 
-    });
+    facade.boot({env: {serverType: "Chick", serverId: 1}, static: [['/', './web/game/chick']]});
+    facade.boot({env: {serverType: "Monkey", serverId: 1}, static: [['/', './web/game/monkey']]});
 
     //加载钱包节点
     await facade.boot({

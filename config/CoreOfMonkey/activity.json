@@ -1,0 +1,37 @@
+{
+    "ActivityScoreBonus": {
+        "0":{
+            "0": {"score":60, "bonus":[{"type":2, "num":10000},{"type":1, "num":5}]},
+            "1": {"score":120, "bonus":[{"type":2, "num":15000},{"type":1, "num":10}]},
+            "2": {"score":360, "bonus":[{"type":2, "num":30000},{"type":1, "num":15}]}
+        },
+        "1":{
+            "0": {"score":40, "bonus":[{"type":1000, "id":0, "num":1},{"type":1, "num":1}]},
+            "1": {"score":80, "bonus":[{"type":1000, "id":0, "num":1},{"type":1, "num":5}]},
+            "2": {"score":200, "bonus":[{"type":1000, "id":0, "num":2},{"type":1, "num":10}]}
+        },
+        "2":{
+            "0": {"score":100, "bonus":[{"type":2, "num":40000},{"type":1000, "id":0, "num":1}]},
+            "1": {"score":300, "bonus":[{"type":2, "num":100000},{"type":1000, "id":0, "num":2}]},
+            "2": {"score":800, "bonus":[{"type":2, "num":300000},{"type":1000, "id":0, "num":3}]}
+        }
+    },
+    
+    "ActivityRankBonus": {
+        "0":{
+            "1": {"rank":1, "bonus":[{"type":1000, "id":0, "num":10}, {"type":1, "num":150}]},
+            "2": {"rank":2, "bonus":[{"type":1000, "id":0, "num":8}, {"type":1, "num":120}]},
+            "3": {"rank":3, "bonus":[{"type":1000, "id":0, "num":5}, {"type":1, "num":100}]}
+        },
+        "1":{
+            "1": {"rank":1, "bonus":[{"type":1000, "id":0, "num":10}, {"type":1, "num":150}]},
+            "2": {"rank":2, "bonus":[{"type":1000, "id":0, "num":8}, {"type":1, "num":120}]},
+            "3": {"rank":3, "bonus":[{"type":1000, "id":0, "num":5}, {"type":1, "num":100}]}
+        },
+        "2":{
+            "1": {"rank":1, "bonus":[{"type":1000, "id":5, "num":10}, {"type":1000, "id":8, "num":10}]},
+            "2": {"rank":2, "bonus":[{"type":1000, "id":5, "num":8}, {"type":1000, "id":8, "num":8}]},
+            "3": {"rank":3, "bonus":[{"type":1000, "id":5, "num":3}, {"type":1000, "id":8, "num":3}]}
+        }
+    }    
+}
