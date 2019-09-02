@@ -39,7 +39,7 @@ describe('认证', function() {
      *   async notify(user, objData) {
      *       let friend = this.core.GetObject(EntityType.User, `${user.domain}.${objData.id}`, IndexType.Domain);
      *       setTimeout(() => {
-     *           friend.notify({type: NotifyType.test, info:`来自${user.domainId}的好消息`}); //下行通知
+     *           friend.notify({type: NotifyType.test, info:`来自${user.domain}.${objData.id}的好消息`}); //下行通知
      *       }, 100)
      *       
      *       return {code: ReturnCode.Success};

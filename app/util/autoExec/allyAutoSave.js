@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
 let {EntityType, UserStatus} = facade.const
-let AllyObject = facade.entities.AllyObject
 
 /**
  * VIP监控任务对象

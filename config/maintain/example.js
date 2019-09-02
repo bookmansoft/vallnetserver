@@ -1,11 +1,9 @@
 /**
- * 系统维护任务 - 提取单独字段，包括score，hisGateNo等
+ * 系统维护任务
  * Created by liub on 2017-06-01.
  */
 let baseTask = require('./baseTask')
 let iniInfo = require('../../gameconfig')
-let facade = require('gamecloud')
-let User = facade.models['User']
 
 class task extends baseTask {
     async Execute(){
@@ -16,17 +14,6 @@ class task extends baseTask {
                     //填充Promise
                     pl.push(new Promise((resolve, reject) => {
                         let sysCur = iniInfo.servers[idx][x];
-                        User(sysCur.mysql).findAll().then(ret=>{
-                            ret.map(it=>{
-                                it.status = 1;
-                                process.nextTick(()=>{
-                                    it.save();
-                                });
-                            });
-                            resolve();
-                        }).catch(e=>{
-                            reject(e);
-                        });
                     }));
                 });
             }

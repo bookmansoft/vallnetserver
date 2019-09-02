@@ -358,7 +358,7 @@ async function CheckOrder(core) {
             let stock = core.GetObject(TableType.StockBase, parseInt(bonus.id));
             if(!!stock && bonus.num > 0 && stock.getAttr('sum_left') >= bonus.num) {
                 //由于订单已经支付，此处由系统为用户代购, 义务捐赠模式下 bonus.num 为零，不需处理
-                ret = await core.service.gamegoldHelper.execute('stock.purchaseTo', [stock.getAttr('cid'), bonus.num, user.domainId]);
+                ret = await core.service.gamegoldHelper.execute('stock.purchaseTo', [stock.getAttr('cid'), bonus.num, user.account]);
                 return ret;
             }
             return {code:0};
