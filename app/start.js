@@ -105,8 +105,6 @@ async function CheckOrder(core) {
                 serverId: 1
             },
             loading: [
-                TableType.sharedredpack, 
-                TableType.sharedredpack_receive, 
             ],
         });
     }

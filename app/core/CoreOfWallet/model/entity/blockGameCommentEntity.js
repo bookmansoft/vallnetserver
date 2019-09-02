@@ -3,7 +3,6 @@ let {TableType} = facade.const;
 let BaseEntity = facade.BaseEntity;
 let {blockgamecomment} = require('../table/blockgamecomment');
 
-//游戏道具
 class blockGameCommentEntiy extends BaseEntity
 {
     //region 集合功能
