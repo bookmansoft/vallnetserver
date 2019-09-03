@@ -11,7 +11,7 @@
 let facade = require('gamecloud')
 let CoreOfBase = facade.CoreOfBase
 let orderMonitor = require('../../../util/autoExec/orderMonitor');
-let {TableType, TableField} = facade.const
+let {EntityType} = facade.const
 
 /**
  * 对订单进行检测，已确认订单进行处理后删除，未确认订单如超时则主动查询状态
@@ -202,7 +202,7 @@ async function startAfter(core) {
 
     //3.1 参与众筹
     core.RegisterResHandle('crowd', async (user, bonus) => {
-        let stock = core.GetObject(TableType.StockBase, parseInt(bonus.id));
+        let stock = core.GetObject(EntityType.StockBase, parseInt(bonus.id));
         if(!!stock && bonus.num > 0 && stock.getAttr('sum_left') >= bonus.num) {
             //由于订单已经支付，此处由系统为用户代购, 义务捐赠模式下 bonus.num 为零，不需处理
             ret = await core.service.gamegoldHelper.execute('stock.purchaseTo', [stock.getAttr('cid'), bonus.num, user.account]);

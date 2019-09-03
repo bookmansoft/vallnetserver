@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType, IndexType} = facade.const;
+let {EntityType, IndexType} = facade.const;
 
 /**
  * 节点控制器--道具
@@ -21,7 +21,7 @@ class prop extends facade.Control
 
         if(ret.code == 0) {
             for(let prop of ret.result.list) {
-                let cp = this.core.GetObject(TableType.blockgame, prop.cid, IndexType.Domain);
+                let cp = this.core.GetObject(EntityType.blockgame, prop.cid, IndexType.Domain);
                 if(cp) {
                     prop.cpurl = cp.orm.cpurl;
                     prop.cp_name = cp.orm.cp_name;
@@ -50,7 +50,7 @@ class prop extends facade.Control
         let ret = await this.core.service.gamegoldHelper.execute('prop.remoteQuery', [[['pst', 2]]]);
         if(ret.code == 0) {
             for(let prop of ret.result.list) {
-                let cp = this.core.GetObject(TableType.blockgame, prop.cid, IndexType.Domain);
+                let cp = this.core.GetObject(EntityType.blockgame, prop.cid, IndexType.Domain);
                 if(cp) {
                     prop.cpurl = cp.orm.cpurl;
                     prop.cp_name = cp.orm.cp_name;

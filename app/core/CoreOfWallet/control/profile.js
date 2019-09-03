@@ -1,5 +1,4 @@
 let facade = require('gamecloud');
-let {TableType, TableField} = facade.const;
 
 /**
  * 个人中心

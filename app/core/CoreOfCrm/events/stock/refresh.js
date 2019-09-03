@@ -1,12 +1,12 @@
 let facade = require('gamecloud')
-let {TableType} = facade.const
+let {EntityType} = facade.const
 
 /**
  * 定时遍历所有CP，查询每个CP一定时期内的所有流水，形成连续历史快照，为K线提供数据支撑
  * @param {Object} data 
  */
 async function handle(data) {
-    this.GetMapping(TableType.Cp).groupOf().forEach(async (cp, key) => {
+    this.GetMapping(EntityType.Cp).groupOf().forEach(async (cp, key) => {
         let stockRecordList = await this.service.gamegoldHelper.execute('stock.record', [0, cp.getAttr("cid"), Math.max(0, this.chain.height - 144)]);
         for(let item of stockRecordList.list) {
             switch(item.type) {
@@ -33,7 +33,7 @@ async function handle(data) {
 
                     //记录凭证的开盘、收盘价等数据
                     let today = new Date();
-                    await this.core.GetMapping(TableType.CpStock).Create(
+                    await this.core.GetMapping(EntityType.CpStock).Create(
                         cp.getAttr("cid"),
                         today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(),
                         stock_open,

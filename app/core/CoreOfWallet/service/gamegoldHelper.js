@@ -1,6 +1,6 @@
 let gh = require('../../../util/gamegoldHelper')
 let facade = require('gamecloud')
-let {EntityType, TableType, IndexType, NotifyType} = facade.const
+let {EntityType, IndexType, NotifyType} = facade.const
 
 class gamegoldHelper extends gh
 {
@@ -41,7 +41,7 @@ class gamegoldHelper extends gh
      * @param {*} cid   CP编码
      */
     async getAddrFromUserIdAndCid(user, cid) {
-        let addrObj = this.core.GetObject(TableType.userwallet, `${cid}.${user.domainId}`, IndexType.Domain);
+        let addrObj = this.core.GetObject(EntityType.userwallet, `${cid}.${user.domainId}`, IndexType.Domain);
         if(!addrObj) {
             let ret = await this.core.service.gamegoldHelper.execute('token.user', [
                 cid,
@@ -51,7 +51,7 @@ class gamegoldHelper extends gh
             ]);
     
             if (!!ret && ret.code == 0) {
-                this.core.GetMapping(TableType.userwallet).Create({
+                this.core.GetMapping(EntityType.userwallet).Create({
                     cid: cid,
                     user_id: user.domainId,
                     addr: ret.result.data.addr,

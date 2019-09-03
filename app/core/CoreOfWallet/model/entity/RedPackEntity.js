@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType} = facade.const
+let {EntityType} = facade.const
 let BaseEntity = facade.BaseEntity
 let {redpack} = require('../table/redpack')
 
@@ -13,7 +13,7 @@ class RedPackEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.redpack,                     //表类型
+            etype: EntityType.redpack,                     //表类型
             model: redpack,               //表映射类
             entity: RedPackEntity,        //ORM映射类
         };

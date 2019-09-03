@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType, TableField, IndexType, PurchaseStatus, EntityType} = facade.const;
+let {EntityType, TableField, IndexType, PurchaseStatus} = facade.const;
 
 /**
  * 节点控制器--订单
@@ -20,7 +20,7 @@ class order extends facade.Control
         //根据订单类型分别处理
         switch(params.order.type) {
             case 'crowd': { //凭证一级市场购买
-                let stockList = this.core.GetMapping(TableType.StockBase).groupOf()
+                let stockList = this.core.GetMapping(EntityType.StockBase).groupOf()
                     .where([['cid', params.order.cid]])
                     .orderby('height', 'desc')
                     .records(TableField.StockBase);

@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType, IndexType} = facade.const
+let {EntityType, IndexType} = facade.const
 let BaseEntity = facade.BaseEntity
 let {userwallet} = require('../table/userwallet')
 
@@ -13,7 +13,7 @@ class userWalletEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.userwallet,     //表类型
+            etype: EntityType.userwallet,     //表类型
             model: userwallet,               //表映射类
             entity: userWalletEntity,        //ORM映射类
         };

@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType} = facade.const
+let {EntityType} = facade.const
 let BaseEntity = facade.BaseEntity
 let {Prop} = require('../table/Prop')
 
@@ -11,7 +11,7 @@ class PropEntity extends BaseEntity {
      */
     static get mapParams() {
         return {
-            etype: TableType.Prop,          //表类型
+            etype: EntityType.Prop,          //表类型
             model: Prop,                    //表映射类
             entity: PropEntity,             //ORM映射类
         };

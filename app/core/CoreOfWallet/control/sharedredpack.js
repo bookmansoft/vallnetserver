@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let { EntityType, ReturnCode, TableType, TableField } = facade.const;
+let { ReturnCode, EntityType, TableField } = facade.const;
 
 /**
  * 游戏的控制器
@@ -25,7 +25,7 @@ class sharedredpack extends facade.Control {
         paramArray.push(['send_uid', user.id]);
 
         //得到 Mapping 对象
-        let muster = this.core.GetMapping(TableType.sharedredpack)
+        let muster = this.core.GetMapping(EntityType.sharedredpack)
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .where(paramArray)
             .orderby('id', 'desc') //根据id字段倒叙排列
@@ -56,7 +56,7 @@ class sharedredpack extends facade.Control {
      * @param {*} objData 
      */
     Retrieve(user, objData) {
-        let rps = TableField.record(this.core.GetObject(TableType.sharedredpack, parseInt(objData.id)), TableField.sharedredpack);
+        let rps = TableField.record(this.core.GetObject(EntityType.sharedredpack, parseInt(objData.id)), TableField.sharedredpack);
         if (!!rps) {
             let sender = this.core.GetObject(EntityType.User, rps.send_uid);
             if(!!sender) {
@@ -81,7 +81,7 @@ class sharedredpack extends facade.Control {
      */
     async Send(user, objData) {
         //生成红包记录
-        let srp = await this.core.GetMapping(TableType.sharedredpack).Create({
+        let srp = await this.core.GetMapping(EntityType.sharedredpack).Create({
             total_amount: objData.total_amount,
             total_num: objData.total_num,
             send_uid: user.id,
@@ -124,7 +124,7 @@ class sharedredpack extends facade.Control {
                 left_amount = left_amount - receive_amount[i]; //更新剩余金额
             }
 
-            await this.core.GetMapping(TableType.sharedredpack_receive).Create({
+            await this.core.GetMapping(EntityType.sharedredpack_receive).Create({
                 send_id: srp.orm.id,
                 receive_amount: (receive_amount[i]*0.98)|0, //扣除2%手续费
                 modify_date: Date.parse(new Date())/1000,

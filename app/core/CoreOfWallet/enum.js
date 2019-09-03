@@ -1,25 +1,3 @@
-const TableType ={
-    "Test": 101,
-    "userwallet": 104,
-    "blockgame": 107,
-    'redpack': 119,
-    'redpackact': 120,
-    'userredpack': 121,
-    'userredpackact': 122,
-    'blockgamecomment': 123,
-    'sharedredpack':131,
-    'sharedredpack_receive':132,
-    'stock': 134,
-    'Cp': 202,
-    'Prop': 203,
-    'RedPacket': 207,
-    'Prize': 208,
-    'CpFunding': 209,
-    'CpStock': 210,
-    'StockBulletin': 302,
-    'StockBase': 303,
-};
-
 let blockgame = ['id','game_title','small_img_url','game_resource_uri','game_ico_uri','game_link_url','game_desc','sort','category_id',
     'category_title','provider_id','provider_name','ad_title','ranking','star_level','down_count','comment_count',
     'create_time','update_time','store_status','game_version', 'stock_price', 'stock_sum', 'grate', 'hHeight', 'hBonus', 'hAds',
@@ -162,7 +140,6 @@ function record(obj, attrs) {
 }
 
 exports = module.exports = {
-    TableType: TableType,
     TableField: {
         blockgame, StockBulletin, Mail,
         userwallet, redpack, redpackact, StockBase, Prize, Cp, CpFunding, CpStock, RedPacket,

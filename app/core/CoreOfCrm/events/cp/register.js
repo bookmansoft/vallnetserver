@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType, DomainType, UserStatus, EntityType, IndexType} = facade.const
+let {EntityType, IndexType} = facade.const
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 let fetch = require("node-fetch");
 
@@ -76,9 +76,9 @@ async function CreateRecord(user, cpinfo, core) {
 
     //写入数据库
     console.log('register cp start', data);
-    let cp = core.GetObject(TableType.Cp, cpinfo.cid, IndexType.Foreign);
+    let cp = core.GetObject(EntityType.Cp, cpinfo.cid, IndexType.Foreign);
     if(!cp) {
-        await core.GetMapping(TableType.Cp).Create(
+        await core.GetMapping(EntityType.Cp).Create(
             data.cp_id,
             data.cp_name,
             data.cp_text,

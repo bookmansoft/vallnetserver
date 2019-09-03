@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { IndexType, ReturnCode, NotifyType, TableType, TableField } = facade.const
+let { ReturnCode, EntityType, TableField } = facade.const
 let fetch = require("node-fetch");
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 let uuid = require('uuid');
@@ -25,7 +25,7 @@ class cp extends facade.Control {
      */
     UpdateRecord(user, objData) {
         try {
-            let cp = this.core.GetObject(TableType.Cp, objData.id);
+            let cp = this.core.GetObject(EntityType.Cp, objData.id);
             if(!cp || (user.id != cp.getAttr('operator_id') && user.cid != remoteSetup.cid)) {
                 return { code: -2, data: null };
             }
@@ -155,7 +155,7 @@ class cp extends facade.Control {
      * @param {*} objData 
      */
     async Retrieve(user, objData) {
-        let cp = this.core.GetObject(TableType.Cp, parseInt(objData.id));
+        let cp = this.core.GetObject(EntityType.Cp, parseInt(objData.id));
         if (!!cp) {
             return {
                 code: ReturnCode.Success,
@@ -241,7 +241,7 @@ class cp extends facade.Control {
         }
 
         //得到 Mapping 对象
-        let muster = this.core.GetMapping(TableType.Cp)
+        let muster = this.core.GetMapping(EntityType.Cp)
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .where(paramArray)
             .orderby('id', 'desc') //根据id字段倒叙排列

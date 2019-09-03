@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType, EntityType, IndexType, TableField} = facade.const
+let {EntityType, IndexType} = facade.const
 let fetch = require("node-fetch");
 
 /**
@@ -93,18 +93,18 @@ async function CreateRecord(cpInfo, core) {
         return {code: 0};
     }
 
-    let cpObj = core.GetObject(TableType.blockgame, cpInfo.cid, IndexType.Domain);
+    let cpObj = core.GetObject(EntityType.blockgame, cpInfo.cid, IndexType.Domain);
     if(!!cpObj) { //已经有相同 cid 的记录了, 更新其内容
         for(let key of Object.keys(content)) {
             cpObj.orm[key] = content[key];
         }
     } else { //尚无记录，创建新的条目
-        await core.GetMapping(TableType.blockgame).Create(content);
+        await core.GetMapping(EntityType.blockgame).Create(content);
     }
 
     //完成众筹信息的入库和更新
     if(cpInfo.stock.sum > 0 && cpInfo.stock.height > 0) {
-        let stockList = core.GetMapping(TableType.StockBase).groupOf()
+        let stockList = core.GetMapping(EntityType.StockBase).groupOf()
             .where([['cid', cpInfo.cid]])
             .orderby('height', 'desc')
             .records();
@@ -124,7 +124,7 @@ async function CreateRecord(cpInfo, core) {
             content.funding_text = res.crowd.funding_text;
             content.funding_project_text = res.crowd.funding_project_text;
 
-            await core.GetMapping(TableType.StockBase).Create(content);
+            await core.GetMapping(EntityType.StockBase).Create(content);
         } else if (cpInfo.stock.height == stock.orm.height) { //相同高度才更新
             for(let key of Object.keys(content)) {
                 stock.orm[key] = content[key];

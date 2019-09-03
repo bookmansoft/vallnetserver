@@ -1,7 +1,6 @@
 let facade = require('gamecloud');
-let {TableType, TableField} = facade.const;
+let {EntityType, TableField} = facade.const;
 const stringRandom = require('string-random');
-let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 
 /**
  * 管理后台
@@ -10,7 +9,7 @@ class manage extends facade.Control
 {
     //活动列表
     async RedPackActCurrent(user, params) {
-        let redpackActList = await this.core.GetMapping(TableType.redpackact).groupOf().where([['status', '==', 1]]).records(TableField.redpackact)
+        let redpackActList = await this.core.GetMapping(EntityType.redpackact).groupOf().where([['status', '==', 1]]).records(TableField.redpackact)
         if(redpackActList.length >0 ) {
             let redPacetAct = redpackActList[0];
             return {code: 0, data: redPacetAct};
@@ -22,7 +21,7 @@ class manage extends facade.Control
     async UserRedPackAct(user, params) {
         let uid = user.id;
         let act_id = params.act_id;
-        let userRedPactActs = await this.core.GetMapping(TableType.userredpackact).groupOf()
+        let userRedPactActs = await this.core.GetMapping(EntityType.userredpackact).groupOf()
             .where([
                 ['uid', '==', uid],
                 ['act_id', '==', act_id]
@@ -38,7 +37,7 @@ class manage extends facade.Control
     async UserRedPack(user, params) {
         let uid = user.id
         let act_id = params.act_id
-        let userRedPacts = await this.core.GetMapping(TableType.userredpack).groupOf()
+        let userRedPacts = await this.core.GetMapping(EntityType.userredpack).groupOf()
             .where([
                 ['uid', '==', uid],
                 ['act_id', '==', act_id]
@@ -58,7 +57,7 @@ class manage extends facade.Control
         let gamegold = params.gamegold
         let amount = params.amount
 
-        let redpackAct = this.core.GetObject(TableType.redpackact, act_id); 
+        let redpackAct = this.core.GetObject(EntityType.redpackact, act_id); 
         if(!!!redpackAct ) {
             return {code: -1, msg: '无红包活动'};
         }
@@ -75,9 +74,9 @@ class manage extends facade.Control
             cid: redpackAct.orm.cid,
             status: 0
         }
-        await this.core.GetMapping(TableType.userredpack).Create(userRedpackItem)
+        await this.core.GetMapping(EntityType.userredpack).Create(userRedpackItem)
 
-        let userRedPactActs = await this.core.GetMapping(TableType.userredpackact).groupOf()
+        let userRedPactActs = await this.core.GetMapping(EntityType.userredpackact).groupOf()
         .where([
             ['uid', '==', uid],
             ['act_id', '==', act_id]
@@ -97,7 +96,7 @@ class manage extends facade.Control
                 amount_all: amount,
                 last_act_at: current_time
             }
-            await this.core.GetMapping(TableType.userredpackact).Create(userRedpackActItem)
+            await this.core.GetMapping(EntityType.userredpackact).Create(userRedpackActItem)
         }
 
         return {code: 0};
@@ -110,7 +109,7 @@ class manage extends facade.Control
         let uid = user.id
         let act_id = params.act_id
         let openid = params.openid
-        let userRedPact = this.core.GetObject(TableType.userredpack, id);     //根据上行id查找userRedPact表中记录
+        let userRedPact = this.core.GetObject(EntityType.userredpack, id);     //根据上行id查找userRedPact表中记录
         if( !!userRedPact ) {
             if(userRedPact.orm.status != 0) {
                 return {code: -1, msg: '红包已领取'};

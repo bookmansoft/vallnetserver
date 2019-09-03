@@ -1,5 +1,4 @@
 let facade = require('gamecloud')
-let {TableType, GetResType, NotifyType, ResType, ActivityType, em_Condition_Type, em_Condition_Checkmode} = facade.const
 let EventData = facade.Util.EventData
 
 /**

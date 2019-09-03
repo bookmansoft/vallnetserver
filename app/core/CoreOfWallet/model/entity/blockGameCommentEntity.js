@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let {TableType} = facade.const;
+let {EntityType} = facade.const;
 let BaseEntity = facade.BaseEntity;
 let {blockgamecomment} = require('../table/blockgamecomment');
 
@@ -12,7 +12,7 @@ class blockGameCommentEntiy extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.blockgamecomment,     //表类型
+            etype: EntityType.blockgamecomment,     //表类型
             model: blockgamecomment,               //表映射类
             entity: blockGameCommentEntiy,         //ORM映射类
         };

@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType, TableType, TableField } = facade.const
+let { ReturnCode, EntityType, TableField } = facade.const
 
 /**
  * 游戏的控制器
@@ -13,7 +13,7 @@ class redpacket extends facade.Control {
      */
     DeleteRecord(user, objData) {
         try {
-            this.core.GetMapping(TableType.RedPacket).Delete(objData.id, true);
+            this.core.GetMapping(EntityType.RedPacket).Delete(objData.id, true);
             return { code: ReturnCode.Success };
         } catch (error) {
             console.log(error);
@@ -30,7 +30,7 @@ class redpacket extends facade.Control {
         try {
             console.log(JSON.stringify(objData));
             console.log(objData.id);
-            let redpacket = this.core.GetObject(TableType.RedPacket, parseInt(objData.id));
+            let redpacket = this.core.GetObject(EntityType.RedPacket, parseInt(objData.id));
             if (!!redpacket) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 redpacket.setAttr('act_name', objData.act_name);
@@ -63,7 +63,7 @@ class redpacket extends facade.Control {
     async CreateRecord(user, objData) {
         try {
 
-            let redpacket = await this.core.GetMapping(TableType.RedPacket).Create(
+            let redpacket = await this.core.GetMapping(EntityType.RedPacket).Create(
                 objData.act_name,
                 objData.act_sequence,
                 objData.total_gamegold,
@@ -95,7 +95,7 @@ class redpacket extends facade.Control {
     Retrieve(user, objData) {
         try {
             //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-            let redpacket = this.core.GetObject(TableType.RedPacket, parseInt(objData.id));
+            let redpacket = this.core.GetObject(EntityType.RedPacket, parseInt(objData.id));
             console.log(redpacket);
             if (!!redpacket) {
                 return {
@@ -151,7 +151,7 @@ class redpacket extends facade.Control {
 
             console.log(paramArray);
             //得到 Mapping 对象
-            let muster = this.core.GetMapping(TableType.RedPacket)
+            let muster = this.core.GetMapping(EntityType.RedPacket)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列

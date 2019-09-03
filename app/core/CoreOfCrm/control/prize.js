@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { ReturnCode, NotifyType, TableType, TableField } = facade.const
+let { ReturnCode, EntityType, TableField } = facade.const
 
 /**
  * 游戏的控制器
@@ -13,7 +13,7 @@ class prize extends facade.Control {
      */
     DeleteRecord(user, objData) {
         try {
-            this.core.GetMapping(TableType.Prize).Delete(objData.id, true);
+            this.core.GetMapping(EntityType.Prize).Delete(objData.id, true);
             return { code: ReturnCode.Success, data: null };
         } catch (error) {
             console.log(error);
@@ -28,7 +28,7 @@ class prize extends facade.Control {
      */
     UpdateRecord(user, objData) {
         try {
-            let prize = this.core.GetObject(TableType.Prize, objData.id);
+            let prize = this.core.GetObject(EntityType.Prize, objData.id);
             if (!!prize) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
                 prize.setAttr('act_name', objData.act_name);
@@ -60,7 +60,7 @@ class prize extends facade.Control {
     async CreateRecord(user, objData) {
         try {
 
-            let prize = await this.core.GetMapping(TableType.Prize).Create(
+            let prize = await this.core.GetMapping(EntityType.Prize).Create(
                 objData.act_name,
                 objData.mch_billno,
                 objData.nick_name,
@@ -94,7 +94,7 @@ class prize extends facade.Control {
     Retrieve(user, objData) {
         try {
             //根据上行id查找test表中记录, 注意在 get 方式时 id 不会自动由字符串转换为整型
-            let prize = this.core.GetObject(TableType.Prize, parseInt(objData.id));
+            let prize = this.core.GetObject(EntityType.Prize, parseInt(objData.id));
             console.log(prize);
             if (!!prize) {
                 return {
@@ -151,7 +151,7 @@ class prize extends facade.Control {
 
             console.log(paramArray);
             //得到 Mapping 对象
-            let muster = this.core.GetMapping(TableType.Prize)
+            let muster = this.core.GetMapping(EntityType.Prize)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where(paramArray)
                 .orderby('id', 'desc') //根据id字段倒叙排列

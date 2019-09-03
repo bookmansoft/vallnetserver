@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType, TableField, IndexType} = facade.const;
+let {EntityType, TableField, IndexType} = facade.const;
 let fetch = require("node-fetch");
 
 /**
@@ -18,7 +18,7 @@ class cp extends facade.Control
         if(!!params.category) {
             query.push(['category_id', params.category]);
         }
-        let muster = this.core.GetMapping(TableType.blockgame).groupOf().where(query).paginate(10, params.page || 1);
+        let muster = this.core.GetMapping(EntityType.blockgame).groupOf().where(query).paginate(10, params.page || 1);
 
         let $data = { 
             list: [], 
@@ -44,7 +44,7 @@ class cp extends facade.Control
         if(!!params.category) {
             query.push(['category_id', params.category]);
         }
-        let muster = this.core.GetMapping(TableType.blockgame).groupOf().where(query).paginate(10, params.page || 1);
+        let muster = this.core.GetMapping(EntityType.blockgame).groupOf().where(query).paginate(10, params.page || 1);
 
         let $data = { 
             list: [], 
@@ -99,7 +99,7 @@ class cp extends facade.Control
     async getProps(user, objData) {
         let proplist = [];
 
-        let cpObj = this.core.GetObject(TableType.blockgame, objData.cid, IndexType.Domain);
+        let cpObj = this.core.GetObject(EntityType.blockgame, objData.cid, IndexType.Domain);
         if(!!cpObj) { 
             let res = await fetch(`${cpObj.orm.cpurl}`, { mode: 'cors' });
             res = await res.json();

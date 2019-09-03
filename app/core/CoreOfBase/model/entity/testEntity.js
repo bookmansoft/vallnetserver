@@ -1,6 +1,6 @@
 let facade = require('gamecloud')
 let BaseEntity = facade.BaseEntity
-let {TableType} = require('../../enum')
+let {EntityType} = facade.const
 let {Test} = require('../table/test')
 
 class testEntity extends BaseEntity
@@ -12,7 +12,7 @@ class testEntity extends BaseEntity
      */
     static get mapParams() {
         return {
-            etype: TableType.Test,          //表类型
+            etype: EntityType.Test,         //表类型
             model: Test,                    //表映射类
             entity: testEntity,             //ORM映射类
         };

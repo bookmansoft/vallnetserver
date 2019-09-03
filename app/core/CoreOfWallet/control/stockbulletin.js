@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { IndexType, ReturnCode, TableType, TableField } = facade.const
+let { IndexType, EntityType, TableField } = facade.const
 
 /**
  * 凭证看板控制器
@@ -21,7 +21,7 @@ class stockbulletin extends facade.Control {
             params.stock_day = `${date.getFullYear()}-${(date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1)}-${(date.getDate() < 10 ? '0' + date.getDate() : date.getDate())}`;
         }
 
-        let record = this.core.GetObject(TableType.StockBulletin, `${params.cid}-${params.stock_day}`, IndexType.Domain);
+        let record = this.core.GetObject(EntityType.StockBulletin, `${params.cid}-${params.stock_day}`, IndexType.Domain);
         if(!!record) {
             record = TableField.record(record.orm, TableField.StockBulletin);
         } else {
@@ -70,14 +70,14 @@ class stockbulletin extends facade.Control {
                 }
             }
     
-            let cpObj = this.core.GetObject(TableType.blockgame, params.cid, IndexType.Domain);
+            let cpObj = this.core.GetObject(EntityType.blockgame, params.cid, IndexType.Domain);
             if(!!cpObj) { 
                 record.sum = cpObj.orm.stock_sum;
                 record.price = cpObj.orm.stock_price;
                 record.bonus = cpObj.orm.hBonus;
             }
 
-            this.core.GetMapping(TableType.StockBulletin).Create(record);
+            this.core.GetMapping(EntityType.StockBulletin).Create(record);
         }
 
         return {code: 0, data: record};

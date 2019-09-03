@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let { EntityType, TableType, TableField } = facade.const;
+let { EntityType, TableField } = facade.const;
 
 /**
  * 游戏的控制器
@@ -22,7 +22,7 @@ class sharedredpack_receive extends facade.Control {
             paramArray.push(['receive_uid', user.id]);
         }
 
-        let muster = this.core.GetMapping(TableType.sharedredpack_receive)
+        let muster = this.core.GetMapping(EntityType.sharedredpack_receive)
             .groupOf()
             .where(paramArray)
             .orderby('id', 'asc')
@@ -38,7 +38,7 @@ class sharedredpack_receive extends facade.Control {
             if (objData.server_flag == 1 || !!$value['receive_uid']) {
                 $value['rank'] = $idx++;
 
-                let rps = this.core.GetObject(TableType.sharedredpack, $value['send_id']);
+                let rps = this.core.GetObject(EntityType.sharedredpack, $value['send_id']);
                 if(!!rps) {
                     let sender = this.core.GetObject(EntityType.User, rps.orm.send_uid);
                     if(!!sender) {
@@ -65,7 +65,7 @@ class sharedredpack_receive extends facade.Control {
      * @param {*} objData 
      */
     async Receive(user, objData) {
-        let rps = this.core.GetObject(TableType.sharedredpack, parseInt(objData.id));
+        let rps = this.core.GetObject(EntityType.sharedredpack, parseInt(objData.id));
         if (!!rps) {
             let sendData = TableField.record(rps, TableField.sharedredpack);
             let sender = this.core.GetObject(EntityType.User, sendData.send_uid);
@@ -117,7 +117,7 @@ class sharedredpack_receive extends facade.Control {
                     if (sendData.state_id == 1 && !srp_receive.list[i].receive_uid) {
                         sendData.real_amount = srp_receive.list[i].receive_amount;//设置接收金额
 
-                        let receiveData = this.core.GetObject(TableType.sharedredpack_receive, parseInt(srp_receive.list[i].id));
+                        let receiveData = this.core.GetObject(EntityType.sharedredpack_receive, parseInt(srp_receive.list[i].id));
 
                         let rt = await this.core.service.gamegoldHelper.execute('tx.send', [
                             user.baseMgr.info.getAttr('acaddr'), //发送到用户默认地址

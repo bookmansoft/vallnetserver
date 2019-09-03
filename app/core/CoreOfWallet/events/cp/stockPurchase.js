@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType, EntityType, IndexType, TableField} = facade.const
+let {EntityType} = facade.const
 
 /**
  * CP一级市场购买事件
@@ -24,7 +24,7 @@ async function CreateRecord(record, core) {
         return {code: 0};
     }
 
-    let stockList = core.GetMapping(TableType.StockBase).groupOf()
+    let stockList = core.GetMapping(EntityType.StockBase).groupOf()
         .where([['cid', record.cid]])
         .orderby('height', 'desc')
         .records();

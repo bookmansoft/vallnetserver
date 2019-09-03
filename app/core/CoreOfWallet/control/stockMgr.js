@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableType, TableField, IndexType} = facade.const;
+let {EntityType, TableField, IndexType} = facade.const;
 
 /**
  * 游戏的控制器
@@ -39,7 +39,7 @@ class stockMgr extends facade.Control {
         if(ret.code == 0) {
             let $data = { list: [] };
             for(let item of ret.result.list) {
-                let cpObj = this.core.GetObject(TableType.blockgame, item.cid, IndexType.Domain);
+                let cpObj = this.core.GetObject(EntityType.blockgame, item.cid, IndexType.Domain);
                 if(!!cpObj) { 
                     $data.list.push({
                         src: cpObj.orm.game_ico_uri,
@@ -116,7 +116,7 @@ class stockMgr extends facade.Control {
         if(ret.code == 0) {
             let $data = { list: [] };
             for(let item of ret.result.list) {
-                let cpObj = this.core.GetObject(TableType.blockgame, item.cid, IndexType.Domain);
+                let cpObj = this.core.GetObject(EntityType.blockgame, item.cid, IndexType.Domain);
                 if(!!cpObj) { 
                     $data.list.push({
                         provider: cpObj.orm.developer,
@@ -151,7 +151,7 @@ class stockMgr extends facade.Control {
         objData = objData || {};
         objData.currentPage = objData.currentPage || 1;
 
-        let muster = this.core.GetMapping(TableType.StockBase)
+        let muster = this.core.GetMapping(EntityType.StockBase)
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .where([])
             .orderby('id', 'desc') //根据id字段倒叙排列
@@ -162,7 +162,7 @@ class stockMgr extends facade.Control {
         for (let $value of muster.records(TableField.StockBase)) {
             $value['rank'] = $idx++;
             //查询CP基本信息，补充显示内容
-            let cpObj = this.core.GetObject(TableType.blockgame, $value.cid, IndexType.Domain);
+            let cpObj = this.core.GetObject(EntityType.blockgame, $value.cid, IndexType.Domain);
             if(!!cpObj) { 
                 $value.cp_name = cpObj.orm.cp_name;
                 $value.large_img_url = cpObj.orm.game_resource_uri;

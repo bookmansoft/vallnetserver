@@ -2,7 +2,7 @@
  * Created by liub on 2017-05-26.
  */
 let facade = require('gamecloud')
-let {EntityType, IndexType, NotifyType, ActionExecuteType, UserStatus,em_Condition_Type, TableType} = facade.const
+let {EntityType, IndexType, UserStatus} = facade.const
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
@@ -56,7 +56,7 @@ async function handle(data){
             rt = await remote.execute('cp.mine', [null, account]);
             if(!!rt && rt.code == 0) {
                 //将操作员名下已注册、未入库的CP条目写入数据库
-                let cids = this.GetMapping(TableType.Cp).groupOf().excludeProperty(rt.result.list.map(it=>it.cid), 'cp_id');
+                let cids = this.GetMapping(EntityType.Cp).groupOf().excludeProperty(rt.result.list.map(it=>it.cid), 'cp_id');
                 if(cids.length > 0) {
                     let items = rt.result.list.reduce((sofar, cur)=>{
                         sofar[cur.cid] = cur;

@@ -1,7 +1,7 @@
 const fs = require('fs')
 const axios = require('axios')
 let facade = require('gamecloud')
-let {TableType} = facade.const;
+let {EntityType} = facade.const;
 let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
 
 /**
@@ -87,7 +87,7 @@ class wechat extends facade.Control {
             return_msg: ret.return_msg,
             order_status: 0,
         }
-        this.core.GetMapping(TableType.redpack).Create(redpackItem);
+        this.core.GetMapping(EntityType.redpack).Create(redpackItem);
 
         return { code: 0, data: ret.return_msg };
     }

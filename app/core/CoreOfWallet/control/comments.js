@@ -1,5 +1,5 @@
 let facade = require('gamecloud');
-let {TableType, TableField} = facade.const;
+let {EntityType, TableField} = facade.const;
 
 /**
  * 游戏接口
@@ -10,7 +10,7 @@ class comments extends facade.Control
     //评论列表
     async GameCommentList(user, params)  {
         let cid = params.cid
-        let dataList = this.core.GetMapping(TableType.blockgamecomment).groupOf()
+        let dataList = this.core.GetMapping(EntityType.blockgamecomment).groupOf()
             .where([['cid', '==', cid]])
             .records(TableField.blockgamecomment);
 
@@ -33,7 +33,7 @@ class comments extends facade.Control
             point_up_count: 0,
             create_at: current_time,
         };
-        this.core.GetMapping(TableType.blockgamecomment).Create(commentItem);
+        this.core.GetMapping(EntityType.blockgamecomment).Create(commentItem);
         return {code: 0};
     }
 }

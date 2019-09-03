@@ -11,7 +11,7 @@
 let facade = require('gamecloud')
 let CoreOfBase = facade.CoreOfBase
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
-let {TableType, TableField} = facade.const
+let {EntityType, TableField} = facade.const
 
 /**
  * 对订单进行检测，已确认订单进行处理后删除，未确认订单如超时则主动查询状态
@@ -59,7 +59,7 @@ async function startAfter(core) {
     }
 
     //自检特约商户设定
-    let cids = core.GetMapping(TableType.Cp).groupOf().records(TableField.Cp).reduce((sofar,cur)=>{sofar += `${cur.cp_id},`; return sofar;}, '');
+    let cids = core.GetMapping(EntityType.Cp).groupOf().records(TableField.Cp).reduce((sofar,cur)=>{sofar += `${cur.cp_id},`; return sofar;}, '');
     await core.service.RemoteNode.conn(remoteSetup.cid).execute('sys.changeSpecialCp', [1, cids]);
 
     //直接登记消息处理句柄，因为 tx.client/balance.account.client 这样的消息是默认发送的，不需要订阅

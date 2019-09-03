@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let { IndexType, EntityType, ReturnCode, NotifyType, TableType, TableField } = facade.const
+let { IndexType, ReturnCode, EntityType, TableField } = facade.const
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
@@ -15,7 +15,7 @@ class cpfunding extends facade.Control {
      */
     async CreateRecord(user, objData) {
         //1. 首先检验该操作员是否有权发布该众筹
-        let cp = this.core.GetObject(TableType.Cp, objData.cid, IndexType.Foreign);
+        let cp = this.core.GetObject(EntityType.Cp, objData.cid, IndexType.Foreign);
         if(!cp) {
             return { code: -1, msg: "指定CP不存在" };
         } else if(cp.getAttr('operator_id') != user.id) {
@@ -31,7 +31,7 @@ class cpfunding extends facade.Control {
         //todo ...
 
         //4. 提交众筹申请，等待管理员审批
-        await this.core.GetMapping(TableType.CpFunding).Create(
+        await this.core.GetMapping(EntityType.CpFunding).Create(
             objData.stock_num,
             objData.stock_num * objData.stock_amount,
             objData.stock_amount*100000,
@@ -59,7 +59,7 @@ class cpfunding extends facade.Control {
      */
     async UpdateRecord(user, objData) {
         if(user.cid == remoteSetup.cid) { //只能超级管理员执行
-            let cpfunding = this.core.GetObject(TableType.CpFunding, parseInt(objData.id));
+            let cpfunding = this.core.GetObject(EntityType.CpFunding, parseInt(objData.id));
             if (!!cpfunding && cpfunding.getAttr('audit_state_id')==1) {
                 //获取发行众筹的发起者
                 let operator = this.core.GetObject(EntityType.User, cpfunding.getAttr('user_id'));
@@ -130,7 +130,7 @@ class cpfunding extends facade.Control {
      */
     async Retrieve(user, objData) {
         try {
-            let cpfunding = this.core.GetObject(TableType.CpFunding, parseInt(objData.id));
+            let cpfunding = this.core.GetObject(EntityType.CpFunding, parseInt(objData.id));
             if (!!cpfunding) {
                 return {
                     code: ReturnCode.Success,
@@ -270,7 +270,7 @@ class cpfunding extends facade.Control {
         }
 
         //得到 Mapping 对象
-        let muster = this.core.GetMapping(TableType.CpFunding)
+        let muster = this.core.GetMapping(EntityType.CpFunding)
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
             .where(paramArray)
             .orderby('id', 'desc') //根据id字段倒叙排列
@@ -304,7 +304,7 @@ class cpfunding extends facade.Control {
     ListCp(user, objData) {
         try {
             //查询当前操作员名下注册的CP列表
-            let muster = this.core.GetMapping(TableType.Cp)
+            let muster = this.core.GetMapping(EntityType.Cp)
                 .groupOf()                          // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
                 .where([['operator_id', user.id]])  //只罗列当前操作员名下记录
                 .orderby('id', 'asc')               //根据id字段倒叙排列
