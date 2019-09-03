@@ -3,7 +3,9 @@ let {EntityType, IndexType} = facade.const
 let BaseEntity = facade.BaseEntity
 let {userwallet} = require('../table/userwallet')
 
-//用户钱包地址
+/**
+ * 用户登录认证报文缓存表
+ */
 class userWalletEntity extends BaseEntity
 {
     //region 集合功能

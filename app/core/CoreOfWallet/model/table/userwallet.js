@@ -10,8 +10,11 @@ let userwallet = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.
     'userwallet',
     {
         cid: Sequelize.STRING,
+        uid: Sequelize.STRING,
+        time: Sequelize.STRING,
         addr: Sequelize.STRING,
-        user_id: Sequelize.STRING,
+        pubkey: Sequelize.STRING,
+        sig: Sequelize.STRING,
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段

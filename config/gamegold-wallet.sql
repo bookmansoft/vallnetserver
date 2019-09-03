@@ -330,12 +330,14 @@ CREATE TABLE IF NOT EXISTS `our_block_user_redpack_act` (
 
 -- 导出  表 gamegold-wallet.our_block_user_wallet 结构
 CREATE TABLE IF NOT EXISTS `our_block_user_wallet` (
-  `id` int(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '自动编号',
-  `cid` varchar(64) NOT NULL COMMENT 'cid',
-  `user_id` varchar(32) NOT NULL COMMENT 'cp用户ID',
-  `addr` varchar(64) NOT NULL COMMENT '钱包地址',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `cid` (`cid`) USING BTREE
+	`id` INT(8) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '自动编号',
+	`cid` VARCHAR(64) NOT NULL COMMENT 'CP编号',
+	`uid` VARCHAR(64) NOT NULL COMMENT '用户编号',
+	`time` VARCHAR(64) NOT NULL COMMENT '时间戳',
+	`addr` VARCHAR(64) NOT NULL COMMENT '地址',
+	`pubkey` VARCHAR(128) NOT NULL COMMENT '公钥',
+	`sig` VARCHAR(256) NOT NULL COMMENT '签名字段',
+	PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 数据导出被取消选择。

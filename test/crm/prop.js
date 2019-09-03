@@ -127,41 +127,5 @@ describe('道具（prop）', function () {
             msg = await remote.fetching({ func: "wallet.Info", userinfo: { id: 5 }, items: [] });
             remote.isSuccess(msg, true);
         }
-    });/* 
-    it('批量生产 prop.CreatePropListRemote', async () => {
-        let msg = await remote.login({ openid: `${Math.random() * 1000000000 | 0}` });
-        if (remote.isSuccess(msg)) {
-            res = await remote.fetching({
-                func: "prop.CreatePropListRemote", userinfo: { id: 5 },
-                cid: 'e26f7a20-fcef-11e8-af9c-9f3accf37b7f', //测试cid 记得先gamegold中cp.list找个稳定的
-                oid: 'xxxxxxxx-game-gold-boss-tokenxxx00042',
-                num: 5,
-                id: 35
-
-            });
-            console.log(res);
-        }
-    }); */
-    it('游戏厂商获取道具列表 prop.getPropsByGame', async () => {
-        let msg = await remote.login({ openid: `${Math.random() * 1000000000 | 0}` });
-        if (remote.isSuccess(msg)) {
-            res = await remote.fetching({
-                func: "prop.getPropsByGame", userinfo: { id: 5 },
-                cp_url: 'http://h5.gamegold.xin/mock/cp122701', 
-            });
-            console.log(res);
-        }
     });
-    it('游戏厂商获取道具详情 prop.getCpPropsDetail', async () => {
-        let msg = await remote.login({ openid: `${Math.random() * 1000000000 | 0}` });
-        if (remote.isSuccess(msg)) {
-            res = await remote.fetching({
-                func: "prop.getCpPropsDetail", userinfo: { id: 5 },
-                cp_url: 'http://h5.gamegold.xin/mock/cp122701', 
-                pid: 'cp122801_prop0', 
-            });
-            console.log(res);
-        }
-    });
-
 });

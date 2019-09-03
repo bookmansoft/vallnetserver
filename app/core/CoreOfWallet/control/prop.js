@@ -25,6 +25,8 @@ class prop extends facade.Control
                 if(cp) {
                     prop.cpurl = cp.orm.cpurl;
                     prop.cp_name = cp.orm.cp_name;
+
+                    //todo 检测那些不在CP默认地址上的道具，进行自动迁移，以方便CP道具确权
                 }
             }
             //弥补下协议定义上的差别
@@ -85,7 +87,11 @@ class prop extends facade.Control
         }
     }
 
-    //道具发送
+    /**
+     * 道具发送
+     * @param {*} user 
+     * @param {*} params 
+     */
     async PropOrder(user, params)  {
         let cid = params.cid;
         let prop_ori_id = params.prop_ori_id;
@@ -100,14 +106,22 @@ class prop extends facade.Control
         return {code: 0, data: ret.result};
     }
 
-    //道具数量
+    /**
+     * 道具数量
+     * @param {*} user 
+     * @param {*} params 
+     */
     async PropCount(user, params) {
         let ret = await this.core.service.gamegoldHelper.execute('prop.list', [0, user.account]);
         user.baseMgr.info.setAttr('prop_count', ret.result.count);
         return {code: 0, data: {count: ret.result.count}};
     }
 
-    //道具熔铸
+    /**
+     * 道具熔铸
+     * @param {*} user 
+     * @param {*} params 
+     */
     async PropFound(user, params) {
         let pid = params.pid;
         let ret = await this.core.service.gamegoldHelper.execute('prop.found', [

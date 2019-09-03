@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {MiddlewareParam, ReturnCode, EntityType, IndexType, UserStatus, DomainType, GetDomainType,RecordType} = facade.const
+let {MiddlewareParam, ReturnCode, EntityType, IndexType, UserStatus} = facade.const
 let CommonFunc = facade.util
 
 /**
@@ -19,7 +19,7 @@ async function handle(sofar) {
             //针对各类第三方平台，执行一些必要的验证流程：
             let domainType = sofar.msg.oemInfo.domain.split('.')[0];
             switch(domainType) {
-                case DomainType.TX: { //QQ游戏开发平台, 前向校验下用户的合法性
+                case 'tx': { //QQ游戏开发平台, 前向校验下用户的合法性
                         if (!sofar.facade.options.debug) {
                             ret = await sofar.facade.service.txApi.Get_Info(sofar.msg.oemInfo.openid, sofar.msg.oemInfo.openkey, sofar.msg.oemInfo.pf, sofar.msg.userip);
                         }
@@ -45,7 +45,7 @@ async function handle(sofar) {
                                     return;
                                 }
                             } else { // 通用验签流程
-                                let _sign = (sofar.msg.oemInfo.auth.sign == facade.util.sign(sofar.msg.oemInfo.auth, sofar.facade.options[DomainType.D360].game_secret));
+                                let _sign = (sofar.msg.oemInfo.auth.sign == facade.util.sign(sofar.msg.oemInfo.auth, sofar.facade.options['360'].game_secret));
                                 let _exp = (Math.abs(sofar.msg.oemInfo.auth.t - CommonFunc.now()) <= 300);
                                 if (!_sign || !_exp) {
                                     sofar.fn({ code: ReturnCode.authThirdPartFailed });
@@ -114,7 +114,7 @@ async function handle(sofar) {
                     ret.figureurl = sofar.facade.fileMap.DataConst.user.icon;
                 }
                 sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});//发送"登录后"事件
-                if(usr.domainType == DomainType.TX) { //设置腾讯会员属性
+                if(usr.domainType == 'tx') { //设置腾讯会员属性
                     await usr.SetTxInfo(ret); //异步执行，因为涉及到了QQ头像的CDN地址转换
                 }
                 usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌

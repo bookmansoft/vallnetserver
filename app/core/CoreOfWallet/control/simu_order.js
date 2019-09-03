@@ -1,8 +1,8 @@
 let facade = require('gamecloud')
-let {EntityType, IndexType, ReturnCode} = facade.const
 let crypto = require('crypto');
 let { stringify } = require('../../../util/stringUtil');
 let uuid = require('uuid');
+let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
 /**
  * 游戏提供的对外接口：订单接收处理
@@ -15,13 +15,14 @@ class order extends facade.Control
     get middleware() {
         return ['parseParams', 'commonHandle'];
     }
-
+    
     /**
      * 配置URL路由，用户可以直接经由页面访问获取签名数据集
      */
     get router() {
         return [
-            ['/mock/:cp_name/testnet/order/confirm', 'orderConfirm'],
+            [`/mock/:cp_name/${remoteSetup.type}/order/confirm`, 'orderConfirm'],
+            ['/mock/:cp_name/main/order/confirm', 'orderConfirm'],
             ['/mock/:cp_name/order', 'order'],
         ];
     }
@@ -29,6 +30,7 @@ class order extends facade.Control
     /**
      * 处理客户端上行的道具购买指令，通过 sys.notify 向主网发送订单消息
      * @param {*} params
+     * @description 向主网还是测试网络发布消息，是由 service.gamegoldHelper 决定的
      */
     async order(params) {
         //通过 uid 查询用户对象
@@ -41,15 +43,15 @@ class order extends facade.Control
                 price: params.price,              //价格，单位尘
                 url: params.url,                  //道具图标URL
                 props_name: params.props_name,    //道具名称
-                sn: uuid.v1(),                      //订单编号
-                address: user.address,              //用户地址
-                confirmed: -1,                      //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+                sn: uuid.v1(),                    //订单编号
+                address: user.addr,               //用户地址
+                confirmed: -1,                    //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
                 time: Date.now()/1000,
             };
             
             //向主网发送消息
             let paramArray = [
-                user.address,
+                user.addr,
                 JSON.stringify(data),
             ];
             let ret = await this.core.service.gamegoldHelper.execute('sys.notify', paramArray);

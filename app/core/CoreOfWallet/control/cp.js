@@ -80,13 +80,13 @@ class cp extends facade.Control
     }
 
     /**
-     * 获取当前用户针对指定游戏的映射地址
+     * 为当前用户生成针对指定游戏的认证报文
      * @param {*} user 
      * @param {*} params 
      */
     async UserToken(user, params) {
-        let addr = await this.core.service.gamegoldHelper.getAddrFromUserIdAndCid(user, params.cid);
-        return {code: 0, data: addr};
+        let pack = await this.core.service.gamegoldHelper.getUserToken(user, params.cid);
+        return {code: 0, data: pack};
     }
 
     /**

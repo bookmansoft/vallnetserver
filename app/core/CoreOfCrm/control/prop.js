@@ -452,9 +452,9 @@ class prop extends facade.Control {
         }
         return { code: -1 };
     }
+
     /**
      * 根据游戏cp地址获取道具列表
-     *
      * @param {*} user
      * @param {*} objData
      * @returns
@@ -470,7 +470,6 @@ class prop extends facade.Control {
 
     /**
      * 根据游戏cp地址 道具pid获取道具详情
-     *
      * @param {*} user
      * @param {*} objData
      * @returns

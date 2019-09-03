@@ -1,7 +1,7 @@
 let facade = require('gamecloud')
 let {EntityType, IndexType, ReturnCode} = facade.const
 let fetch = require('node-fetch')
-let crypto = require('crypto')
+const toolkit = require('gamerpc')
 
 /**
  * 游戏提供的对外接口：查询CP基本资料
@@ -20,8 +20,8 @@ class cp extends facade.Control
      */
     get router() {
         return [
-            [`/mock/:cp_name`, 'getInfo'],
-            ['/mock/:cp_name/user/:uid', 'responseUser'],
+            [`/mock/:cp_name/info`, 'getInfo'],
+            [`/mock/:cp_name/auth`, 'auth'],
             ['/mock/:cp_name/prop/:id', 'responseProp'],
             ['/mock/:cp_name/myprops/:uid', 'myProps'],
         ];
@@ -42,13 +42,17 @@ class cp extends facade.Control
 
         //通过url取道具列表等数据
         let propMap = new Map();
-        let json = await (await fetch(cpInfo.result.url)).json();
+        let json = await (await fetch(`${cpInfo.result.url}/info`)).json();
         for (let i = 0; i < json.proplist.length; i++) {
             propMap.set(json.proplist[i].id, json.proplist[i]);
         }
 
         let user = this.core.userMap[params.uid];
-        let retProps = await this.core.service.gamegoldHelper.execute('prop.list', [0, user.account, null, cpInfo.result.cid]);
+        let retProps = await this.core.service.gamegoldHelper.execute('prop.remoteQuery', [[
+            ['pst', 9],
+            ['cid',cpInfo.result.cid],
+            ['current.address', user.addr]
+        ]]);
 
         //将来自CP的商品列表信息，和链上数据信息进行拼装
         let retData = [];
@@ -73,6 +77,30 @@ class cp extends facade.Control
     
     responseProp(params) {
         return this.createProp(params.id);
+    }
+
+    /**
+     * 校验客户端从钱包获取的认证报文
+     * @param {*} params 
+     */
+    async auth(params) {
+        let json = JSON.parse(params.data);
+        if(toolkit.verifyData({
+            data: {
+                cid: json.cid,
+                uid: json.uid,
+                time: json.time,
+                addr: json.addr,
+                pubkey: json.pubkey,
+            },
+            sig: json.sig
+        })) {
+            //缓存认证报文
+            this.core.userMap[json.uid] = json;
+            return {code: 0};
+        } else {
+            return {code: -1};
+        }
     }
 
     /**
@@ -144,18 +172,6 @@ class cp extends facade.Control
             },
         };
         return cpInfo;
-    }
-
-    async responseUser(params) {
-        let account = crypto.createHash('sha1').update(Buffer.from(params.uid,'utf8')).digest().toString('hex');
-        let rt = await this.core.service.gamegoldHelper.execute('token.user', [params.cp_name, account, null, account]);
-        if(rt.code == 0) {
-            this.core.userMap[params.uid] = {
-                domainId: params.uid,
-                address: rt.result.data.addr,
-            };
-        }
-        return {code: rt.code};
     }
 
     /**

@@ -123,7 +123,7 @@ if(env.constructor == String) {
         static: [
             ['/', './web/wallet'],
             ['/image', './web/image'],
-            ['/test/', './web/game/test'],
+            ['/mock/:cpname', './web/game/test'],
         ], 
     });
 })();

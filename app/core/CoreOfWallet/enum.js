@@ -7,8 +7,11 @@ let blockgame = ['id','game_title','small_img_url','game_resource_uri','game_ico
 let userwallet = [
     'id',
     'cid',
+    'uid',
     'addr',
-    'user_id',
+    'pubkey',
+    'time',
+    'sig',
 ];
 
 let redpack = [

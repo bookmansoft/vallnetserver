@@ -1,70 +1,37 @@
 <!doctype html>
 <html>
 <head>
+    <title>模拟游戏</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="format-detection" content="telephone=no">
 	<meta name="renderer" content="webkit">
 	<meta http-equiv="Cache-Control" content="no-siteapp" />
-    <title>模拟游戏</title>
 	<link rel="stylesheet" href="css/amazeui.css"/>
     <link rel="stylesheet" href="css/style.css"/>
-    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
     <script src="js/common.js"></script>
     <script src="js/jquery.min.js"></script>
     <script src="js/amazeui.min.js"></script>
     <script src="js/vue.min.js"></script>
     <script src="js/md5.js"></script>
-    <script src="js/gamegold.cp.js"></script>
-	<style>
-		.card {
-			/*height:200px;*/
-			border-radius:12px;
-			background-color:blanchedalmond;
-			-moz-border-radius: 12px; 
-			-webkit-border-radius: 12px; 
-			margin-top: 8px;
-            margin-left: 4px;
-            margin-right: 4px;
-			padding:8px 12px 12px 12px;
-			font-size:14px;
-		}
-        .game {
-            /*background-image:url(images/background.jpg);*/
-            background-repeat:no-repeat; 
-            background-size:100% 100%;-moz-background-size:100% 100%;
-            height:512px;
-            width:384;
-            background-color:beige;
-        }
-        body {
-            background-color:beige;
-        }
-        .card-background {
-            background-color:beige;
-        }
-        span {font-size:18px}
-	</style>
 </head>
 <body>
 <div class="container" id="mainVue">
     <!-- 导航条 -->
     <div data-am-widget="tabs" class="am-tabs am-tabs-d2">
         <ul class="am-tabs-nav am-cf" style="background-color:beige;">
-                <li v-for="item in tabsNavs" v-bind:class="item.cls"><a v-bind:href="item.href" v-text="item.label" @click="onSwitchTab(item)"></a></li>
+            <li v-for="item in tabsNavs" v-bind:class="item.cls"><a v-bind:href="item.href" v-text="item.label" @click="onSwitchTab(item)"></a></li>
         </ul>
     </div>        
-    <div class="gray-panel" v-if="tabIndex==0" style="background-color:beige;">
-        <!-- 游戏主页 -->
-        <div id="divHome" class="card"></div>
-    </div>
-    <div id="divProp" class="gray-panel" v-if="tabIndex==1" style="background-color:beige;">
-        <!--道具商城在这里-->
-    </div>
+    <!-- 游戏主页 -->
+    <div class="gray-panel" v-if="tabIndex==0" style="background-color:beige;"><div id="divHome" class="card"></div></div>
+    <!-- 游戏商城 -->
+    <div id="divProp" class="gray-panel" v-if="tabIndex==1" style="background-color:beige;"></div>
     <!-- 道具背包 -->
-    <div id="divMyPropList" class="card" style="background-color:beige;" v-if="tabIndex==2"></div>
-    <div id="divProp" class="gray-panel" v-if="tabIndex==3" style="background-color:beige;"></div>
+    <div id="divMyProp" class="card"  v-if="tabIndex==2" style="background-color:beige;"></div>
+    <!-- 返回钱包 -->
+    <div id="divWallet" class="gray-panel" v-if="tabIndex==3" style="background-color:beige;"></div>
 </div>
 <div id="alert"></div>
 <script>
@@ -96,67 +63,60 @@
                         this.tabsNavs[i].cls = "am-active";
                     }
                 }
-                if(that.tabIndex == 0) {        //游戏主界面
+                if(that.tabIndex == 0) {        
+                    //游戏主界面
                     homeInfo();
-                } else if(that.tabIndex == 1) { //游戏商城界面
+                } else if(that.tabIndex == 1) { 
+                    //游戏商城
                     propInfo();
-                } else if(that.tabIndex == 2) { //我的道具
+                } else if(that.tabIndex == 2) { 
+                    //我的道具
                     myPropList();
                 } else if(that.tabIndex == 3) {
-                    // 返回钱包
-                    window.location.href = `http://h5.gamegold.xin/?openid=${mainVue.user.openid}&openkey=${mainVue.user.openkey}&token=${mainVue.user.token}`;
+                    //返回钱包
+                    window.location.href = `http://h5.gamegold.xin`;
                 }
             },
         }
     });
-</script>
-<script>
-    jQuery(function($) {
-        $(document).ready(function(e) {
-            //页面加载完成
-            homeInfo();
-        });
-    });
-</script>
-<script>
+
     /**
      * 模拟游戏首页，显示当前游戏基本信息
      */
     function homeInfo() {
         $("#divProp").empty();
         $("#divHome").empty();
-        $("#divMyPropList").empty();
+        $("#divMyProp").empty();
 
-        var params=location.search.substring(1).split("&");
-        mainVue.cp.cp_name = params[0].split('=')[1];
-        mainVue.cp.cid = params[1].split('=')[1];
-        mainVue.user.uid = params[2].split('=')[1];
-        mainVue.user.openid = params[3].split('=')[1];
-        mainVue.user.openkey = params[4].split('=')[1];
-        mainVue.user.token = params[5].split('=')[1];
+        var param = decodeURIComponent(location.search.substring(1).split("&")[0].split('=')[1]);
+        mainVue.cp = JSON.parse(param);
+        mainVue.user.uid = mainVue.cp.uid;
 
         $.ajax({
             type: "GET",
-            url: `${localhost}/mock/${mainVue.cp.cp_name}`,
+            url: `${location.origin}${location.pathname}auth?data=${encodeURIComponent(param)}`,
             success: function(result) {
-                var sDiv = `<div class='card'><table>
-                    <tr>
-                        <td><img src='${result.game.icon_url}' style='width:320px;height:240px;' /></td>
-                    </tr>
-                    <tr>
-                        <td><p>游戏名称：<span >${result.game.game_title}</span></p><p>游戏类型：<span >${result.game.cp_type}</span></p><p>游戏描述：<span >${result.game.desc}</span></p></td>
-                    </tr>
-                    </table></div>`;
+                if(result.code == 0) {
+                    $.ajax({
+                        type: "GET",
+                        url: `${location.origin}${location.pathname}info`,
+                        success: function(result) {
+                            var sDiv = `<div class='card'><table>
+                                <tr>
+                                    <td><img src='${result.game.icon_url}' style='width:320px;height:240px;' /></td>
+                                </tr>
+                                <tr>
+                                    <td><p>游戏名称：<span >${result.game.game_title}</span></p><p>游戏类型：<span >${result.game.cp_type}</span></p><p>游戏描述：<span >${result.game.desc}</span></p></td>
+                                </tr>
+                                </table></div>`;
 
-                $("#divHome").append($(sDiv));
-
-                $.ajax({
-                    type: "GET",
-                    url: `${localhost}/mock/${mainVue.cp.cp_name}/user/${mainVue.user.uid}`,
-                    success: function(result) {
-                        console.log('user auth');
-                    }
-                });
+                            $("#divHome").append($(sDiv));
+                        }
+                    });
+                } else {
+                    var sDiv = `<div class='card'>身份校验失败</div>`;
+                    $("#divHome").append($(sDiv));
+                }
             }
         });
     }
@@ -167,11 +127,11 @@
      function propInfo() {
         $("#divProp").empty();
         $("#divHome").empty();
-        $("#divMyPropList").empty();
+        $("#divMyProp").empty();
 
         $.ajax({
             type: "GET",
-            url: `${localhost}/mock/${mainVue.cp.cp_name}`,
+            url: `${location.origin}${location.pathname}info`,
             success: function(result){
                 for (let item of result.proplist) {
                     let sDiv = `<div class='card'><table>
@@ -201,7 +161,7 @@
     function buy(id, price, icon, props_name) {
         $.ajax({
             type: "POST",
-            url: `${localhost}/mock/${mainVue.cp.cp_name}/order`,
+            url: `${location.origin}${location.pathname}order`,
             data: {
                 "oid":id,
                 "cid":mainVue.cp.cid,
@@ -222,11 +182,11 @@
 	function myPropList() {;
         $("#divProp").empty();
         $("#divHome").empty();
-        $("#divMyPropList").empty();
+        $("#divMyProp").empty();
 
         $.ajax({
             type: "GET",
-            url: `${localhost}/mock/${mainVue.cp.cp_name}/myProps/${mainVue.user.uid}`,
+            url: `${location.origin}${location.pathname}myProps/${mainVue.user.uid}`,
             success: function(result) {
                 console.log('myPropList', JSON.stringify(result.data));
                 for (var i=0; i<result.data.length; i++) {
@@ -243,11 +203,47 @@
                         <tr><td style='height:15px'></td></tr>
                         </table></div>`;
 
-                    $("#divMyPropList").append($(sDiv));
+                    $("#divMyProp").append($(sDiv));
                 }
             }
         });
     }
+
+    jQuery(function($) {
+        $(document).ready(function(e) {
+            //页面加载完成
+            homeInfo();
+        });
+    });
 </script>
+<style>
+    .card {
+        /*height:200px;*/
+        border-radius:12px;
+        background-color:blanchedalmond;
+        -moz-border-radius: 12px; 
+        -webkit-border-radius: 12px; 
+        margin-top: 8px;
+        margin-left: 4px;
+        margin-right: 4px;
+        padding:8px 12px 12px 12px;
+        font-size:14px;
+    }
+    .game {
+        /*background-image:url(images/background.jpg);*/
+        background-repeat:no-repeat; 
+        background-size:100% 100%;-moz-background-size:100% 100%;
+        height:512px;
+        width:384;
+        background-color:beige;
+    }
+    body {
+        background-color:beige;
+    }
+    .card-background {
+        background-color:beige;
+    }
+    span {font-size:18px}
+</style>
 </body>
 </html>

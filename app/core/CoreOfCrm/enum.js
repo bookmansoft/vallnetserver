@@ -4,13 +4,6 @@ let blockgame = ['id','game_title','small_img_url','game_resource_uri','game_ico
     'developer','update_desc','game_screenshots','player_count','cpid','cpurl','cp_addr','cp_name'
 ];
 
-let userwallet = [
-    'id',
-    'cid',
-    'addr',
-    'user_id',
-];
-
 let redpack = [
     'user_redpack_id',
     'uid',
@@ -117,9 +110,6 @@ let StockBulletin = ['id', 'cid', 'stock_day', 'stock_open', 'stock_close', 'sto
 
 let Mail = ['id', 'src', 'dst', 'content', 'time', 'state', 'sn']
 
-let sharedredpack = ['id', 'total_amount', 'total_num', 'send_uid', 'wishing', 'modify_date', 'state_id', 'hash'];
-let sharedredpack_receive = ['id', 'send_id', 'receive_amount', 'receive_uid', 'modify_date', 'hash'];
-
 let BuyLog = ['id', 'domainid', 'trade_no', 'third_no', 'product', 'product_desc', 'total_fee', 'fee_type', 'result', 'createdAt', 'updatedAt'];
 
 /**
@@ -142,8 +132,8 @@ function record(obj, attrs) {
 exports = module.exports = {
     TableField: {
         blockgame, StockBulletin, Mail,
-        userwallet, redpack, redpackact, StockBase, Prize, Cp, CpFunding, CpStock, RedPacket,
-        Prop, sharedredpack, sharedredpack_receive, BuyLog,
+        redpack, redpackact, StockBase, Prize, Cp, CpFunding, CpStock, RedPacket,
+        Prop, BuyLog,
         userredpack, userredpackact, blockgamecomment, stock, record,
     },
 }

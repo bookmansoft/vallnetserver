@@ -36,11 +36,11 @@ class gamegoldHelper extends gh
     }
 
     /**
-     * 查询用户对应特定CP的专用地址
+     * 查询用户对应特定CP的认证报文
      * @param {*} user  用户对象
      * @param {*} cid   CP编码
      */
-    async getAddrFromUserIdAndCid(user, cid) {
+    async getUserToken(user, cid) {
         let addrObj = this.core.GetObject(EntityType.userwallet, `${cid}.${user.domainId}`, IndexType.Domain);
         if(!addrObj) {
             let ret = await this.core.service.gamegoldHelper.execute('token.user', [
@@ -51,13 +51,9 @@ class gamegoldHelper extends gh
             ]);
     
             if (!!ret && ret.code == 0) {
-                this.core.GetMapping(EntityType.userwallet).Create({
-                    cid: cid,
-                    user_id: user.domainId,
-                    addr: ret.result.data.addr,
-                });
-                
-                return ret.result.data.addr;
+                let pack = Object.assign(ret.result.data, {sig: ret.result.sig});
+                this.core.GetMapping(EntityType.userwallet).Create(pack);
+                return pack;
             } else {
                 return null;
             }
