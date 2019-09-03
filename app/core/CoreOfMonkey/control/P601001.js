@@ -70,10 +70,10 @@ class P601001 extends facade.Control
                 break;
         }
         let dt = {
-            rank: facade.GetRanking(this.core.entities.UserEntity).result(user.openid, $rankType).rank,
-            list: facade.GetRanking(this.core.entities.UserEntity).list($rankType).slice(input.pageSize*(input.page-1), input.pageSize),
+            rank: this.core.GetRanking(this.core.entities.UserEntity).result(user.openid, $rankType).rank,
+            list: this.core.GetRanking(this.core.entities.UserEntity).list($rankType).slice(input.pageSize*(input.page-1), input.pageSize),
         }
-        return {code:ReturnCode.Success, data:dt};
+        return {code: $code, data:dt};
 }
 }
 
