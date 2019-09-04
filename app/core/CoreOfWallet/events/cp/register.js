@@ -65,7 +65,7 @@ async function CreateRecord(cpInfo, core) {
     //@warning 如果开放接口访问异常，会导致中台CP注册流程提前终止
     let res = {};
     try {
-        res = await fetch(`${cpInfo.url}`, { mode: 'cors' });
+        res = await fetch(`${cpInfo.url}/info`, { mode: 'cors' });
         res = await res.json();
 
         let pics = '';

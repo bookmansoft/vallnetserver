@@ -52,7 +52,7 @@ async function CreateRecord(user, cpinfo, core) {
 
     try {
         //从CP登记的集采接口获取CP详细信息
-        let res = await fetch(`${cpinfo.url}`, { mode: 'no-cors' });
+        let res = await fetch(`${cpinfo.url}/info`, { mode: 'cors' });
         res = await res.json();
         let qry = res.game;
 

@@ -69,6 +69,12 @@ async function startAfter(core) {
     }, 'balance.account.client');
     core.service.monitor.remote.watch(msg => {
     }, 'tx.client');
+
+    //todo 定期刷新凭证信息, 形成历史快照
+    // core.autoTaskMgr.addCommonMonitor(() => {
+    //     core.notifyEvent('stock.refresh', {msg:{}});
+    //     return false;
+    // }, 60000);
 }
 
 exports.startAfter = startAfter;
