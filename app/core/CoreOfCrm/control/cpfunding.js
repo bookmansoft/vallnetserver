@@ -33,10 +33,10 @@ class cpfunding extends facade.Control {
         //4. 提交众筹申请，等待管理员审批
         await this.core.GetMapping(EntityType.CpFunding).Create(
             objData.stock_num,
-            objData.stock_num * objData.stock_amount,
-            objData.stock_amount*100000,
-            objData.stock_rmb,
-            objData.audit_state_id,
+            objData.stock_num * objData.stock_amount * 100000, //发行单价，转换为尘为单位
+            objData.stock_amount * 100000, //发行总额，转换为尘为单位
+            objData.stock_amount, //按1千克/分进行转换
+            1,
             objData.audit_text,
             new Date().getTime() / 1000,
             cp.getAttr('cp_name'),
