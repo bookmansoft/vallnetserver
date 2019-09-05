@@ -7,19 +7,19 @@ let {NotifyType, ReturnCode, UserStatus, PurchaseStatus, EntityType, IndexType} 
  */
 class config extends facade.Control {
     /**
+     * 中间件设定，子类可覆盖
+     */
+    get middleware(){
+        return ['parseParams', 'commonHandle'];
+    }
+
+    /**
      * 配置URL路由，用户可以直接经由页面访问获取签名数据集
      */
     get router() {
         return [
             ['/txpay', 'txpay'],             //腾讯支付回调路由
         ];
-    }
-
-    /**
-     * 中间件设定，子类可覆盖
-     */
-    get middleware(){
-        return ['parseParams', 'commonHandle'];
     }
 
     /**
@@ -121,26 +121,6 @@ class config extends facade.Control {
         pUser.notify({type: NotifyType.buyItem, info:{tradeNo:item.orm.trade_no, product_id: item.orm.product_id}});
 
         return ReturnCode.Success;
-    }
-
-    /**
-     * 查询并返回配置文件
-     * @param user
-     * @param objData
-     * @returns {Promise.<*>}
-     */
-    async get(user, objData) {
-        try{
-            if(!!this.core.fileMap[objData.file]){
-                return {code:ReturnCode.Success, data:this.core.fileMap[objData.file]};
-            }
-            else{
-                return {code:ReturnCode.Error};
-            }
-        }
-        catch(e){
-            console.error(e);
-        }
     }
 }
 
