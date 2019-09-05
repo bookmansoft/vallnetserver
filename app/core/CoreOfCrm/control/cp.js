@@ -65,7 +65,13 @@ class cp extends facade.Control {
 
         //CP注册指令：cp.create "name" "url" ["addr", "cls" ,"grate 媒体分成比例" ,"ip"]
         let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.create', paramArray);
-        return { code: ret.code, data: ret.result };
+        if(!ret) {
+            return {code: -1};
+        } else if(!!ret && ret.code == 0) {
+            return { code: 0, data: ret.result };
+        } else {
+            return { code: ret.code, data: ret.result, msg: ret.error.message };
+        }
     }
 
     /**
@@ -111,7 +117,7 @@ class cp extends facade.Control {
     }
 
     /**
-     * 生成订单
+     * 生成模拟订单并支付
      * @param {*} user      当前操作员，注意如果是系统管理员，要将账户切换为'default'
      * @param {*} objData 
      */
@@ -273,7 +279,7 @@ class cp extends facade.Control {
      * 传入的参数是cp_url，就是真实的URL路径
      */
     async getGameFromUrl(user, objData) {
-        let res = await fetch(objData.cp_url, { mode: 'no-cors' });
+        let res = await fetch(`${objData.cp_url}/info`, { mode: 'cors' });
         return await res.json();
     }
 }

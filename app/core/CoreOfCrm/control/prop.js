@@ -462,7 +462,7 @@ class prop extends facade.Control {
      */
     async getPropsByGame(user, objData) {
         let fetch = require("node-fetch");
-        let res = await fetch(objData.cp_url, { mode: 'no-cors' });
+        let res = await fetch(`${objData.cp_url}/info`, { mode: 'cors' });
         res = await res.json();
         let proplist = res.proplist || [];
         return proplist;
@@ -477,7 +477,7 @@ class prop extends facade.Control {
      */
     async getCpPropsDetail(user, objData) {
         let fetch = require("node-fetch");
-        let res = await fetch(objData.cp_url + '/prop/' + objData.pid, { mode: 'no-cors' });
+        let res = await fetch(objData.cp_url + '/prop/' + objData.pid, { mode: 'cors' });
         let json = await res.json();
         return json;
     }

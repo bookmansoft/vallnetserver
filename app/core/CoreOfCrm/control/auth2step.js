@@ -51,8 +51,8 @@ class auth2step extends facade.Control
 
         //生成新的签名
         ret = {
-            t: now(),                               //当前时间戳，游戏方必须验证时间戳，暂定有效期为当前时间前后 5 分钟
-            nonce: Math.random()*1000 | 0,          //随机数
+            t: now(),                             //当前时间戳，游戏方必须验证时间戳，暂定有效期为当前时间前后 5 分钟
+            nonce: Math.random()*1000 | 0,        //随机数
             addrType: uinfo.addrType || 'phone',  //地址类型，'phone'
             address: uinfo.address,               //地址内容，如手机号码
             openid: uinfo.openid,                 //用户上行的认证标识
