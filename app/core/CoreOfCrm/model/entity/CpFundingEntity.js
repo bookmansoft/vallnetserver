@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {EntityType} = facade.const
+let {IndexType, EntityType} = facade.const;
 let BaseEntity = facade.BaseEntity
 let {CpFunding} = require('../table/CpFunding')
 
@@ -59,6 +59,15 @@ class CpFundingEntity extends BaseEntity
      */
     static onMapping(record, core){
         return new CpFundingEntity(record, core);
+    }
+
+    IndexOf(type) {
+        switch(type) {
+            case IndexType.Foreign:
+                return this.orm.cid;
+            default:
+                return this.orm.id;
+        }
     }
 
     /**

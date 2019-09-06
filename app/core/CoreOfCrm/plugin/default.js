@@ -28,6 +28,7 @@ async function startAfter(core) {
                 'block/tips',
                 'cp/register', 
                 'cp/change',
+                'cp/stock',
             ]);
 
             //订阅 notify/receive 消息，登记处理句柄
@@ -49,6 +50,11 @@ async function startAfter(core) {
             core.service.monitor.remote.watch(msg => {
                 core.notifyEvent('cp.register', {msg:msg});
             }, 'cp/change').execute('subscribe', 'cp/change');
+
+            //订阅CP众筹消息，登记处理句柄
+            core.service.monitor.remote.watch(msg => {
+                core.notifyEvent('stock.funding', {msg:msg});
+            }, 'cp/stock').execute('subscribe', 'cp/stock');
         }).execute('block.count', []);
         if(ret && ret.code == 0) {
             core.chain.height = ret.result;
@@ -69,6 +75,20 @@ async function startAfter(core) {
     }, 'balance.account.client');
     core.service.monitor.remote.watch(msg => {
     }, 'tx.client');
+
+    //追加检测凭证发行状态
+    let ret = await core.service.RemoteNode.conn(remoteSetup.cid).execute('stock.offer.list', [
+        [
+            ['page', 1],
+            ['size', -1],
+        ]
+    ]);
+
+    if(ret.code == 0) {
+        for(let it of ret.result.list) {
+            core.notifyEvent('stock.funding', {msg:it});
+        }
+    }
 
     //todo 定期刷新凭证信息, 形成历史快照
     // core.autoTaskMgr.addCommonMonitor(() => {

@@ -96,27 +96,6 @@ class cp extends facade.Control {
     }
 
     /**
-     * 根据ID查询CP注册信息 cid CP编码
-     * @param {*} user 
-     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
-     */
-    async ById(user, paramGold) {
-        try {
-            console.log("cp.ById参数串：");
-            let paramArray = paramGold.items;
-            if (typeof (paramArray) == "string") {
-                paramArray = JSON.parse(paramArray);
-            }
-            console.log(paramArray);
-            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.byId', paramArray);
-            return { code: ret.code, data: ret.result };
-        } catch (error) {
-            console.log(error);
-            return { code: -1, msg: "cp.ById方法出错" };
-        }
-    }
-
-    /**
      * 生成模拟订单并支付
      * @param {*} user      当前操作员，注意如果是系统管理员，要将账户切换为'default'
      * @param {*} objData 
@@ -186,13 +165,6 @@ class cp extends facade.Control {
                 },
             };
         } else {
-            //到主链上查询
-            let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.byId', objData.id);
-            if(ret.code == 0) {
-                await this.CreateRecord(user, ret.result);
-                return await this.Retrieve(user, objData);
-            }
-
             return { code: -2, msg: "指定CP不存在" };
         }
     }

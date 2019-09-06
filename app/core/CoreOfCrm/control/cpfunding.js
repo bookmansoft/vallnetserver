@@ -36,7 +36,7 @@ class cpfunding extends facade.Control {
             objData.stock_num * objData.stock_amount * 100000, //发行单价，转换为尘为单位
             objData.stock_amount * 100000, //发行总额，转换为尘为单位
             objData.stock_amount, //按1千克/分进行转换
-            1,
+            0,
             objData.audit_text,
             new Date().getTime() / 1000,
             cp.getAttr('cp_name'),
@@ -56,15 +56,21 @@ class cpfunding extends facade.Control {
      * 审核众筹
      * @param {*} user 
      * @param {*} objData 
+     * 
+     * @description 状态图：
+     *  0：发起者提起发行请求
+     *  1：管理员审核通过，并向主网广播成功
+     *      2：主网已记账
+     *  3：管理员审核否决，本次发行终止
      */
     async UpdateRecord(user, objData) {
         if(user.cid == remoteSetup.cid) { //只能超级管理员执行
             let cpfunding = this.core.GetObject(EntityType.CpFunding, parseInt(objData.id));
-            if (!!cpfunding && cpfunding.getAttr('audit_state_id')==1) {
-                //获取发行众筹的发起者
+            if (!!cpfunding && cpfunding.getAttr('audit_state_id')==0) {
                 let operator = this.core.GetObject(EntityType.User, cpfunding.getAttr('user_id'));
                 if(!!operator) {
-                    if(objData.audit_state_id == 3) { //拒绝
+                    if(objData.audit_state_id == 3) { 
+                        //拒绝本次发行
                         cpfunding.setAttr('audit_state_id', 3);
                         cpfunding.setAttr('operator_id', user.id);
                         return { code: ret.code };
@@ -78,20 +84,22 @@ class cpfunding extends facade.Control {
 
                         if(ret.code == 0) {
                             //广播成功，更新本地数据库
-                            cpfunding.setAttr('audit_state_id', 2);
-                            cpfunding.setAttr('stock_rmb', objData.stock_rmb);
+                            cpfunding.setAttr('audit_state_id', 1);
                             cpfunding.setAttr('audit_text', objData.audit_text);
-                            cpfunding.setAttr('modify_date', new Date().getTime() / 1000);
                             cpfunding.setAttr('operator_id', user.id);
                         }
 
                         return { code: ret.code, data: ret.result };
                     }
+                } else {
+                    return { code: -1, msg:"操作员不存在" };
                 }
+            } else {
+                return { code: -2, msg:"记录不存在" };
             }
+        } else {
+            return { code: -3, msg:"权限不足" };
         }
-
-        return { code: -2, msg:"找不到记录" };
     }
 
     /**
@@ -132,30 +140,40 @@ class cpfunding extends facade.Control {
         try {
             let cpfunding = this.core.GetObject(EntityType.CpFunding, parseInt(objData.id));
             if (!!cpfunding) {
+                let data = {
+                    id: parseInt(objData.id),
+                    stock_num: cpfunding.getAttr('stock_num'),
+                    total_amount: cpfunding.getAttr('total_amount'),
+                    stock_amount: cpfunding.getAttr('stock_amount'),
+                    stock_rmb: cpfunding.getAttr('stock_rmb'),
+                    audit_state_id: cpfunding.getAttr('audit_state_id'),
+                    audit_text: cpfunding.getAttr('audit_text'),
+                    modify_date: cpfunding.getAttr('modify_date'),
+                    cp_name: cpfunding.getAttr('cp_name'),
+                    cp_text: cpfunding.getAttr('cp_text'),
+                    cp_type: cpfunding.getAttr('cp_type'),
+                    cp_url: cpfunding.getAttr('cp_url'),
+                    develop_name: cpfunding.getAttr('develop_name'),
+                    develop_text: cpfunding.getAttr('develop_text'),
+                    user_id: cpfunding.getAttr('user_id'),
+                    cid: cpfunding.getAttr("cid"),
+                    operator_id: cpfunding.getAttr("operator_id"),
+                    sell_limit_date:cpfunding.getAttr('modify_date')+3600*24*14,
+                };
+
+                data.residue_num = data.stock_num;
+                if(data.audit_state_id == 2) {
+                    //调用链，获取剩余数量 - todo 考虑这样实时查询的性能问题 是否可以缓存在中台
+                    let ret = await this.core.service.RemoteNode.conn(user.cid).execute('cp.byId', [data.cid]);
+                    if (!!ret.result) {
+                        data.residue_num = ret.result.stock.sum;
+                    }
+                }
+
                 return {
                     code: ReturnCode.Success,
-                    data: {
-                        id: parseInt(objData.id),
-                        stock_num: cpfunding.getAttr('stock_num'),
-                        total_amount: cpfunding.getAttr('total_amount'),
-                        stock_amount: cpfunding.getAttr('stock_amount'),
-                        stock_rmb: cpfunding.getAttr('stock_rmb'),
-                        audit_state_id: cpfunding.getAttr('audit_state_id'),
-                        audit_text: cpfunding.getAttr('audit_text'),
-                        modify_date: cpfunding.getAttr('modify_date'),
-                        cp_name: cpfunding.getAttr('cp_name'),
-                        cp_text: cpfunding.getAttr('cp_text'),
-                        cp_type: cpfunding.getAttr('cp_type'),
-                        cp_url: cpfunding.getAttr('cp_url'),
-                        develop_name: cpfunding.getAttr('develop_name'),
-                        develop_text: cpfunding.getAttr('develop_text'),
-                        user_id: cpfunding.getAttr('user_id'),
-                        cid: cpfunding.getAttr("cid"),
-                        operator_id: cpfunding.getAttr("operator_id"),
-                        sell_limit_date:cpfunding.getAttr('modify_date')+3600*24*14
-                    },
-
-                };
+                    data: data,
+                }
             }
             else {
                 return { code: -2, msg: "该cpfunding不存在" };
