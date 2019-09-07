@@ -17,7 +17,6 @@ let {EntityType, TableField} = facade.const
 EntityType = Object.assign(EntityType, {
     "Test": 101,
     'Cp': 202,
-    'Prop': 203,
     'RedPacket': 207,
     'Prize': 208,
     'CpFunding': 209,
@@ -31,7 +30,6 @@ function DynamicOptions(core) {
         loading: [
             EntityType.Test, 
             EntityType.Cp,
-            EntityType.Prop,
             EntityType.RedPacket,
             EntityType.Prize,
             EntityType.CpFunding,

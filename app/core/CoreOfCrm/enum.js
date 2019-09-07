@@ -96,11 +96,9 @@ let StockBase = [
 
 let Prize = ['id', 'act_name', 'mch_billno', 'nick_name', 're_openid', 'remark', 'send_name', 'total_amount', 'total_num', 'wishing', 'return_msg', 'order_status']
 
-let Cp = ['id', 'cp_id', 'cp_text', 'cp_type', 'cp_state', 'publish_time', 'operator_id']
+let Cp = ['id', 'cp_id', 'cp_name', 'cp_text', 'cp_url', 'wallet_addr', 'cp_type', 'develop_name', 'cp_desc', 'cp_version', 'picture_url', 'cp_state', 'publish_time', 'update_time', 'update_content', 'invite_share', 'operator_id']
 
 let CpFunding = ['id', 'stock_num', 'total_amount', 'stock_amount', 'stock_rmb', 'audit_state_id', 'audit_text', 'modify_date', 'cp_name', 'cp_text', 'cp_type', 'cp_url', 'develop_name', 'develop_text', 'user_id', 'cid', 'operator_id']
-
-let Prop = ['id', 'props_name', 'props_type', 'props_desc', 'icon_url', 'icon_preview', 'status', 'props_price', 'props_rank', 'propsAt', 'cid', 'props_id']
 
 let CpStock = ['id', 'cid', 'cp_name', 'cp_text', 'stock_day', 'stock_open', 'stock_close', 'stock_high', 'stock_low', 'total_num', 'total_amount']
 
@@ -133,7 +131,7 @@ exports = module.exports = {
     TableField: {
         blockgame, StockBulletin, Mail,
         redpack, redpackact, StockBase, Prize, Cp, CpFunding, CpStock, RedPacket,
-        Prop, BuyLog,
+        BuyLog,
         userredpack, userredpackact, blockgamecomment, stock, record,
     },
 }

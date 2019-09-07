@@ -38,15 +38,12 @@ class address extends facade.Control {
      */
     async Filter(user, paramGold) {
         try {
-            console.log("address.Filter参数串：");
             let paramArray = paramGold.items;
-            if (typeof (paramArray) == "string") {
+            if (typeof paramArray == "string") {
                 paramArray = JSON.parse(paramArray);
             }
-            console.log(paramArray);
             let retOld = await this.core.service.RemoteNode.conn(user.cid).execute('address.filter', paramArray);
-            console.log(retOld);
-            let ret=retOld.result;
+            let ret = retOld.result;
 
             let $data = { items: {}, list: [], pagination: {} };
             //扩展分页器对象
@@ -63,7 +60,6 @@ class address extends facade.Control {
             //转化并设置数组属性
             $data.list = Object.keys($data.items).map(key => $data.items[key]);
 
-            // let ret=$data.list;
             return $data;
         }
         catch (ex) {
