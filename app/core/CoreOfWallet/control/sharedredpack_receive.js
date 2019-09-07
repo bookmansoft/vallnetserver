@@ -125,9 +125,11 @@ class sharedredpack_receive extends facade.Control {
                             'redpackAccount'
                         ]); 
                         if(rt.code == 0) {
-                            receiveData.setAttr("hash", rt.result.hash);
-                            receiveData.setAttr("receive_uid", user.id);
-                            receiveData.setAttr("modify_date", new Date().getTime()/1000);
+                            receiveData.setAttrs([
+                                ["hash", rt.result.hash],
+                                ["receive_uid", user.id],
+                                ["modify_date", new Date().getTime()/1000],
+                            ]);
 
                             receiveList.push(TableField.record(receiveData, TableField.sharedredpack_receive));
                         }

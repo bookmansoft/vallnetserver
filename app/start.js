@@ -12,36 +12,7 @@
 const facade = require('gamecloud')
 facade.addition = true;
 
-let {NotifyType, IndexType, EntityType} = facade.const
-
-//#region 新增自定义数据表类型(大于100)
-EntityType = Object.assign(EntityType, {
-    "Test": 101,
-    "userwallet": 104,
-    "blockgame": 107,
-    'redpack': 119,
-    'redpackact': 120,
-    'userredpack': 121,
-    'userredpackact': 122,
-    'blockgamecomment': 123,
-    'sharedredpack':131,
-    'sharedredpack_receive':132,
-    'stock': 134,
-    'Cp': 202,
-    'Prop': 203,
-    'RedPacket': 207,
-    'Prize': 208,
-    'CpFunding': 209,
-    'CpStock': 210,
-    'StockBulletin': 302,
-    'StockBase': 303,
-});
-//#endregion
-
-//#region 新增索引类型(大于1000)，使用时要在实体对象的 IndexOf 函数中增加字段映射
-IndexType.Phone = 1001;
-IndexType.Terminal = 1002;
-//#endregion
+let {NotifyType} = facade.const
 
 //#region 新增通告类型(大于10000)
 NotifyType.balance = 10001;     //账户变更日志
@@ -74,56 +45,21 @@ if(env.constructor == String) {
         });
 
         //开启索引服务
-        await facade.boot({env: {serverType: "Index", serverId: 1}});
+        await facade.boot({serverType: "Index", serverId: 1});
 
         //开启Auth服务
-        await facade.boot({env: {serverType: "Auth", serverId: 1}});
+        await facade.boot({serverType: "Auth", serverId: 1});
     }
 
     //加载CRM管理节点
-    await facade.boot({env: {serverType: "CRM",serverId: 1},
-        loading: [
-            EntityType.Test, 
-            EntityType.Cp,
-            EntityType.Prop,
-            EntityType.RedPacket,
-            EntityType.Prize,
-            EntityType.CpFunding,
-            EntityType.CpStock,
-        ],
-        static: [
-            ['/', './web/crm'],
-            ['/echart', './web/echart'],
-        ], 
-    });
+    await facade.boot({serverType: "CRM",serverId: 1});
 
     //加载 游戏-Chick 节点
-    facade.boot({env: {serverType: "Chick", serverId: 1}, static: [['/', './web/game/chick']]});
+    facade.boot({serverType: "Chick", serverId: 1});
     
     //加载 游戏-Monkey 节点
-    facade.boot({env: {serverType: "Monkey", serverId: 1}, static: [['/', './web/game/monkey']]});
+    facade.boot({serverType: "Monkey", serverId: 1});
 
     //加载钱包节点
-    await facade.boot({
-        env: env,
-        loading: [
-            EntityType.blockgame, 
-            EntityType.blockgamecomment, 
-            EntityType.userwallet, 
-            EntityType.userredpack, 
-            EntityType.userredpackact, 
-            EntityType.redpack, 
-            EntityType.redpackact, 
-            EntityType.sharedredpack, 
-            EntityType.sharedredpack_receive, 
-            EntityType.StockBulletin, 
-            EntityType.StockBase,
-            EntityType.Test, 
-        ],
-        static: [
-            ['/', './web/wallet'],
-            ['/image', './web/image'],
-            ['/mock/:cpname', './web/game/test'],
-        ], 
-    });
+    await facade.boot(env);
 })();

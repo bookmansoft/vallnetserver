@@ -13,6 +13,51 @@ let CoreOfBase = facade.CoreOfBase
 let orderMonitor = require('../../../util/autoExec/orderMonitor');
 let {EntityType} = facade.const
 
+//#region 新增自定义数据表类型(大于100)
+EntityType = Object.assign(EntityType, {
+    "userwallet": 104,
+    "blockgame": 107,
+    'redpack': 119,
+    'redpackact': 120,
+    'userredpack': 121,
+    'userredpackact': 122,
+    'blockgamecomment': 123,
+    'sharedredpack':131,
+    'sharedredpack_receive':132,
+    'StockBulletin': 302,
+    'StockBase': 303,
+});
+//#endregion
+
+/**
+ * 动态参数输出
+ * @param {*} core 
+ */
+function DynamicOptions(core) {
+    return {
+        //当前节点的附加载入数据表
+        loading: [
+            EntityType.userwallet, 
+            EntityType.blockgame, 
+            EntityType.redpack, 
+            EntityType.redpackact, 
+            EntityType.userredpack, 
+            EntityType.userredpackact, 
+            EntityType.blockgamecomment, 
+            EntityType.sharedredpack, 
+            EntityType.sharedredpack_receive, 
+            EntityType.StockBulletin, 
+            EntityType.StockBase,
+        ],
+        //当前节点的附加路由，和反向代理结合使用
+        static: [
+            ['/', './web/wallet'],
+            ['/image', './web/image'],
+            ['/mock/:cpname', './web/game/test'],
+        ], 
+    };
+}
+
 /**
  * 对订单进行检测，已确认订单进行处理后删除，未确认订单如超时则主动查询状态
  * @param {CoreOfBase} env
@@ -255,3 +300,4 @@ async function startAfter(core) {
 }
 
 exports.startAfter = startAfter;
+exports.DynamicOptions = DynamicOptions;

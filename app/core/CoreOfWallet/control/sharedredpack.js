@@ -106,8 +106,10 @@ class sharedredpack extends facade.Control {
             if(ret.code != 0) {
                 return { code: -3 }
             }
-            srp.setAttr('state_id', 1);
-            srp.setAttr('hash', ret.result.hash);
+            srp.setAttrs([
+                ['state_id', 1],
+                ['hash', ret.result.hash],
+            ]);
         } else {
             return { code: -2 }
         }

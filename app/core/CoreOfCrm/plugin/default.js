@@ -13,6 +13,38 @@ let CoreOfBase = facade.CoreOfBase
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 let {EntityType, TableField} = facade.const
 
+//#region 新增自定义数据表类型(大于100)
+EntityType = Object.assign(EntityType, {
+    "Test": 101,
+    'Cp': 202,
+    'Prop': 203,
+    'RedPacket': 207,
+    'Prize': 208,
+    'CpFunding': 209,
+    'CpStock': 210,
+});
+//#endregion
+
+function DynamicOptions(core) {
+    return {
+        //当前节点的附加载入数据表
+        loading: [
+            EntityType.Test, 
+            EntityType.Cp,
+            EntityType.Prop,
+            EntityType.RedPacket,
+            EntityType.Prize,
+            EntityType.CpFunding,
+            EntityType.CpStock,
+        ],
+        //当前节点的附加路由，和反向代理结合使用
+        static: [
+            ['/', './web/crm'],
+            ['/echart', './web/echart'],
+        ], 
+    };
+}
+
 /**
  * 对订单进行检测，已确认订单进行处理后删除，未确认订单如超时则主动查询状态
  * @param {CoreOfBase} env
@@ -98,3 +130,4 @@ async function startAfter(core) {
 }
 
 exports.startAfter = startAfter;
+exports.DynamicOptions = DynamicOptions;

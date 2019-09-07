@@ -71,8 +71,10 @@ class cpfunding extends facade.Control {
                 if(!!operator) {
                     if(objData.audit_state_id == 3) { 
                         //拒绝本次发行
-                        cpfunding.setAttr('audit_state_id', 3);
-                        cpfunding.setAttr('operator_id', user.id);
+                        cpfunding.setAttrs([
+                            ['audit_state_id', 3],
+                            ['operator_id', user.id],
+                        ]);
                         return { code: ret.code };
                     } else {
                         //以发起者身份，向主链广播众筹报文
@@ -84,9 +86,11 @@ class cpfunding extends facade.Control {
 
                         if(ret.code == 0) {
                             //广播成功，更新本地数据库
-                            cpfunding.setAttr('audit_state_id', 1);
-                            cpfunding.setAttr('audit_text', objData.audit_text);
-                            cpfunding.setAttr('operator_id', user.id);
+                            cpfunding.setAttrs([
+                                ['audit_state_id', 1],
+                                ['audit_text', objData.audit_text],
+                                ['operator_id', user.id],
+                            ]);
                         }
 
                         return { code: ret.code, data: ret.result };

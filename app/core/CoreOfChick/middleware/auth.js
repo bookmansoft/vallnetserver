@@ -67,11 +67,6 @@ async function handle(sofar) {
                     });
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
                     sofar.facade.notifyEvent('user.afterRegister', {user:usr});
-
-                    //在用户创建成功后，再绑定手机号码
-                    if(!!sofar.msg.oemInfo.address && !!sofar.msg.oemInfo.addrType) {
-                        sofar.facade.notifyEvent('user.bind', {user: usr, params:{addrType: sofar.msg.oemInfo.addrType, address: sofar.msg.oemInfo.address}});
-                    }
                 }
             }
 
@@ -79,9 +74,6 @@ async function handle(sofar) {
                 usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌
                 usr.time = CommonFunc.now();                //记录标识令牌有效期的时间戳
                 sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token);   //添加一定有效期的令牌类型的反向索引
-                if(!!usr.baseMgr.info.GetRecord('phone')) {
-                    sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.GetRecord('phone'), usr.id], IndexType.Phone);
-                }
                 sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});//发送"登录后"事件
             }
         }

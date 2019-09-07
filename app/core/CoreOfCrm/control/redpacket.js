@@ -33,18 +33,17 @@ class redpacket extends facade.Control {
             let redpacket = this.core.GetObject(EntityType.RedPacket, parseInt(objData.id));
             if (!!redpacket) {
                 //需要针对各个属性增加为null的判断；如果为null的情况下，则
-                redpacket.setAttr('act_name', objData.act_name);
-                redpacket.setAttr('act_sequence', objData.act_sequence);
-                redpacket.setAttr('total_gamegold', parseInt(objData.total_gamegold));
-                redpacket.setAttr('each_gamegold', parseInt(objData.each_gamegold));
-                redpacket.setAttr('total_num', parseInt(objData.total_num));
-                redpacket.setAttr('each_num', parseInt(objData.each_num));
-                redpacket.setAttr('act_desc', objData.act_desc);
-                redpacket.setAttr('act_start_at', parseInt(objData.act_start_at));
-                redpacket.setAttr('act_end_at', parseInt(objData.act_end_at));
-                console.log("60 ok");
-                redpacket.Save();
-                console.log("62 ok");
+                redpacket.setAttrs([
+                    ['act_name', objData.act_name],
+                    ['act_sequence', objData.act_sequence],
+                    ['total_gamegold', parseInt(objData.total_gamegold)],
+                    ['each_gamegold', parseInt(objData.each_gamegold)],
+                    ['total_num', parseInt(objData.total_num)],
+                    ['each_num', parseInt(objData.each_num)],
+                    ['act_desc', objData.act_desc],
+                    ['act_start_at', parseInt(objData.act_start_at)],
+                    ['act_end_at', parseInt(objData.act_end_at)],
+                ]);
                 return { code: ReturnCode.Success };
             }
             return { code: -1 };
