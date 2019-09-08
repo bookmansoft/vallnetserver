@@ -41,7 +41,7 @@ async function handlePayload(event) {
 
     let mail = this.GetObject(EntityType.Mail, event.data.sn, IndexType.Domain);
     if(!mail) {
-        let user = this.GetObject(EntityType.User, event.data.account, IndexType.Domain);
+        let user = this.GetObject(EntityType.User, event.data.account, IndexType.Account);
         if(!!user) {
             await this.service.gamegoldHelper.sendSysNotify(
                 user, 

@@ -101,7 +101,7 @@ class cp extends facade.Control
 
         let cpObj = this.core.GetObject(EntityType.blockgame, objData.cid, IndexType.Domain);
         if(!!cpObj) { 
-            let res = await fetch(`${cpObj.orm.cpurl}`, { mode: 'cors' });
+            let res = await fetch(`${cpObj.orm.cpurl}/info`, { mode: 'cors' });
             res = await res.json();
             proplist = res.proplist;
         }
