@@ -153,7 +153,7 @@ class stockMgr extends facade.Control {
 
         let muster = this.core.GetMapping(EntityType.StockBase)
             .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
-            .where([])
+            .where([['orm.height', '>', this.core.chain.height - 144*14]]) // 判断有效期
             .orderby('id', 'desc') //根据id字段倒叙排列
             .paginate(10, objData.currentPage);
 
@@ -171,7 +171,7 @@ class stockMgr extends facade.Control {
                 $value.pic_urls = JSON.stringify(cpObj.orm.game_screenshots.split(','));
                 $value.cp_desc = cpObj.orm.game_desc;
                 $value.provider = cpObj.orm.developer;
-                $value.funding_residue_day = ((14*24*60 - Math.max(0, this.core.chain.height - $value.height)*10)/60/24)|0;
+                $value.funding_residue_day = Math.max(0, parseFloat((14*24*6 - Math.max(0, this.core.chain.height - $value.height))/144).toFixed(2));
             }
 
             list.push($value);
