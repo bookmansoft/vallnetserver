@@ -19,31 +19,20 @@ class cp extends facade.Control {
     }
 
     /**
-     * 修改数据库记录
+     * 激活/禁用CP
      * @param {*} user 
      * @param {*} objData 
      */
     UpdateRecord(user, objData) {
         try {
-            let cp = this.core.GetObject(EntityType.Cp, objData.id);
+            let cp = this.core.GetObject(EntityType.Cp, objData.cp_id);
             if(!cp || (user.id != cp.getAttr('operator_id') && user.cid != remoteSetup.cid)) {
                 return { code: -2, data: null };
             }
 
-            //需要针对各个属性增加为null的判断；如果为null的情况下，则
-            cp.setAttr('cp_name', objData.cp_name);
-            cp.setAttr('cp_text', objData.cp_text);
-            cp.setAttr('cp_url', objData.cp_url);
-            cp.setAttr('wallet_addr', objData.wallet_addr);
-            cp.setAttr('cp_type', objData.cp_type);
-            cp.setAttr('develop_name', objData.develop_name);
-            cp.setAttr('cp_desc', objData.cp_desc);
-            cp.setAttr('cp_version', objData.cp_version);
-            cp.setAttr('cp_version', objData.cp_version);
-            cp.setAttr('cp_state', objData.cp_state);
-            cp.setAttr('update_time', objData.update_time);
-            cp.setAttr('update_content', objData.update_content);
-            cp.setAttr('invite_share',objData.invite_share);
+            cp.setAttr('cp_state', objData.cp_st);
+
+            this.core.remoteCall('routeCommand', {func:'cpStatus', msg:{cp_id: cp.getAttr('cp_id'), cp_st: objData.cp_st}, si:{stype:'Wallet', sid:0}}, msg=>{ return msg });
 
             return { code: ReturnCode.Success };
         } catch (error) {

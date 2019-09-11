@@ -69,7 +69,6 @@ async function CreateRecord(user, cpinfo, core) {
         data.publish_time = qry.publish_time;
         data.update_time = qry.update_time;
         data.update_content = qry.update_content;
-        data.cp_state = qry.state;
     } catch(e) {
         console.log('CRM - 访问CP公众接口失败', e.message);
     }
@@ -89,7 +88,7 @@ async function CreateRecord(user, cpinfo, core) {
             data.cp_desc,
             data.cp_version,
             data.picture_url,
-            data.cp_state,
+            0,
             data.publish_time,
             data.update_time,
             data.update_content,

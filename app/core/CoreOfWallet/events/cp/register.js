@@ -80,7 +80,7 @@ async function CreateRecord(cpInfo, core) {
         content.developer = res.game.provider; // `developer` varchar(64)  '开发者',
         content.create_time = res.game.publish_time; // `create_time` int(8)  '创建时间',
         content.update_time = res.game.update_time; // `update_time` int(8)  '更新时间',
-        content.store_status = res.game.state; // `store_status` int(1)  '状态',
+        content.store_status = 0; // `store_status` int(1)  '状态',
         content.game_title = res.game.game_title; // `game_title` varchar(64)  '标题',
         content.game_ico_uri = res.game.icon_url; // `game_ico_uri` varchar(255)  '图标URI',
         content.update_desc = res.game.update_content; // `update_desc` varchar(255)  '更新描述',

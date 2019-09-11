@@ -14,7 +14,7 @@ class cp extends facade.Control
      * @param {*} params
      */
     async List(user, params) {
-        let query = [];
+        let query = [['store_status', '1']]; //只列表已激活游戏
         if(!!params.category) {
             query.push(['category_id', params.category]);
         }
@@ -40,7 +40,7 @@ class cp extends facade.Control
      * @param {*} params
      */
     async Mine(user, params) {
-        let query = [];
+        let query = [['store_status', '1']]; //只列表已激活游戏
         if(!!params.category) {
             query.push(['category_id', params.category]);
         }

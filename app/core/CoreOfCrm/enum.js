@@ -1,9 +1,3 @@
-let blockgame = ['id','game_title','small_img_url','game_resource_uri','game_ico_uri','game_link_url','game_desc','sort','category_id',
-    'category_title','provider_id','provider_name','ad_title','ranking','star_level','down_count','comment_count',
-    'create_time','update_time','store_status','game_version', 'stock_price', 'stock_sum', 'grate', 'hHeight', 'hBonus', 'hAds',
-    'developer','update_desc','game_screenshots','player_count','cpid','cpurl','cp_addr','cp_name'
-];
-
 let redpack = [
     'user_redpack_id',
     'uid',
@@ -129,7 +123,7 @@ function record(obj, attrs) {
 
 exports = module.exports = {
     TableField: {
-        blockgame, StockBulletin, Mail,
+        StockBulletin, Mail,
         redpack, redpackact, StockBase, Prize, Cp, CpFunding, CpStock, RedPacket,
         BuyLog,
         userredpack, userredpackact, blockgamecomment, stock, record,

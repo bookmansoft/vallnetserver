@@ -150,7 +150,6 @@ class cp extends facade.Control
                 "publish_time": 1545606613,
                 "update_time": 1545706613,
                 "update_content": "更新了最新场景和新的地图",
-                "state": 1,
             },
             "proplist": propArray,
             "apps": {
