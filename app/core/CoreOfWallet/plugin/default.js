@@ -69,16 +69,19 @@ async function CheckOrder(env) {
         }
 
         if(data.confirm >= env.confirmNum) {
-            //调用prop.order 订购该道具，即创建道具并发送到指定地址
+            //执行订单内容, 订单包含一个商品清单，可能包括上链道具和普通道具
+
+            //1. 构造数据结构
             let paramArray = [
                 data.cid,
                 data.oid,
                 parseInt(data.sum * 0.5),//统一当成含金量50%处理
                 data.addr,
             ];
+            //2. 调用 prop.order 订购该道具: 创建道具并发送到指定地址
             let ret = await env.service.gamegoldHelper.execute('prop.order', paramArray);
             if(ret.code == 0) {
-                //标记为已处理
+                //3. 标记为已处理
                 data.finish = true;
             }
         } else {
@@ -292,8 +295,8 @@ async function startAfter(core) {
     //订单执行前需要达到的确认数
     core.confirmNum = 0;
 
-    core.autoTaskMgr.addCommonMonitor(()=>{
-        CheckOrder(core);
+    core.autoTaskMgr.addCommonMonitor(() => {
+        return CheckOrder(core);
     }, 5000);
 
     console.log(`${core.options.serverType}.${core.options.serverId}'s startup finished!`);

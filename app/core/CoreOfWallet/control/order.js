@@ -102,31 +102,6 @@ class order extends facade.Control
     }
 
     /**
-     * 使用游戏金支付订单
-     * @param {*} user 
-     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
-     */
-    async OrderPay(user, params) {
-        let cid = params.cid;       //CPID
-        let sn = params.sn;         //item.id + '-new-' + this.randomString(16);
-        let price = params.price;
-
-        let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
-            cid,            //CPID
-            user.account,   //用户ID
-            sn,             //order_sn订单编号
-            price,          //order_sum订单金额
-            user.account,   //指定结算的钱包账户，本系统中和用户ID一致
-        ]);
-
-        if(ret.result == null) {
-            return {code: -1, msg: 'pay error'};
-        } else {
-            return {code: 0, data: ret.result};
-        }
-    }
-
-    /**
      * 查询订单信息
      * @param {*} user 
      * @param {*} params 

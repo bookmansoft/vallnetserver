@@ -1,5 +1,4 @@
 let facade = require('gamecloud')
-let {EntityType, IndexType, ReturnCode} = facade.const
 let fetch = require('node-fetch')
 const toolkit = require('gamerpc')
 
@@ -23,12 +22,12 @@ class cp extends facade.Control
             [`/mock/:cp_name/info`, 'getInfo'],
             [`/mock/:cp_name/auth`, 'auth'],
             ['/mock/:cp_name/prop/:id', 'responseProp'],
-            ['/mock/:cp_name/myprops/:uid', 'myProps'],
+            ['/mock/:cp_name/myprops/:addr', 'myProps'],
         ];
     }
 
     /**
-     * 我的道具列表【确权】 /mock/:cp_name/myprops/:uid
+     * 我的道具列表【确权】 /mock/:cp_name/myprops/:addr
      */
     async myProps(params) {
         //根据cp_name取cp完整信息，包括数据集采接口的url
@@ -47,11 +46,11 @@ class cp extends facade.Control
             propMap.set(json.proplist[i].id, json.proplist[i]);
         }
 
-        let user = this.core.userMap[params.uid];
         let retProps = await this.core.service.gamegoldHelper.execute('prop.remoteQuery', [[
+            ['size', -1],
             ['pst', 9],
             ['cid',cpInfo.result.cid],
-            ['current.address', user.addr]
+            ['current.address', params.addr]
         ]]);
 
         //将来自CP的商品列表信息，和链上数据信息进行拼装
@@ -82,6 +81,7 @@ class cp extends facade.Control
     /**
      * 校验客户端从钱包获取的认证报文
      * @param {*} params 
+     * @description 此接口不是CP开放式API的一部分，而是面向配套的游戏客户端，提供身份信息校验/缓存的功能
      */
     async auth(params) {
         let json = JSON.parse(params.data);

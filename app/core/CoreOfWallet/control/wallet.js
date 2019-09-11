@@ -1,5 +1,6 @@
 let facade = require('gamecloud')
 let {IndexType, EntityType} = facade.const;
+let uuid = require('uuid');
 
 /**
  * 钱包
@@ -51,7 +52,7 @@ class wallet extends facade.Control
         }
 
         let content = JSON.parse(mail.content);
-        if(content.type != 10002) {
+        if(content.type != 10002) { //必须是订单支付类消息才会在此处理
             return {code: -2, msg: 'notify not exist'}; 
         }
         let order = JSON.parse(content.info.content.body.content);
@@ -67,6 +68,42 @@ class wallet extends facade.Control
           return {code: 0, data:ret.result}; 
         }  else {
           return {code: -1, msg: 'pay error'}; 
+        }
+    }
+
+    /**
+     * 使用游戏金支付订单
+     * @param {*} user 
+     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
+     */
+    async OrderPay(user, params) {
+        params.sn = params.sn || uuid.v1();                 //订单编号
+        params.time = Date.now()/1000;                      //订单生成时间戳
+        params.confirmed = -1;                              //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+        params.addr = user.baseMgr.info.getAttr('acaddr');  //用户地址
+
+        let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
+            params.cid,     //CP编码
+            user.account,   //用户ID
+            params.sn,      //订单编号
+            params.price,   //订单金额, 单位尘
+            user.account,   //指定结算的钱包账户，本系统中和用户ID一致
+        ]);
+
+        if(!ret.code) {
+            return {code: ret.code, msg: ret.error.message};
+        } else {
+            //缓存订单，为后续流程做准备
+            this.core.orderMap.set(params.sn, params);
+            /** params {
+                    sn          //订单编号
+                    time        //订单生成时间戳
+                    confirmed   //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+                    addr        //用户地址
+                    oid         //道具模板编码
+                }
+             */
+            return {code: 0, data: ret.result};
         }
     }
 }

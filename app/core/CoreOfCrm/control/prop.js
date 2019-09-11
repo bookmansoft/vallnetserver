@@ -116,20 +116,6 @@ class prop extends facade.Control {
     }
 
     /**
-     * 根据游戏cp地址 道具pid获取道具详情
-     * @param {*} user
-     * @param {*} objData
-     * @returns
-     * @memberof prop
-     */
-    async getCpPropsDetail(user, objData) {
-        let fetch = require("node-fetch");
-        let res = await fetch(objData.cp_url + '/prop/' + objData.pid, { mode: 'cors' });
-        let json = await res.json();
-        return json;
-    }
-
-    /**
      * 从数据库中获取所有列表
      * 客户端直接调用此方法
      * jinghh 用做创建道具获取所有游戏

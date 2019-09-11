@@ -22,7 +22,6 @@ class order extends facade.Control
     get router() {
         return [
             [`/mock/:cp_name/${remoteSetup.type}/order/confirm`, 'orderConfirm'],
-            ['/mock/:cp_name/main/order/confirm', 'orderConfirm'],
             ['/mock/:cp_name/order', 'order'],
         ];
     }
@@ -44,14 +43,14 @@ class order extends facade.Control
                 url: params.url,                  //道具图标URL
                 props_name: params.props_name,    //道具名称
                 sn: uuid.v1(),                    //订单编号
-                address: user.addr,               //用户地址
+                addr: user.addr,                  //用户地址
                 confirmed: -1,                    //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
                 time: Date.now()/1000,
             };
             
             //向主网发送消息
             let paramArray = [
-                user.addr,
+                data.addr,
                 JSON.stringify(data),
             ];
             let ret = await this.core.service.gamegoldHelper.execute('sys.notify', paramArray);
@@ -72,13 +71,6 @@ class order extends facade.Control
      */
     async orderConfirm(params) {
         try {
-            // //查询订单列表中是否存在对应记录
-            let theOrder = this.core.orderMap.get(params.data.sn);
-            if (!theOrder) {
-                console.log("订单不存在");
-                return {code:0};
-            }
-
             //确认已获取正确签名密钥
             if(!this.core.cpToken[params.data.cid]) {
                 let retAuth = await this.core.service.gamegoldHelper.execute('sys.createAuthToken', [params.data.cid]);
@@ -99,6 +91,8 @@ class order extends facade.Control
 
             //更新订单信息
             params.data.time = Date.now()/1000;
+
+            let theOrder = this.core.orderMap.get(params.data.sn) || {};
             Object.keys(params.data).map(key=>{
                 theOrder[key] = params.data[key];
             });

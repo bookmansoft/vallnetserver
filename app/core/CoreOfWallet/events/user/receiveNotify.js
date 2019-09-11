@@ -19,7 +19,6 @@ async function handle(event) {
     }
 }
 
-
 /**
  * 收到主网通告(notify/receive)，将其转化为邮件
  * Created by liub on 2019.06.05

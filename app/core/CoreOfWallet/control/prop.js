@@ -16,6 +16,7 @@ class prop extends facade.Control
         let ret = await this.core.service.gamegoldHelper.execute('prop.query', [[
             ['page', params.page||1],
             ['account', user.account],
+            ['oid', '!=', ''], //过滤没有模板ID的道具
             ['pst', 'exclude', [2]],
         ]]);
 
