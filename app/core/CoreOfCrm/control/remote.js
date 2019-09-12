@@ -13,19 +13,6 @@ class remote extends facade.RemoteLogicCtrl
     get middleware(){
         return ['parseParams', 'authRemote', 'commonHandle'];
     }
-
-    /**
-     * 激活/禁止指定游戏
-     * @param {*} svr       来访服务器信息
-     * @param {*} params    参数对象
-     */
-    cpStatus(svr, params) {
-        let cp = this.core.GetObject(EntityType.blockgame, params.msg.cp_id, IndexType.Domain);
-        if(cp) {
-            cp.setAttr('store_status', params.msg.cp_st);
-        }
-        return {code: 0};
-    }
 }
 
 exports = module.exports = remote;
