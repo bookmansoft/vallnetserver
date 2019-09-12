@@ -16,7 +16,7 @@ function handle(data) { //客户端上行消息
     data.user.tick();
     if (time5.check()) {
         //判断是否开启七夕活动
-        this.remoteCall('dailyactivity.CheckButtonStatus', [data.user.domain, data.user.openid], msg=>{return msg});     
+        this.remoteService('dailyactivity.CheckButtonStatus', [data.user.domain, data.user.openid]);     
     }
 }
 

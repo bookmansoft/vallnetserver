@@ -11,7 +11,7 @@
 let facade = require('gamecloud')
 let CoreOfBase = facade.CoreOfBase
 let orderMonitor = require('../../../util/autoExec/orderMonitor');
-let {EntityType} = facade.const
+let {EntityType, NotifyType} = facade.const
 
 //#region 新增自定义数据表类型(大于100)
 EntityType = Object.assign(EntityType, {
@@ -298,6 +298,24 @@ async function startAfter(core) {
     core.autoTaskMgr.addCommonMonitor(() => {
         return CheckOrder(core);
     }, 5000);
+
+    //#region 远程调用相关的示例代码
+
+    //调用索引服上的服务接口
+    //await core.remoteService(`dailyactivity.getList`, []);
+
+    //向用户发送一封邮件, 注意该调用没有指定目标逻辑节点，而是提供了 domain/openid 信息，由索引服进行适配
+    // await core.remoteCall('routeCommand', {
+    //     func: 'userNotify',
+    //     domain: 'authwx.Wallet',
+    //     openid: '021Pkmz4023vzD1111z40e6wz40Pkmzg',
+    //     msg: {
+    //         type: NotifyType.DailyActivityInstantBonus,
+    //         info: {}
+    //     }
+    // });
+
+    //#endregion
 
     console.log(`${core.options.serverType}.${core.options.serverId}'s startup finished!`);
 }

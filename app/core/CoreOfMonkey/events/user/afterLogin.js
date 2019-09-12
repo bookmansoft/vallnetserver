@@ -21,7 +21,7 @@ function handle(data){
     let d1 = data.curTime.toDateString();
     let d2 = data.user.getRefreshDate(); //缓存用户最近登录日期, 因为checkDailyData会修改该数值，而该数值后续判断还需要使用
     //todo:判断是否开启七夕活动
-    this.remoteCall('dailyactivity.CheckButtonStatus',[data.user.domain, data.user.openid], msg=>{return msg});
+    this.remoteService('dailyactivity.CheckButtonStatus', [data.user.domain, data.user.openid]);
 
     //如果跨天推送一条消息
     if(d1 != d2){

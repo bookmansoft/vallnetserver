@@ -229,8 +229,9 @@ class dailyactivity extends facade.Service
             //todo:改为随机奖励
             let bonus = [{ type: ResType.Coin, num: Math.floor(Math.random()*500) }];
             // bonus.push(this.core.getTxFriendMgr().getRandomBonus(false));
+
             //向用户发送一封邮件
-            this.core.remoteCall('remote.userNotify', {
+            this.core.remoteCall('userNotify', {
                 domain: si.domain,
                 openid: si.openid,
                 msg: {
@@ -238,7 +239,7 @@ class dailyactivity extends facade.Service
                     info: { bonus: bonus, num: $num }
                 }
             }, null, si);
-            
+
             return {
                 code: ReturnCode.Success,
                 data: {
@@ -466,7 +467,7 @@ class dailyactivity extends facade.Service
                 let bonus = [{ type: ResType.Diamond, num: uo.bonus }];
                 let msg = { type: NotifyType.DailyActivityBonus, info: { bonus: bonus, rank: uo.rank } };
                 //向用户发送一封邮件
-                this.core.remoteCall('remote.userNotify', {
+                this.core.remoteCall('userNotify', {
                     domain: uo.domain,
                     openid: uo.openid,
                     msg: msg
@@ -523,6 +524,7 @@ class dailyactivity extends facade.Service
                 break;
         }
     }
+
     /**
      * 检测活动按钮开启状态
      */
@@ -531,7 +533,7 @@ class dailyactivity extends facade.Service
         if (!!ui) {
             let cur = new Date();
             if (this.$state == DailyActivityStatus.Idle) {
-                this.core.remoteCall('remote.userNotify', {
+                this.core.remoteCall('userNotify', {
                     domain: domain,
                     openid: openid,
                     msg: { type: NotifyType.DailyActivityState, info: { status: "close" } }
@@ -542,7 +544,7 @@ class dailyactivity extends facade.Service
                 if (this.$state != DailyActivityStatus.Ready) {
                     cd = 0;
                 }
-                this.core.remoteCall('remote.userNotify', {
+                this.core.remoteCall('userNotify', {
                     domain: domain,
                     openid: openid,
                     msg: { type: NotifyType.DailyActivityState, info: { status: "open", cd: cd } }

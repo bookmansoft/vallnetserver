@@ -32,7 +32,7 @@ class cp extends facade.Control {
 
             cp.setAttr('cp_state', objData.cp_st);
 
-            this.core.remoteCall('routeCommand', {func:'cpStatus', msg:{cp_id: cp.getAttr('cp_id'), cp_st: objData.cp_st}, si:{stype:'Wallet', sid:0}}, msg=>{ return msg });
+            this.core.remoteLogic('cpStatus', {cp_id: cp.getAttr('cp_id'), cp_st: objData.cp_st}, {stype:'Wallet', sid:0});
 
             return { code: ReturnCode.Success };
         } catch (error) {
