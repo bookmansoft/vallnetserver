@@ -38,6 +38,7 @@ if(env.constructor == String) {
                 'h5.gamegold.xin': {target: 'http://localhost:9101'},
                 'chick.gamegold.xin': {target: 'http://localhost:9201'},
                 'monkey.gamegold.xin': {target: 'http://localhost:9202'},
+                'simu.gamegold.xin': {target: 'http://localhost:9203'},
                 'crm.vallnet.cn': {target: 'http://localhost:9801'},
             },
             port: 80,
@@ -54,11 +55,14 @@ if(env.constructor == String) {
     //加载CRM管理节点
     await facade.boot({serverType: "CRM",serverId: 1});
 
+    //加载 模拟游戏节点
+    await facade.boot({serverType: "Simu", serverId: 1});
+
     //加载 游戏-Chick 节点
-    facade.boot({serverType: "Chick", serverId: 1});
+    await facade.boot({serverType: "Chick", serverId: 1});
     
     //加载 游戏-Monkey 节点
-    facade.boot({serverType: "Monkey", serverId: 1});
+    await facade.boot({serverType: "Monkey", serverId: 1});
 
     //加载钱包节点
     await facade.boot(env);

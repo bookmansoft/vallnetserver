@@ -19,15 +19,15 @@ class cp extends facade.Control
      */
     get router() {
         return [
+            ['/mock/:cp_name/testnet/myprops/:addr', 'myProps'],
+            [`/mock/:cp_name/testnet/auth`, 'auth'],
             [`/mock/:cp_name/info`, 'getInfo'],
-            [`/mock/:cp_name/auth`, 'auth'],
             ['/mock/:cp_name/prop/:id', 'responseProp'],
-            ['/mock/:cp_name/myprops/:addr', 'myProps'],
         ];
     }
 
     /**
-     * 我的道具列表【确权】 /mock/:cp_name/myprops/:addr
+     * 我的道具列表【确权】 /mock/:cp_name/testnet/myprops/:addr
      */
     async myProps(params) {
         //根据cp_name取cp完整信息，包括数据集采接口的url

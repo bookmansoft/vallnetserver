@@ -3,6 +3,7 @@ let crypto = require('crypto');
 let { stringify } = require('../../../util/stringUtil');
 let uuid = require('uuid');
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
+const toolkit = require('gamerpc')
 
 /**
  * 游戏提供的对外接口：订单接收处理
@@ -21,20 +22,81 @@ class order extends facade.Control
      */
     get router() {
         return [
-            [`/mock/:cp_name/${remoteSetup.type}/order/confirm`, 'orderConfirm'],
-            ['/mock/:cp_name/order', 'order'],
+            [`/mock/:cp_name/${remoteSetup.type}/order/confirm`, 'confirmOrder'],
+            [`/mock/:cp_name/${remoteSetup.type}/order/notify`, 'notifyOrder'],
+            [`/mock/:cp_name/${remoteSetup.type}/order/add`, 'addOrder'],
         ];
     }
 
     /**
-     * 处理客户端上行的道具购买指令，通过 sys.notify 向主网发送订单消息
+     * 游戏客户端上行订单，游戏服务端以通告模型处理
      * @param {*} params
-     * @description 向主网还是测试网络发布消息，是由 service.gamegoldHelper 决定的
      */
-    async order(params) {
-        //通过 uid 查询用户对象
+    async notifyOrder(params) {
         let user = this.core.userMap[params.uid];
-        if(!!user) {
+        if(!user) {
+            return {code: -1};
+        }
+
+        //生成订单。对于以 sys.notify 模式发起的订单，游戏服务器不用承担订单状态监控、主动查询订单状态、再次发起订单支付的义务，简单说就是发射后不管
+        let data = {
+            cid: params.cid,                  //CP编码
+            oid: params.oid,                  //道具原始编码
+            price: params.price,              //价格，单位尘
+            url: params.url,                  //道具图标URL
+            props_name: params.props_name,    //道具名称
+            sn: uuid.v1(),                    //订单编号
+            addr: user.addr,                  //用户地址
+            confirmed: -1,                    //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+            time: Date.now()/1000,
+        };
+        
+        //向主网发送消息
+        let paramArray = [
+            data.addr,
+            JSON.stringify(data),
+        ];
+        let ret = await this.core.service.gamegoldHelper.execute('sys.notify', paramArray);
+        if(!!ret) {
+            if(ret.code == 0) { //操作成功，本地缓存订单，以便在将来接收到回调时进行必要的比对
+                this.core.orderMap.set(data.sn, data);
+            }
+            return { code: ret.code };
+        }
+
+        return { code: -1 };
+    }
+
+    /**
+     * 钱包提交订单信息，服务端缓存订单、等待回调通知
+     * @param {*} params
+     */
+    async addOrder(params) {
+        if(!params.auth) {
+            return {code: -1};
+        }
+
+        try {
+            if(typeof params.auth == 'string') {
+                params.auth = JSON.parse(params.auth);
+            }
+            let user = params.auth;
+            if(toolkit.verifyData({
+                data: {
+                    cid: user.cid,
+                    uid: user.uid,
+                    time: user.time,
+                    addr: user.addr,
+                    pubkey: user.pubkey,
+                },
+                sig: user.sig
+            })) {
+                //缓存认证报文
+                this.core.userMap[user.uid] = user;
+            } else {
+                return {code: -1};
+            }
+
             //生成订单。对于以 sys.notify 模式发起的订单，游戏服务器不用承担订单状态监控、主动查询订单状态、再次发起订单支付的义务，简单说就是发射后不管
             let data = {
                 cid: params.cid,                  //CP编码
@@ -42,34 +104,25 @@ class order extends facade.Control
                 price: params.price,              //价格，单位尘
                 url: params.url,                  //道具图标URL
                 props_name: params.props_name,    //道具名称
-                sn: uuid.v1(),                    //订单编号
+                sn: params.sn,                    //订单编号
                 addr: user.addr,                  //用户地址
                 confirmed: -1,                    //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
                 time: Date.now()/1000,
             };
+            this.core.orderMap.set(data.sn, data);
             
-            //向主网发送消息
-            let paramArray = [
-                data.addr,
-                JSON.stringify(data),
-            ];
-            let ret = await this.core.service.gamegoldHelper.execute('sys.notify', paramArray);
-            if(!!ret) {
-                if(ret.code == 0) { //操作成功，本地缓存订单，以便在将来接收到回调时进行必要的比对
-                    this.core.orderMap.set(data.sn, data);
-                }
-                return { code: ret.code };
-            }
+            return { code: 0 };
+        } catch(e) {
         }
 
         return { code: -1 };
     }
-
+    
     /**
      * 订单支付回调接口，处理来自主网的订单支付确认通知
      * @param {*} params
      */
-    async orderConfirm(params) {
+    async confirmOrder(params) {
         try {
             //确认已获取正确签名密钥
             if(!this.core.cpToken[params.data.cid]) {

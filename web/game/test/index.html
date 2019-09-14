@@ -35,7 +35,6 @@
 </div>
 <div id="alert"></div>
 <script>
-    var localhost = 'http://h5.gamegold.xin'; 
     var mainVue = new Vue({
         el: '#mainVue',
         data: { 
@@ -91,7 +90,7 @@
 
         $.ajax({
             type: "GET",
-            url: `${location.origin}${location.pathname}auth?data=${encodeURIComponent(param)}`,
+            url: `${location.origin}${location.pathname}testnet/auth?data=${encodeURIComponent(param)}`,
             success: function(result) {
                 if(result.code == 0) {
                     $.ajax({
@@ -158,7 +157,7 @@
     function buy(id, price, icon, props_name) {
         $.ajax({
             type: "POST",
-            url: `${location.origin}${location.pathname}order`,
+            url: `${location.origin}${location.pathname}testnet/order/notify`,
             data: {
                 "oid":id,
                 "cid":mainVue.cp.cid,
@@ -183,7 +182,7 @@
 
         $.ajax({
             type: "GET",
-            url: `${location.origin}${location.pathname}myprops/${mainVue.cp.uid}`,
+            url: `${location.origin}${location.pathname}testnet/myprops/${mainVue.cp.addr}`,
             success: function(result) {
                 console.log('myPropList', JSON.stringify(result.data));
                 for (var i=0; i<result.data.length; i++) {

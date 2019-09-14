@@ -1,6 +1,5 @@
 const toolkit = require('gamerpc')
 let facade = require('gamecloud')
-let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 let CoreOfBase = facade.CoreOfBase
 
 class gamegoldHelper extends facade.Service
@@ -14,7 +13,6 @@ class gamegoldHelper extends facade.Service
 
         this.remote = new toolkit.conn();
         //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-        this.remote.setup(remoteSetup);
         this.remote.setFetch(require('node-fetch'))  
     }
 
@@ -28,6 +26,13 @@ class gamegoldHelper extends facade.Service
 
     async execute(method, params) {
         return await this.remote.execute(method, params)
+    }
+
+    /**
+     * 网络类型
+     */
+    get network() {
+        return this.remote.getTerminalConfig().type;
     }
 
     watch(cb, etype = '0') {

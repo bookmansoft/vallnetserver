@@ -1,6 +1,7 @@
 let facade = require('gamecloud')
 let {IndexType, EntityType} = facade.const;
 let uuid = require('uuid');
+let fetch = require('node-fetch')
 
 /**
  * 钱包
@@ -74,36 +75,70 @@ class wallet extends facade.Control
     /**
      * 使用游戏金支付订单
      * @param {*} user 
-     * @param {*} paramGold 其中的成员 items 是传递给区块链全节点的参数数组
+     * @param {*} params
+     * @description 分为如下两种情形：
+     * 1. sn 置空：直接从钱包发起交易并完成支付，此时CP方尚未形成订单
+     * 2. sn 已填：CP方形成订单后，传递订单到钱包、完成支付
      */
     async OrderPay(user, params) {
-        params.sn = params.sn || uuid.v1();                 //订单编号
-        params.time = Date.now()/1000;                      //订单生成时间戳
-        params.confirmed = -1;                              //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
-        params.addr = user.baseMgr.info.getAttr('acaddr');  //用户地址
+        try {
+            params.time = Date.now()/1000;                      //时间戳
+            params.confirmed = -1;                              //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+            params.addr = user.baseMgr.info.getAttr('acaddr');  //用户地址
 
-        let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
-            params.cid,     //CP编码
-            user.account,   //用户ID
-            params.sn,      //订单编号
-            params.price,   //订单金额, 单位尘
-            user.account,   //指定结算的钱包账户，本系统中和用户ID一致
-        ]);
+            params.sn = params.sn || uuid.v1(); 
 
-        if(!ret.code) {
-            return {code: ret.code, msg: ret.error.message};
-        } else {
-            //缓存订单，为后续流程做准备
-            this.core.orderMap.set(params.sn, params);
-            /** params {
-                    sn          //订单编号
-                    time        //订单生成时间戳
-                    confirmed   //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
-                    addr        //用户地址
-                    oid         //道具模板编码
+            //查询CP信息
+            let cpObj = this.core.GetObject(EntityType.blockgame, params.cid, IndexType.Domain);
+            if(!cpObj) { 
+                throw new Error('cp not exist');
+            }
+
+            //查询当前用户对应该CP的身份信息
+            let pack = await this.core.service.gamegoldHelper.getUserToken(user, params.cid);
+            if(!pack) {
+                throw new Error('user not exist');
+            }
+
+            //同时提交身份认证和订单信息
+            const newOptions = { json: true, method: 'POST', mode: 'cors', body: JSON.stringify({
+                auth: pack,
+                ...params,
+            })};
+            newOptions.headers = {
+                Accept: 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+            };
+    
+            let res = await fetch(`${cpObj.orm.cpurl}/${this.core.service.gamegoldHelper.network}/order/add`, newOptions);
+            res = await res.json();
+   
+            if(res.code == 0) {
+                //广播订单支付信息
+                let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
+                    params.cid,     //CP编码
+                    user.account,   //用户ID
+                    params.sn,      //订单编号
+                    params.price,   //订单金额, 单位尘
+                    user.account,   //指定结算的钱包账户，本系统中和用户ID一致
+                ]);
+        
+                if(ret.code != 0) {
+                    return {code: ret.code, msg: ret.error.message};
+                } else {
+                    /** params {
+                            sn          //订单编号
+                            time        //订单生成时间戳
+                            confirmed   //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+                            addr        //用户地址
+                            oid         //道具模板编码
+                        }
+                    */
+                    return {code: 0, data: ret.result};
                 }
-             */
-            return {code: 0, data: ret.result};
+            }
+        } catch(e) {
+            console.log(e);
         }
     }
 }

@@ -4,15 +4,15 @@
 let facade = require('gamecloud')
 
 /**
- * 签证服务器对应的门面类
+ * 模拟游戏服务器
  */
-class CoreOfAuth extends facade.CoreOfBase 
+class CoreOfSimulation extends facade.CoreOfBase 
 {
     constructor($env){
         super($env);
 
         //中间件设定 - 注意不要覆盖父类构造函数已经做出的设定
-        this.middlewareSetting.default = ['parseParams', 'commonHandle', 'afterHandle'];
+        this.middlewareSetting.default = ['parseParams', 'afterHandle'];
     }
 
     /**
@@ -20,7 +20,7 @@ class CoreOfAuth extends facade.CoreOfBase
      * @returns {Array}
      */
     static get mapping() {
-        this.$mapping = ['Auth'];
+        this.$mapping = ['Simu'];
         return this.$mapping;
     }
 
@@ -39,4 +39,4 @@ class CoreOfAuth extends facade.CoreOfBase
     }
 }
 
-exports = module.exports = CoreOfAuth;
+exports = module.exports = CoreOfSimulation;

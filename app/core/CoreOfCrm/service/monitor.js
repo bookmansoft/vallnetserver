@@ -1,3 +1,4 @@
+const facade = require('gamecloud')
 const gamegoldHelper = require('./gamegoldHelper')
 
 /**
@@ -5,6 +6,10 @@ const gamegoldHelper = require('./gamegoldHelper')
  */
 class monitor extends gamegoldHelper
 {
+    constructor(core) {
+        super(core);
+        this.remote.setup(facade.ini.servers["Index"][1].node);
+    }
 }
 
 module.exports = monitor;
