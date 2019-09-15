@@ -1,16 +1,18 @@
-let facade = require('gamecloud')
 let fetch = require('node-fetch')
+let crypto = require('crypto');
+let uuid = require('uuid');
+let facade = require('gamecloud')
 let toolkit = require('gamerpc')
-let crc = require('crc-32');
+let { stringify, hashInt } = require('../../../util/stringUtil');
+let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 
-function hashInt(str) {
-    return crc.str(str)>>>0;
-}
-  
+//游戏名称静态配置信息
+let cp_name = 'cp_chick';
+ 
 /**
- * 游戏开放接口：查询CP基本资料
+ * 游戏商接入百谷王生态平台必须实现的交互接口
  */
-class cp extends facade.Control
+class openapi extends facade.Control
 {
     /**
      * 自定义中间件序列
@@ -24,21 +26,159 @@ class cp extends facade.Control
      */
     get router() {
         return [
-            ['/mock/:cp_name/testnet/myprops/:addr', 'myProps'],
-            [`/mock/:cp_name/testnet/auth`, 'auth'],
-            [`/mock/:cp_name/info`, 'getInfo'],
-            ['/mock/:cp_name/prop/:id', 'responseProp'],
+            [`/info`, 'getInfo'],                                     //获取游戏基本描述信息
+            ['/prop/:id', 'responseProp'],                            //获取指定道具模板信息
+            [`/${remoteSetup.type}/myprops/:addr`, 'myProps'],        //获取指定地址上的确权道具
+            [`/${remoteSetup.type}/auth`, 'auth'],                    //验证玩家身份信息
+            [`/${remoteSetup.type}/order/confirm`, 'confirmOrder'],   //订单完成回调接口
+            [`/${remoteSetup.type}/order/notify`, 'notifyOrder'],     //游戏服务端通过该接口接收游戏客户端提交的订单，缓存并以通告模型广播至至主网。主网将进一步将订单信息通知到钱包
+            [`/${remoteSetup.type}/order/add`, 'addOrder'],           //游戏服务端通过该接口接收钱包提交的订单，只缓存但不做进一步处理。钱包以此方式提交订单后，会进一步执行订单支付流程
         ];
     }
 
     /**
-     * 我的道具列表【根据地址进行道具确权】 /mock/:cp_name/testnet/myprops/:addr
-     * @param {*} params    {cp_name:"CP名称", addr:"确权的地址"}
+     * 游戏客户端上行订单，游戏服务端进一步通告主网
+     * @param {*} params
+     */
+    async notifyOrder(params) {
+        let user = this.core.userMap[params.uid];
+        if(!user) {
+            return {code: -1};
+        }
+
+        //以 sys.notify 模式发起订单
+        let data = {
+            cid: params.cid,                  //CP编码
+            oid: params.oid,                  //道具原始编码
+            price: params.price,              //价格，单位尘
+            url: params.url,                  //道具图标URL
+            props_name: params.props_name,    //道具名称
+            sn: uuid.v1(),                    //订单编号
+            addr: user.addr,                  //用户地址
+            confirmed: -1,                    //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+            time: Date.now()/1000,
+        };
+        
+        //向主网发送消息
+        let paramArray = [
+            data.addr,
+            JSON.stringify(data),
+        ];
+        let ret = await this.core.service.gamegoldHelper.execute('sys.notify', paramArray);
+        if(!!ret) {
+            if(ret.code == 0) { 
+                //缓存订单信息，以便在将来接收到回调时进行必要的比对
+                this.core.orderMap.set(data.sn, data);
+            }
+            return { code: ret.code };
+        }
+
+        return { code: -1 };
+    }
+
+    /**
+     * 钱包执行订单支付流程中，会通过该接口提交订单信息，服务端缓存订单、等待主网回调通知
+     * @param {*} params
+     */
+    async addOrder(params) {
+        if(!params.auth) {
+            return {code: -1};
+        }
+
+        try {
+            if(typeof params.auth == 'string') {
+                params.auth = JSON.parse(params.auth);
+            }
+            let user = params.auth;
+            if(toolkit.verifyData({
+                data: {
+                    cid: user.cid,
+                    uid: user.uid,
+                    time: user.time,
+                    addr: user.addr,
+                    pubkey: user.pubkey,
+                },
+                sig: user.sig
+            })) {
+                //缓存认证报文
+                this.core.userMap[user.uid] = user;
+            } else {
+                return {code: -1};
+            }
+
+            //生成订单。对于以 sys.notify 模式发起的订单，游戏服务器不用承担订单状态监控、主动查询订单状态、再次发起订单支付的义务，简单说就是发射后不管
+            let data = {
+                cid: params.cid,                  //CP编码
+                oid: params.oid,                  //道具原始编码
+                price: params.price,              //价格，单位尘
+                url: params.url,                  //道具图标URL
+                props_name: params.props_name,    //道具名称
+                sn: params.sn,                    //订单编号
+                addr: user.addr,                  //用户地址
+                confirmed: -1,                    //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+                time: Date.now()/1000,
+            };
+
+            //更新缓存中的订单信息
+            this.core.orderMap.set(data.sn, data);
+            
+            return { code: 0 };
+        } catch(e) {
+        }
+
+        return { code: -1 };
+    }
+    
+    /**
+     * 订单支付回调接口，处理来自主网的订单支付确认通知
+     * @param {*} params
+     */
+    async confirmOrder(params) {
+        try {
+            //确认已获取正确签名密钥
+            if(!this.core.cpToken[params.data.cid]) {
+                let retAuth = await this.core.service.gamegoldHelper.execute('sys.createAuthToken', [params.data.cid]);
+                if(retAuth.code == 0) {
+                    let {aeskey, aesiv} = this.core.service.gamegoldHelper.remote.getAes();
+                    this.core.cpToken[params.data.cid] = this.core.service.gamegoldHelper.remote.decrypt(aeskey, aesiv, retAuth.result[0].encry);
+                } else {
+                    return { code: 0 };
+                }
+            }
+    
+            //校验签名
+            let dstr = stringify(params.data);
+            let sim = crypto.createHmac('sha256', dstr).update(this.core.cpToken[params.data.cid]).digest('hex');
+            if (sim != params.sig) {
+                return { code: 0 };
+            }
+
+            //更新订单信息
+            params.data.time = Date.now()/1000;
+
+            let theOrder = this.core.orderMap.get(params.data.sn) || {};
+            Object.keys(params.data).map(key=>{
+                theOrder[key] = params.data[key];
+            });
+
+            //缓存订单信息
+            this.core.orderMap.set(theOrder.sn, theOrder);
+
+            return { code: 0 };
+        } catch (e) {
+            console.error(e);
+            return { code: 0 };
+        }
+    }
+    
+    /**
+     * 我的道具列表【根据地址进行道具确权】 /testnet/myprops/:addr
+     * @param {*} params    {addr:"确权的地址"}
      */
     async myProps(params) {
         //根据cp_name取cp完整信息，包括数据集采接口的url
         let cpParamArray = [
-            params.cp_name,
+            cp_name,
         ];
         let cpInfo = await this.core.service.gamegoldHelper.execute('cp.byName', cpParamArray);
         if (!cpInfo || !cpInfo.result) {
@@ -106,25 +246,12 @@ class cp extends facade.Control
     }
 
     /**
-     * 查询指定道具模板的描述信息对象
-     * @param {*} params    {id:"道具模板编码"}
-     */
-    responseProp(params) {
-        return this.createProp(params.id);
-    }
-
-    /**
      * 返回对应CP的描述信息对象，同时也返回道具模板列表
-     * @param {*} params {cp_name:"CP名称"}
      */
-    getInfo(params) {
-        if (!params.cp_name) {
-            return {code: -1};
-        }
-
+    getInfo() {
         let groupNum = 0;//默认为0
         try {
-            groupNum = hashInt(params.cp_name) % 4;
+            groupNum = hashInt(cp_name) % 4;
             if (groupNum != 0 && groupNum != 1 && groupNum != 2 && groupNum != 3) {
                 groupNum = 0;
             }
@@ -136,7 +263,7 @@ class cp extends facade.Control
         let propArray = new Array();
         let propCount = 5;
         for (let i = 0; i < propCount; i++) {
-            propArray.push(this.createProp(`${params.cp_name}_prop_${i}`));
+            propArray.push(this.createProp(`${cp_name}_prop_${i}`));
         }
 
         //编组cpInfo
@@ -146,8 +273,8 @@ class cp extends facade.Control
                 "funding_project_text": "希望大家支持我们一哈",
             },
             "game": {
-                "cp_name": params.cp_name,
-                "game_title": `${arrayGame[groupNum].Title}(${params.cp_name})`,
+                "cp_name": cp_name,
+                "game_title": `${arrayGame[groupNum].Title}(${cp_name})`,
                 "cp_type": arrayGame[groupNum].Type,
                 "desc": arrayGame[groupNum].Desc,
                 "provider": arrayGame[groupNum].Provider,
@@ -185,12 +312,19 @@ class cp extends facade.Control
     }
 
     /**
+     * 查询指定道具模板的描述信息对象
+     * @param {*} params    {id:"道具模板编码"}
+     */
+    responseProp(params) {
+        return this.createProp(params.id);
+    }
+
+    /**
      * 以 propid 作为模板编码，创建一个模拟游戏道具
      * @param {*} propid
      */
     createProp(propid) {
         let propIndexArray = propid.split('_prop_');
-        let cp_name = propIndexArray[0];
         let propIndex = propIndexArray[propIndexArray.length - 1];
 
         let groupNum = 0;//默认为0
@@ -275,4 +409,4 @@ let arrayGame = [
 
 //#endregion
 
-exports = module.exports = cp;
+exports = module.exports = openapi;

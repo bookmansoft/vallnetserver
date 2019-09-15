@@ -104,6 +104,7 @@ CREATE TABLE IF NOT EXISTS `cp` (
   `update_content` varchar(2000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `invite_share` int(11) DEFAULT '0' COMMENT '邀请人分成比例，为0-15；如果为0，则表示不存在邀请人分成。',
   `operator_id` int(11) DEFAULT NULL COMMENT '操作员ID',
+	`status` INT(11) NULL DEFAULT '0' COMMENT '复合状态',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

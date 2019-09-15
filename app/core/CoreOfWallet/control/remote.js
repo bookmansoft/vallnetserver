@@ -15,14 +15,19 @@ class remote extends facade.RemoteLogicCtrl
     }
 
     /**
-     * 激活/禁止指定游戏
+     * 修改游戏部分属性
      * @param {*} svr       来访服务器信息
      * @param {*} params    参数对象
      */
     cpStatus(svr, params) {
         let cp = this.core.GetObject(EntityType.blockgame, params.msg.cp_id, IndexType.Domain);
         if(cp) {
-            cp.setAttr('store_status', params.msg.cp_st);
+            if(params.msg.cp_st != null) {
+                cp.setAttr('store_status', params.msg.cp_st);
+            }
+            if(params.msg.ranking != null) {
+                cp.setAttr('ranking', params.msg.ranking);
+            }
         }
         return {code: 0};
     }

@@ -18,7 +18,11 @@ class cp extends facade.Control
         if(!!params.category) {
             query.push(['category_id', params.category]);
         }
-        let muster = this.core.GetMapping(EntityType.blockgame).groupOf().where(query).paginate(10, params.page || 1);
+        let muster = this.core.GetMapping(EntityType.blockgame)
+            .groupOf()
+            .where(query)
+            .orderby('ranking', 'desc')
+            .paginate(10, params.page || 1);
 
         let $data = { 
             list: [], 

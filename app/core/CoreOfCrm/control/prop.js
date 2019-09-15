@@ -125,17 +125,13 @@ class prop extends facade.Control {
         let resList = this.core.GetMapping(EntityType.Cp)
             .groupOf()
             .where(paramArray)
-            .orderby('id', 'desc')
-            .records(TableField.Cp);
+            .orderby('id', 'desc');
+
         let $data = {};
         let $idx = 0;
-        for (let $value of resList) {
-            $data[$idx] = {
-                id: $value['id'], cp_id: $value['cp_id'], cp_text: $value['cp_text'], cp_type: $value['cp_type'], cp_state: $value['cp_state'],
-                cp_url: $value['cp_url'], publish_time: $value['publish_time'], rank: $idx
-            };;
-            $idx++;
-
+        for (let $value of resList.records(TableField.Cp)) {
+            $value['rank'] = $idx++;
+            $data[$idx] = $value;
         }
         return { code: ReturnCode.Success, data: $data };
     }

@@ -1,3 +1,5 @@
+let crc = require('crc-32');
+
 /**
  * 序列化对象，和 JSON.stringify 不同之处在于：
  *    1、排除了属性排序变化带来的影响
@@ -35,7 +37,12 @@ function stringify(data, exclude) {
     
     return data;
 }
+
+function hashInt(str) {
+    return crc.str(str)>>>0;
+}
+
   
 module.exports={
-    stringify
+    stringify, hashInt,
 }

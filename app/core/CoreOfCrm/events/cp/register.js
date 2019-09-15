@@ -94,6 +94,7 @@ async function CreateRecord(user, cpinfo, core) {
             data.update_content,
             data.invite_share,
             data.operator_id,
+            0,
         );
 
         //修改特约商户配置信息, 在系统启动自检时还要再检查一遍

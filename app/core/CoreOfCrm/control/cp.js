@@ -3,6 +3,13 @@ let { ReturnCode, EntityType, TableField } = facade.const
 let fetch = require("node-fetch");
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 let uuid = require('uuid');
+let Indicator = facade.tools.Indicator;
+
+//CP状态位标志
+let CpStatus = {
+    Forbid: 1,  //禁用
+    Top: 2,     //置顶
+}
 
 /**
  * 游戏的控制器
@@ -30,9 +37,22 @@ class cp extends facade.Control {
                 return { code: -2, data: null };
             }
 
-            cp.setAttr('cp_state', objData.cp_st);
-
-            this.core.remoteLogic('cpStatus', {cp_id: cp.getAttr('cp_id'), cp_st: objData.cp_st}, {stype:'Wallet', sid:0});
+            if(objData.cp_st != null) {
+                if(objData.cp_st == 1) {
+                    cp.setAttr('status', Indicator.inst(cp.getAttr('status')).unSet(CpStatus.Forbid).value);
+                } else {
+                    cp.setAttr('status', Indicator.inst(cp.getAttr('status')).set(CpStatus.Forbid).value);
+                }
+                this.core.remoteLogic('cpStatus', {cp_id: cp.getAttr('cp_id'), cp_st: objData.cp_st}, {stype:'Wallet', sid:0});
+            }
+            if(objData.ranking != null) {
+                if(objData.ranking == 1) {
+                    cp.setAttr('status', Indicator.inst(cp.getAttr('status')).set(CpStatus.Top).value);
+                } else {
+                    cp.setAttr('status', Indicator.inst(cp.getAttr('status')).unSet(CpStatus.Top).value);
+                }
+                this.core.remoteLogic('cpStatus', {cp_id: cp.getAttr('cp_id'), ranking: objData.ranking}, {stype:'Wallet', sid:0});
+            }
 
             return { code: ReturnCode.Success };
         } catch (error) {
@@ -151,6 +171,7 @@ class cp extends facade.Control {
                     update_content: cp.getAttr('update_content'),
                     invite_share: cp.getAttr('invite_share'),
                     operator_id: cp.getAttr('operator_id'),
+                    status: cp.getAttr('status'),
                 },
             };
         } else {

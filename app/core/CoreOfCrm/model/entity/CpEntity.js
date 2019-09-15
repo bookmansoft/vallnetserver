@@ -36,7 +36,7 @@ class CpEntity extends BaseEntity
      * 创建记录时的钩子函数
      */
     static async onCreate(db, cp_id,cp_name,cp_text,cp_url,wallet_addr,cp_type,develop_name,
-        cp_desc,cp_version,picture_url,cp_state,publish_time,update_time,update_content,invite_share,operator_id) {
+        cp_desc,cp_version,picture_url,cp_state,publish_time,update_time,update_content,invite_share,operator_id,status) {
         try{
             let it = await Cp(db).create({
                 'cp_id': cp_id,
@@ -55,6 +55,7 @@ class CpEntity extends BaseEntity
                 'update_content': update_content,
                 'invite_share':invite_share,
                 'operator_id':operator_id,
+                'status': status,
             });
             await it.save();
     
