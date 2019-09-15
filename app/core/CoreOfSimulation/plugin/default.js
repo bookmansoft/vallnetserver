@@ -84,11 +84,14 @@ async function CheckOrder(env) {
 async function startAfter(core) {
     console.log(`${core.options.serverType}.${core.options.serverId}'s startup start`);
 
-    core.cpToken = new Map();
-    core.userMap = new Map();
-    core.orderMap = new Map();
+    core.cpToken = new Map();   //CP签名密钥缓存
+    core.userMap = new Map();   //用户身份认证信息缓存
+    core.orderMap = new Map();  //订单缓存
+
     //订单执行前需要达到的确认数
     core.confirmNum = 0;
+
+    //定时流程 - 订单检测
     core.autoTaskMgr.addCommonMonitor(() => {
         return CheckOrder(core);
     }, 5000);

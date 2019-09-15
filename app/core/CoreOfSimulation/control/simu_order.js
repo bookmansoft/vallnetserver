@@ -58,7 +58,8 @@ class order extends facade.Control
         ];
         let ret = await this.core.service.gamegoldHelper.execute('sys.notify', paramArray);
         if(!!ret) {
-            if(ret.code == 0) { //操作成功，本地缓存订单，以便在将来接收到回调时进行必要的比对
+            if(ret.code == 0) { 
+                //缓存订单信息，以便在将来接收到回调时进行必要的比对
                 this.core.orderMap.set(data.sn, data);
             }
             return { code: ret.code };
@@ -109,6 +110,8 @@ class order extends facade.Control
                 confirmed: -1,                    //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
                 time: Date.now()/1000,
             };
+
+            //更新缓存中的订单信息
             this.core.orderMap.set(data.sn, data);
             
             return { code: 0 };
@@ -150,6 +153,7 @@ class order extends facade.Control
                 theOrder[key] = params.data[key];
             });
 
+            //缓存订单信息
             this.core.orderMap.set(theOrder.sn, theOrder);
 
             return { code: 0 };
