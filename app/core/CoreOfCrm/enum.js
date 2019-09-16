@@ -90,7 +90,7 @@ let StockBase = [
 
 let Prize = ['id', 'act_name', 'mch_billno', 'nick_name', 're_openid', 'remark', 'send_name', 'total_amount', 'total_num', 'wishing', 'return_msg', 'order_status']
 
-let Cp = ['id', 'cp_id', 'cp_name', 'cp_text', 'cp_url', 'wallet_addr', 'cp_type', 'develop_name', 'cp_desc', 'cp_version', 'picture_url', 'cp_state', 'publish_time', 'update_time', 'update_content', 'invite_share', 'operator_id', 'status']
+let Cp = ['id', 'cp_id', 'cp_name', 'cp_text', 'cp_url', 'wallet_addr', 'cp_type', 'develop_name', 'cp_desc', 'cp_version', 'picture_url', 'cp_state', 'publish_time', 'update_time', 'update_content', 'invite_share', 'operator_id']
 
 let CpFunding = ['id', 'stock_num', 'total_amount', 'stock_amount', 'stock_rmb', 'audit_state_id', 'audit_text', 'modify_date', 'cp_name', 'cp_text', 'cp_type', 'cp_url', 'develop_name', 'develop_text', 'user_id', 'cid', 'operator_id']
 

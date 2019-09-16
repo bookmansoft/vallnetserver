@@ -25,7 +25,6 @@ let Cp = (db) => seqconn.seqConnector(db.db, db.sa, db.pwd, db.host, db.port).de
         update_content: Sequelize.STRING,
         invite_share: Sequelize.INTEGER,
         operator_id: Sequelize.INTEGER,
-        status: Sequelize.INTEGER,
     },
     {
         'timestamps': false,    // 是否需要增加createdAt、updatedAt、deletedAt字段

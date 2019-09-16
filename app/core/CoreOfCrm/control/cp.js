@@ -7,8 +7,9 @@ let Indicator = facade.tools.Indicator;
 
 //CP状态位标志
 let CpStatus = {
-    Forbid: 1,  //禁用
-    Top: 2,     //置顶
+    Activate: 1,    //激活
+    Forbid: 2,      //禁用
+    Top: 4,         //置顶
 }
 
 /**
@@ -37,19 +38,23 @@ class cp extends facade.Control {
                 return { code: -2, data: null };
             }
 
-            if(objData.cp_st != null) {
-                if(objData.cp_st == 1) {
-                    cp.setAttr('status', Indicator.inst(cp.getAttr('status')).unSet(CpStatus.Forbid).value);
+            if(objData.activate == 1) {
+                cp.setAttr('cp_state', Indicator.inst(cp.getAttr('cp_state')).set(CpStatus.Activate).value);
+                this.core.remoteLogic('cpStatus', {cp_id: cp.getAttr('cp_id'), cp_st: 1}, {stype:'Wallet', sid:0});
+            } else if(objData.forbid != null) {
+                if(objData.forbid == 1) {
+                    cp.setAttr('cp_state', Indicator.inst(cp.getAttr('cp_state')).set(CpStatus.Forbid).value);
+                    this.core.remoteLogic('cpStatus', {cp_id: cp.getAttr('cp_id'), cp_st: 0}, {stype:'Wallet', sid:0});
                 } else {
-                    cp.setAttr('status', Indicator.inst(cp.getAttr('status')).set(CpStatus.Forbid).value);
+                    cp.setAttr('cp_state', Indicator.inst(cp.getAttr('cp_state')).unSet(CpStatus.Forbid).value);
+                    this.core.remoteLogic('cpStatus', {cp_id: cp.getAttr('cp_id'), cp_st: 1}, {stype:'Wallet', sid:0});
                 }
-                this.core.remoteLogic('cpStatus', {cp_id: cp.getAttr('cp_id'), cp_st: objData.cp_st}, {stype:'Wallet', sid:0});
             }
             if(objData.ranking != null) {
                 if(objData.ranking == 1) {
-                    cp.setAttr('status', Indicator.inst(cp.getAttr('status')).set(CpStatus.Top).value);
+                    cp.setAttr('cp_state', Indicator.inst(cp.getAttr('cp_state')).set(CpStatus.Top).value);
                 } else {
-                    cp.setAttr('status', Indicator.inst(cp.getAttr('status')).unSet(CpStatus.Top).value);
+                    cp.setAttr('cp_state', Indicator.inst(cp.getAttr('cp_state')).unSet(CpStatus.Top).value);
                 }
                 this.core.remoteLogic('cpStatus', {cp_id: cp.getAttr('cp_id'), ranking: objData.ranking}, {stype:'Wallet', sid:0});
             }
@@ -223,9 +228,6 @@ class cp extends facade.Control {
         }
         if (!!objData.cp_type) {
             paramArray.push(['cp_type', objData.cp_type]);
-        }
-        if (!!objData.cp_state) {
-            paramArray.push(['cp_state', objData.cp_state]);
         }
 
         //得到 Mapping 对象

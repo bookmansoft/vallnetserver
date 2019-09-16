@@ -249,16 +249,6 @@ class openapi extends facade.Control
      * 返回对应CP的描述信息对象，同时也返回道具模板列表
      */
     getInfo() {
-        let groupNum = 0;//默认为0
-        try {
-            groupNum = hashInt(cp_name) % 4;
-            if (groupNum != 0 && groupNum != 1 && groupNum != 2 && groupNum != 3) {
-                groupNum = 0;
-            }
-        } catch (error1) {
-            groupNum = 0;
-        }
-
         //随机生成若干道具并添加到数组中
         let propArray = new Array();
         let propCount = 5;
@@ -274,16 +264,18 @@ class openapi extends facade.Control
             },
             "game": {
                 "cp_name": cp_name,
-                "game_title": `${arrayGame[groupNum].Title}(${cp_name})`,
-                "cp_type": arrayGame[groupNum].Type,
-                "desc": arrayGame[groupNum].Desc,
-                "provider": arrayGame[groupNum].Provider,
-                "icon_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/${groupNum}/icon_img.jpg`,
-                "small_img_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/small_img.jpg",
-                "large_img_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/large_img.jpg",
-                "pic_urls": [`http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/pic1.jpg",
-                `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/pic2.jpg",
-                `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/pic3.jpg"],
+                "game_title": `${arrayGame[0].Title}(${cp_name})`,
+                "cp_type": arrayGame[0].Type,
+                "desc": arrayGame[0].Desc,
+                "provider": arrayGame[0].Provider,
+                "icon_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5icon_img.jpg`,
+                "small_img_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/small_img.jpg`,
+                "large_img_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/large_img.jpg`,
+                "pic_urls": [
+                    `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/pic1.jpg`,
+                    `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/pic2.jpg`,
+                    `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/pic3.jpg`
+                ],
                 "version": "V1.0",
                 "publish_time": 1545606613,
                 "update_time": 1545706613,
@@ -327,25 +319,17 @@ class openapi extends facade.Control
         let propIndexArray = propid.split('_prop_');
         let propIndex = propIndexArray[propIndexArray.length - 1];
 
-        let groupNum = 0;//默认为0
-        try {
-            groupNum = hashInt(cp_name) % 4;
-            if (groupNum != 0 && groupNum != 1 && groupNum != 2 && groupNum != 3) {
-                groupNum = 0;
-            }
-        } catch (error1) {
-            groupNum = 0;
-        }
-
         let prop = {
             "id": propid,
-            "props_name": `${arrayGame[groupNum].Prop.Name}-${propIndex}`,
-            "props_desc": arrayGame[groupNum].Prop.Desc,
-            "icon": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_icon.jpg",
-            "large_icon": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_large_icon.jpg",
-            "more_icon": [`http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_pic1.jpg",
-            `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_pic2.jpg",
-            `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_pic3.jpg"],
+            "props_name": `${arrayGame[0].Prop.Name}-${propIndex}`,
+            "props_desc": arrayGame[0].Prop.Desc,
+            "icon": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_icon.jpg`,
+            "large_icon": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_large_icon.jpg`,
+            "more_icon": [
+                `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_pic1.jpg`,
+                `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_pic2.jpg`,
+                `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_pic3.jpg`
+            ],
             "props_type": "装备",
             "props_price": (parseInt(propIndex)+1)*100000,
             "props_createtime": "2018-12-22 16:22:30",
@@ -366,43 +350,13 @@ class openapi extends facade.Control
 
 let arrayGame = [
     {
-        Type: 'FPS', 
-        Title: 'Code of War',
-        Desc: '指挥在线枪战 – 纯粹的动作游戏！ Code of War是一款在线枪战游戏，拥有最佳3D图形、真实物理引擎以及海量真实枪支供您选择。 在与来自世界各地的其他玩家对战的动态在线动作游戏内试试您的技能和精通！',
-        Provider: 'Extreme Developers Action & adventure',
+        Type: 'PZL', 
+        Title: '鸡小德历险记',
+        Desc: '带领鸡小德以出神入化的跳跃技能破碎虚空',
+        Provider: '原石互娱',
         Prop: {
-            Name: 'M416自动步枪',
-            Desc: 'M4虽然是很多的玩家喜爱的步枪，但是随着版本的改动现在已经垫底了，配件也是非常的多，没有配件的M4基本就是个烧火棍，但是满配了以后还是可以玩的，EatChicken的最佳武器之一',
-        },
-    },
-    {
-        Type: 'SHT', 
-        Title: 'Mercs of Boom',
-        Desc: 'Supply elite soldiers with tons of equipment: hi-tech armor, deadly weapons, implants, and gadgets. ? Upgrade your base and research futuristic technology to gain access to advanced war',
-        Provider: 'GAME INSIGHT UAB Strategy',
-        Prop: {
-            Name: '北极50地狱行者',
-            Desc: '北极50拥有极高的准确度，栓动射击大大的保证了武器的精度。狙击枪的盲射是所有武器中最差的，弹道散射大，即便贴身了，也难以击中。',
-        },
-    },
-    {
-        Type: 'ACT', 
-        Title: '孤胆车神',
-        Desc: '开放沙盒式动作冒险游戏金牌标杆系列之作霸气归来。前往迷人的新奥尔良，打下一片新天地。在这座巨大的城市中，驾驶数百种交通工具、坐拥数量惊人的武器装备，来往自如，无法无天！ 在这里万事俱备，您也可以成为黑道传奇人物！',
-        Provider: 'Gameloft. Action & adventure',
-        Prop: {
-            Name: '超级跑车',
-            Desc: '极其稀有的超级跑车，一旦拥有，便能上天入地。W12四涡轮增压喷气式引擎，配合极度流畅的车身线条，可以直接使角色上天与太阳肩并肩，轻松完成任何任务。',
-        },
-    },
-    {
-        Type: 'WAR',
-        Title: '坦克大战',
-        Desc: '终于等到了！全新世界征服战资料片震撼开启！三大阵营重兵集结，打响国战第一炮！万千坦克同屏对决，铸造最热血的坦克手游！集合策略和国战经典玩法于一体的全民坦克游戏，传奇将领，万人国战，占领世界疆土，成就世界霸主梦',
-        Provider: 'Strategy、Role playing',
-        Prop: {
-            Name: 'T10自行反坦克车',
-            Desc: '仅支持金币购买的超值坦克，性价比超高，配合AP弹，轻松击穿同级其他坦克。需要配备驾驶成员4名，支持AP弹和HE弹。',
+            Name: '金箍棒',
+            Desc: '东海龙宫镇宫之宝',
         },
     },
 ];
