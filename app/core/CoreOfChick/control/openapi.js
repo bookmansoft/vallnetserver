@@ -268,7 +268,7 @@ class openapi extends facade.Control
                 "cp_type": arrayGame[0].Type,
                 "desc": arrayGame[0].Desc,
                 "provider": arrayGame[0].Provider,
-                "icon_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5icon_img.jpg`,
+                "icon_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/icon_img.jpg`,
                 "small_img_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/small_img.jpg`,
                 "large_img_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/large_img.jpg`,
                 "pic_urls": [
