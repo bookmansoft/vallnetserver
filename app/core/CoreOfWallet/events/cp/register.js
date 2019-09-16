@@ -41,7 +41,6 @@ async function CreateRecord(cpInfo, core) {
         provider_id: 1002, // `provider_id` int(4)  '供应商ID',
         provider_name: '红蝶游戏', // `provider_name` varchar(32)  '供应商名',
         ad_title: '孤胆车神：新奥尔良 - 在线开放世界游戏', // `ad_title` varchar(32)  '推广标题',
-        ranking: 0, // `ranking` int(2)  '排名',
         star_level: 0, // `star_level` int(2)  '星级',
         player_count: 368, // `player_count` int(4)  '玩家人数',
         down_count: 0, // `down_count` int(4)  '下载次数',
@@ -99,6 +98,7 @@ async function CreateRecord(cpInfo, core) {
         }
     } else { //尚无记录，创建新的条目
         content.store_status = 0; // `store_status` int(1)  '状态',
+        content.ranking = 0, // `ranking` int(2)  '排名',
         await core.GetMapping(EntityType.blockgame).Create(content);
     }
 
