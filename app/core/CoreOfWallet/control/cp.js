@@ -14,22 +14,38 @@ class cp extends facade.Control
      * @param {*} params
      */
     async List(user, params) {
-        let query = [['store_status', '1']]; //只列表已激活游戏
+        //只列表已激活游戏
+        let query = [
+            ['store_status', '1'],
+            ['ranking', 0],
+        ]; 
+
         if(!!params.category) {
             query.push(['category_id', params.category]);
         }
+
         let muster = this.core.GetMapping(EntityType.blockgame)
             .groupOf()
             .where(query)
-            .orderby('ranking', 'desc')
             .paginate(10, params.page || 1);
 
+        //查询置顶游戏
+        let tops = this.core.GetMapping(EntityType.blockgame)
+            .groupOf()
+            .where([
+                ['store_status', '1'],
+                ['ranking', 1],
+            ])
+            .paginate(10, params.page || 1)
+            .records(TableField.blockgame);
+
         let $data = { 
+            tops: tops,
             list: [], 
             total: muster.pageNum,
             page: muster.pageCur,
         };
-
+        
         for (let $value of muster.records(TableField.blockgame)) {
             $data.list.push($value);
         }
