@@ -3,20 +3,6 @@ let facade     = require('gamecloud')
 let {ShopTypeEnum, PurchaseStatus,PurchaseType, ResType, ActionExecuteType, ReturnCode,cid} = facade.const
 let shopInfo   = facade.assistants.shopInfo
 
-//引入工具包
-const toolkit = require('gamerpc')
-//创建授权式连接器实例
-const remote = new toolkit.conn();
-remote.setFetch(require('node-fetch'))  //兼容性设置，提供模拟浏览器环境中的 fetch 函数
-//     .setup({ //设置授权式连接器的参数 - 将会覆盖默认设置
-//     type:   'testnet',               //希望连接的对等网络的类型，分为 testnet 和 main
-//     ip:     '127.0.0.1',             //远程全节点地址
-//     apiKey: 'bookmansoft',           //远程全节点基本校验密码
-//     id:     'primary',               //默认访问的钱包编号
-//     cid:    'terminal001',           //终端编码，作为访问远程全节点时的终端标识
-//     token:  '0340129aaa7a69ac10bfbf314b9b1ca8bdda5faecce1b6dab3e7c4178b99513392', //访问钱包时的令牌固定量，通过HMAC算法，将令牌随机量和令牌固定量合成为最终的访问令牌
-// });
-
 /**
  * 获取商品列表，细分为：元宝商城；普通商城；工会商城；荣誉商城
  */
@@ -79,55 +65,39 @@ class P999003 extends facade.Control
         let $status = facade.tools.Indicator.inst(input.type);
         Object.keys(ShopTypeEnum).map($key=>{
             let $val = ShopTypeEnum[$key];
-            if($status.check($val)){
+            if($status.check($val)) {
                 /**
                  * 商品缓存信息管理器
                  */
                 user.getShopInfo().refresh($val, false);//检测时间间隔、刷新商品列表
 
-                switch(input.oper){
+                switch(input.oper) {
                     case ShopOperType.query:
                         break;
 
                     case ShopOperType.buy: //购买并发放奖励
                         let $item = shopInfo.items.get(input.id);
-                        if($item != null){
-                            //生成订单
-                            this.core.entities.LogEntity.onCreate(user.domain,uuid.v4(),input.id,$item['price'],(new Date()).valueOf(),$item['name'],user.id,PurchaseStatus.create);
-                            // remote.execute('prop.order', [
-                            //     cid, //游戏编号
-                            //     facade.util.rand(10000000, 9999999999), //道具原始
-                            //     50000, //道具含金量
-                            //     user.baseMgr.info.address //游戏内玩家的有效地址
-                            // ]).then(ret => {
-                            //     console.log(ret)
-                            // }).catch(error=>{
-                            //     console.log(error);
-                            // });
-
+                        if($item != null) {
                             if(user.getPocket().ResEnough(ResType.Diamond, $item['price'])) {
                                 //购买商品、做标记
                                 $code = user.getShopInfo().purchase($item);
                                 if($code == ReturnCode.Success){
                                     user.getPocket().AddRes(ResType.Diamond, -$item['price']);//扣钱
                                 }
-                            }
-                            else{
+                            } else {
                                 $code = ReturnCode.NotEnough_Diamond;
                             }
-                        }
-                        else{
+                        } else {
                             $code = ReturnCode.itemNotExist;
                         }
                         break;
 
                     case ShopOperType.refresh: //强刷新的物品
                         let $sum = shopInfo.shops[$val]['money'];
-                        if(user.getPocket().ResEnough(ResType.Diamond, $sum)){
+                        if(user.getPocket().ResEnough(ResType.Diamond, $sum)) {
                             user.getPocket().AddRes(ResType.Diamond, -$sum);
                             user.getShopInfo().refresh($val, true);
-                        }
-                        else{
+                        } else {
                             $code = ReturnCode.NotEnough_Diamond;
                         }
                         break;

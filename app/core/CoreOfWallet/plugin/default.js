@@ -160,35 +160,16 @@ async function startAfter(core) {
 
     //#region 订单处理相关流程
     
-    //1. 添加微信支付回调路由(也可以选择配置于 facade.boot/static 数组或者 control/router 中，集中置于此处是为了提高代码聚合度)
-    core.addRouter('/wxnotify', async params => {
-        try {
-            //验证签名、解析字段
-            let data = await this.service.wechat.verifyXml(params); 
-            if(!data) {
-                throw new Error('error sign code');
-            }
-
-            //触发 wallet.payCash 事件，执行订单确认、商品发放流程
-            this.notifyEvent('wallet.payCash', {data: data});
-
-            //给微信送回应答
-            return `<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>`;
-        } catch (e) {
-            console.log('wxnotify', e.message);
-        }
-    });
-
-    //2. 添加订单状态定时检测器(每5分钟检测一轮)，具体查询工作由 orderMonitor.execute 承载
+    //1. 添加订单状态定时检测器(每5分钟检测一轮)，具体查询工作由 orderMonitor.execute 承载
 
     // test only 调测阶段，暂时封闭
     //core.autoTaskMgr.addMonitor(new orderMonitor(), 10*1000);
     //
 
-    //3. 添加商品发放流程，配合 wallet.payCash 的工作流程。商品参数保存于 buylogs.product 字段中，格式为复合格式字符串 "type, id, num[;type, id, num]"
+    //2. 添加商品发放流程，配合 wallet.payCash 的工作流程。商品参数保存于 buylogs.product 字段中，格式为复合格式字符串 "type, id, num[;type, id, num]"
     //@warning 对于异步发放、可能最终发放失败的商品，需要先放入背包，然后由用户从背包中选兑，以降低事务处理的复杂性
 
-    //3.1 参与众筹
+    //2.1 参与众筹
     core.RegisterResHandle('crowd', async (user, bonus) => {
         let stock = core.GetObject(EntityType.StockBase, parseInt(bonus.id));
         if(!!stock && bonus.num > 0 && stock.getAttr('sum_left') >= bonus.num) {
@@ -199,7 +180,7 @@ async function startAfter(core) {
         return {code:0};
     });
 
-    //3.2 购买VIP服务
+    //2.2 购买VIP服务
     core.RegisterResHandle('vip', async (user, bonus) => {
         let vip_level =  bonus.num;
         let month_time =  3600 * 24 * 30;

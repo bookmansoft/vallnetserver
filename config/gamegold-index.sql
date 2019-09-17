@@ -63,24 +63,20 @@ CREATE TABLE IF NOT EXISTS `ally_object` (
 
 -- 导出  表 gamegold-index.buylogs 结构
 CREATE TABLE IF NOT EXISTS `buylogs` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `content` varchar(255) DEFAULT NULL,
-  `time` varchar(50) DEFAULT NULL,
-  `user` varchar(50) DEFAULT NULL,
-  `trade_no` varchar(50) DEFAULT NULL,
-  `domain` varchar(50) DEFAULT NULL,
-  `uuid` varchar(50) DEFAULT NULL,
-  `product_id` varchar(50) DEFAULT NULL,
-  `total_fee` varchar(50) DEFAULT NULL,
-  `notify_time` varchar(50) DEFAULT NULL,
-  `product_name` varchar(50) DEFAULT NULL,
-  `request_count` varchar(50) DEFAULT NULL,
-  `result` varchar(50) DEFAULT NULL,
-  `createdAt` datetime DEFAULT NULL,
-  `updatedAt` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `trade_no` (`trade_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`domainid` VARCHAR(128) NOT NULL,
+	`trade_no` VARCHAR(128) NOT NULL,
+	`third_no` VARCHAR(128) NULL DEFAULT NULL,
+	`product` VARCHAR(128) NULL DEFAULT NULL,
+	`product_desc` VARCHAR(255) NULL DEFAULT NULL,
+	`total_fee` BIGINT(20) NULL DEFAULT NULL,
+	`fee_type` VARCHAR(50) NULL DEFAULT NULL,
+	`result` SMALLINT(6) NOT NULL DEFAULT '0',
+	`createdAt` DATETIME NULL DEFAULT NULL,
+	`updatedAt` DATETIME NULL DEFAULT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE INDEX `trade_no` (`trade_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 数据导出被取消选择。
 

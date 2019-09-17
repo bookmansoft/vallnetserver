@@ -132,78 +132,6 @@ class index extends facade.Control
     }
 
     /**
-     * 购买道具
-     * @param {UserEntity} user
-     * @param objData
-     * @returns {Promise.<*>}
-     */
-    async 1003(user, objData){
-        objData.num = Math.max(0, Math.min(200, !!objData.num ? objData.num : 1));
-
-        let bi = this.core.fileMap.shopdata[objData.id];
-        if(!!bi){
-            let tm = bi.price * objData.num;
-            //判断折扣
-            let tm1 = bi.times.split(",");
-            let now = Date.parse(new Date())/1000;
-            if(now >= parseInt(tm1[0]) && now <= parseInt(tm1[1])){
-                tm = Math.ceil(tm * bi.discount);
-            }
-            //判断是否有足够的购买金
-            if(user.baseMgr.item.GetRes(bi.costtype) >= tm) {
-                let cbs = BonusObject.convert(bi.bonus);
-                for(let cb of cbs) {
-                    if(bi.stack == 1 || !user.getPocket().GetRes(cb.type, cb.id)) {
-                        //进行可用性分析
-                        let canExec = (!user.baseMgr.item.relation(cb, ResType.Action) || !user.baseMgr.item.isMaxRes(ResType.Action));
-                        if(canExec) {
-                            user.getBonus({type:bi.costtype, num:-tm});
-                            cb.num = cb.num * Math.min(1000, objData.num);
-                            user.getBonus(cb);
-                        }
-                    } else {
-                        return {code:ReturnCode.itemHasOne};
-                    }
-                }
-
-                return {code:ReturnCode.Success, data:user.baseMgr.item.getList()};
-            } else {
-                let rt = null;
-                switch(bi.costtype){
-                    case ResType.Diamond:
-                        rt = ReturnCode.DiamondNotEnough;
-                        break;
-        
-                    case ResType.Action:
-                        rt = ReturnCode.ActionNotEnough;
-                        break;
-                        
-                    case ResType.Coin:
-                        rt = ReturnCode.MoneyNotEnough;
-                        break;
-        
-                    default:
-                        rt = ReturnCode.Error;
-                }
-        
-                return {code: rt};
-            }
-        } else {
-            return {code:ReturnCode.itemNotExist};
-        }
-    }
-
-    /**
-     * 玩吧兑换金币
-     * @param user
-     * @param objData
-     * @returns {Promise.<Promise.<Promise|{code: number, data: {tradeNo: string}}>|{code: number, data: {tradeNo: string}}>}
-     */
-    async 1006(user, objData){
-        return this.core.control.shop.BuyItem(user, objData);
-    }
-
-    /**
      * 修改道路、场景、角色
      * @param {UserEntity} user
      * @param {Object} objData
@@ -369,8 +297,8 @@ class index extends facade.Control
                 return {code:ReturnCode.illegalData};
                 break;
         }
-            
     }
+
     /**
      * 国庆礼包统一接口
      * @param {*} user 

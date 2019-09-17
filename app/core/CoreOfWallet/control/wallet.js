@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {IndexType, EntityType} = facade.const;
+let {TableField, PurchaseStatus, IndexType, EntityType} = facade.const;
 let uuid = require('uuid');
 let fetch = require('node-fetch')
 
@@ -9,6 +9,34 @@ let fetch = require('node-fetch')
  */
 class wallet extends facade.Control
 {
+    get router() {
+        return [
+            ['/wxnotify', 'wxnotify'],
+        ];
+    }
+
+    /**
+     * 添加微信支付回调路由
+     * @param {*} params 
+     */
+    async wxnotify(params) {
+        try {
+            //验证签名、解析字段
+            let data = await this.service.wechat.verifyXml(params); 
+            if(!data) {
+                throw new Error('error sign code');
+            }
+
+            //触发 wallet.payCash 事件，执行订单确认、商品发放流程
+            this.notifyEvent('wallet.payCash', {data: data});
+
+            //给微信送回应答
+            return `<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>`;
+        } catch (e) {
+            console.log('wxnotify', e.message);
+        }
+    }
+    
     /**
      * 创建一个收款地址：address.create 不需要参数
      * 
@@ -139,6 +167,156 @@ class wallet extends facade.Control
             }
         } catch(e) {
             console.log(e);
+        }
+    }
+
+    /**
+     * 收到客户端订单申请请求，生成订单条目
+     * @param {*} user 
+     * @param {*} params
+    */
+    async prepay(user, params) {
+        let price = 0;
+        let product = null;
+        let product_desc = '';
+
+        //根据订单类型分别处理
+        switch(params.order.type) {
+            case 'crowd': { //凭证一级市场购买
+                let stockList = this.core.GetMapping(EntityType.StockBase).groupOf()
+                    .where([['cid', params.order.cid]])
+                    .orderby('height', 'desc')
+                    .records(TableField.StockBase);
+
+                let stock = stockList[0]
+                if(!stock) { 
+                    return { code: -1 };
+                }
+
+                //从配置表取对应的众筹项目
+                let item = this.core.fileMap['crowd'][params.order.id];    
+                if(!item) { 
+                    return { code: -1 };
+                }
+
+                let baseConfig = this.core.fileMap['base'];
+
+                //填充订单信息
+                if(item.stock == 0) {
+                    price = params.order.num;
+                } else {
+                    price = parseFloat(
+                        stock.price / baseConfig.kg     //atom化为KG
+                        * item.stock                    //选项包含的凭证数量
+                        * params.order.num              //选项数量
+                        * baseConfig.kgprice            //KG单价
+                    ).toFixed(2);
+                }
+
+                product = `crowd, ${stock.id}, ${item.stock*params.order.num}`;       //订单内容：一级市场凭证若干
+                product_desc = item.desc;                                             //订单描述
+        
+                break;
+            }
+
+            case 'vip': {
+                let vl = user.baseMgr.info.getAttr('vl') || 0;
+                let vst = user.baseMgr.info.getAttr('vst');
+                let vet = user.baseMgr.info.getAttr('vet');
+                let cfg = this.core.fileMap['vip'];
+
+                product = `vip,${params.order.id}`;                                         //订单内容：VIP升级
+                product_desc = cfg[params.order.id].label;                                  //订单描述
+
+                //如下是三种互斥的场景，分别计算各自价格。支付完成后，由 `RegisterResHandle('vip'...` 登记的句柄完成VIP属性的修改
+                if(!vl) { 
+                    //新开通，支付全额，新增有效期30天
+                    price = cfg[params.order.id].price;                                     //订单金额
+                } else if(params.order.id == vl) { 
+                    //同级延期，支付全额，延展有效期30天
+                    price = cfg[params.order.id].price;                                     //订单金额
+                } else if(params.order.id > vl) { 
+                    //升级，支付差额，有效期不变
+                    let days = ((vet - vst) / (24 * 3600)) | 0;
+                    price = (cfg[params.order.id].price - cfg[vl].price) / 30 * days;       //订单金额
+                }
+                break;
+            }
+        }
+
+        if(!!price && !!product) {
+            let tradeId = this.core.service.wechat.getTradeId('vallnet');
+
+            //test only
+            //let res = await this.core.service.wechat.unifiedOrder(user.openidOri, user.userip, price, product_desc, tradeId);
+            let res = {};
+            //end
+
+            res.tradeId = tradeId;
+
+            console.log('支付', `${user.domainId}`, tradeId, product, product_desc, price);
+
+            await this.core.GetMapping(EntityType.BuyLog).Create(
+                `${user.domainId}`, 
+                tradeId, 
+                product, 
+                product_desc, 
+                price,
+                1,
+            );
+
+            return { code: 0, data: res };
+        }
+
+        return { code: -1 };
+    }
+
+    /**
+     * 查询订单信息
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async OrderStatus(user, params) {
+        let userOrders = this.core.GetObject(EntityType.BuyLog, params.tradeId, IndexType.Domain);
+        if(!!userOrders) {
+            return {code: 0, data: TableField.record(userOrders.orm, TableField.BuyLog)};
+        } else {
+            return {code: -1, msg: 'order:error'};
+        }
+    }
+
+    /**
+     * 收到客户端支付完成请求, 修改订单状态
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async OrderPayResult(user, params) {
+        // const PurchaseStatus = {
+        //     create: 0,          //订单已生成
+        //     prepay: 1,          //订单已支付 - client
+        //     commit: 2,          //订单已支付 - server
+        //     cancel: 3,          //订单已取消
+        // };
+
+        let order = this.core.GetObject(EntityType.BuyLog, params.tradeId, IndexType.Domain);
+        if(!!order && order.orm.domainid == user.domainId) { //必须验证订单所有者信息
+            if(order.orm.result == PurchaseStatus.create) {
+                order.setAttr('result', PurchaseStatus.prepay);
+            }
+
+            //此处并不处理订单，要等到微信回调，触发 wxnotify 才会真正处理订单内容，或者由定时程序反向问询微信
+
+            //test only 此处为模拟测试流程，直接结算订单
+            this.core.notifyEvent('wallet.payCash', {data: {
+                return_code: 'SUCCESS',
+                out_trade_no: params.tradeId,
+                result_code: 'SUCCESS',
+            }});
+            //end
+
+            return {code: 0};
+        } else {
+            return {code: -1, msg: 'no order'};
         }
     }
 }
