@@ -31,8 +31,8 @@ class shop extends facade.Control
                     );
 
                     //test only 这里采用了测试流程：不等待第三方支付回调，而是直接确认了订单
-                    let ret = this.core.control.openapi.CommitTrade(result.getAttr('trade_no'), item.price);
-                    if(ret == ReturnCode.Success){
+                    let ret = await this.core.notifyEvent('user.orderPay', {data:{trade_no: result.getAttr('trade_no'), price: item.price}});
+                    if(ret.code == ReturnCode.Success){
                         this.core.notifyEvent('user.task', {user:pUser, data:{type:em_Condition_Type.totalPurchase, value:item.price/10}});
                         this.core.notifyEvent('user.afterPurchase', {user:pUser, amount:item.price});
 
@@ -45,7 +45,7 @@ class shop extends facade.Control
                             }
                         }
 
-                        return {code:ReturnCode.Success, data: {total:pUser.baseMgr.item.GetRes(ResType.Coin), bonus:item.bonus}};
+                        return {code:ReturnCode.Success, data: {bonus:item.bonus}};
                     } else {
                         return {code:ReturnCode.illegalData};
                     }

@@ -103,12 +103,14 @@ class manage extends facade.Control
         
     };
 
-    //用户红包发送
+    /**
+     * 用户发送红包
+     * @param {*} user 
+     * @param {*} params 
+     */
     async UserRedPackSend(user, params)  {
         let id = params.id
-        let uid = user.id
-        let act_id = params.act_id
-        let openid = params.openid
+
         let userRedPact = this.core.GetObject(EntityType.userredpack, id);     //根据上行id查找userRedPact表中记录
         if( !!userRedPact ) {
             if(userRedPact.orm.status != 0) {
@@ -116,15 +118,26 @@ class manage extends facade.Control
             }
 
             let cid = userRedPact.orm.cid;
-            let sn = stringRandom(32)
+            let sn = stringRandom(32);
 
-            userRedPact.setAttr('status', 1)
-            userRedPact.setAttr('order_sn', sn)
-            userRedPact.setAttr('cid', cid)
+            userRedPact.setAttr('status', 1);
+            userRedPact.setAttr('order_sn', sn);
+            userRedPact.setAttr('cid', cid);
 
             //发送游戏金
-            await this.core.service.gamegoldHelper.orderPay(cid, uid, sn, userRedPact.orm.gamegold, uid);
-            return {code: 0};
+            let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
+                cid,                        //game_id
+                user.account,               //user_id
+                sn,                         //order_sn订单编号
+                userRedPact.orm.gamegold,   //order_sum订单金额
+                user.account,               //指定结算的钱包账户，一般为微信用户的openid
+              ]);
+    
+            if(ret == null) {
+                return {code: -1, msg: 'pay error'};
+            } else {
+                return {code: 0, data: ret};
+            }
         } else {
             return {code: -1};
         }

@@ -3,7 +3,7 @@ let crypto = require('crypto');
 let uuid = require('uuid');
 let facade = require('gamecloud')
 let toolkit = require('gamerpc')
-let { stringify, hashInt } = require('../../../util/stringUtil');
+let { stringify } = require('../../../util/stringUtil');
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
 let {NotifyType, ReturnCode, UserStatus, PurchaseStatus, EntityType, IndexType} = facade.const
 
@@ -423,55 +423,16 @@ class openapi extends facade.Control
 
         if(!this.core.service.txApi.checkPayCallbackSign(data, "/txpay")){
             return {ret: ReturnCode.illegalData, msg:"数据非法"};
+        }
+
+        //向玩家发放商品、下行通知 tradeNo, total_fee
+        let result = await this.core.notifyEvent('user.orderPay', {data:{trade_no: data.billno, price: data.amt}});
+        if(result.code == ReturnCode.Success) {
+            //向第三方平台返回成功应答
+            return {ret: result, msg:"OK"};
         } else {
-            //向玩家发放商品、下行通知 tradeNo, total_fee
-            let result = this.CommitTrade(data.billno, data.amt);
-            if(result == ReturnCode.Success) {
-                return {ret: result, msg:"OK"};
-            } else {
-                return {ret: result, msg:"Error"};
-            }
+            return {ret: result, msg:"Error"};
         }
-    }
-    
-    /**
-     * 确认交易完成
-     * @param tradeNo			订单流水号
-     * @param total_fee		    总金额
-     * @returns {*}
-     */
-    CommitTrade(tradeNo, total_fee) {
-        let item = this.core.GetObject(EntityType.BuyLog, tradeNo, IndexType.Domain);
-        if (!item || item.orm.trade_no != tradeNo || item.orm.total_fee != total_fee || item.orm.result == PurchaseStatus.cancel) {
-            console.log('[trade not exist]');
-            return ReturnCode.illegalData;
-        }
-
-        if(item.orm.result == PurchaseStatus.commit){ //已经处理完毕的重复订单, 直接返回
-            return ReturnCode.Success;
-        }
-
-        let pUser = this.core.GetObject(EntityType.User, item.orm.domainid, IndexType.Domain);
-        if(!pUser){
-            return ReturnCode.userIllegal;
-        }
-
-        //设置首充标记,单笔金额必须大于等于60
-        if(total_fee >= 60) {
-            if(!pUser.baseMgr.info.CheckStatus(UserStatus.isFirstPurchase)){
-                pUser.baseMgr.info.SetStatus(UserStatus.isFirstPurchase);
-                pUser.baseMgr.info.UnsetStatus(UserStatus.isFirstPurchaseBonus);
-            }
-        }
-
-        //给 user 道具
-        pUser.getBonus(item.getAttr('product'));
-        item.setAttr('result', PurchaseStatus.commit);
-
-        //向客户端下行购买成功通知
-        pUser.notify({type: NotifyType.buyItem, info:{tradeNo:item.getAttr('trade_no'), product: item.getAttr('product')}});
-
-        return ReturnCode.Success;
     }
 
     /**
@@ -492,10 +453,10 @@ class openapi extends facade.Control
             return "error.auth";
         }
 
-        if(!!params.plat_user_id){
-            //向玩家发放商品、下行通知 tradeNo, total_fee, notify_time, product_name, request_count
-            let result = this.CommitTrade(params.order_id, params.amount);
-            if(result == ReturnCode.Success){
+        if(!!params.plat_user_id) {
+            //向玩家发放商品、下行通知 tradeNo, total_fee
+            let ret = await this.core.notifyEvent('user.orderPay', {data:{trade_no: params.order_id, price: params.amount}});
+            if(ret.code == ReturnCode.Success){
                 //向第三方平台返回成功应答
                 return "ok";
             }

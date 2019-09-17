@@ -40,22 +40,6 @@ class gamegoldHelper extends facade.Service
         return this;
     }
 
-    async orderPay(cid, user_id, sn, price, account) {
-        let ret = await this.remote.execute('order.pay', [
-            cid, //game_id
-            user_id, //user_id
-            sn, //order_sn订单编号
-            price, //order_sum订单金额
-            account  //指定结算的钱包账户，一般为微信用户的openid
-          ]);
-
-        if(ret == null) {
-            return {code: -1, msg: 'pay error'};
-        } else {
-            return {code: 0, data: ret};
-        }
-    }
-
     revHex(data) {
         this.assert(typeof data === 'string');
         this.assert(data.length > 0);
