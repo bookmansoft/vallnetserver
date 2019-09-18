@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {PurchaseType, ResType, ActionExecuteType, ReturnCode} = facade.const
+let {ReturnCode} = facade.const
 
 /**
  * 用户登录

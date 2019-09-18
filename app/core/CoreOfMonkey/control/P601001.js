@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {RankType, EntityType, UserStatus, ActivityType, NotifyType, ActionExecuteType, em_Condition_Type, OperEnum, ReturnCode} = facade.const
+let {RankType, ReturnCode} = facade.const
 
 /**
  * 排行榜相关的操作

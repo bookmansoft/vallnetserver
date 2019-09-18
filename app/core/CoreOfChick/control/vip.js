@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {ActionExecuteType, ReturnCode} = facade.const
+let {ReturnCode} = facade.const
 
 /**
  * VIP相关流程

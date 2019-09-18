@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
-let {PurchaseType, ResType, ActionExecuteType, ReturnCode} = facade.const
-let PotentialClientItem = facade.Util.PotentialClientItem
+let {ReturnCode} = facade.const
 
 /**
  * 时效性技能操作类型

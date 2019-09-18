@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {EntityType, UserStatus, ActivityType, NotifyType, ActionExecuteType, em_Condition_Type, OperEnum, ReturnCode} = facade.const
+let {EntityType, ReturnCode} = facade.const
 let BonusObject = facade.Util.BonusObject
 
 /**

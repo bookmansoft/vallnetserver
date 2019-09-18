@@ -19,6 +19,15 @@ async function startAfter(core) {
     console.log(`${core.options.serverType}.${core.options.serverId}'s startup start`);
 
     //do anything as you wish
+    //关卡探险随机事件触发
+    core.autoTaskMgr.addCommonMonitor(() => {
+        for(let s of Object.values(core.service.server.connected)) {
+            if(!!s.user){
+                //触发随机事件
+                s.user.getEventMgr().RandomEvent(s.user);
+            }
+        }
+    }, 60000);
 
     console.log(`${core.options.serverType}.${core.options.serverId}'s startup finished!`);
 }

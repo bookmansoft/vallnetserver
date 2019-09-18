@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {PurchaseType, ResType, ActionExecuteType, ReturnCode} = facade.const
+let {PurchaseType, ResType, ReturnCode} = facade.const
 
 /**
  * 操作类型
@@ -61,6 +61,8 @@ class P500001 extends facade.Control
      * @note 查询列表暂不考虑分页功能；目前无论是查询列表，还是升级洗点，都返回完整的法宝列表，优化阶段将改为只返回受影响的法宝列表
      */
     async Execute(user, input) {
+        let ActionExecuteType = this.core.const.ActionExecuteType;
+
         let $data = new D500001();
         
         input.pm = parseInt(input.pm);

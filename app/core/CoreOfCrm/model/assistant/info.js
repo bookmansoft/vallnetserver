@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {RecordType, ReturnCode, ResType, UserStatus, em_Condition_Type, em_Condition_Checkmode, NotifyType, ActivityType, RankType, em_EffectCalcType,em_Effect_Comm,mapOfTechCalcType} = facade.const
+let {UserStatus, NotifyType} = facade.const
 let baseMgr = facade.Assistant
 
 /**
@@ -48,67 +48,10 @@ class info extends baseMgr
     }
 
     /**
-     * 提取福利，推送变更消息
-     * @param {*} draw_count 
-     */
-    subVipCur(draw_count) {
-        this.setAttr('vcur', this.getAttr('vcur') - draw_count);
-        this.parent.orm.save(); //强制保存
-
-        //推送通知给客户端，告知VIP相关信息发生了变化
-        this.parent.notify({type: 911002, info: JSON.parse(this.getData())});
-    }
-
-    /**
      * 返回客户端需要展示的数据
      * @param {*} force 强制刷新，忽略10秒间隔的限制，这是为了避免C/S间数据误差造成误判
      */
     getData(force=false) {
-        //#region 处理 VIP 信息
-
-        // `vip_level`              vl      'VIP等级',
-        // `vip_start_time`         vst     'VIP开始时间',
-        // `vip_end_time`           vet     'VIP结束时间',
-        // `vip_last_get_time`      vlg     '最新提取福利时间',
-        // `vip_usable_count`       vcur    '可提取余额',
-
-        if(!!this.getAttr('vet')) {
-            let cfg = this.parent.core.fileMap['vip'][this.getAttr('vl')];
-            if(!!cfg && cfg.time_get_count > 0) {
-                let current_time = Date.parse(new Date())/1000;
-                let vlg = Math.max(this.getAttr('vlg'), this.getAttr('vst'));
-                if(current_time > this.getAttr('vet')) {
-                    //发放尚未提取的福利
-                    let delta_time = this.getAttr('vet') - vlg;
-                    if(delta_time > 0) {
-                        this.setAttr('vcur', this.getAttr('vcur') + delta_time * cfg.time_get_count);
-                    }
-
-                    this.setAttr('vst', current_time);
-                    this.setAttr('vlg', current_time);
-
-                    this.setAttr('vl', 0);
-                } else {
-                    let delta_time = current_time - vlg;
-                    if(force || delta_time > 10) { //控制刷新频率
-                        this.setAttr('vcur', this.getAttr('vcur') + delta_time * cfg.time_get_count);
-                        this.setAttr('vlg', current_time);
-                    }
-                }
-            } else {
-                this.setAttr('vl', 0);
-            }
-        } else {
-            this.setAttr('vl', 0);
-        }
-
-        //填充下缺省值
-        if(!this.getAttr('vcur')) {
-            this.setAttr('vcur', 0);
-        }
-
-        //#endregion
-
         return JSON.stringify(this.v);
     }
 
@@ -167,10 +110,7 @@ class info extends baseMgr
             }
 
             switch(val){
-                case UserStatus.gaming:
                 case UserStatus.online:
-                case UserStatus.slave:
-                case UserStatus.master:
                     //将新的状态登记到索引服上
                     this.parent.core.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'status', value: this.v.status}});
 
@@ -197,10 +137,7 @@ class info extends baseMgr
             }
 
             switch(val){
-                case UserStatus.gaming:
                 case UserStatus.online:
-                case UserStatus.slave:
-                case UserStatus.master:
                     //通知所有好友，状态发生了变化
                     this.parent.socialBroadcast({type: NotifyType.userStatus, info: {id:this.parent.openid, value:this.v.status}});
                     //将新的状态登记到索引服上
@@ -219,34 +156,6 @@ class info extends baseMgr
     
     GetStatus(){
         return this.v.status;
-    }
-
-    get role(){
-        return this.GetRecord(RecordType.Role);
-    }
-    set role(val){
-        this.SetRecord(RecordType.Role, parseInt(val));
-
-        //角色形象发生变化
-        this.parent.core.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'role', value:this.GetRecord(RecordType.Role)}});
-    }
-    get scene(){
-        return this.GetRecord(RecordType.Scene);
-    }
-    set scene(val){
-        this.SetRecord(RecordType.Scene, parseInt(val))
-    }
-    get road(){
-        return this.GetRecord(RecordType.Road);
-    }
-    set road(val){
-        this.SetRecord(RecordType.Road, parseInt(val))
-    }
-    get address(){
-        return this.GetRecord(RecordType.address);
-    }
-    set address(val){
-        this.SetRecord(RecordType.address,val);
     }
 
     //	设置头像

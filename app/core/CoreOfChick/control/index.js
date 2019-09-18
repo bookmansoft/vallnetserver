@@ -2,8 +2,7 @@
  * Created by liub on 2017-04-06.
  */
 let facade = require('gamecloud')
-let {RecordType, UserStatus, GuideList, EntityType, RankType, em_Effect_Comm, ActivityType, NotifyType, ActionExecuteType, em_Condition_Type, ResType, OperEnum, ReturnCode} = facade.const
-let BonusObject = facade.Util.BonusObject
+let {UserStatus, GuideList, RankType, em_Effect_Comm, NotifyType, em_Condition_Type, ResType, ReturnCode} = facade.const
 
 class index extends facade.Control
 {
@@ -42,15 +41,15 @@ class index extends facade.Control
         //对用户输入要有一个合理区间判定，还可能需要频次控制 - 游戏时长决定最高分数和金币：scoreMax = timeLen * 3, moneyMax = timeLen * 1.5
         try {
             if(objData.start == 0){
-                switch(user.getInfoMgr().GetRecord(RecordType.Role)){
+                switch(user.getInfoMgr().GetRecord('role')){
                     case 1002:
-                        this.core.notifyEvent('user.task', {user:user, data:{type:facade.const.em_Condition_Type.useRole1002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
+                        this.core.notifyEvent('user.task', {user:user, data:{type: em_Condition_Type.useRole1002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
                         break;
                 }
 
-                switch(user.getInfoMgr().GetRecord(RecordType.Scene)){
+                switch(user.getInfoMgr().GetRecord('scene')){
                     case 2002:
-                        this.core.notifyEvent('user.task', {user:user, data:{type:facade.const.em_Condition_Type.useScene2002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
+                        this.core.notifyEvent('user.task', {user:user, data:{type: em_Condition_Type.useScene2002, value:1, mode:facade.const.em_Condition_Checkmode.add}});
                         break;
                 }
 
@@ -74,10 +73,10 @@ class index extends facade.Control
                     
                     //region 任务检测
                     this.core.notifyEvent('user.task', {user:user, data:[
-                        {type:facade.const.em_Condition_Type.roundScore, value:user.score, mode:facade.const.em_Condition_Checkmode.absolute},
-                        {type:facade.const.em_Condition_Type.roundMoney, value:_money, mode:facade.const.em_Condition_Checkmode.absolute},
-                        {type:facade.const.em_Condition_Type.death, value:1, mode:facade.const.em_Condition_Checkmode.add},
-                        {type:facade.const.em_Condition_Type.totalMoney, value:_money, mode:facade.const.em_Condition_Checkmode.add},
+                        {type:em_Condition_Type.roundScore, value:user.score, mode:facade.const.em_Condition_Checkmode.absolute},
+                        {type:em_Condition_Type.roundMoney, value:_money, mode:facade.const.em_Condition_Checkmode.absolute},
+                        {type:em_Condition_Type.death, value:1, mode:facade.const.em_Condition_Checkmode.add},
+                        {type:em_Condition_Type.totalMoney, value:_money, mode:facade.const.em_Condition_Checkmode.add},
                     ]});
                     //endregion
 
@@ -147,22 +146,22 @@ class index extends facade.Control
     
             switch(bi.type) {
                 case 'role':
-                    user.getInfoMgr().SetRecord(RecordType.Role, objData.id);
+                    user.getInfoMgr().SetRecord('role', objData.id);
                     break;
                 case 'scene':
-                    user.getInfoMgr().SetRecord(RecordType.Scene, objData.id);
+                    user.getInfoMgr().SetRecord('scene', objData.id);
                     break;
                 case 'road':
-                    user.getInfoMgr().SetRecord(RecordType.Road, objData.id);
+                    user.getInfoMgr().SetRecord('road', objData.id);
                     break;
             }
 
             return {
                 code:ReturnCode.Success, 
                 data: {
-                    scene: user.getInfoMgr().GetRecord(RecordType.Scene),
-                    road: user.getInfoMgr().GetRecord(RecordType.Road),
-                    role: user.getInfoMgr().GetRecord(RecordType.Role),
+                    scene: user.getInfoMgr().GetRecord('scene'),
+                    road: user.getInfoMgr().GetRecord('road'),
+                    role: user.getInfoMgr().GetRecord('role'),
                 }
             };
         } else {

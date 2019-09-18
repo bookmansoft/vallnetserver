@@ -1,6 +1,5 @@
 let facade = require('gamecloud')
-let {PurchaseType, ResType, ActionExecuteType, ReturnCode} = facade.const
-let PotentialClientItem = facade.Util.PotentialClientItem
+let {ResType, ReturnCode} = facade.const
 
 /**
  * PVE伙伴操作类型码

@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {UserStatus, ActivityType, NotifyType, ActionExecuteType, em_Condition_Type, ResType, OperEnum, ReturnCode} = facade.const
+let {UserStatus, NotifyType, em_Condition_Type, ResType, ReturnCode} = facade.const
 
 /**
  * 社交类交互接口
@@ -59,7 +59,7 @@ class social extends facade.Control
                             $msg.info.code = ReturnCode.socialNoEnemyToAttack;
                         }
                         else{
-                            if(user.getActionMgr().Execute(ActionExecuteType.AE_SlaveCatch, 1, false)) {//可以继续抓捕
+                            if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.AE_SlaveCatch, 1, false)) {//可以继续抓捕
                                 user.baseMgr.vip.registerSlaveBattle(fri);
                                 $msg.info.gid = fri.hisGateNo;
                             }
@@ -91,7 +91,7 @@ class social extends facade.Control
                             $msg.info.code = ReturnCode.socialNoEnemyToAttack;
                         }
                         else{
-                            if(user.getActionMgr().Execute(ActionExecuteType.AE_SlaveEscape, 1, false)) {//可以起义
+                            if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.AE_SlaveEscape, 1, false)) {//可以起义
                                 user.baseMgr.vip.registerSlaveBattle(fri);
                                 $msg.info.gid = fri.hisGateNo;
                             }
@@ -119,7 +119,7 @@ class social extends facade.Control
                 $msg.info.dst = user.openid;
                 [$msg.info.code, $msg.info.time] = user.baseMgr.slave.flattery(objData.openid);
                 if($msg.info.code == ReturnCode.Success){
-                    if(user.getActionMgr().Execute(ActionExecuteType.slaveFlattery, 1, true)) {
+                    if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.slaveFlattery, 1, true)) {
                         //向好友发送消息
                         user.socialNotify($msg, objData.openid);
                     }
@@ -136,7 +136,7 @@ class social extends facade.Control
             {
                 $msg.info.src = user.openid;
                 $msg.info.dst = objData.openid;
-                if(user.getActionMgr().Execute(ActionExecuteType.slaveCommend, 1, true)) {
+                if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.slaveCommend, 1, true)) {
                     //向好友发送消息
                     user.socialNotify($msg, objData.openid);
                     let fri = user.getTxFriendMgr().getFriend($msg.info.dst);
@@ -168,7 +168,7 @@ class social extends facade.Control
             }
 
             case NotifyType.socialSendAction: //赠送体力
-                if(user.getActionMgr().Execute(ActionExecuteType.AE_SocialOfAction, 1, true)){//可以赠送体力
+                if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.AE_SocialOfAction, 1, true)){//可以赠送体力
                     user.socialNotify($msg, objData.openid);
                     return {code: ReturnCode.Success, data: $msg.info};
                 }
@@ -203,7 +203,7 @@ class social extends facade.Control
                     $msg.info.dst = user.openid;
                     $msg.info.code = user.baseMgr.slave.avenge(objData.openid);
                     if($msg.info.code == ReturnCode.Success){
-                        if(user.getActionMgr().Execute(ActionExecuteType.slaveAvenge, 1, true)) {
+                        if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.slaveAvenge, 1, true)) {
                             //向好友发送消息
                             user.socialNotify($msg, objData.openid);
 
@@ -226,7 +226,7 @@ class social extends facade.Control
                     //检测是否能够实施此动作，目标用户是否是自己的奴隶
                     $msg.info.code = user.baseMgr.slave.food(objData.openid);
                     if($msg.info.code == ReturnCode.Success){
-                        if(user.getActionMgr().Execute(ActionExecuteType.slaveFood, 1, true)) {
+                        if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.slaveFood, 1, true)) {
                             //向好友发送消息
                             user.socialNotify($msg, objData.openid);
 
@@ -250,7 +250,7 @@ class social extends facade.Control
                     $msg.info.dst = objData.openid;
                     [$msg.info.code, $msg.info.time] = user.baseMgr.slave.lash(objData.openid);
                     if($msg.info.code == ReturnCode.Success){
-                        if(user.getActionMgr().Execute(ActionExecuteType.slaveLash, 1, true)) {
+                        if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.slaveLash, 1, true)) {
                             //todo：代币数量为5~20随机,每次几率增加10%,最高30%
                             let randomNum = Math.random();
                             let num = 0;
@@ -326,11 +326,11 @@ class social extends facade.Control
         }
 
         switch(parseInt(objData.type)){
-            case ActionExecuteType.AE_SocialOfFail:
-                if(user.getActionMgr().Execute(ActionExecuteType.AE_SocialOfFail, 1, true)){
+            case this.core.const.ActionExecuteType.AE_SocialOfFail:
+                if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.AE_SocialOfFail, 1, true)){
                     this.core.notifyEvent('user.task', {user:user, data:[
-                        {type:facade.const.em_Condition_Type.shareOfFail, value:1},
-                        {type:facade.const.em_Condition_Type.totalShare, value:1}
+                        {type:em_Condition_Type.shareOfFail, value:1},
+                        {type:em_Condition_Type.totalShare, value:1}
                     ]})
 
                     ret.code = ReturnCode.Success;
@@ -342,11 +342,11 @@ class social extends facade.Control
                 }
                 break;
 
-            case ActionExecuteType.AE_SocialOfAction:
-                if(user.getActionMgr().Execute(ActionExecuteType.AE_SocialOfAction, 1, true)){
+            case this.core.const.ActionExecuteType.AE_SocialOfAction:
+                if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.AE_SocialOfAction, 1, true)){
                     this.core.notifyEvent('user.task', {user:user, data:[
-                        {type:facade.const.em_Condition_Type.shareOfLackAction, value:1},
-                        {type:facade.const.em_Condition_Type.totalShare, value:1}
+                        {type:em_Condition_Type.shareOfLackAction, value:1},
+                        {type:em_Condition_Type.totalShare, value:1}
                     ]});
 
                     ret.code = ReturnCode.Success;
@@ -358,9 +358,9 @@ class social extends facade.Control
                 }
                 break;
 
-            case ActionExecuteType.AE_SocialOfSuper:
-                if(user.getActionMgr().Execute(ActionExecuteType.AE_SocialOfSuper, 1, true)){
-                    this.core.notifyEvent('user.task', {user:user, data:{type:facade.const.em_Condition_Type.totalShare, value:1}});
+            case this.core.const.ActionExecuteType.AE_SocialOfSuper:
+                if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.AE_SocialOfSuper, 1, true)){
+                    this.core.notifyEvent('user.task', {user:user, data:{type:em_Condition_Type.totalShare, value:1}});
 
                     ret.code = ReturnCode.Success;
                     if(!!user.baseMgr.vip.superBonus){

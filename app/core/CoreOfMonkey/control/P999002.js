@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {UserStatus, PurchaseType, ResType, ActionExecuteType, ReturnCode,GuideList} = facade.const
+let {UserStatus, PurchaseType, ResType, ReturnCode,GuideList} = facade.const
 
 /**
  * Class P999002 获取用户常用状态，包括金币、元宝、魂石、状态

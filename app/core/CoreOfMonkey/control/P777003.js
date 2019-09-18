@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {EntityType, AllySetting, em_Ally_Oper, InviteType, PurchaseType, ResType, ActionExecuteType, ReturnCode} = facade.const
+let {EntityType, em_Ally_Oper, ReturnCode} = facade.const
 
 /**
  * 联盟管理

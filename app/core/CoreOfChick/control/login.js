@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {em_Effect_Comm, UserStatus, NotifyType, OperEnum, ReturnCode, ActionExecuteType} = facade.const
+let {NotifyType, ReturnCode} = facade.const
 
 class login extends facade.Control
 {

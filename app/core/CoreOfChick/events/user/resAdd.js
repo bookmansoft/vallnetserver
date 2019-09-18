@@ -16,13 +16,6 @@ function handle(event){ //用户资源发生变化
             this.service.activity.addScore(event.user.id, ActivityType.Money, event.data.value);
             break;
 
-        case ResType.Gold:
-            //任务检测
-            let coin = LargeNumberCalculator.Load(event.user.getPocket().GetRes(ResType.Gold));
-            //只统计指数
-            this.notifyEvent('user.task', {user:event.user, data:{type:em_Condition_Type.totalMoney, value:coin.power, mode:em_Condition_Checkmode.absolute}});
-            break;
-
         case ResType.Diamond:
             if(event.data.value < 0){ //消费了钻石
                 //任务检测
@@ -43,12 +36,6 @@ function handle(event){ //用户资源发生变化
                 this.notifyEvent('user.task', {user:event.user, data:{type:em_Condition_Type.useAction, value:-event.data.value}});
                 //累计分段积分
                 this.service.activity.addScore(event.user.id, ActivityType.Action, -event.data.value);
-            }
-            break;
-
-        case ResType.Stone:
-            if(event.data.value > 0){
-                this.notifyEvent('user.task', {user:event.user, data:{type:em_Condition_Type.getStone, value:event.data.value}});
             }
             break;
 

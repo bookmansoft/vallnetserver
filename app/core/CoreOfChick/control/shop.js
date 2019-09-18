@@ -84,7 +84,7 @@ class shop extends facade.Control
                         let canExec = (!user.baseMgr.item.relation(cb, ResType.Action) || !user.baseMgr.item.isMaxRes(ResType.Action));
                         if(canExec) {
                             user.getBonus({type:bi.costtype, num:-tm});
-                            cb.num = cb.num * Math.min(1000, objData.num);
+                            cb.num = cb.num * objData.num;
                             user.getBonus(cb);
                         }
                     } else {

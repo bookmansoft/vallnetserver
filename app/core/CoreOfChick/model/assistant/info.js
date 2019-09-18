@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {RecordType, ReturnCode, ResType, UserStatus, em_Condition_Type, em_Condition_Checkmode, NotifyType, ActivityType, RankType, em_EffectCalcType,em_Effect_Comm,mapOfTechCalcType} = facade.const
+let {UserStatus, NotifyType} = facade.const
 let baseMgr = facade.Assistant
 
 /**
@@ -45,18 +45,6 @@ class info extends baseMgr
      */
     getAttr(key) {
         return this.v[key];
-    }
-
-    /**
-     * 提取福利，推送变更消息
-     * @param {*} draw_count 
-     */
-    subVipCur(draw_count) {
-        this.setAttr('vcur', this.getAttr('vcur') - draw_count);
-        this.parent.orm.save(); //强制保存
-
-        //推送通知给客户端，告知VIP相关信息发生了变化
-        this.parent.notify({type: 911002, info: JSON.parse(this.getData())});
     }
 
     /**
@@ -222,31 +210,31 @@ class info extends baseMgr
     }
 
     get role(){
-        return this.GetRecord(RecordType.Role);
+        return this.GetRecord('role');
     }
     set role(val){
-        this.SetRecord(RecordType.Role, parseInt(val));
+        this.SetRecord('role', parseInt(val));
 
         //角色形象发生变化
-        this.parent.core.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'role', value:this.GetRecord(RecordType.Role)}});
+        this.parent.core.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'role', value:this.GetRecord('role')}});
     }
     get scene(){
-        return this.GetRecord(RecordType.Scene);
+        return this.GetRecord('scene');
     }
     set scene(val){
-        this.SetRecord(RecordType.Scene, parseInt(val))
+        this.SetRecord('scene', parseInt(val))
     }
     get road(){
-        return this.GetRecord(RecordType.Road);
+        return this.GetRecord('road');
     }
     set road(val){
-        this.SetRecord(RecordType.Road, parseInt(val))
+        this.SetRecord('road', parseInt(val))
     }
     get address(){
-        return this.GetRecord(RecordType.address);
+        return this.GetRecord('address');
     }
     set address(val){
-        this.SetRecord(RecordType.address,val);
+        this.SetRecord('address', val);
     }
 
     //	设置头像

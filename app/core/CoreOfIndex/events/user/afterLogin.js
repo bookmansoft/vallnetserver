@@ -2,7 +2,7 @@
  * Created by liub on 2017-05-26.
  */
 let facade = require('gamecloud')
-let {NotifyType, ActionExecuteType, UserStatus,em_Condition_Type} = facade.const
+let {NotifyType} = facade.const
 
 /**
  * 用户登录后，用来执行一些后续操作，例如获取腾讯会员信息、蓝钻特权等

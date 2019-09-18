@@ -2,26 +2,33 @@ let facade = require('gamecloud')
 let {em_Effect_Comm, ResType, NotifyType,ActivityType, ReturnCode, GetResType} = facade.const
 
 /**
- * 判断字符串是否整数
- * @param {*} s 
- */
-function isNumber( s ){
-    var regu = "^[0-9]+$";
-    var re = new RegExp(regu);
-    return re.test(s);
-}
-
-/**
  * 背包管理
  */
 class item extends facade.Assistants.Pocket
 {
     /**
+     * 查询并返回角色对象，对部分数据做兼容性处理
+     * @param {*} cur 
+     */
+    getRole(cur) {
+        let role = this.parent.core.fileMap.roledata[cur];
+        if(typeof role.unlockskill1 == 'string') {
+            role.unlockskill1 = role.unlockskill1.split(',');
+        }
+        if(typeof role.unlockskill2 == 'string') {
+            role.unlockskill2 = role.unlockskill2.split(',');
+        }
+        if(typeof role.unlockskill3 == 'string') {
+            role.unlockskill3 = role.unlockskill3.split(',');
+        }
+        return role;
+    }
+
+    /**
      * 设置角色技能
      */
     setSkill(cur) {
-        //todo:判断技能
-        let role = this.parent.core.fileMap.roledata[cur];
+        let role = this.getRole(cur);
         if(!this.v[cur].sk && this.v[cur].sk != 0){
             this.v[cur].sk = 0;
         }
@@ -97,7 +104,8 @@ class item extends facade.Assistants.Pocket
                     this.v[cur].lv = 1;
                 }
                 this.setSkill(cur);
-                let role = this.parent.core.fileMap.roledata[cur];
+
+                let role = this.getRole(cur);
                                 
                 for(let i = 0; i < role.unlockskill1.length; i++){
                 
@@ -191,7 +199,7 @@ class item extends facade.Assistants.Pocket
      * @param price 技能升级价格
      */
     upgradeSkill(id,skid,price){
-        let role = this.parent.core.fileMap.roledata[id];
+        let role = this.getRole(id);
         if(!role || (skid != 1 && skid != 2 && skid != 3)){
             return {code: ReturnCode.illegalData};
         }
@@ -312,7 +320,7 @@ class item extends facade.Assistants.Pocket
      * @param id
      */
     upgradeRole(id){
-        let role = this.parent.core.fileMap.roledata[id];     
+        let role = this.getRole(id);
         if(!role){
             return {code: ReturnCode.illegalData};
         }

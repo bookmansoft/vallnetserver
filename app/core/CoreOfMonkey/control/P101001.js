@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {em_task_status, em_Condition_Checkmode, em_Condition_Type, ResType, ActionExecuteType, ReturnCode} = facade.const
+let {em_task_status, ReturnCode} = facade.const
 
 /**
  * 任务系统报文：领取奖励 -1表示任务不存在，-2表示任务条件不满足，其余表示奖励字符串

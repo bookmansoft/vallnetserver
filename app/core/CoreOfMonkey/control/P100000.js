@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {ResType, ActionExecuteType, ReturnCode, OperEnum ,GuideList} = facade.const
+let {ResType, ReturnCode, GuideList} = facade.const
 let OperationInfo = facade.Util.OperationInfo
 
 /**
@@ -69,11 +69,11 @@ class P100000 extends facade.Control {
 
         $data.added =  $op.money;
 
-        if(input.oper == OperEnum.Require){
+        if(input.oper == this.core.const.OperEnum.Require){
             //检测新手引导
             user.baseMgr.vip.checkGuide();
         }
-        if(input.oper == OperEnum.GuideFinish){
+        if(input.oper == this.core.const.OperEnum.GuideFinish){
             user.baseMgr.vip.GuideNo = input.gid;
         } 
         $data.newGuide = GuideList[user.baseMgr.vip.GuideNo].next;        

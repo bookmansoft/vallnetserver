@@ -5,36 +5,38 @@
  */
 
 /**
- * 玩家特性字段，例如最高分数、默认角色等，统一由 baseMgr.info 管理
+ *  枚举定义文件，使用范例：
+ *  let {ReturnCode} = require('./comm');
+ *  console.log(ReturnCode.Error);
  */
-const RecordType = {
-    Role:'role',            //默认角色编号
-    Group:'group',          //默认使用的战斗卡组
-    Scene:'scene',          //默认场景
-    Road:'road',            //默认道路
-    address:'address'       //链上地址
-}
 
 /**
- * 资源类型
+ * 资源类型 type, 约定 200 以内的为独立索引，以上的为复合索引(使用时必须和分类 id 联合使用，其最终索引值为 type+id)
  */
 const ResType = {
     /**
      * 元宝   'D'
      */
     Diamond: 1,
+    "D" : 1,
     /**
      * 金币   'M'
      */
-    Gold: 2,
+    Coin: 2,
+    "M" : 2,
     /**
-     * 魂石
+     * 大数型金币 'L'
      */
-    Stone: 3,
+    Gold: 3,
+    "L" : 3,
     /**
      * 天赋点，也就是圣光。圣光可以在商城直接购买
      */
     Potential : 4,
+    /**
+     * 魂石
+     */
+    Stone: 5,
     /**
      * 荣誉值，用于工会管理
      */
@@ -51,6 +53,7 @@ const ResType = {
      * 体力值  'A'
      */
     Action : 9,
+    "A": 9,
     /**
      * 圣光分配
      */
@@ -75,44 +78,59 @@ const ResType = {
      * 力量源泉
      */
     OriOfPower : 19,
-    VIP: 20 ,           //'V' VIP特权（单位：天）
     /**
-     * 'coin' 数值型虚拟币，和Gold代表的大数型虚拟币不同
+     * 'V' VIP特权（单位：天）
      */
-    Coin: 21,
+    VIP: 20,
+    "V": 20,
     /**
      * 英魂 转生后由魂石转化而来
      */
     StoneHero : 103,
-    
-    PetChipHead : 1000,     //"C" 用于升星的魔宠碎片
-    PetHead : 1200,         //魔宠
-
-    ActionHead : 1994,      //时效类技能
-
+    /**
+     * "C" 用于升星的魔宠碎片
+     */
+    PetChipHead : 1000,     
+    "C": 1000,
+    /**
+     * 魔宠
+     */
+    PetHead : 1200,
+    /**
+     * 时效类技能
+     */
+    ActionHead : 1994,
     FellowChipHead : 3000,  //PVE伙伴碎片
     FellowHead : 3100,      //PVE伙伴
-
-    Road: 10000,    //"road"道路
-    Role: 20000,    //"role" 角色
-    Scene:30000,    //"scene" 场景
-    Item: 40000,    //"I" 道具
-    Box: 50000,     //"box" 礼包
+    /**
+     * "I" 道具
+     */
+    Item: 40000,
+    "I": 40000,
+    /**
+     * "box" 礼包
+     */
+    Box: 50000,
+    "box": 50000,
 }
-
 /**
- * 资源类型的字符串形式
+ * 资源类型降序数组
  */
-const ResTypeStr = {
-    "D" : ResType.Diamond,
-    "M" : ResType.Gold,         //大数型虚拟币
-    "coin": ResType.Coin,       //数值型虚拟币
-    "road": ResType.Road,
-    "scene": ResType.Scene,
-    "I": ResType.Item,
-    "box": ResType.Box,
-    "A": ResType.Action,
-    "V": ResType.VIP,
+const ResTypeGroup = Object.keys(ResType).sort((a,b) => ResType[b] - ResType[a]);
+/**
+ * 从复合索引推导出资源类型(200以内视为独立索引)
+ * @param {*} val 
+ */
+function GetResType(val) {
+    if(val < 200) {
+        return val;
+    }
+
+    for(let tp of ResTypeGroup) {
+        if(val > ResType[tp]) {
+            return ResType[tp];
+        };
+    }
 }
 
 /**
@@ -123,13 +141,6 @@ const ActionExecuteType = {
     AE_SocialOfFail: 2,       //每日可以进行失败分享的次数
     AE_SocialOfAction: 3,     //每日可以赠送体力分享的次数
     AE_SocialOfSuper: 4,      //每日可以进行胜利超越分享的次数
-    AE_SlaveCatch:5,          //每日可以进行抓捕奴隶的次数
-    AE_SlaveEscape:6,         //每日可以进行起义的次数
-    slaveFood: 7,             //奴隶：给奴隶加餐
-    slaveAvenge: 8,           //奴隶：报复
-    slaveFlattery: 9,         //奴隶：谄媚
-    slaveCommend: 10,         //奴隶：表扬
-    slaveLash: 12,            //奴隶：鞭挞 - 随机奖励
     vipDaily: 21,             //VIP：领取每日奖励
     AE_Revival:22,            //赠送重生次数
     AE_Chip:101,              //免费抽取三界符
@@ -137,17 +148,6 @@ const ActionExecuteType = {
 };
 
 const MAX_INT = Math.pow(2, 53) -1;
-
-/**
- * 索引/反向索引的类型
- */
-const IndexType = {
-    Primary: 0,         //主键
-    Foreign:1,          //外键
-    Domain:2,           //复合键，可能由多个字段组合而成
-    Name:3,             //Name-ID键值对
-    Token:4,            //令牌
-}
 
 /**
  * 玩家状态
@@ -182,14 +182,6 @@ const UserStatus = {
      */
     gaming: 1<<7,
     /**
-     * 成为奴隶
-     */
-    slave: 1<<8,
-    /**
-     * 成为奴隶主
-     */
-    master: 1<<9,
-    /**
      * 是否执行了首次消费
      */
     isFirstPurchase: 1<<10,
@@ -210,10 +202,6 @@ const UserStatus = {
      */
     isGetFestivalGift: 1<<14,
     /**
-     * 是否解锁火影场景
-     */
-    unlockedNinjaScene: 1<<15,
-    /**
      * 是否已领取国庆活动礼包
      */
     isGetNinjaGift: 1<<16,
@@ -226,38 +214,6 @@ const UserStatus = {
      */
     task: 1<<18,
 };
-
-/**
- * 排行榜类型
- */
-const RankType = {
-    total: 0,   //总榜
-    daily: 1,   //日榜
-    friend:2,   //好友榜
-    battle:3,   //PVP榜
-};
-
-/**
- * 天赋的类型
- */
-const PotentialType = {
-    /**
-     * 法宝
-     */
-    Equ: 1,
-    /**
-     * 图腾
-     */
-    Totem: 2,
-    /**
-     * 宠物（魔宠）
-     */
-    Pet: 3,
-    /**
-     * PVE伙伴
-     */
-    CPet: 4,
-}
 
 /**
  * 时效性技能的状态
@@ -378,18 +334,6 @@ const ReturnCode = {
     Hero_NotEnough_AdvChip:3003,        //英雄进阶：缺少专有升阶碎片
 };
 
-/**
- * 联盟个性化设定
- */
-const AllySetting = {
-    AS_None: 0,
-    AS_Auto: 1,		        //自动收人
-    AS_UnionDeny: 1 << 1,	//拒绝友盟申请
-    AS_Battle:  1 << 2,	    //最低等级要求
-    AS_SaveUser: 1 << 3,	//存储成员和盟主信息
-    AS_SaveInfo: 1 << 4,	//存储联盟基础信息
-}
-
 const ReturnCodeName = {
     2001: '活动已结束',
     0:'操作成功',
@@ -483,14 +427,6 @@ const ReturnCodeName = {
 };
 
 /**
- * 通讯模式
- */
-const CommMode = {
-    ws: "webSocket",    //Web Socket
-    http:"http",        //HTTP短连模式
-}
-
-/**
  * 好友类型
  * @type {{stranger: number, social: number, oneWay: number, twoWay: number, enemy: number}}
  */
@@ -559,16 +495,6 @@ const NotifyType = {
     roleShare:7001,                 //角色分享
     sceneShare:7002,                //场景分享
     test: 9999,                     //test
-};
-
-/**
- * 订单状态
- * @type {{create: number, cancel: number, commit: number}}
- */
-const PurchaseStatus = {
-    create: 0,          //订单已生成
-    cancel: 1,          //订单已取消
-    commit: 2,          //订单已确认支付
 };
 
 /**
@@ -1145,84 +1071,11 @@ const OperEnum = {
      * 立即终止挂机
      */
     InteruptHangup: 11,
-
     /**
      * 推进新手引导
      */
     GuideFinish: 12,
 };
-
-
-
-/**
- * 直销类型定义
- */
-const PurchaseType = {
-    /**
-     * 分配圣光
-     */
-    totemAssign: 1,
-    /**
-     * 挂机
-     */
-    hangUp: 2,
-    /**
-     * 结束挂机
-     */
-    EndHangup: 3,
-    /**
-     * 消除主动技能的CD
-     */
-    clearCd: 4,
-    /**
-     * 强制完成任务
-     */
-    finishTask: 5,
-    /**
-     * 抽卡
-     */
-    RandomCard: 6,
-}
-
-const AllyRelationEnum = {
-    Ro_Union: 1,     //联盟关系
-    Ro_Normal: 2,    //普通关系
-    Ro_Ally: 3,      //同一个盟
-    Ro_Enemy: 4,     //敌盟
-    Ro_ReqUnion: 5,
-    Ro_BeReqUnion: 6,
-    Ro_BeReqMember: 7,
-    Ro_ReqMember: 8,
-}
-
-/**
- * 联盟新闻类型
- */
-const AllyNewsType = {
-    BeUnion: 1,
-    Donate: 2,
-    LeaderChange: 3,
-    AllyUpgrade: 4,
-    MemberEnter: 5,
-    MemberLeave: 6,
-    MemberKick: 7,
-    AllyCreate: 8,
-    BeRemoveUnion: 9,
-    DenyUnion: 10,
-    BeRemoveEnemy: 11,
-}
-
-/**
- * 联盟权限
- */
-const AllyPower = {
-    ap_Terminate: 1, //解散联盟
-    ap_Join: 2,      //加人
-    ap_Kick: 3,      //踢人
-    ap_Union: 4,     //结盟 解盟
-    ap_Enemy: 5,     //敌盟 解除敌盟
-    ap_Setting: 6,   //修改联盟设定
-}
 
 /**
  * 副本探险状态
@@ -1242,44 +1095,6 @@ const StayStatus = {
      * 挂机状态
      */
     hangup: "hangup",
-}
-
-/*
- * 用户事件枚举
- */
-const EventEnum = {
-    Enemy: 1,//遭遇其他玩家
-    BossAppear: 2,//遭遇宝箱怪
-    BossAttack: 102,//攻击宝箱怪(金币类型)，该事件由“BossAppear”点击后转化而来
-    BossStoneAttack: 202,//攻击宝箱怪（魂石类型），该事件由“BossAppear”点击后转化而来
-    Rabbit: 3,//小飞兔
-}
-
-/**
- * 副本随机事件配置信息
- * Class EventConfig
- * @package App\Logic\UserEvent
- */
-const EventConfig = {
-    eventList: null,
-
-    /**
-     * 获取事件配置表
-     * type: 事件类型 expired 持续时间 为0表示永久有效
-     *
-     * @return array
-     */
-    getEvents: () => {
-        if(EventConfig.eventList == null){
-            EventConfig.eventList = {};
-            EventConfig.eventList[EventEnum.BossAppear] = {'type': EventEnum.BossAppear, 'expired': 30, 'action': 0, 'random': true};
-            EventConfig.eventList[EventEnum.BossAttack] = {'type': EventEnum.BossAttack, 'expired': 30, 'action': 0, 'random': false};
-            EventConfig.eventList[EventEnum.BossStoneAttack] = {'type': EventEnum.BossStoneAttack, 'expired': 30, 'action': 0, 'random': false};
-            EventConfig.eventList[EventEnum.Enemy] = {'type': EventEnum.Enemy, 'expired': 30, 'action': 0, 'random': true};
-            EventConfig.eventList[EventEnum.Rabbit] = {'type': EventEnum.Rabbit, 'expired': 0, 'action': 3, 'random': true};
-        }
-        return EventConfig.eventList;
-    }
 }
 
 /*
@@ -1305,39 +1120,6 @@ const TollgateConstant = {
 }
 
 /**
- * 用户VIP等级枚举
- */
-const em_UserVipLevel = {
-    Normal: 1,
-    Silver: 2,
-    Gold: 3,
-    Diamond1: 4,
-    Diamond2: 5,
-    Diamond3: 6,
-    Diamond5: 7,
-    Crown1: 8,
-    Crown2: 9,
-    Crown3: 10,
-    Crown5: 11,
-}
-
-/**
- * VIP等级和用户经验对照表，经验值大于指定阈值表示达到该等级
- */
-let UserVipLevelSetting = {};
-UserVipLevelSetting[em_UserVipLevel.Normal] = 0;
-UserVipLevelSetting[em_UserVipLevel.Silver] = 400;
-UserVipLevelSetting[em_UserVipLevel.Gold] = 900;
-UserVipLevelSetting[em_UserVipLevel.Diamond1] = 1900;
-UserVipLevelSetting[em_UserVipLevel.Diamond2] = 2900;
-UserVipLevelSetting[em_UserVipLevel.Diamond3] = 4900;
-UserVipLevelSetting[em_UserVipLevel.Diamond5] = 6900;
-UserVipLevelSetting[em_UserVipLevel.Crown1] = 9900;
-UserVipLevelSetting[em_UserVipLevel.Crown2] = 19900;
-UserVipLevelSetting[em_UserVipLevel.Crown3] = 29900;
-UserVipLevelSetting[em_UserVipLevel.Crown5] = 49900;
-
-/**
  * 技能类型
  */
 const ActionType = {
@@ -1349,29 +1131,6 @@ const ActionType = {
      * 按照冷却时间使用
      */
     coolDown: 2,
-}
-
-/*
- * 用户权限枚举
- */
-const UserAuthorityNum = {
-    IsVip: 1 << 0,           //是否VIP
-    VipAward1: 1 << 1,       //VIP第一个奖励是否领取
-    VipAward2: 1 << 2,       //VIP第二个奖励是否领取
-};
-
-/**
- * 邀请类别
- */
-const InviteType = {
-    /**
-     * 入盟申请
-     */
-    AllyReq: 1,
-    /**
-     * 加盟邀请
-     */
-    AllyInvite: 2,
 }
 
 const ShopTypeEnum = {
@@ -1392,133 +1151,6 @@ const ShopTypeEnum = {
      */
     secret:  1 << 3,
 };
-
-const em_Ally_Oper = {
-    /**
-     * 查询排名
-     */
-    query: 1,
-    /**
-     * 查询用户资料
-     */
-    find: 2,
-    /**
-     * 创建联盟
-     */
-    create: 3,
-    /**
-     * 删除联盟
-     */
-    del: 5,
-    /**
-     * 申请入盟
-     */
-    req: 6,
-    /**
-     * 退盟
-     */
-    quit: 7,
-    /**
-     * 获取入盟申请列表
-     */
-    reqList: 8,
-    /**
-     * 通过入盟申请
-     */
-    reqAllow: 9,
-    /**
-     * 拒绝入盟申请
-     */
-    reqDeny: 14,
-    /**
-     * 交互邀请列表
-     */
-    inviteList: 10,
-    /**
-     * 同意加盟
-     */
-    inviteAllow: 11,
-    /**
-     * 取消或拒绝
-     */
-    inviteCancel: 12,
-    /**
-     * 邀请加盟
-     */
-    invite: 13,
-}
-
-/**
- * 系统实体对象类型，例如用户、联盟、邮件等
- */
-const EntityType = {
-    Ally:0,         //联盟
-    User:1,         //用户
-    AllyNews:2,     //联盟新闻
-    Mail:3,         //邮件
-    BuyLog:4,       //消费流水记录
-}
-
-/**
- * 中间件参数对象
- */
-const MiddlewareParam = {
-    /**
-     * 通讯组件
-     */
-    socket:null, 
-    /**
-     * 消息
-     */
-    msg:{}, 
-    /**
-     * 回调函数
-     */
-    fn: null, 
-    /**
-     * 中继标志：true 按顺序传递信息流到下一个中间件 false 终止传递
-     */
-    recy:true, 
-    /**
-     * 核心对象
-     */
-    facade: null
-};
-
-/**
- * 技能类型/卡牌类型
- */
-const SkillType = {     // 技能类型枚举
-    Counter: 1,         // 反击，格挡后几率触发反击原攻击者
-    Attack: 2,          // 普通攻击
-    Recover: 3,         // 恢复，恢复友军生命
-    Encourage: 4,       // 鼓舞，增加友军士气
-    ConfuseAttack: 7,   // 混乱状态下发动的攻击
-    AddDeBuff: 8,       // 附加负面状态
-    JianCi: 13,         // 尖刺，反弹30%伤害
-    Blood: 15,          // 血爆，死亡时对全体敌人造成伤害
-    Alive: 16,          // 重生
-    AddBuff: 17,        // 增加正面状态
-    Illusion: 18,       // 幻象 在随机空位生成自身复制品
-    XueZhou: 19,        // 血咒 秒杀被攻击者
-    BloodRecover: 20,   // 嗜血
-    GodBless: 21,       // 祈福
-    Summon:24,          // 召唤
-    XianJi: 34,         // 献祭
-    QuSan: 35,          // 驱散
-    LiZhi: 37,          // 励志
-    DongCha: 38,        // 洞察
-    BeDead:42,          //求生
-    IncreaseAura:44,    //提供全体光环
-    Unity:49,           //团结 号召所有队友帮助分担伤害
-    IncreaseLocal:50,   //提供本身光环
-    Enchant:52,         //魅惑
-    Attach:53,          //追加装备
-    Study:54,           //偷师
-    Insight:55,         //顿悟
-};
-
-const cid = 'd7e702f0-cedf-11e8-9a23-ad6cb6e286a0';
 
 /**
  * 卡牌稀有度
@@ -1550,45 +1182,17 @@ const RarityType = {
  * 活动的类型枚举，注意值要连续设置（base 0）
  */
 const ActivityType = {
-    /**
-     * 鸡小德
-     */
-    // Action: 0,       //累计花费的体力
-    // Money: 1,        //累计花费的金币
-    // Diamond:2,          //累计花费的钻石
-    // Gate:3,             //累计通关次数
-    // Revive:4,           //累计复活次数
-    // Slave:5,            //累计抓取奴隶
-    /**
-     * 猴子
-     */
     Money:0,          //累计花费的金币
     Diamond: 1,        //累计花费的钻石    
 };
 ActivityType.len = Object.keys(ActivityType).length; //枚举的数量
-
 /**
  * 不同类型活动的分数转化率
  */
 const ActivityScoreRate = {
     0:10,
     1:1,    
-    // 2:1,
-    // 3:1,
-    // 4:1,
-    // 5:1,
 }
-
-/**
- * 活动的状态枚举
- */
-const DailyActivityStatus = {
-    Idle: 'Idle',       //空闲状态
-    Active: 'Active',   //活跃状态
-    Bonus: 'Bonus',     //奖励展示状态
-    Ready: 'Ready',     //预热
-    End:'End',          //活动结束
-};
 
 /**
  * 活动的状态枚举
@@ -1601,99 +1205,23 @@ const ActivityStatus = {
 
 const ActivityRankMax = 100000; //最大可获奖的排名
 
-/**
- * 服务器运行环境参数对象，此对象数据结构和 game.config.js 内部构造保持一致，多出的参数 serverType 和 serverId 为运行时自动注入
- */
-const env = {
-    serverType:"Monkey",      //服务器类型
-    serverId:1,               //服务器编号
-    debug: true,              //本地测试模式
-    UrlHead: "http",          //协议选择: http/https
-    MaxConnection: 3000,      //最大并发连接
-    MaxRegister: 12000,       //单服最大注册用户数
-    PoolMax: 500,             //最大数据库并发连接
-    game_secret: "",          //加密密钥
-    game_name: "",         
-    clientPath: "./client",
-    adminPath: "./admin",
-    redis: {
-        host: "127.0.0.1",
-        port: 6379,
-        opts: {}
-    },
-    mysql: {
-        logging : false,
-        db: "",
-        sa: "",
-        pwd: "",
-        host: "127.0.0.1",
-        port: 3306
-    },
-    webserver: {
-        mapping: "127.0.0.1",
-        host: "127.0.0.1",
-        port: 9901
-    },
-    auth: {
-        openid: "555",
-        openkey: "555",
-        domain: "tx.IOS",
-        tokenExp: 600,
-        sessionExp: 7200,
-        pf: "wanba_ts"
-    },
-    admin:{
-        role:{
-            default: "chick.server",
-            system: "chick.server"
-        },
-        game_secret: ""
-    },
-    tx: {
-        appid: "",
-        appkey: "",
-        pay_appid: "",
-        pay_appkey: "",
-        reportApiUrl: "",
-        openApiUrl: "",
-        openApiUrlWithPay:""
-    },
-    360:{
-        appid:"",
-        game_key: "",
-        game_secret: ""
-    }    
-}
-
 exports = module.exports = {
-    env: env,
+    GetResType: GetResType,
     ActivityRankMax: ActivityRankMax,
     ActivityType: ActivityType,
     ActivityStatus: ActivityStatus,
     ActivityScoreRate: ActivityScoreRate,
-    DailyActivityStatus:DailyActivityStatus,
-    em_Ally_Oper:em_Ally_Oper,
-    UserAuthorityNum:UserAuthorityNum,
     ResType: ResType,
-    ResTypeStr:ResTypeStr,
     ActionType:ActionType,
-    UserVipLevelSetting:UserVipLevelSetting,
-    AllyPower:AllyPower,
-    AllyNewsType:AllyNewsType,
-    AllyRelationEnum:AllyRelationEnum,
-    AllySetting: AllySetting,
-    PurchaseType:PurchaseType,
     ReturnCode: ReturnCode,
     ReturnCodeName: ReturnCodeName,
     FriendType: FriendType,
     NotifyType: NotifyType,
-    PurchaseStatus: PurchaseStatus,
     em_EffectCalcType: em_EffectCalcType,
     em_Effect_Comm: em_Effect_Comm,
     em_Effect_Name: em_Effect_Name,
     mapOfTechCalcType: mapOfTechCalcType,
     UserStatus: UserStatus,
-    RankType: RankType,
     em_Condition_Checkmode: em_Condition_Checkmode,
     em_Condition_Type: em_Condition_Type,
     em_task_status: em_task_status,
@@ -1702,23 +1230,11 @@ exports = module.exports = {
     TollgateType: TollgateType,
     TollgateState: TollgateState,
     OperEnum: OperEnum,
-    CommMode: CommMode,
     GuideList: GuideList,
-    IndexType: IndexType,
     StayStatus: StayStatus,
-    EventConfig: EventConfig,
-    EventEnum: EventEnum,
     TollgateConstant:TollgateConstant,
-    PotentialType:PotentialType,
     ActionStatus:ActionStatus,
     MAX_INT:MAX_INT,
     ShopTypeEnum:ShopTypeEnum,
-    InviteType:InviteType,
-    EntityType:EntityType,
-    MiddlewareParam:MiddlewareParam,
-    em_UserVipLevel:em_UserVipLevel,
-    SkillType:SkillType,
     RarityType:RarityType,
-    RecordType:RecordType,
-    cid:cid,
 };

@@ -2,7 +2,7 @@
  * Created by liub on 2017-05-26.
  */
 let facade = require('gamecloud')
-let {NotifyType, ActionExecuteType, UserStatus,em_Condition_Type} = facade.const
+let {NotifyType, UserStatus,em_Condition_Type} = facade.const
 
 /**
  * 用户登录后，用来执行一些后续操作，例如获取腾讯会员信息、蓝钻特权等
@@ -28,16 +28,11 @@ function handle(data){
         data.user.notify({type:NotifyType.DailyEvent});
     }
 
-    //赠送重生次数
-    if(data.user.getActionMgr().Execute(ActionExecuteType.AE_Revival, 1, true)){
-        data.user.getTollgateMgr().addRevivalLeftNum();
-    }
-
     //检测用户跨天数据
     data.user.checkDailyData(d1);
 
     //记录用户登录行为
-    if(data.user.getActionMgr().Execute(ActionExecuteType.AE_Login, 1, true)){
+    if(data.user.getActionMgr().Execute(this.const.ActionExecuteType.AE_Login, 1, true)){
         //记录累计登录
         this.notifyEvent('user.task', {user:data.user, data:{type:em_Condition_Type.totalLogin, value:1}});
         if(Date.parse(data.curTime)/1000 - Date.parse(d2)/1000 < 3600*48){

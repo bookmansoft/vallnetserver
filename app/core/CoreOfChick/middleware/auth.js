@@ -66,7 +66,7 @@ async function handle(sofar) {
                         usr.baseMgr.info.SetRecord(key, profile[key]);
                     });
                     sofar.facade.notifyEvent('user.newAttr', {user: usr, attr:[{type:'uid', value:usr.id}, {type:'name', value:usr.name}]});
-                    sofar.facade.notifyEvent('user.afterRegister', {user:usr});
+                    await sofar.facade.notifyEvent('user.afterRegister', {user:usr});
                 }
             }
 

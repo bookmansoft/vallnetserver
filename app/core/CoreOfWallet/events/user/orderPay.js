@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {EntityType, IndexType, RecordType, ResType} = facade.const
+let {EntityType, IndexType} = facade.const
 
 /**
  * 主网通知用户订单支付(order.pay)成功执行

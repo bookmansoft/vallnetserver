@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {RecordType, IndexType, EntityType, SkillType, PurchaseType, ResType, ActionExecuteType, ReturnCode} = facade.const
+let {IndexType, EntityType, PurchaseType, ResType, ReturnCode} = facade.const
 let BattleRoom = facade.Util.BattleManager
 let ConfigMgr = facade.Util.ConfigMgr
 let BaseBattleParam = facade.Util.BaseBattleParam
@@ -187,7 +187,7 @@ class P502001 extends facade.Control
 
             case em_Pet_OperType.getChip: //三界符
             {
-                if(!user.getActionMgr().Execute(ActionExecuteType.AE_Chip, 1, true) && !user.purchase(PurchaseType.RandomCard, 1, true)){
+                if(!user.getActionMgr().Execute(this.core.const.ActionExecuteType.AE_Chip, 1, true) && !user.purchase(PurchaseType.RandomCard, 1, true)){
                     $code = ReturnCode.NotEnough_Diamond;
                 }
                 else{
@@ -226,10 +226,10 @@ class P502001 extends facade.Control
 
                 //获取指定参与战斗的卡牌编组信息
                 if(input.gid<0 || input.gid >= 5){
-                    input.gid = user.getInfoMgr().GetRecord(RecordType.Group); //填充默认编组
+                    input.gid = user.getInfoMgr().GetRecord('group'); //填充默认编组
                 }
                 //更新默认编组
-                user.getInfoMgr().SetRecord(RecordType.Group, input.gid); 
+                user.getInfoMgr().SetRecord('group', input.gid); 
 
                 //攻方技能列表
                 let skillsOfAtk = BattleRoom.getSkills(
@@ -238,7 +238,7 @@ class P502001 extends facade.Control
                 );
                 //守方技能列表
                 let skillsOfDfs = BattleRoom.getSkills(
-                    enemy.getPotentialMgr().getLocArray(enemy.getInfoMgr().GetRecord(RecordType.Group)),
+                    enemy.getPotentialMgr().getLocArray(enemy.getInfoMgr().GetRecord('group')),
                     enemy
                 );
 

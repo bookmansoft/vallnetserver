@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {EntityType, em_task_status, em_Condition_Checkmode, em_Condition_Type, ResType, ActionExecuteType, ReturnCode} = facade.const
+let {EntityType, ReturnCode} = facade.const
 
 /**
  * 聊天室

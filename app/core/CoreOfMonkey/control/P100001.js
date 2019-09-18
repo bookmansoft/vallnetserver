@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {ResType, ActionExecuteType, ReturnCode} = facade.const
+let {ReturnCode} = facade.const
 
 /**
  * 副本探索 - 随机事件管理

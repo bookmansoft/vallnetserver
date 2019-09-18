@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {RecordType, GuideList, ActionExecuteType, ResType, UserStatus, NotifyType, ActivityType, em_Condition_Type, em_Condition_Checkmode, em_Effect_Comm, TollgateState, ReturnCode, OperEnum} = facade.const
+let {GuideList, ResType, UserStatus, NotifyType, ActivityType, em_Condition_Type, em_Condition_Checkmode, em_Effect_Comm, TollgateState, ReturnCode} = facade.const
 let baseMgr = facade.Assistant
 let BonusObject = facade.Util.BonusObject
 let EffectManager = facade.Util.EffectManager
@@ -188,7 +188,7 @@ class vip extends baseMgr
         let ret = {code:ReturnCode.Success, data:{bonus:null, valid:this.valid, time:this.time}};
 
         if(this.valid){ //处于VIP有效期内
-            if(this.parent.getActionMgr().Execute(ActionExecuteType.vipDaily, 1, true)) {
+            if(this.parent.getActionMgr().Execute(this.parent.core.const.ActionExecuteType.vipDaily, 1, true)) {
                 ret.data.bonus = this.parent.core.fileMap.vip.daily; //VIP每日奖励
                 this.parent.getBonus(ret.data.bonus);
             }
@@ -417,6 +417,8 @@ class vip extends baseMgr
 
         let ct = facade.util.now(); //当前时间
 
+        let OperEnum = this.parent.core.const.OperEnum;
+
         switch ($params.oper) {
             case OperEnum.Start:{//开始游戏
                 this.initBattle();
@@ -427,12 +429,12 @@ class vip extends baseMgr
                     this.parent.getBonus({type:ResType.Action, num:-$gate.costap});//扣减体力
                     
                     //特定任务检测
-                    switch(this.parent.getInfoMgr().GetRecord(RecordType.Role)){
+                    switch(this.parent.getInfoMgr().GetRecord('role')){
                         case 1002:
                             this.parent.core.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.useRole1002, value:1}});
                             break;
                     }
-                    switch(this.parent.getInfoMgr().GetRecord(RecordType.Scene)){
+                    switch(this.parent.getInfoMgr().GetRecord('scene')){
                         case 2002:
                             this.parent.core.notifyEvent('user.task', {user:this.parent, data:{type:em_Condition_Type.useScene2002, value:1}});
                             break;
@@ -522,7 +524,7 @@ class vip extends baseMgr
 
                             //计算用户总血量：最终生命 = 基础生命值 x 【（当前等级-1） + 生命成长系数 x 当前等级】^0.6
                             let fullBlood = 1000;
-                            let ro = this.parent.core.fileMap.roledata[this.parent.getInfoMgr().GetRecord(RecordType.Role)];
+                            let ro = this.parent.core.fileMap.roledata[this.parent.getInfoMgr().GetRecord('role')];
                             if(!!ro){
                                 let it = this.parent.getPocket().GetRes(ResType.Role, ro.id);
                                 if(!!it){
@@ -695,7 +697,7 @@ class vip extends baseMgr
 
                 if(!!this.catchObj){
                     if($gate.id + 1 >= this.catchObj.hisGateNo) { //实际挑战关卡低于被挑战者的历史最高
-                        this.parent.getActionMgr().Execute(ActionExecuteType.AE_SlaveEscape, 1, true); //扣除起义次数
+                        this.parent.getActionMgr().Execute(this.parent.core.const.ActionExecuteType.AE_SlaveEscape, 1, true); //扣除起义次数
 
                         //缓存战斗信息
                         this.startBattle($gate);
@@ -719,7 +721,7 @@ class vip extends baseMgr
 
                 if(!!this.catchObj){
                     if($gate.id + 1 >= this.catchObj.hisGateNo) { //实际挑战关卡低于被挑战者的历史最高
-                        this.parent.getActionMgr().Execute(ActionExecuteType.AE_SlaveCatch, 1, true); //扣除抓捕次数
+                        this.parent.getActionMgr().Execute(this.parent.core.const.ActionExecuteType.AE_SlaveCatch, 1, true); //扣除抓捕次数
 
                         //缓存战斗信息
                         this.startBattle($gate);

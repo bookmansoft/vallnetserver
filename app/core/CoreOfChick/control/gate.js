@@ -1,5 +1,4 @@
 let facade = require('gamecloud')
-let {NotifyType, OperEnum, ReturnCode} = facade.const
 
 /**
  * 关卡管理器
@@ -12,7 +11,7 @@ class gate extends facade.Control {
      * @param objData
      */
     async query(user, objData){
-        return user.baseMgr.vip.doSomething({oper: OperEnum.Require});
+        return user.baseMgr.vip.doSomething({oper: this.core.const.OperEnum.Require});
     }
 
     /**
@@ -21,7 +20,7 @@ class gate extends facade.Control {
      * @param objData
      */
     async start(user, objData)  {
-        return user.baseMgr.vip.doSomething({oper: OperEnum.Start, id:objData.id});
+        return user.baseMgr.vip.doSomething({oper: this.core.const.OperEnum.Start, id:objData.id});
     }
 
     /**
@@ -31,11 +30,11 @@ class gate extends facade.Control {
      * @returns {Promise.<*>}
      */
     async sweep(user, objData){
-        return user.baseMgr.vip.doSomething({oper: OperEnum.Sweep, id:objData.id});
+        return user.baseMgr.vip.doSomething({oper: this.core.const.OperEnum.Sweep, id:objData.id});
     }
 
     async getSweepBonus(user, objData){
-        return user.baseMgr.vip.doSomething({oper: OperEnum.SweepBonus});
+        return user.baseMgr.vip.doSomething({oper: this.core.const.OperEnum.SweepBonus});
     }
 
     /**
@@ -60,7 +59,7 @@ class gate extends facade.Control {
         }
 
         return user.baseMgr.vip.doSomething({
-            oper: OperEnum.PassTollgate,
+            oper: this.core.const.OperEnum.PassTollgate,
             id: input.id,
             blood: (typeof input.blood == "string") ? parseInt(input.blood) : input.blood,
             money: (typeof input.money == "string") ? parseInt(input.money) : input.money,
@@ -74,11 +73,11 @@ class gate extends facade.Control {
     }
 
     async startCatch(user, objData)  {
-        return user.baseMgr.vip.doSomething({oper: OperEnum.StartCatch, id:objData.id});
+        return user.baseMgr.vip.doSomething({oper: this.core.const.OperEnum.StartCatch, id:objData.id});
     }
 
     async startEscape(user, objData)  {
-        return user.baseMgr.vip.doSomething({oper: OperEnum.StartEscape, id:objData.id});
+        return user.baseMgr.vip.doSomething({oper: this.core.const.OperEnum.StartEscape, id:objData.id});
     }
 
     /**
@@ -88,7 +87,7 @@ class gate extends facade.Control {
      */
     async catch(user, objData){
         return user.baseMgr.vip.doSomething({
-            oper: OperEnum.Catch,
+            oper: this.core.const.OperEnum.Catch,
             id: objData.id,
             blood: (typeof objData.blood == "string") ? parseInt(objData.blood) : objData.blood,
         });
@@ -101,7 +100,7 @@ class gate extends facade.Control {
      */
     async escape(user, objData){
         return user.baseMgr.vip.doSomething({
-            oper: OperEnum.Escape,
+            oper: this.core.const.OperEnum.Escape,
             id: objData.id,
             blood: (typeof objData.blood == "string") ? parseInt(objData.blood) : objData.blood,
         });

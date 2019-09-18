@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {RecordType, ReturnCode, ResType, UserStatus, em_Condition_Type, em_Condition_Checkmode, NotifyType, ActivityType, RankType, em_EffectCalcType,em_Effect_Comm,mapOfTechCalcType} = facade.const
+let {UserStatus, em_Condition_Type, em_Condition_Checkmode, NotifyType, ActivityType, RankType, em_EffectCalcType,em_Effect_Comm,mapOfTechCalcType} = facade.const
 let baseMgr = facade.Assistant
 
 /**
@@ -45,18 +45,6 @@ class info extends baseMgr
      */
     getAttr(key) {
         return this.v[key];
-    }
-
-    /**
-     * 提取福利，推送变更消息
-     * @param {*} draw_count 
-     */
-    subVipCur(draw_count) {
-        this.setAttr('vcur', this.getAttr('vcur') - draw_count);
-        this.parent.orm.save(); //强制保存
-
-        //推送通知给客户端，告知VIP相关信息发生了变化
-        this.parent.notify({type: 911002, info: JSON.parse(this.getData())});
     }
 
     /**
@@ -169,8 +157,6 @@ class info extends baseMgr
             switch(val){
                 case UserStatus.gaming:
                 case UserStatus.online:
-                case UserStatus.slave:
-                case UserStatus.master:
                     //将新的状态登记到索引服上
                     this.parent.core.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'status', value: this.v.status}});
 
@@ -199,8 +185,6 @@ class info extends baseMgr
             switch(val){
                 case UserStatus.gaming:
                 case UserStatus.online:
-                case UserStatus.slave:
-                case UserStatus.master:
                     //通知所有好友，状态发生了变化
                     this.parent.socialBroadcast({type: NotifyType.userStatus, info: {id:this.parent.openid, value:this.v.status}});
                     //将新的状态登记到索引服上
@@ -219,34 +203,6 @@ class info extends baseMgr
     
     GetStatus(){
         return this.v.status;
-    }
-
-    get role(){
-        return this.GetRecord(RecordType.Role);
-    }
-    set role(val){
-        this.SetRecord(RecordType.Role, parseInt(val));
-
-        //角色形象发生变化
-        this.parent.core.notifyEvent('user.newAttr', {user: this.parent, attr:{type:'role', value:this.GetRecord(RecordType.Role)}});
-    }
-    get scene(){
-        return this.GetRecord(RecordType.Scene);
-    }
-    set scene(val){
-        this.SetRecord(RecordType.Scene, parseInt(val))
-    }
-    get road(){
-        return this.GetRecord(RecordType.Road);
-    }
-    set road(val){
-        this.SetRecord(RecordType.Road, parseInt(val))
-    }
-    get address(){
-        return this.GetRecord(RecordType.address);
-    }
-    set address(val){
-        this.SetRecord(RecordType.address,val);
     }
 
     //	设置头像

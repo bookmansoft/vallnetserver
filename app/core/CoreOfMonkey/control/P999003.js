@@ -1,6 +1,5 @@
-let uuid       = require('uuid');
 let facade     = require('gamecloud')
-let {ShopTypeEnum, PurchaseStatus,PurchaseType, ResType, ActionExecuteType, ReturnCode,cid} = facade.const
+let {ShopTypeEnum, ResType, ReturnCode} = facade.const
 let shopInfo   = facade.assistants.shopInfo
 
 /**
