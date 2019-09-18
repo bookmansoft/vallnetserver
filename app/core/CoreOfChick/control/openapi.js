@@ -34,9 +34,7 @@ class openapi extends facade.Control
             [`/info`, 'getInfo'],                                     //获取游戏基本描述信息
             ['/prop/:id', 'responseProp'],                            //获取指定道具模板信息
             [`/${remoteSetup.type}/myprops/:addr`, 'myProps'],        //获取指定地址上的确权道具
-            [`/${remoteSetup.type}/auth`, 'auth'],                    //验证玩家身份信息
             [`/${remoteSetup.type}/order/confirm`, 'confirmOrder'],   //订单完成回调接口
-            [`/${remoteSetup.type}/order/notify`, 'notifyOrder'],     //游戏服务端通过该接口接收游戏客户端提交的订单，缓存并以通告模型广播至至主网。主网将进一步将订单信息通知到钱包
             [`/${remoteSetup.type}/order/add`, 'addOrder'],           //游戏服务端通过该接口接收钱包提交的订单，只缓存但不做进一步处理。钱包以此方式提交订单后，会进一步执行订单支付流程
         ];
     }
@@ -63,46 +61,6 @@ class openapi extends facade.Control
      */
     async ping(){
         return '200';
-    }
-
-    /**
-     * 游戏客户端上行订单，游戏服务端进一步通告主网
-     * @param {*} params
-     */
-    async notifyOrder(params) {
-        let user = this.core.userMap[params.uid];
-        if(!user) {
-            return {code: -1};
-        }
-
-        //以 sys.notify 模式发起订单
-        let data = {
-            cid: params.cid,                  //CP编码
-            oid: params.oid,                  //道具原始编码
-            price: params.price,              //价格，单位尘
-            url: params.url,                  //道具图标URL
-            props_name: params.props_name,    //道具名称
-            sn: uuid.v1(),                    //订单编号
-            addr: user.addr,                  //用户地址
-            confirmed: -1,                    //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
-            time: Date.now()/1000,
-        };
-        
-        //向主网发送消息
-        let paramArray = [
-            data.addr,
-            JSON.stringify(data),
-        ];
-        let ret = await this.core.service.gamegoldHelper.execute('sys.notify', paramArray);
-        if(!!ret) {
-            if(ret.code == 0) { 
-                //缓存订单信息，以便在将来接收到回调时进行必要的比对
-                this.core.orderMap.set(data.sn, data);
-            }
-            return { code: ret.code };
-        }
-
-        return { code: -1 };
     }
 
     /**
@@ -159,6 +117,30 @@ class openapi extends facade.Control
     }
     
     /**
+     * 校验客户端从钱包获取的认证报文
+     * @param {*} params 
+     * @description 这不是必备的游戏开放接口，而是游戏服务服务端为游戏客户端提供的功能性接口，用于身份信息校验/缓存
+     */
+    async auth(user, params) {
+        let json = params.data;
+        if(toolkit.verifyData({
+            data: {
+                cid: json.cid,
+                uid: json.uid,
+                time: json.time,
+                addr: json.addr,
+                pubkey: json.pubkey,
+            },
+            sig: json.sig
+        })) {
+            user.baseMgr.info.setAttr('acaddr', json.addr);
+            return {code: 0};
+        } else {
+            return {code: -1};
+        }
+    }
+
+    /**
      * 订单支付回调接口，处理来自主网的订单支付确认通知
      * @param {*} params
      */
@@ -185,15 +167,34 @@ class openapi extends facade.Control
             //更新订单信息
             params.data.time = Date.now()/1000;
 
-            let theOrder = this.core.orderMap.get(params.data.sn) || {};
-            Object.keys(params.data).map(key=>{
-                theOrder[key] = params.data[key];
-            });
+            let trade_no = params.data.sn;
 
-            //缓存订单信息
-            this.core.orderMap.set(theOrder.sn, theOrder);
+            let order = this.core.GetObject(EntityType.BuyLog, trade_no, IndexType.Domain);
+            if(!order) {
+                return {code:ReturnCode.illegalData};
+            }
 
-            return { code: 0 };
+            let mitem = this.core.fileMap.shopOuter[order.getAttr('product_desc')];
+            if(!order) {
+                return {code:ReturnCode.illegalData};
+            }
+
+            let ret = await this.core.notifyEvent('user.orderPay', {data: {trade_no: order.getAttr('trade_no'), price: order.getAttr('total_fee')}});
+            if(ret.code != ReturnCode.Success) {
+                return {code:ReturnCode.illegalData};
+            }
+
+            this.core.notifyEvent('user.task', {user:pUser, data:{type:em_Condition_Type.totalPurchase, value: order.getAttr('total_fee')/10}});
+            this.core.notifyEvent('user.afterPurchase', {user:pUser, amount: order.getAttr('total_fee')});
+
+            let now = Date.parse(new Date())/1000;
+            let tm1 = mitem.times.split(",");
+            if(now >= parseInt(tm1[0]) && now <= parseInt(tm1[1])){
+                if(!!mitem.extra){
+                    let extra = BonusObject.convert(mitem.extra);
+                    pUser.getBonus(extra);
+                }
+            }
         } catch (e) {
             console.error(e);
             return { code: 0 };
@@ -249,31 +250,6 @@ class openapi extends facade.Control
         return { code: 0, data: retData };
     }
     
-    /**
-     * 校验客户端从钱包获取的认证报文
-     * @param {*} params 
-     * @description 这不是必备的游戏开放接口，而是游戏服务服务端为游戏客户端提供的功能性接口，用于身份信息校验/缓存
-     */
-    async auth(params) {
-        let json = JSON.parse(params.data);
-        if(toolkit.verifyData({
-            data: {
-                cid: json.cid,
-                uid: json.uid,
-                time: json.time,
-                addr: json.addr,
-                pubkey: json.pubkey,
-            },
-            sig: json.sig
-        })) {
-            //缓存认证报文
-            this.core.userMap[json.uid] = json;
-            return {code: 0};
-        } else {
-            return {code: -1};
-        }
-    }
-
     /**
      * 返回对应CP的描述信息对象，同时也返回道具模板列表
      */

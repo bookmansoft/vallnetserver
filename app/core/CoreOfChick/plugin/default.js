@@ -8,6 +8,8 @@
  * @note 扩展函数的作者，需要在熟悉核心类内部构造的基础上，自行规避命名冲突问题
  */
 
+let orderMonitor = require('../../../util/autoExec/orderMonitor');
+
 function DynamicOptions(core) {
     return {
         //当前节点的附加路由，和反向代理结合使用
@@ -22,7 +24,6 @@ async function startAfter(core) {
     console.log(`${core.options.serverType}.${core.options.serverId}'s startup start`);
 
     core.cpToken = new Map();   //CP签名密钥缓存
-    core.userMap = new Map();   //用户身份认证信息缓存
     core.orderMap = new Map();  //订单缓存
 
     //订单执行前需要达到的确认数
@@ -32,6 +33,9 @@ async function startAfter(core) {
     core.autoTaskMgr.addCommonMonitor(() => {
         return CheckOrder(core);
     }, 5000);
+
+    //添加订单状态定时检测器，具体查询工作由 orderMonitor.execute 承载
+    core.autoTaskMgr.addMonitor(new orderMonitor(), 10*1000);
 
     console.log(`${core.options.serverType}.${core.options.serverId}'s startup finished!`);
 }

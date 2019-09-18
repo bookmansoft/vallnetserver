@@ -1277,7 +1277,17 @@ const StayStatus = {
     hangup: "hangup",
 }
 
+/**
+ * 结算方式
+ */
+const SettleType = {
+    Gamegold: 1,    //游戏金
+    Alipay: 2,      //支付宝
+    Wxpay: 3,       //微信支付
+};
+
 exports = module.exports = {
+    SettleType: SettleType,
     GetResType: GetResType,
     ActivityRankMax: ActivityRankMax,
     ActivityType: ActivityType,

@@ -24,7 +24,7 @@ class orderMonitor
             //1. 列表所有订单
             let muster = core.GetMapping(EntityType.BuyLog)
                 .groupOf() // 将 Mapping 对象转化为 Collection 对象，如果 Mapping 对象支持分组，可以带分组参数调用
-                //.where([['result', 'include', [PurchaseStatus.prepay, PurchaseStatus.cancel]]])
+                .where([['result', 'include', [PurchaseStatus.prepay, PurchaseStatus.cancel]]])
                 .orderby('id', 'desc') //根据id字段倒叙排列
                 .paginate(-1, 1)
                 .records(TableField.BuyLog);
@@ -35,7 +35,7 @@ class orderMonitor
                     case PurchaseStatus.prepay: {
                         let timespan = Date.parse(new Date())/1000 - Date.parse(new Date(item.updatedAt))/1000;
                         if(timespan > 300) { //超时 5 分钟未处理，发起主动查询
-                            let result = await core.service.wechat.orderQuery({inner: item.trade_no}); //  inner: ty_bgw_155702573788578497, outer: 4200000307201905050801142091
+                            let result = await core.service.wechat.orderQuery({inner: item.trade_no}); //inner: ty_bgw_155702573788578497, outer: 4200000307201905050801142091
                             if(!!result) {
                                 //触发事件，进行相应的后续处理
                                 if(!result.out_trade_no) {
@@ -48,8 +48,7 @@ class orderMonitor
                     }
 
                     case PurchaseStatus.cancel: {
-                        //移除失效订单
-                        //@warning 此处并未从数据库真正删除，因此有可能会造成数据不断堆叠，需要进一步考量
+                        //移除失效订单 @warning 此处并未从数据库真正删除，因此有可能会造成数据不断堆叠，需要进一步考量
                         core.GetMapping(EntityType.BuyLog).Delete(item.id, false);
                         break;
                     }

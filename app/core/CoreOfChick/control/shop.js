@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {EntityType, ResType, ReturnCode, em_Condition_Type} = facade.const
+let {SettltType, EntityType, ResType, ReturnCode} = facade.const
 let BonusObject = facade.Util.BonusObject
 let uuid = require('uuid');
 
@@ -7,54 +7,51 @@ class shop extends facade.Control
 {
     /**
      * 处理外购订单
-     * @param pUser
-     * @param objData
+     * @param user
+     * @param params
      * @returns {{code: number, data: {tradeNo: string}}}
      */
-    async BuyItem(pUser, objData){
-        let item = this.core.fileMap.shopOuter[objData.itemid];
-        if(!item){
+    async BuyItem(user, params){
+        let item = this.core.fileMap.shopOuter[params.itemid];
+        if(!item) {
             return {code:ReturnCode.illegalData};
         }
 
-        //针对不同平台，进行分支处理：
-        switch(pUser.domainType) {
-            default: {
-                try {
-                    let result = await this.core.GetMapping(EntityType.BuyLog).Create(
-                        `${pUser.domainId}`,                                //domainid      用户标识
-                        uuid.v4(),                                          //trade_no      订单号，是否可以考虑使用某种标准化格式，如'201901018888'
-                        JSON.stringify(BonusObject.convert(item.bonus)),    //product       订单内容
-                        '',                                                 //product_desc  订单文字描述
-                        item.price,                                         //total_fee     订单总价
-                        1,                                                  //fee_type      支付类型(支付宝、微信、游戏金等)，注意不是货币类型，当前设定中，每种支付类型下只使用其默认货币类型，如支付宝/人民币
-                    );
+        params.fee_type = params.fee_type || SettltType.Gamegold; //由客户端决定支付类型
+        params.sn = uuid.v1();
 
-                    //test only 这里采用了测试流程：不等待第三方支付回调，而是直接确认了订单
-                    let ret = await this.core.notifyEvent('user.orderPay', {data:{trade_no: result.getAttr('trade_no'), price: item.price}});
-                    if(ret.code == ReturnCode.Success){
-                        this.core.notifyEvent('user.task', {user:pUser, data:{type:em_Condition_Type.totalPurchase, value:item.price/10}});
-                        this.core.notifyEvent('user.afterPurchase', {user:pUser, amount:item.price});
+        //以 sys.notify 模式发起订单
+        let data = {
+            cid: this.core.service.gamegoldHelper.cid,  //CP编码
+            oid: '',                                    //道具原始编码
+            price: item.price,                          //价格，单位尘
+            url: '',                                    //道具图标URL
+            props_name: '',                             //道具名称
+            sn: params.sn,                              //订单编号
+            addr: user.baseMgr.info.getAttr('acaddr'),  //用户地址
+            confirmed: -1,                              //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+            time: Date.now()/1000,
+        };
+        
+        //向主网发送消息
+        let ret = await this.core.service.gamegoldHelper.execute('sys.notify', [
+            data.addr,
+            JSON.stringify(data),
+        ]);
+        if(!!ret && ret.code == 0) {
+            //生成并保存订单
+            this.core.GetMapping(EntityType.BuyLog).Create(
+                `${user.domainId}`,                                //domainid      用户标识
+                data.sn,                                           //trade_no      订单号，是否可以考虑使用某种标准化格式，如'201901018888'
+                JSON.stringify(BonusObject.convert(item.bonus)),   //product       订单内容
+                params.itemid,                                     //product_desc  订单文字描述
+                item.price,                                        //total_fee     订单总价
+                params.fee_type,                                   //fee_type      支付类型(支付宝、微信、游戏金等)，注意不是货币类型，当前设定中，每种支付类型下只使用其默认货币类型，如支付宝/人民币
+            );
 
-                        let now = Date.parse(new Date())/1000;
-                        let tm1 = item.times.split(",");
-                        if(now >= parseInt(tm1[0]) && now <= parseInt(tm1[1])){
-                            if(!!item.extra){
-                                let extra = BonusObject.convert(item.extra);
-                                pUser.getBonus(extra);
-                            }
-                        }
-
-                        return {code:ReturnCode.Success, data: {bonus:item.bonus}};
-                    } else {
-                        return {code:ReturnCode.illegalData};
-                    }
-                } catch(e) {
-                    console.log(e);
-                }
-            }
+            return { code: ReturnCode.Success, data: {bonus:item.bonus}};
         }
-        return {code:ReturnCode.Error};
+        return { code: -1 };
     }
 
     /**
