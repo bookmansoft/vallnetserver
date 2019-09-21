@@ -117,30 +117,6 @@ class openapi extends facade.Control
     }
     
     /**
-     * 校验客户端从钱包获取的认证报文
-     * @param {*} params 
-     * @description 这不是必备的游戏开放接口，而是游戏服务服务端为游戏客户端提供的功能性接口，用于身份信息校验/缓存
-     */
-    async auth(user, params) {
-        let json = params.data;
-        if(toolkit.verifyData({
-            data: {
-                cid: json.cid,
-                uid: json.uid,
-                time: json.time,
-                addr: json.addr,
-                pubkey: json.pubkey,
-            },
-            sig: json.sig
-        })) {
-            user.baseMgr.info.setAttr('acaddr', json.addr);
-            return {code: 0};
-        } else {
-            return {code: -1};
-        }
-    }
-
-    /**
      * 订单支付回调接口，处理来自主网的订单支付确认通知
      * @param {*} params
      */

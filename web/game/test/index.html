@@ -90,7 +90,7 @@
 
         $.ajax({
             type: "GET",
-            url: `${location.origin}${location.pathname}testnet/auth?data=${encodeURIComponent(param)}`,
+            url: `${location.origin}${location.pathname}testnet/auth?kyc=${encodeURIComponent(param)}`,
             success: function(result) {
                 if(result.code == 0) {
                     $.ajax({

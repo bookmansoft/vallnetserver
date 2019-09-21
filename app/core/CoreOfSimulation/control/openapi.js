@@ -223,7 +223,7 @@ class openapi extends facade.Control
      * @description 这不是必备的游戏开放接口，而是游戏服务服务端为游戏客户端提供的功能性接口，用于身份信息校验/缓存
      */
     async auth(params) {
-        let json = JSON.parse(params.data);
+        let json = JSON.parse(params.kyc);
         if(toolkit.verifyData({
             data: {
                 cid: json.cid,

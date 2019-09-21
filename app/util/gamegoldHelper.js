@@ -36,10 +36,10 @@ class gamegoldHelper extends facade.Service
     }
 
     /**
-     * CP编号
+     * CP编号，注意不要和授权终端编码混淆
      */
     get cid() {
-        return this.remote.getTerminalConfig().cid;
+        return this.remote.getTerminalConfig().cpid;
     }
 
     watch(cb, etype = '0') {

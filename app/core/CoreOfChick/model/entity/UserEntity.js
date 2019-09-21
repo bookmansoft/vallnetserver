@@ -12,6 +12,14 @@ class UserEntity extends BaseUserEntity
     }
 
     /**
+     * 固定时间间隔的滴答操作，由底层自动调用
+     */
+    tick() {
+        this.baseMgr.vip.checkSweep(); //检测扫荡是否结束，如果结束则自动计算奖励
+        this.baseMgr.slave.CheckStatus(); //释放到期奴隶，或者解放自身
+    }
+
+    /**
      * 根据用户经验返回相应的VIP等级
      */
     static GetVipLevel($exp) {

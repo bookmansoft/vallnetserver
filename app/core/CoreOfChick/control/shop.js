@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {SettltType, EntityType, ResType, ReturnCode} = facade.const
+let {SettleType, EntityType, ResType, ReturnCode} = facade.const
 let BonusObject = facade.Util.BonusObject
 let uuid = require('uuid');
 
@@ -11,13 +11,19 @@ class shop extends facade.Control
      * @param params
      * @returns {{code: number, data: {tradeNo: string}}}
      */
-    async BuyItem(user, params){
+    async BuyItem(user, params) {
+        let acaddr = user.baseMgr.info.getAttr('acaddr');
+        if(!acaddr) {
+            //尚未完成钱包认证流程
+            return { code: -1 };
+        }
+
         let item = this.core.fileMap.shopOuter[params.itemid];
         if(!item) {
             return {code:ReturnCode.illegalData};
         }
 
-        params.fee_type = params.fee_type || SettltType.Gamegold; //由客户端决定支付类型
+        params.fee_type = params.fee_type || SettleType.Gamegold; //由客户端决定支付类型
         params.sn = uuid.v1();
 
         //以 sys.notify 模式发起订单
@@ -28,7 +34,7 @@ class shop extends facade.Control
             url: '',                                    //道具图标URL
             props_name: '',                             //道具名称
             sn: params.sn,                              //订单编号
-            addr: user.baseMgr.info.getAttr('acaddr'),  //用户地址
+            addr: acaddr,                               //用户地址
             confirmed: -1,                              //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
             time: Date.now()/1000,
         };
