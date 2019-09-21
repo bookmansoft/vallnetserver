@@ -85,8 +85,13 @@ class cp extends facade.Control
      * @param {*} params.cid CP编码
      */
     async ById(user, params) {
-        let ret = await this.core.service.gamegoldHelper.execute('cp.byId', [params.cid]);
-        return {code: 0, data: ret.result};
+        //20190922 改为查询本地数据库
+        //let ret = await this.core.service.gamegoldHelper.execute('cp.byId', [params.cid]);
+        let cpObj = this.core.GetObject(EntityType.blockgame, params.id, IndexType.Domain);
+        if(!!cpObj) { 
+            return {code: 0, data: TableField.record(cpObj, TableField.blockgame)};
+        }
+        return {code: -1};
     }
 
     /**

@@ -25,6 +25,7 @@ class shop extends facade.Control
 
         params.fee_type = params.fee_type || SettleType.Gamegold; //由客户端决定支付类型
         params.sn = uuid.v1();
+        params.mode = parseInt(params.mode);
 
         //以 sys.notify 模式发起订单
         let data = {
@@ -39,25 +40,42 @@ class shop extends facade.Control
             time: Date.now()/1000,
         };
         
-        //向主网发送消息
-        let ret = await this.core.service.gamegoldHelper.execute('sys.notify', [
-            data.addr,
-            JSON.stringify(data),
-        ]);
-        if(!!ret && ret.code == 0) {
-            //生成并保存订单
-            this.core.GetMapping(EntityType.BuyLog).Create(
-                `${user.domainId}`,                                //domainid      用户标识
-                data.sn,                                           //trade_no      订单号，是否可以考虑使用某种标准化格式，如'201901018888'
-                JSON.stringify(BonusObject.convert(item.bonus)),   //product       订单内容
-                params.itemid,                                     //product_desc  订单文字描述
-                item.price,                                        //total_fee     订单总价
-                params.fee_type,                                   //fee_type      支付类型(支付宝、微信、游戏金等)，注意不是货币类型，当前设定中，每种支付类型下只使用其默认货币类型，如支付宝/人民币
-            );
+        switch(params.mode) {
+            case 2: {
+                break;
+            }
 
-            return { code: ReturnCode.Success, data: {bonus:item.bonus}};
+            default: {
+                //向主网发送消息
+                let ret = await this.core.service.gamegoldHelper.execute('sys.notify', [
+                    data.addr,
+                    JSON.stringify(data),
+                ]);
+                if(!ret || ret.code != 0) {
+                    return { code: -1 };
+                }
+            }
         }
-        return { code: -1 };
+
+        //生成并保存订单
+        await this.core.GetMapping(EntityType.BuyLog).Create(
+            `${user.domainId}`,                                //domainid      用户标识
+            data.sn,                                           //trade_no      订单号，是否可以考虑使用某种标准化格式，如'201901018888'
+            JSON.stringify(BonusObject.convert(item.bonus)),   //product       订单内容
+            params.itemid,                                     //product_desc  订单文字描述
+            item.price,                                        //total_fee     订单总价
+            params.fee_type,                                   //fee_type      支付类型(支付宝、微信、游戏金等)，注意不是货币类型，当前设定中，每种支付类型下只使用其默认货币类型，如支付宝/人民币
+        );
+
+        return { 
+            code: ReturnCode.Success, 
+            data: {
+                cid: data.cid,
+                price: data.price,
+                sn: data.sn,
+                bonus:item.bonus
+            },
+        };
     }
 
     /**

@@ -64,7 +64,7 @@ class openapi extends facade.Control
     }
 
     /**
-     * 钱包执行订单支付流程中，会通过该接口提交订单信息，服务端缓存订单、等待主网回调通知
+     * 钱包执行订单支付流程中，会通过该接口提交订单信息，服务端进行数据检测后返回检测结果
      * @param {*} params
      */
     async addOrder(params) {
@@ -77,7 +77,7 @@ class openapi extends facade.Control
                 params.auth = JSON.parse(params.auth);
             }
             let user = params.auth;
-            if(toolkit.verifyData({
+            if(!toolkit.verifyData({
                 data: {
                     cid: user.cid,
                     uid: user.uid,
@@ -87,28 +87,14 @@ class openapi extends facade.Control
                 },
                 sig: user.sig
             })) {
-                //缓存认证报文
-                this.core.userMap[user.uid] = user;
-            } else {
                 return {code: -1};
             }
-
-            //生成订单。对于以 sys.notify 模式发起的订单，游戏服务器不用承担订单状态监控、主动查询订单状态、再次发起订单支付的义务，简单说就是发射后不管
-            let data = {
-                cid: params.cid,                  //CP编码
-                oid: params.oid,                  //道具原始编码
-                price: params.price,              //价格，单位尘
-                url: params.url,                  //道具图标URL
-                props_name: params.props_name,    //道具名称
-                sn: params.sn,                    //订单编号
-                addr: user.addr,                  //用户地址
-                confirmed: -1,                    //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
-                time: Date.now()/1000,
-            };
-
-            //更新缓存中的订单信息
-            this.core.orderMap.set(data.sn, data);
             
+            let order = this.core.GetObject(EntityType.BuyLog, params.sn, IndexType.Domain);
+            if(!order) {
+                return {code: ReturnCode.illegalData};
+            }
+
             return { code: 0 };
         } catch(e) {
         }
@@ -160,6 +146,11 @@ class openapi extends facade.Control
                 return {code:ReturnCode.illegalData};
             }
 
+            let pUser = this.core.GetObject(EntityType.User, ret.data.account, IndexType.Domain);
+            if(!pUser) {
+                return {code: ReturnCode.userIllegal};
+            }
+
             this.core.notifyEvent('user.task', {user:pUser, data:{type:em_Condition_Type.totalPurchase, value: order.getAttr('total_fee')/10}});
             this.core.notifyEvent('user.afterPurchase', {user:pUser, amount: order.getAttr('total_fee')});
 
@@ -171,9 +162,10 @@ class openapi extends facade.Control
                     pUser.getBonus(extra);
                 }
             }
+            return { code: 0 };
         } catch (e) {
             console.error(e);
-            return { code: 0 };
+            return { code: -1 };
         }
     }
     

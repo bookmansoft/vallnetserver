@@ -140,30 +140,31 @@ class wallet extends facade.Control
     
             let res = await fetch(`${cpObj.orm.cpurl}/${this.core.service.gamegoldHelper.network}/order/add`, newOptions);
             res = await res.json();
+            if(!res || res.code != 0) {
+                throw new Error('commit order error');
+            }
    
-            if(res.code == 0) {
-                //广播订单支付信息
-                let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
-                    params.cid,     //CP编码
-                    user.account,   //用户ID
-                    params.sn,      //订单编号
-                    params.price,   //订单金额, 单位尘
-                    user.account,   //指定结算的钱包账户，本系统中和用户ID一致
-                ]);
-        
-                if(ret.code != 0) {
-                    return {code: ret.code, msg: ret.error.message};
-                } else {
-                    /** params {
-                            sn          //订单编号
-                            time        //订单生成时间戳
-                            confirmed   //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
-                            addr        //用户地址
-                            oid         //道具模板编码
-                        }
-                    */
-                    return {code: 0, data: ret.result};
-                }
+            //广播订单支付信息
+            let ret = await this.core.service.gamegoldHelper.execute('order.pay', [
+                params.cid,     //CP编码
+                user.account,   //用户ID
+                params.sn,      //订单编号
+                params.price,   //订单金额, 单位尘
+                user.account,   //指定结算的钱包账户，本系统中和用户ID一致
+            ]);
+    
+            if(ret.code != 0) {
+                return {code: ret.code, msg: ret.error.message};
+            } else {
+                /** params {
+                        sn          //订单编号
+                        time        //订单生成时间戳
+                        confirmed   //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+                        addr        //用户地址
+                        oid         //道具模板编码
+                    }
+                */
+                return {code: 0, data: ret.result};
             }
         } catch(e) {
             console.log(e);

@@ -644,19 +644,6 @@ var x_button = __webpack_require__("2sLL");
         }, _callee, _this2);
       }))();
     },
-
-
-    previewImage: function previewImage(e) {
-      var that = this;
-      var current = this.image;
-      that.$wechat.previewImage({
-        current: current, // 当前显示图片的http链接
-        urls: [current], // 需要预览的图片http链接列表
-        success: function success(res) {},
-        fail: function fail(res) {}
-      });
-    },
-
     randomString: function randomString(len) {
       len = len || 32;
       /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
@@ -674,7 +661,11 @@ var x_button = __webpack_require__("2sLL");
     * 跳转至模拟游戏
     */
     gotoGame: function gotoGame() {
-      var url = this.cpInfo.cpurl + '/?data=' + stringify_default()(this.vData);
+      if (!this.vData || !this.userBase.uid) {
+        return;
+      }
+
+      var url = this.cpInfo.cpurl + '?kyc=' + encodeURIComponent(stringify_default()(this.vData));
       window.location.href = url;
     },
     buyProp: function buyProp(item) {
@@ -686,7 +677,7 @@ var x_button = __webpack_require__("2sLL");
 
       this.$store.dispatch('wallet/pay', {
         cid: this.cpInfo.cpid,
-        sn: item.id + '-new-' + this.randomString(16),
+        oid: item.id,
         price: item.props_price
       }).then(function (res) {
         if (res.code == 0) {
@@ -910,19 +901,6 @@ var x_button = __webpack_require__("2sLL");
         }, _callee, _this2);
       }))();
     },
-
-
-    previewImage: function previewImage(e) {
-      var that = this;
-      var current = this.image;
-      that.$wechat.previewImage({
-        current: current, // 当前显示图片的http链接
-        urls: [current], // 需要预览的图片http链接列表
-        success: function success(res) {},
-        fail: function fail(res) {}
-      });
-    },
-
     randomString: function randomString(len) {
       len = len || 32;
       /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
@@ -940,7 +918,11 @@ var x_button = __webpack_require__("2sLL");
     * 跳转至模拟游戏
     */
     gotoGame: function gotoGame() {
-      var url = this.cpInfo.cpurl + '/?data=' + stringify_default()(this.vData);
+      if (!this.vData || !this.userBase.uid) {
+        return;
+      }
+
+      var url = this.cpInfo.cpurl + '?kyc=' + encodeURIComponent(stringify_default()(this.vData));
       window.location.href = url;
     },
     buyProp: function buyProp(item) {
@@ -952,7 +934,7 @@ var x_button = __webpack_require__("2sLL");
 
       this.$store.dispatch('wallet/pay', {
         cid: this.cpInfo.cpid,
-        sn: item.id + '-new-' + this.randomString(16),
+        oid: item.id,
         price: item.props_price
       }).then(function (res) {
         if (res.code == 0) {
@@ -1045,14 +1027,14 @@ var x_button = __webpack_require__("2sLL");
     }
   }
 });
-// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-679f1070","hasScoped":true,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/GameInfo.vue
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('div',{attrs:{"id":"gameName"}},[_c('div',{attrs:{"id":"topImg"}},[_c('img',{attrs:{"src":_vm.cpInfo.game_resource_uri}})]),_vm._v(" "),_c('div',{staticClass:"backcolor-white",staticStyle:{"height":"130px"},attrs:{"id":"centImg"}},[_c('div',[_c('img',{attrs:{"src":_vm.cpInfo.game_ico_uri}})]),_vm._v(" "),_c('ul',{staticClass:"center-ul",staticStyle:{"position":"relative","top":"-75px"}},[_c('li',[_vm._v(_vm._s(_vm.cpInfo.game_title))]),_vm._v(" "),_c('li',{staticClass:"color-999-provider"},[_vm._v("发行商："+_vm._s(_vm.cpInfo.developer))]),_vm._v(" "),_c('li',[_c('span',{staticClass:"color-999"},[_vm._v("射击")]),_vm._v(" "),_c('a',{staticClass:"play-btn float-right"},[_c('span',{staticStyle:{"font-size":"11px"},on:{"click":_vm.gotoGame}},[_vm._v(_vm._s(_vm.playGameLable))])])]),_vm._v(" "),_vm._m(0)])]),_vm._v(" "),_c('group',{attrs:{"title":"长按二维码进入游戏"}},[_c('div',{staticStyle:{"text-align":"center","padding":"15px"}},[_c('qrcode',{attrs:{"value":_vm.gameWexQrcode,"type":"img"},nativeOn:{"touchstart":function($event){return _vm.previewImage($event)}}})],1)]),_vm._v(" "),_c('div',{staticClass:"backcolor-white",attrs:{"id":"botImage"}},[_c('div',{on:{"click":_vm.introduce}},[_c('p',{staticClass:"bottom-orange",attrs:{"id":"inIntroduce"}},[_vm._v("详情")])]),_vm._v(" "),_c('div',{on:{"click":_vm.gameNameImg}},[_c('p',{attrs:{"id":"inGameNameImg"}},[_vm._v("游戏截图")])]),_vm._v(" "),_c('div',{on:{"click":_vm.gameProps}},[_c('p',{attrs:{"id":"inGameProps"}},[_vm._v("游戏道具")])])]),_vm._v(" "),_c('div',{attrs:{"id":"introduce"}},[_c('div',{staticClass:"backcolor-white padding-rem"},[_c('p',[_vm._v("简介")]),_vm._v(" "),_c('p',{staticStyle:{"color":"#888","font-size":"14px"}},[_vm._v(_vm._s(_vm.cpInfo.game_desc))])]),_vm._v(" "),_c('div',{staticClass:"backcolor-white padding-rem"},[_c('p',[_vm._v("游戏信息")]),_vm._v(" "),_c('p',[_c('span',[_vm._v("版本")]),_c('span',[_vm._v("v"+_vm._s(_vm.cpInfo.game_version))])]),_vm._v(" "),_c('p',[_c('span',[_vm._v("开发者")]),_c('span',[_vm._v(_vm._s(_vm.cpInfo.developer))])])]),_vm._v(" "),_c('div',{staticClass:"backcolor-white padding-rem"},[_c('p',[_vm._v("最近更新")]),_vm._v(" "),_c('p',[_c('span',[_vm._v("更新时间")]),_c('span',[_vm._v(_vm._s(_vm.cpInfo.update_time))])]),_vm._v(" "),_c('p',{staticStyle:{"color":"#888","font-size":"14px"}},[_vm._v(_vm._s(_vm.cpInfo.update_desc))])])]),_vm._v(" "),_c('div',{staticClass:"backcolor-white",attrs:{"id":"gameNameImg"}},[_c('div',_vm._l((_vm.cpInfo.game_screenshots),function(item,index){return _c('img',{key:index,attrs:{"src":item,"alt":""}})}),0)]),_vm._v(" "),_c('div',{staticClass:"backcolor-white",attrs:{"id":"gameProps"}},_vm._l((_vm.cpProps),function(item,index){return _c('div',{key:index,staticClass:"game-props"},[_c('div',[_c('img',{attrs:{"src":item.icon}})]),_vm._v(" "),_c('div',[_c('p',[_vm._v(_vm._s(item.props_name))]),_vm._v(" "),_c('p',[_vm._v(" ")]),_c('p'),_c('p',[_vm._v(_vm._s(item.props_desc))]),_vm._v(" "),_c('a',{staticClass:"gp-btn",on:{"click":function($event){return _vm.buyProp(item)}}},[_vm._v("购买")]),_vm._v(" "),_c('p',{staticClass:"color-red"},[_vm._v(_vm._s(_vm.assistant.toKg(item.props_price))+"千克")])])])}),0),_vm._v(" "),_c('div',{staticClass:"backcolor-white",attrs:{"id":"gameProps"}},[(_vm.commentsList.length==0)?_c('div',{staticClass:"no-comment-box"},[_vm._v("暂无评论")]):_vm._e(),_vm._v(" "),(_vm.commentsList.length > 0)?_c('div',_vm._l((_vm.commentsList),function(item,index){return _c('div',{key:index,staticClass:"game-props"},[_c('div',[_c('img',{attrs:{"src":item.avatar}})]),_vm._v(" "),_c('div',[_c('p',[_c('span',{staticStyle:{"color":"#666","font-size":"15px"}},[_vm._v(_vm._s(item.nick))])]),_vm._v(" "),_c('p',[_vm._v(" ")]),_c('p'),_c('p',[_c('span',{staticStyle:{"color":"#888"}},[_vm._v(_vm._s(item.content))])]),_vm._v(" "),_c('p',[_vm._v(" ")]),_vm._v(" "),_c('a',{staticClass:"gp-btn",on:{"click":function($event){return _vm.buyProp(item)}}},[_vm._v("体验")]),_vm._v(" "),_c('p',{staticClass:"color-red"},[_vm._v(_vm._s(_vm.assistant.toKg(item.props_price))+"千克")]),_vm._v(" "),_c('p',{staticStyle:{"text-align":"right","width":"100%"}},[_c('span',{staticStyle:{"color":"#888"}},[_vm._v(_vm._s(item.timestamp))])])])])}),0):_vm._e(),_vm._v(" "),_c('tabbar',{staticStyle:{"background-color":"#FAFAFA","height":"50px"}},[_c('flexbox',[_c('flexbox-item',[_c('div',{staticClass:"flex-demo"},[_c('x-input',{attrs:{"placeholder":"输入评论内容"},model:{value:(_vm.msgInput),callback:function ($$v) {_vm.msgInput=$$v},expression:"msgInput"}})],1)]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":3}},[_c('div',{staticClass:"flex-demo",staticStyle:{"padding":"10px"}},[_c('x-button',{attrs:{"type":"primary"},nativeOn:{"click":function($event){return _vm.commentPub($event)}}},[_c('span',{staticStyle:{"font-size":"14px"}},[_vm._v("发表")])])],1)])],1)],1)],1)],1)])}
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-8adcbeea","hasScoped":true,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/GameInfo.vue
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('div',{attrs:{"id":"gameName"}},[_c('div',{attrs:{"id":"topImg"}},[_c('img',{attrs:{"src":_vm.cpInfo.game_resource_uri}})]),_vm._v(" "),_c('div',{staticClass:"backcolor-white",staticStyle:{"height":"130px"},attrs:{"id":"centImg"}},[_c('div',[_c('img',{attrs:{"src":_vm.cpInfo.game_ico_uri}})]),_vm._v(" "),_c('ul',{staticClass:"center-ul",staticStyle:{"position":"relative","top":"-75px"}},[_c('li',[_vm._v(_vm._s(_vm.cpInfo.game_title))]),_vm._v(" "),_c('li',{staticClass:"color-999-provider"},[_vm._v("发行商："+_vm._s(_vm.cpInfo.developer))]),_vm._v(" "),_c('li',[_c('span',{staticClass:"color-999"},[_vm._v("射击")]),_vm._v(" "),_c('a',{staticClass:"play-btn float-right"},[_c('span',{staticStyle:{"font-size":"11px"},on:{"click":_vm.gotoGame}},[_vm._v(_vm._s(_vm.playGameLable))])])]),_vm._v(" "),_vm._m(0)])]),_vm._v(" "),_c('div',{staticClass:"backcolor-white",attrs:{"id":"botImage"}},[_c('div',{on:{"click":_vm.introduce}},[_c('p',{staticClass:"bottom-orange",attrs:{"id":"inIntroduce"}},[_vm._v("游戏详情")])]),_vm._v(" "),_c('div',{on:{"click":_vm.gameProps}},[_c('p',{attrs:{"id":"inGameProps"}},[_vm._v("道具商城")])]),_vm._v(" "),_c('div',{on:{"click":_vm.gameNameImg}},[_c('p',{attrs:{"id":"inGameNameImg"}},[_vm._v("游戏截图")])])]),_vm._v(" "),_c('div',{attrs:{"id":"introduce"}},[_c('div',{staticClass:"backcolor-white padding-rem"},[_c('p',[_vm._v("简介")]),_vm._v(" "),_c('p',{staticStyle:{"color":"#888","font-size":"14px"}},[_vm._v(_vm._s(_vm.cpInfo.game_desc))])]),_vm._v(" "),_c('div',{staticClass:"backcolor-white padding-rem"},[_c('p',[_vm._v("游戏信息")]),_vm._v(" "),_c('p',[_c('span',[_vm._v("版本")]),_c('span',[_vm._v("v"+_vm._s(_vm.cpInfo.game_version))])]),_vm._v(" "),_c('p',[_c('span',[_vm._v("开发者")]),_c('span',[_vm._v(_vm._s(_vm.cpInfo.developer))])])]),_vm._v(" "),_c('div',{staticClass:"backcolor-white padding-rem"},[_c('p',[_vm._v("最近更新")]),_vm._v(" "),_c('p',[_c('span',[_vm._v("更新时间")]),_c('span',[_vm._v(_vm._s(_vm.cpInfo.update_time))])]),_vm._v(" "),_c('p',{staticStyle:{"color":"#888","font-size":"14px"}},[_vm._v(_vm._s(_vm.cpInfo.update_desc))])])]),_vm._v(" "),_c('div',{staticClass:"backcolor-white",attrs:{"id":"gameNameImg"}},[_c('div',_vm._l((_vm.cpInfo.game_screenshots),function(item,index){return _c('img',{key:index,attrs:{"src":item,"alt":""}})}),0)]),_vm._v(" "),_c('div',{staticClass:"backcolor-white",attrs:{"id":"gameProps"}},_vm._l((_vm.cpProps),function(item,index){return _c('div',{key:index,staticClass:"game-props"},[_c('div',[_c('img',{attrs:{"src":item.icon}})]),_vm._v(" "),_c('div',[_c('p',[_vm._v(_vm._s(item.props_name))]),_vm._v(" "),_c('p',[_vm._v(" ")]),_c('p'),_c('p',[_vm._v(_vm._s(item.props_desc))]),_vm._v(" "),_c('a',{staticClass:"gp-btn",on:{"click":function($event){return _vm.buyProp(item)}}},[_vm._v("购买")]),_vm._v(" "),_c('p',{staticClass:"color-red"},[_vm._v(_vm._s(_vm.assistant.toKg(item.props_price))+"千克")])])])}),0),_vm._v(" "),_c('div',{staticClass:"backcolor-white",attrs:{"id":"gameProps"}},[(_vm.commentsList.length==0)?_c('div',{staticClass:"no-comment-box"},[_vm._v("暂无评论")]):_vm._e(),_vm._v(" "),(_vm.commentsList.length > 0)?_c('div',_vm._l((_vm.commentsList),function(item,index){return _c('div',{key:index,staticClass:"game-props"},[_c('div',[_c('img',{attrs:{"src":item.avatar}})]),_vm._v(" "),_c('div',[_c('p',[_c('span',{staticStyle:{"color":"#666","font-size":"15px"}},[_vm._v(_vm._s(item.nick))])]),_vm._v(" "),_c('p',[_vm._v(" ")]),_c('p'),_c('p',[_c('span',{staticStyle:{"color":"#888"}},[_vm._v(_vm._s(item.content))])]),_vm._v(" "),_c('p',[_vm._v(" ")]),_vm._v(" "),_c('a',{staticClass:"gp-btn",on:{"click":function($event){return _vm.buyProp(item)}}},[_vm._v("体验")]),_vm._v(" "),_c('p',{staticClass:"color-red"},[_vm._v(_vm._s(_vm.assistant.toKg(item.props_price))+"千克")]),_vm._v(" "),_c('p',{staticStyle:{"text-align":"right","width":"100%"}},[_c('span',{staticStyle:{"color":"#888"}},[_vm._v(_vm._s(item.timestamp))])])])])}),0):_vm._e(),_vm._v(" "),_c('tabbar',{staticStyle:{"background-color":"#FAFAFA","height":"50px"}},[_c('flexbox',[_c('flexbox-item',[_c('div',{staticClass:"flex-demo"},[_c('x-input',{attrs:{"placeholder":"输入评论内容"},model:{value:(_vm.msgInput),callback:function ($$v) {_vm.msgInput=$$v},expression:"msgInput"}})],1)]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":3}},[_c('div',{staticClass:"flex-demo",staticStyle:{"padding":"10px"}},[_c('x-button',{attrs:{"type":"primary"},nativeOn:{"click":function($event){return _vm.commentPub($event)}}},[_c('span',{staticStyle:{"font-size":"14px"}},[_vm._v("发表")])])],1)])],1)],1)],1)])])}
 var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',[_c('span',{staticClass:"color-999"},[_vm._v("128人玩过")]),_vm._v(" "),_c('span',{staticClass:"color-orange float-right"},[_c('i',{staticClass:"fa fa-thumbs-o-up",attrs:{"aria-hidden":"true"}}),_vm._v("编辑推荐")])])}]
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ var selectortype_template_index_0_src_pages_GameInfo = (esExports);
 // CONCATENATED MODULE: ./src/pages/GameInfo.vue
 function injectStyle (ssrContext) {
-  __webpack_require__("8sFM")
+  __webpack_require__("Q6Gb")
 }
 var normalizeComponent = __webpack_require__("VU/8")
 /* script */
@@ -1065,7 +1047,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-679f1070"
+var __vue_scopeId__ = "data-v-8adcbeea"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -3414,7 +3396,7 @@ var msg_Component = msg_normalizeComponent(
     }
   }
 });
-// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-660b3e4c","hasScoped":false,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/WeChatPay.vue
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-49db8c10","hasScoped":false,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/WeChatPay.vue
 var WeChatPay_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[(_vm.orderPre==true)?_c('div',[_c('br'),_c('br'),_vm._v(" "),_c('p',{staticStyle:{"text-align":"center"}},[_c('inline-loading')],1)]):(_vm.payResult==false)?_c('div',[_c('group',[_c('cell',{attrs:{"title":"商品","value":_vm.order.desc + '/' + _vm.order.num}}),_vm._v(" "),_c('cell',{attrs:{"title":"价格","value":_vm.order.price}})],1),_vm._v(" "),_c('div',{staticStyle:{"padding":"15px"}},[_c('x-button',{attrs:{"type":"primary","show-loading":_vm.showLoading},nativeOn:{"click":function($event){return _vm.wxPay()}}},[_vm._v("确定支付")])],1)],1):_c('div',[_c('br'),_vm._v(" "),_c('msg',{attrs:{"title":_vm.payTitle,"icon":_vm.payIcon}})],1),_vm._v(" "),_c('br')])}
 var WeChatPay_staticRenderFns = []
 var WeChatPay_esExports = { render: WeChatPay_render, staticRenderFns: WeChatPay_staticRenderFns }
@@ -4886,13 +4868,6 @@ var RedPackSharedOpen_Component = RedPackSharedOpen_normalizeComponent(
 
 /***/ }),
 
-/***/ "8sFM":
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
 /***/ "8vVr":
 /***/ (function(module, exports) {
 
@@ -5946,14 +5921,14 @@ var ScrollList = __webpack_require__("DpNv");
     }
   }
 });
-// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-704d720d","hasScoped":true,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/Crowds.vue
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"root",staticStyle:{"background-color":"white","margin-top":"-8px"}},[_c('ScrollList',{attrs:{"config":_vm.config},scopedSlots:_vm._u([{key:"default",fn:function(props){return [_c('div',[_c('div',{staticStyle:{"margin-top":"15px"}},[_c('flexbox',[_c('flexbox-item',{attrs:{"span":12}},[_c('div',{staticClass:"flex-left"},[_c('img',{staticStyle:{"width":"3px","height":"13px"},attrs:{"src":"/static/img/stock/hot_line.png"}}),_vm._v(" "),_c('span',{staticStyle:{"font-size":"15px"}},[_vm._v("热门众筹")])])])],1)],1),_vm._v(" "),_c('div',{staticStyle:{"margin-top":"-30px"}},[_c('div',{staticClass:"flex-left",staticStyle:{"position":"relative","top":"45px","left":"-5px"}},[_c('img',{staticStyle:{"width":"100px","height":"27px"},attrs:{"src":"/static/img/stock/ren_qi.png"}})]),_vm._v(" "),_vm._l((props.content),function(item,index){return _c('div',{key:index,staticClass:"crowdItem"},[_c('div',{staticStyle:{"padding":"10px"},on:{"click":function($event){return _vm.crowdDetail(item)}}},[_c('img',{staticClass:"img-top",attrs:{"src":item.large_img_url}}),_vm._v(" "),_c('flexbox',[_c('flexbox-item',{attrs:{"span":12}},[_c('div',{staticClass:"flex-left",staticStyle:{"margin-top":"6px","margin-bottom":"8px"}},[_c('span',{staticStyle:{"font-size":"15px"}},[_vm._v(_vm._s(item.funding_text))])])])],1),_vm._v(" "),_c('flexbox',[_c('flexbox-item',{attrs:{"span":1}},[_c('div',{staticClass:"flex-left"},[_c('span',{staticStyle:{"font-size":"15px"}},[_c('img',{staticStyle:{"width":"22px","height":"22px"},attrs:{"src":"/static/img/stock/headimg.png"}})])])]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":11}},[_c('div',{staticClass:"flex-left",staticStyle:{"margin-left":"-8px","margin-top":"-5px"}},[_c('span',{staticStyle:{"font-size":"15px"}},[_vm._v(_vm._s(item.provider))])])])],1),_vm._v(" "),_c('flexbox',[_c('flexbox-item',{attrs:{"span":12}},[_c('box',{attrs:{"gap":"10px"}},[_c('XXProgress',{attrs:{"percent":item.percent2,"show-cancel":false}})],1)],1)],1),_vm._v(" "),_c('flexbox',{staticStyle:{"height":"40px","line-height":"40px"}},[_c('flexbox-item',{attrs:{"span":4}},[_c('div',{staticClass:"flex-left"},[_c('img',{staticStyle:{"width":"15px","hegith":"15px"},attrs:{"src":"/static/img/stock/stock_jiner.png"}}),_vm._v(" "),_c('span',{staticStyle:{"color":"coral","font-size":"12px"}},[_vm._v(_vm._s(item.price)+"千克")])])]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":4}},[_c('div',{staticClass:"flex-left"},[_c('img',{staticStyle:{"width":"15px","hegith":"15px"},attrs:{"src":"/static/img/stock/stock_renshu.png"}}),_vm._v(" "),_c('span',{staticStyle:{"font-size":"12px"}},[_vm._v(_vm._s(item.supply_people_num))])])]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":4}},[_c('div',{staticClass:"flex-left"},[_c('img',{staticStyle:{"width":"15px","hegith":"15px"},attrs:{"src":"/static/img/stock/stock_shichang.png"}}),_vm._v(" "),_c('span',{staticStyle:{"font-size":"12px"}},[_vm._v(_vm._s(((item.percent2) + "%")))])])])],1)],1)])})],2)])]}}])}),_vm._v(" "),_c('navs')],1)}
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-00286ca5","hasScoped":true,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/Crowds.vue
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"root",staticStyle:{"background-color":"white","margin-top":"-8px"}},[_c('ScrollList',{attrs:{"config":_vm.config},scopedSlots:_vm._u([{key:"default",fn:function(props){return [_c('div',[_c('div',{staticStyle:{"margin-top":"15px"}},[_c('flexbox',[_c('flexbox-item',{attrs:{"span":12}},[_c('div',{staticClass:"flex-left"},[_c('img',{staticStyle:{"width":"3px","height":"13px"},attrs:{"src":"/static/img/stock/hot_line.png"}}),_vm._v(" "),_c('span',{staticStyle:{"font-size":"15px"}},[_vm._v("热门众筹")])])])],1)],1),_vm._v(" "),_c('div',{staticStyle:{"margin-top":"-30px"}},[_c('div',{staticClass:"flex-left",staticStyle:{"position":"relative","top":"45px","left":"-5px"}},[_c('img',{staticStyle:{"width":"100px","height":"27px"},attrs:{"src":"/static/img/stock/ren_qi.png"}})]),_vm._v(" "),_vm._l((props.content),function(item,index){return _c('div',{key:index,staticClass:"crowdItem"},[_c('div',{staticStyle:{"padding":"10px"},on:{"click":function($event){return _vm.crowdDetail(item)}}},[_c('img',{staticClass:"img-top",attrs:{"src":item.large_img_url}}),_vm._v(" "),_c('flexbox',[_c('flexbox-item',{attrs:{"span":12}},[_c('div',{staticClass:"flex-left",staticStyle:{"margin-top":"6px","margin-bottom":"8px"}},[_c('span',{staticStyle:{"font-size":"15px"}},[_vm._v(_vm._s(item.funding_text))])])])],1),_vm._v(" "),_c('flexbox',[_c('flexbox-item',{attrs:{"span":1}},[_c('div',{staticClass:"flex-left"},[_c('span',{staticStyle:{"font-size":"15px"}},[_c('img',{staticStyle:{"width":"22px","height":"22px"},attrs:{"src":"/static/img/stock/headimg.png"}})])])]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":11}},[_c('div',{staticClass:"flex-left",staticStyle:{"margin-left":"-8px","margin-top":"-5px"}},[_c('span',{staticStyle:{"font-size":"15px"}},[_vm._v(_vm._s(item.provider))])])])],1),_vm._v(" "),_c('flexbox',[_c('flexbox-item',{attrs:{"span":12}},[_c('box',{attrs:{"gap":"10px"}},[_c('XXProgress',{attrs:{"percent":item.percent2,"show-cancel":false}})],1)],1)],1),_vm._v(" "),_c('flexbox',{staticStyle:{"height":"40px","line-height":"40px"}},[_c('flexbox-item',{attrs:{"span":4}},[_c('div',{staticClass:"flex-left"},[_c('img',{staticStyle:{"width":"15px","hegith":"15px"},attrs:{"src":"/static/img/stock/stock_jiner.png"}}),_vm._v(" "),_c('span',{staticStyle:{"color":"coral","font-size":"12px"}},[_vm._v(_vm._s(parseFloat(item.price/100000).toFixed(3))+"千克/个")])])]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":4}},[_c('div',{staticClass:"flex-left"},[_c('img',{staticStyle:{"width":"15px","hegith":"15px"},attrs:{"src":"/static/img/stock/stock_renshu.png"}}),_vm._v(" "),_c('span',{staticStyle:{"font-size":"12px"}},[_vm._v(_vm._s(item.supply_people_num))])])]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":4}},[_c('div',{staticClass:"flex-left"},[_c('img',{staticStyle:{"width":"15px","hegith":"15px"},attrs:{"src":"/static/img/stock/stock_shichang.png"}}),_vm._v(" "),_c('span',{staticStyle:{"font-size":"12px"}},[_vm._v(_vm._s(((item.percent2) + "%")))])])])],1)],1)])})],2)])]}}])}),_vm._v(" "),_c('navs')],1)}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ var selectortype_template_index_0_src_pages_Crowds = (esExports);
 // CONCATENATED MODULE: ./src/pages/Crowds.vue
 function injectStyle (ssrContext) {
-  __webpack_require__("i2cN")
+  __webpack_require__("Y69U")
 }
 var normalizeComponent = __webpack_require__("VU/8")
 /* script */
@@ -5966,7 +5941,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-704d720d"
+var __vue_scopeId__ = "data-v-00286ca5"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -5991,13 +5966,6 @@ var Component = normalizeComponent(
 /***/ }),
 
 /***/ "Blgf":
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ "C2PV":
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
@@ -6635,10 +6603,18 @@ var NoData = __webpack_require__("sqAx");
   },
   computed: {
     /**
+    * 分页列表数据
     * @warning 需要数据仓库在 getters 下设置 list 属性
     */
     content: function content() {
-      return this.$store.getters[this.config.store + '/list'];
+      return this.$store.getters[this.config.store + '/list'] || [];
+    },
+
+    /**
+    * 置顶数据
+    */
+    tops: function tops() {
+      return this.$store.getters[this.config.store + '/tops'] || [];
     }
   },
   created: function created() {
@@ -6755,10 +6731,18 @@ var NoData = __webpack_require__("sqAx");
   },
   computed: {
     /**
+    * 分页列表数据
     * @warning 需要数据仓库在 getters 下设置 list 属性
     */
     content: function content() {
-      return this.$store.getters[this.config.store + '/list'];
+      return this.$store.getters[this.config.store + '/list'] || [];
+    },
+
+    /**
+    * 置顶数据
+    */
+    tops: function tops() {
+      return this.$store.getters[this.config.store + '/tops'] || [];
     }
   },
   created: function created() {
@@ -6771,14 +6755,14 @@ var NoData = __webpack_require__("sqAx");
     this.isActive = false;
   }
 });
-// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-e2533b96","hasScoped":true,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/ScrollList.vue
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[(_vm.isLoadMore)?_c('div',[_c('scroller',{ref:"scroller",attrs:{"height":"-100","lock-x":"","scrollbar-y":"","bounce":true,"use-pulldown":true,"pulldown-config":_vm.downobj,"use-pullup":true,"pullup-config":_vm.upobj},on:{"on-pulldown-loading":_vm.selPullDown,"on-pullup-loading":_vm.selPullUp},model:{value:(_vm.scrollerStatus),callback:function ($$v) {_vm.scrollerStatus=$$v},expression:"scrollerStatus"}},[_c('div',[_vm._t("default",null,{"content":_vm.content})],2)])],1):_vm._e(),_vm._v(" "),(_vm.isLoadMore && _vm.content.length==0 && _vm.showNoData==true && !!_vm.config.nodata)?_c('div',[_c('no-data',{attrs:{"src":_vm.config.nodata}})],1):_vm._e(),_vm._v(" "),(!_vm.isLoadMore)?_c('div',[_c('load-more',{staticStyle:{"position":"relative","top":"250px"},attrs:{"tip":"正在加载","show-loading":!_vm.isLoadMore}})],1):_vm._e()])}
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-6adeb06d","hasScoped":true,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/ScrollList.vue
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[(_vm.isLoadMore)?_c('div',[_c('scroller',{ref:"scroller",attrs:{"height":"-100","lock-x":"","scrollbar-y":"","bounce":true,"use-pulldown":true,"pulldown-config":_vm.downobj,"use-pullup":true,"pullup-config":_vm.upobj},on:{"on-pulldown-loading":_vm.selPullDown,"on-pullup-loading":_vm.selPullUp},model:{value:(_vm.scrollerStatus),callback:function ($$v) {_vm.scrollerStatus=$$v},expression:"scrollerStatus"}},[_c('div',[_vm._t("default",null,{"content":_vm.content,"tops":_vm.tops})],2)])],1):_vm._e(),_vm._v(" "),(_vm.isLoadMore && _vm.content.length==0 && _vm.showNoData==true && !!_vm.config.nodata)?_c('div',[_c('no-data',{attrs:{"src":_vm.config.nodata}})],1):_vm._e(),_vm._v(" "),(!_vm.isLoadMore)?_c('div',[_c('load-more',{staticStyle:{"position":"relative","top":"250px"},attrs:{"tip":"正在加载","show-loading":!_vm.isLoadMore}})],1):_vm._e()])}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ var selectortype_template_index_0_src_components_ScrollList = (esExports);
 // CONCATENATED MODULE: ./src/components/ScrollList.vue
 function injectStyle (ssrContext) {
-  __webpack_require__("hRI8")
+  __webpack_require__("oRCV")
 }
 var normalizeComponent = __webpack_require__("VU/8")
 /* script */
@@ -6791,7 +6775,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-e2533b96"
+var __vue_scopeId__ = "data-v-6adeb06d"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -7598,12 +7582,6 @@ var ScrollList = __webpack_require__("DpNv");
       config: {
         store: 'cp', //引用的数据仓库
         nodata: '/static/img/default/no-product.png' //列表为空时的占位图片
-      },
-      recommendGame: {
-        gameTitle: "奔跑的悟空",
-        src: "/static/img/game/game-3.jpg",
-        gameProvider: "原石互娱",
-        cpid: 'chick'
       }
     };
   },
@@ -7619,10 +7597,6 @@ var ScrollList = __webpack_require__("DpNv");
         name: "GameInfo",
         params: { cpInfo: item }
       });
-    },
-    gotoGame: function gotoGame() {
-
-      window.location.href = 'http://chick.gamegold.xin/?openid=' + this.userBase.openid + '&openkey=' + this.userBase.openkey;
     }
   },
   created: function created() {}
@@ -7646,12 +7620,6 @@ var ScrollList = __webpack_require__("DpNv");
       config: {
         store: 'cp', //引用的数据仓库
         nodata: '/static/img/default/no-product.png' //列表为空时的占位图片
-      },
-      recommendGame: {
-        gameTitle: "奔跑的悟空",
-        src: "/static/img/game/game-3.jpg",
-        gameProvider: "原石互娱",
-        cpid: 'chick'
       }
     };
   },
@@ -7667,22 +7635,18 @@ var ScrollList = __webpack_require__("DpNv");
         name: "GameInfo",
         params: { cpInfo: item }
       });
-    },
-    gotoGame: function gotoGame() {
-
-      window.location.href = 'http://chick.gamegold.xin/?openid=' + this.userBase.openid + '&openkey=' + this.userBase.openkey;
     }
   },
   created: function created() {}
 });
-// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-65e8f77d","hasScoped":true,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/Games.vue
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('ScrollList',{attrs:{"config":_vm.config},scopedSlots:_vm._u([{key:"default",fn:function(props){return [_c('div',[_c('div',{staticStyle:{"height":"5px"}}),_vm._v(" "),_c('div',{staticStyle:{"background-color":"white"}},[_c('div',{staticStyle:{"padding":"10px 10px 0px 10px"},on:{"click":_vm.gotoGame}},[_c('img',{staticClass:"img-top",attrs:{"src":_vm.recommendGame.src}})]),_vm._v(" "),_c('div',[_c('p',{staticStyle:{"font-size":"15px","padding":"5px 0px 0px 10px"}},[_c('span',{staticStyle:{"color":"red"}},[_vm._v("推荐")]),_vm._v(" "),_c('span',{staticStyle:{"margin-left":"5px"}},[_vm._v(_vm._s(_vm.recommendGame.gameTitle))])])]),_vm._v(" "),_c('div',[_c('p',{staticStyle:{"font-size":"13px","color":"#888","padding":"5px 0px 10px 10px"}},[_vm._v(_vm._s(_vm.recommendGame.gameProvider))])])]),_vm._v(" "),_vm._l((props.content),function(item,index){return _c('div',{key:index,staticClass:"gameItem"},[_c('flexbox',{nativeOn:{"click":function($event){return _vm.gotoCpInfo(item, index)}}},[_c('flexbox-item',{staticStyle:{"padding":"0.3rem"},attrs:{"span":4}},[_c('div',{staticClass:"flex-demo-left"},[_c('img',{staticClass:"img-game-list",attrs:{"src":item.small_img_url}})])]),_vm._v(" "),_c('flexbox-item',[_c('div',{staticStyle:{"padding-left":"6px"}},[_c('p',[_c('span',{staticStyle:{"font-size":"15px"}},[_vm._v(_vm._s(item.game_title))])]),_vm._v(" "),_c('p',[_c('span',{staticStyle:{"color":"#888","font-size":"14px"}},[_vm._v(_vm._s(item.game_desc))])])])])],1)],1)})],2)]}}])})],1)}
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-47cb9b5e","hasScoped":true,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/Games.vue
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('ScrollList',{attrs:{"config":_vm.config},scopedSlots:_vm._u([{key:"default",fn:function(props){return [_c('div',[_c('div',{staticStyle:{"height":"5px"}}),_vm._v(" "),(props.tops.length>0)?_c('div',{staticStyle:{"background-color":"white"}},[_c('div',{staticStyle:{"padding":"10px 10px 0px 10px"},on:{"click":function($event){return _vm.gotoCpInfo(props.tops[0])}}},[_c('img',{staticClass:"img-top",attrs:{"src":props.tops[0].game_resource_uri}})]),_vm._v(" "),_c('div',[_c('p',{staticStyle:{"font-size":"15px","padding":"5px 0px 0px 10px"}},[_c('span',{staticStyle:{"color":"red"}},[_vm._v("推荐")]),_vm._v(" "),_c('span',{staticStyle:{"margin-left":"5px"}},[_vm._v(_vm._s(props.tops[0].game_title))])])]),_vm._v(" "),_c('div',[_c('p',{staticStyle:{"font-size":"13px","color":"#888","padding":"5px 0px 10px 10px"}},[_vm._v(_vm._s(props.tops[0].provider_name))])])]):_vm._e(),_vm._v(" "),_vm._l((props.content),function(item,index){return _c('div',{key:index,staticClass:"gameItem"},[_c('flexbox',{nativeOn:{"click":function($event){return _vm.gotoCpInfo(item, index)}}},[_c('flexbox-item',{staticStyle:{"padding":"0.3rem"},attrs:{"span":4}},[_c('div',{staticClass:"flex-demo-left"},[_c('img',{staticClass:"img-game-list",attrs:{"src":item.small_img_url}})])]),_vm._v(" "),_c('flexbox-item',[_c('div',{staticStyle:{"padding-left":"6px"}},[_c('p',[_c('span',{staticStyle:{"font-size":"15px"}},[_vm._v(_vm._s(item.game_title))])]),_vm._v(" "),_c('p',[_c('span',{staticStyle:{"color":"#888","font-size":"14px"}},[_vm._v(_vm._s(item.game_desc))])])])])],1)],1)})],2)]}}])})],1)}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ var selectortype_template_index_0_src_components_Games = (esExports);
 // CONCATENATED MODULE: ./src/components/Games.vue
 function injectStyle (ssrContext) {
-  __webpack_require__("P2fH")
+  __webpack_require__("KlDL")
 }
 var normalizeComponent = __webpack_require__("VU/8")
 /* script */
@@ -7695,7 +7659,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-65e8f77d"
+var __vue_scopeId__ = "data-v-47cb9b5e"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -8035,6 +7999,304 @@ var Home_Component = Home_normalizeComponent(
 
 /* harmony default export */ var src_pages_Home = __webpack_exports__["a"] = (Home_Component.exports);
 
+
+/***/ }),
+
+/***/ "KP+A":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/x-button/index.vue + 3 modules
+var x_button = __webpack_require__("2sLL");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/x-header/index.vue + 3 modules
+var x_header = __webpack_require__("ABCa");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/tab/tab.vue + 3 modules
+var tab = __webpack_require__("odqc");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/tab/tab-item.vue + 3 modules
+var tab_item = __webpack_require__("Znkm");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/flexbox/flexbox.vue + 3 modules
+var flexbox = __webpack_require__("YxJB");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/flexbox/flexbox-item.vue + 3 modules
+var flexbox_item = __webpack_require__("3Lt7");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/group/index.vue + 3 modules
+var group = __webpack_require__("rHil");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/divider/index.vue + 3 modules
+var divider = __webpack_require__("rGqP");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/box/index.vue + 3 modules
+var box = __webpack_require__("QTi7");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/inline-x-number/index.vue + 7 modules
+var inline_x_number = __webpack_require__("iFAF");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/cell/index.vue + 3 modules
+var cell = __webpack_require__("1DHf");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/cell-box/index.vue + 3 modules
+var cell_box = __webpack_require__("32ER");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/cell-form-preview/index.vue + 3 modules
+var cell_form_preview = __webpack_require__("jHVj");
+
+// EXTERNAL MODULE: ./node_modules/vux/src/components/badge/index.vue + 3 modules
+var badge = __webpack_require__("D8a4");
+
+// EXTERNAL MODULE: ./src/components/Navs.vue + 7 modules
+var Navs = __webpack_require__("1v+H");
+
+// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vux-loader/src/script-loader.js!./node_modules/vux-loader/src/script-loader.js!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/PayOrder.vue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* harmony default export */ var PayOrder = ({
+  components: {
+    Navs: Navs["a" /* default */],
+    Tab: tab["a" /* default */],
+    XButton: x_button["a" /* default */],
+    XHeader: x_header["a" /* default */],
+    TabItem: tab_item["a" /* default */],
+    Flexbox: flexbox["a" /* default */],
+    FlexboxItem: flexbox_item["a" /* default */],
+    Group: group["a" /* default */],
+    Divider: divider["a" /* default */],
+    Box: box["a" /* default */],
+    InlineXNumber: inline_x_number["a" /* default */],
+    Cell: cell["a" /* default */],
+    CellBox: cell_box["a" /* default */],
+    CellFormPreview: cell_form_preview["a" /* default */],
+    Badge: badge["a" /* default */]
+  },
+  data: function data() {
+    return {
+      headerTitle: "凭证购买",
+      tabIndex: 0,
+      item: {},
+      showLoading: false,
+      flagMore: false
+    };
+  },
+
+  computed: {
+    userBase: function userBase() {
+      return this.$store.state.user.auth;
+    }
+  },
+  methods: {
+    viewMore: function viewMore() {
+      console.log("进入viewMore方法");
+      this.flagMore = true;
+    },
+    OrderPay: function OrderPay() {
+      var _this = this;
+
+      this.$store.dispatch('wallet/pay', {
+        sn: this.item.sn,
+        cid: this.item.cid,
+        price: this.item.price
+      }).then(function (res) {
+        if (res.code == 0) {
+          _this.$vux.alert.show({
+            title: '购买成功',
+            content: '购买成功'
+          });
+        } else {
+          _this.$vux.alert.show({
+            title: '购买失败',
+            content: res.msg
+          });
+        }
+
+        window.location.href = _this.item.url;
+      }).catch(function (e) {
+        console.log(e);
+      });
+    }
+  },
+
+  created: function created() {
+    console.log('PayOrder', this.$route.params.order);
+    if (!this.$route.params.order) {
+      if (!this.userBase.uid) {
+        this.$router.push({ name: 'Login' });
+      } else {
+        this.$router.push('/home');
+      }
+    } else if (!this.userBase.uid) {
+      this.$router.push({ name: 'Login', params: { path: '/wallet/pay/' + this.$route.params.order } });
+    } else {
+      this.item = this.$route.params.order;
+      if (typeof this.item == 'string') {
+        this.item = JSON.parse(decodeURIComponent(this.item));
+      }
+    }
+  }
+});
+// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vux-loader/src/script-loader.js!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/pages/PayOrder.vue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* harmony default export */ var pages_PayOrder = ({
+  components: {
+    Navs: Navs["a" /* default */],
+    Tab: tab["a" /* default */],
+    XButton: x_button["a" /* default */],
+    XHeader: x_header["a" /* default */],
+    TabItem: tab_item["a" /* default */],
+    Flexbox: flexbox["a" /* default */],
+    FlexboxItem: flexbox_item["a" /* default */],
+    Group: group["a" /* default */],
+    Divider: divider["a" /* default */],
+    Box: box["a" /* default */],
+    InlineXNumber: inline_x_number["a" /* default */],
+    Cell: cell["a" /* default */],
+    CellBox: cell_box["a" /* default */],
+    CellFormPreview: cell_form_preview["a" /* default */],
+    Badge: badge["a" /* default */]
+  },
+  data: function data() {
+    return {
+      headerTitle: "凭证购买",
+      tabIndex: 0,
+      item: {},
+      showLoading: false,
+      flagMore: false
+    };
+  },
+
+  computed: {
+    userBase: function userBase() {
+      return this.$store.state.user.auth;
+    }
+  },
+  methods: {
+    viewMore: function viewMore() {
+      console.log("进入viewMore方法");
+      this.flagMore = true;
+    },
+    OrderPay: function OrderPay() {
+      var _this = this;
+
+      this.$store.dispatch('wallet/pay', {
+        sn: this.item.sn,
+        cid: this.item.cid,
+        price: this.item.price
+      }).then(function (res) {
+        if (res.code == 0) {
+          _this.$vux.alert.show({
+            title: '购买成功',
+            content: '购买成功'
+          });
+        } else {
+          _this.$vux.alert.show({
+            title: '购买失败',
+            content: res.msg
+          });
+        }
+
+        window.location.href = _this.item.url;
+      }).catch(function (e) {
+        console.log(e);
+      });
+    }
+  },
+
+  created: function created() {
+    console.log('PayOrder', this.$route.params.order);
+    if (!this.$route.params.order) {
+      if (!this.userBase.uid) {
+        this.$router.push({ name: 'Login' });
+      } else {
+        this.$router.push('/home');
+      }
+    } else if (!this.userBase.uid) {
+      this.$router.push({ name: 'Login', params: { path: '/wallet/pay/' + this.$route.params.order } });
+    } else {
+      this.item = this.$route.params.order;
+      if (typeof this.item == 'string') {
+        this.item = JSON.parse(decodeURIComponent(this.item));
+      }
+    }
+  }
+});
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-2a9444c2","hasScoped":true,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/PayOrder.vue
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"root"},[_c('div',{staticStyle:{"background-color":"#f3f3f3"}},[_c('flexbox',[_c('flexbox-item',{attrs:{"span":12}},[_c('div',{staticStyle:{"height":"6px"}})])],1)],1),_vm._v(" "),(!!_vm.item)?_c('div',{staticStyle:{"background-color":"white"}},[_c('div',[_c('flexbox',{staticClass:"cell"},[_c('flexbox-item',{attrs:{"span":3}},[_c('div',{staticStyle:{"display":"block","padding":"8px"}},[_c('img',{staticStyle:{"width":"auto","height":"auto","max-width":"100%","max-height":"100%"},attrs:{"src":"/static/img/stock/orderfree/head.png"}})])]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":9}},[_c('div',{staticStyle:{"display":"block","margin-left":"5px","line-height":"30px"}},[_c('span',{staticStyle:{"font-size":"16px","font-family":"'黑体','Heiti SC','Droidsansfallback'","color":"rgb(50,58,69)"}},[_vm._v(_vm._s(_vm.item.desc))]),_c('br'),_vm._v(" "),_c('span',{staticStyle:{"font-size":"16px","font-family":"'黑体','Heiti SC','Droidsansfallback'","color":"rgb(255,113,100)"}},[_vm._v(_vm._s(parseFloat(_vm.item.price/100000).toFixed(3))+"千克")])])])],1)],1),_vm._v(" "),_c('flexbox',[_c('flexbox-item',{attrs:{"span":12}},[_c('div',{staticStyle:{"height":"2px","background-color":"#f3f3f3"}})])],1),_vm._v(" "),_c('flexbox',{staticClass:"cell"},[_c('flexbox-item',{attrs:{"span":4}},[_c('div',{staticStyle:{"display":"block","text-align":"left"}},[_c('img',{staticStyle:{"width":"22px","height":"19px"},attrs:{"src":"/static/img/stock/orderfree/buy.png"}}),_vm._v(" "),_c('span',{staticStyle:{"font-size":"15px","font-family":"'黑体','Heiti SC','Droidsansfallback'","color":"rgb(50,58,69)","vertical-align":"top"}},[_vm._v("游戏金支付")])])]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":3}}),_vm._v(" "),_c('flexbox-item',{attrs:{"span":3}},[_c('div',{staticStyle:{"display":"block","text-align":"right"}},[_c('img',{staticStyle:{"width":"14px","height":"14px"},attrs:{"src":"/static/img/stock/order/wechat_ok.png"}})])]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":2}})],1)],1):_vm._e(),_vm._v(" "),_c('div',[_c('flexbox',{staticStyle:{"margin":"0px","padding":"0px","border-style":"outset none outset none","border-width":"1px"}},[_c('flexbox-item',{attrs:{"span":7}},[_c('div',{staticStyle:{"width":"100%","height":"100%","align":"center","text-align":"center"}},[_c('label',{staticStyle:{"font-weight":"bold","font-size":"16px","color":"rgb(255,113,101)"}},[_vm._v(_vm._s(parseFloat(_vm.item.price/100000).toFixed(3))+"千克")])])]),_vm._v(" "),_c('flexbox-item',{attrs:{"span":5}},[_c('x-button',{staticStyle:{"border-radius":"0px","background-color":"rgb(255,113,101)"},attrs:{"type":"warn","show-loading":_vm.showLoading},nativeOn:{"click":function($event){return _vm.OrderPay()}}},[_vm._v("确认支付")])],1)],1)],1)])}
+var staticRenderFns = []
+var esExports = { render: render, staticRenderFns: staticRenderFns }
+/* harmony default export */ var selectortype_template_index_0_src_pages_PayOrder = (esExports);
+// CONCATENATED MODULE: ./src/pages/PayOrder.vue
+function injectStyle (ssrContext) {
+  __webpack_require__("uMTb")
+}
+var normalizeComponent = __webpack_require__("VU/8")
+/* script */
+
+
+/* template */
+
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-2a9444c2"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  pages_PayOrder,
+  selectortype_template_index_0_src_pages_PayOrder,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+
+/* harmony default export */ var src_pages_PayOrder = __webpack_exports__["a"] = (Component.exports);
+
+
+/***/ }),
+
+/***/ "KlDL":
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ }),
 
@@ -9015,19 +9277,31 @@ var contract_mod = {
 
 
 /**
- * 游戏数据集合
+ * CP集合
  */
 var cp_mod = {
     namespaced: true, //独立命名空间
 
     state: {
-        list: [], //CP列表，用于分页显示，注意为了节省空间，只存放CP编码
+        list: [], //分页列表，用于分页显示，注意为了节省空间，只存放CP编码
+        tops: [], //置顶列表，注意为了节省空间，只存放CP编码
         dict: {}, //CP字典，以CP编码为索引，用于快速索引CP对象
         pageMax: 1 //网络获取的最大页数
     },
     getters: {
+        /**
+         * 为可视控件提供访问分页列表的接口
+         */
         list: function list(state) {
             return state.list.map(function (id) {
+                return state.dict[id];
+            });
+        },
+        /**
+         * 为可视控件提供访问置顶数据的接口
+         */
+        tops: function tops(state) {
+            return state.tops.map(function (id) {
                 return state.dict[id];
             });
         }
@@ -9082,11 +9356,42 @@ var cp_mod = {
 
             state.list = state.list.concat(ls);
         },
+        setTops: function setTops(state, arr) {
+            state.tops = [];
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = get_iterator_default()(arr), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var item = _step2.value;
+
+                    state.dict[item.cpid] = item;
+                    if (!state.tops.includes(item.cpid)) {
+                        state.tops.push(item.cpid);
+                    }
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+        },
         setPage: function setPage(state, page) {
             state.pageMax = page;
         },
         clear: function clear(state) {
             state.list = [];
+            state.tops = [];
             state.dict = {};
             state.pageMax = 1;
         }
@@ -9137,6 +9442,9 @@ var cp_mod = {
                                 res = _context.sent;
 
                                 if (res.code == 0) {
+                                    console.log('cp.list, curPage:', curPage, res);
+                                    context.commit('setTops', res.data.tops);
+
                                     //设定最大页数
                                     if (context.state.pageMax != res.data.total) {
                                         context.commit('setPage', res.data.total);
@@ -11636,6 +11944,7 @@ var user_mod = {
 
 
 
+
 /**
  * 道具数据集合
  */
@@ -11893,7 +12202,7 @@ var wallet_mod = {
                             case 0:
                                 _context5.next = 2;
                                 return utils_remote.fetching({
-                                    func: 'order.prepay',
+                                    func: 'wallet.prepay',
                                     order: params.order
                                 });
 
@@ -11920,7 +12229,7 @@ var wallet_mod = {
                             case 0:
                                 _context6.next = 2;
                                 return utils_remote.fetching({
-                                    func: 'order.OrderPayResult',
+                                    func: 'wallet.OrderPayResult',
                                     tradeId: params.tradeId,
                                     status: params.status
                                 });
@@ -11953,12 +12262,9 @@ var wallet_mod = {
                         switch (_context7.prev = _context7.next) {
                             case 0:
                                 _context7.next = 2;
-                                return utils_remote.fetching({
-                                    func: 'order.OrderPay',
-                                    cid: params.cid,
-                                    sn: params.sn,
-                                    price: params.price
-                                });
+                                return utils_remote.fetching(extends_default()({
+                                    func: 'wallet.OrderPay'
+                                }, params));
 
                             case 2:
                                 res = _context7.sent;
@@ -12321,13 +12627,6 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIIAAABQCAYAAADV
 
 /***/ }),
 
-/***/ "P2fH":
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
 /***/ "P7ry":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -12514,7 +12813,7 @@ var flexbox_item = __webpack_require__("3Lt7");
               redirect_uri = _this2.remote.appConfig.siteUri;
 
               if (_this2.urlParamPath) {
-                redirect_uri = redirect_uri + ('?path=' + _this2.urlParamPath);
+                redirect_uri = redirect_uri + ('?path=' + encodeURIComponent(_this2.urlParamPath));
               }
               url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + _this2.remote.appConfig.wx_appid + '&redirect_uri=' + encodeURIComponent(redirect_uri) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect';
 
@@ -12703,7 +13002,7 @@ var flexbox_item = __webpack_require__("3Lt7");
               redirect_uri = _this2.remote.appConfig.siteUri;
 
               if (_this2.urlParamPath) {
-                redirect_uri = redirect_uri + ('?path=' + _this2.urlParamPath);
+                redirect_uri = redirect_uri + ('?path=' + encodeURIComponent(_this2.urlParamPath));
               }
               url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + _this2.remote.appConfig.wx_appid + '&redirect_uri=' + encodeURIComponent(redirect_uri) + '&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect';
 
@@ -12735,14 +13034,14 @@ var flexbox_item = __webpack_require__("3Lt7");
     }))();
   }
 });
-// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-ce1f9b92","hasScoped":true,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/Login.vue
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-4fc9820a","hasScoped":true,"transformToRequire":{"video":"src","source":"src","img":"src","image":"xlink:href"},"buble":{"transforms":{}}}!./node_modules/vux-loader/src/before-template-compiler-loader.js!./node_modules/vux-loader/src/template-loader.js!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/pages/Login.vue
 var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return (_vm.refresh)?_c('div',[_c('box',{attrs:{"gap":"10px 10px"}},[_c('flexbox',[_c('flexbox-item',{attrs:{"span":3}}),_vm._v(" "),_c('flexbox-item',{attrs:{"span":6}},[_c('x-button',{staticClass:"xbutton",attrs:{"plain":"","type":"warn"},nativeOn:{"click":function($event){return _vm.tryagain($event)}}},[_vm._v("再次登录")])],1)],1)],1)],1):_vm._e()}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ var selectortype_template_index_0_src_pages_Login = (esExports);
 // CONCATENATED MODULE: ./src/pages/Login.vue
 function injectStyle (ssrContext) {
-  __webpack_require__("C2PV")
+  __webpack_require__("PVP/")
 }
 var normalizeComponent = __webpack_require__("VU/8")
 /* script */
@@ -12755,7 +13054,7 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-ce1f9b92"
+var __vue_scopeId__ = "data-v-4fc9820a"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -12769,6 +13068,13 @@ var Component = normalizeComponent(
 
 /* harmony default export */ var src_pages_Login = __webpack_exports__["a"] = (Component.exports);
 
+
+/***/ }),
+
+/***/ "PVP/":
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ }),
 
@@ -12794,6 +13100,13 @@ var Component = normalizeComponent(
 /***/ }),
 
 /***/ "Py9F":
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ "Q6Gb":
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
@@ -15010,6 +15323,13 @@ var Component = normalizeComponent(
 
 /***/ }),
 
+/***/ "Y69U":
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
 /***/ "YaEn":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -15031,37 +15351,39 @@ var Component = normalizeComponent(
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__pages_Mine__ = __webpack_require__("iGU7");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__pages_Wallet__ = __webpack_require__("nQni");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__pages_WalletSend__ = __webpack_require__("vhzf");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__pages_WalletReceive__ = __webpack_require__("DUCS");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__pages_WalletTrans__ = __webpack_require__("thv7");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__pages_Props__ = __webpack_require__("DAO6");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__pages_GameInfo__ = __webpack_require__("0BFO");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__pages_PropDetail__ = __webpack_require__("2yuw");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__pages_MailReader__ = __webpack_require__("SM73");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__pages_PropSend__ = __webpack_require__("zVsL");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__pages_PropSaleInfo__ = __webpack_require__("8IbV");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__pages_PropReceive__ = __webpack_require__("9RQ1");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__pages_ContractInfo__ = __webpack_require__("lKC1");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__pages_About__ = __webpack_require__("en7K");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__pages_Member__ = __webpack_require__("oIwR");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__pages_WeChatPay__ = __webpack_require__("56jv");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__pages_Message__ = __webpack_require__("kEhC");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__pages_RedPackAct__ = __webpack_require__("gIH/");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__pages_MyGame__ = __webpack_require__("XBz+");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__pages_Login__ = __webpack_require__("P7ry");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__pages_luckywheel__ = __webpack_require__("q/Fo");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__pages_RedPackShared__ = __webpack_require__("ts25");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_36__pages_RedPackSharedSend__ = __webpack_require__("evcx");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_37__pages_RedPackSharedReceive__ = __webpack_require__("/EJR");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_38__pages_RedPackSharedOpen__ = __webpack_require__("8mc1");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_39__pages_BuySuccess__ = __webpack_require__("vMZY");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_40__pages_BuyFail__ = __webpack_require__("iKMR");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_41__pages_PaySuccess__ = __webpack_require__("7GzU");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_42__pages_HouseAddress__ = __webpack_require__("TB4m");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_43__pages_HouseAddressAdd__ = __webpack_require__("iXn+");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_44__pages_SendSuccess__ = __webpack_require__("gMHV");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_45__pages_SendFail__ = __webpack_require__("dWuC");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_46__pages_SendConfirm__ = __webpack_require__("Wo8K");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_47__pages_TransList__ = __webpack_require__("cKPp");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__pages_PayOrder__ = __webpack_require__("KP+A");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__pages_WalletReceive__ = __webpack_require__("DUCS");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__pages_WalletTrans__ = __webpack_require__("thv7");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__pages_Props__ = __webpack_require__("DAO6");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__pages_GameInfo__ = __webpack_require__("0BFO");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__pages_PropDetail__ = __webpack_require__("2yuw");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__pages_MailReader__ = __webpack_require__("SM73");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__pages_PropSend__ = __webpack_require__("zVsL");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__pages_PropSaleInfo__ = __webpack_require__("8IbV");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__pages_PropReceive__ = __webpack_require__("9RQ1");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__pages_ContractInfo__ = __webpack_require__("lKC1");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__pages_About__ = __webpack_require__("en7K");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__pages_Member__ = __webpack_require__("oIwR");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__pages_WeChatPay__ = __webpack_require__("56jv");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__pages_Message__ = __webpack_require__("kEhC");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__pages_RedPackAct__ = __webpack_require__("gIH/");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__pages_MyGame__ = __webpack_require__("XBz+");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__pages_Login__ = __webpack_require__("P7ry");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__pages_luckywheel__ = __webpack_require__("q/Fo");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_36__pages_RedPackShared__ = __webpack_require__("ts25");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_37__pages_RedPackSharedSend__ = __webpack_require__("evcx");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_38__pages_RedPackSharedReceive__ = __webpack_require__("/EJR");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_39__pages_RedPackSharedOpen__ = __webpack_require__("8mc1");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_40__pages_BuySuccess__ = __webpack_require__("vMZY");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_41__pages_BuyFail__ = __webpack_require__("iKMR");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_42__pages_PaySuccess__ = __webpack_require__("7GzU");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_43__pages_HouseAddress__ = __webpack_require__("TB4m");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_44__pages_HouseAddressAdd__ = __webpack_require__("iXn+");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_45__pages_SendSuccess__ = __webpack_require__("gMHV");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_46__pages_SendFail__ = __webpack_require__("dWuC");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_47__pages_SendConfirm__ = __webpack_require__("Wo8K");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_48__pages_TransList__ = __webpack_require__("cKPp");
+
 
 
 
@@ -15117,7 +15439,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */].use(__WEBPACK_IMPORTED_MODU
 /* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
     mode: 'history',
     base: __dirname,
-    routes: [{ path: '/', redirect: 'Login' }, { path: '/login', name: 'Login', component: __WEBPACK_IMPORTED_MODULE_33__pages_Login__["a" /* default */], meta: { title: 'Vallnet' } }, { path: '/home', name: 'Home', component: __WEBPACK_IMPORTED_MODULE_2__pages_Home__["a" /* default */], meta: { title: 'Vallnet' } }, { path: '/about', name: 'About', component: __WEBPACK_IMPORTED_MODULE_27__pages_About__["a" /* default */], meta: { title: '关于我们' } }, { path: '/member', name: 'Member', component: __WEBPACK_IMPORTED_MODULE_28__pages_Member__["a" /* default */], meta: { title: '成员' } }, { path: '/mine', name: 'Mine', component: __WEBPACK_IMPORTED_MODULE_14__pages_Mine__["a" /* default */], meta: { title: '我的' } }, { path: '/mygame', name: 'MyGame', component: __WEBPACK_IMPORTED_MODULE_32__pages_MyGame__["a" /* default */], meta: { title: '我的游戏' } }, { path: '/message', name: 'Message', component: __WEBPACK_IMPORTED_MODULE_30__pages_Message__["a" /* default */], meta: { title: '消息' } }, { path: '/message/read', name: 'MailReader', component: __WEBPACK_IMPORTED_MODULE_22__pages_MailReader__["a" /* default */], meta: { title: '邮件阅读' } }, { path: '/market', name: 'Market', component: __WEBPACK_IMPORTED_MODULE_3__pages_Market__["a" /* default */], meta: { title: 'Market' } }, { path: '/pocket', name: 'Pocket', component: __WEBPACK_IMPORTED_MODULE_5__pages_Pocket__["a" /* default */], meta: { title: '背包' } }, { path: '/pocket/info', name: 'ItemInfo', component: __WEBPACK_IMPORTED_MODULE_6__pages_ItemInfo__["a" /* default */], meta: { title: '背包 - 道具详情' } }, { path: '/crowds', name: 'Crowds', component: __WEBPACK_IMPORTED_MODULE_4__pages_Crowds__["a" /* default */], meta: { title: '众筹-百谷王游戏金链' } }, { path: '/crowd/my', name: 'StocksMine', component: __WEBPACK_IMPORTED_MODULE_9__pages_StocksMine__["a" /* default */], meta: { title: 'StocksMine' } }, { path: '/crowd/my/info', name: 'MyStockInfo', component: __WEBPACK_IMPORTED_MODULE_10__pages_MyStockInfo__["a" /* default */], meta: { title: '代练宝宝' } }, { path: '/crowd/my/sale', name: 'MyStockSale', component: __WEBPACK_IMPORTED_MODULE_11__pages_MyStockSale__["a" /* default */], meta: { title: '挂单出售中' } }, { path: '/crowd/my/send', name: 'MyStockSend', component: __WEBPACK_IMPORTED_MODULE_12__pages_MyStockSend__["a" /* default */], meta: { title: '凭证转让' } }, { path: '/crowd/info', name: 'CrowdInfo', component: __WEBPACK_IMPORTED_MODULE_7__pages_CrowdInfo__["a" /* default */], meta: { title: '众筹详情-百谷王游戏金链' } }, { path: '/crowd/order', name: 'CrowdOrder', component: __WEBPACK_IMPORTED_MODULE_8__pages_CrowdOrder__["a" /* default */], meta: { title: '确认订单' } }, { path: '/crowd/prePay', name: 'CrowdPrePay', component: __WEBPACK_IMPORTED_MODULE_13__pages_CrowdPrePay__["a" /* default */], meta: { title: '选择回报' } }, { path: '/crowd/SendSuccess', name: 'SendSuccess', component: __WEBPACK_IMPORTED_MODULE_44__pages_SendSuccess__["a" /* default */], meta: { title: '发送成功' } }, { path: '/crowd/SendFail', name: 'SendFail', component: __WEBPACK_IMPORTED_MODULE_45__pages_SendFail__["a" /* default */], meta: { title: ' 发送失败' } }, { path: '/crowd/SendConfirm', name: 'SendConfirm', component: __WEBPACK_IMPORTED_MODULE_46__pages_SendConfirm__["a" /* default */], meta: { title: '发送确认' } }, { path: '/crowd/TransList', name: 'TransList', component: __WEBPACK_IMPORTED_MODULE_47__pages_TransList__["a" /* default */], meta: { title: '交易清单' } }, { path: '/crowd/BuySuccess', name: 'BuySuccess', component: __WEBPACK_IMPORTED_MODULE_39__pages_BuySuccess__["a" /* default */], meta: { title: '购买成功' } }, { path: '/crowd/BuyFail', name: 'BuyFail', component: __WEBPACK_IMPORTED_MODULE_40__pages_BuyFail__["a" /* default */], meta: { title: ' 购买失败' } }, { path: '/crowd/PaySuccess', name: 'PaySuccess', component: __WEBPACK_IMPORTED_MODULE_41__pages_PaySuccess__["a" /* default */], meta: { title: '支付成功' } }, { path: '/crowd/HouseAddress', name: 'HouseAddress', component: __WEBPACK_IMPORTED_MODULE_42__pages_HouseAddress__["a" /* default */], meta: { title: '收货地址' } }, { path: '/crowd/HouseAddressAdd', name: 'HouseAddressAdd', component: __WEBPACK_IMPORTED_MODULE_43__pages_HouseAddressAdd__["a" /* default */], meta: { title: '添加收货地址' } }, { path: '/wallet', name: 'Wallet', component: __WEBPACK_IMPORTED_MODULE_15__pages_Wallet__["a" /* default */], meta: { title: '我的钱包' } }, { path: '/wallet/send', name: 'WalletSend', component: __WEBPACK_IMPORTED_MODULE_16__pages_WalletSend__["a" /* default */], meta: { title: '转账' } }, { path: '/wallet/receive', name: 'WalletReceive', component: __WEBPACK_IMPORTED_MODULE_17__pages_WalletReceive__["a" /* default */], meta: { title: '接受转账' } }, { path: '/wallet/trans', name: 'WalletTrans', component: __WEBPACK_IMPORTED_MODULE_18__pages_WalletTrans__["a" /* default */], meta: { title: '交易对' } }, { path: '/redpack/act', name: 'RedPackAct', component: __WEBPACK_IMPORTED_MODULE_31__pages_RedPackAct__["a" /* default */], meta: { title: '利是Act' } }, { path: '/redpackshared', name: 'RedPackShared', component: __WEBPACK_IMPORTED_MODULE_35__pages_RedPackShared__["a" /* default */], meta: { title: '多人利是管理' } }, { path: '/redpackshared/send', name: 'RedPackSharedSend', component: __WEBPACK_IMPORTED_MODULE_36__pages_RedPackSharedSend__["a" /* default */], meta: { title: '多人利是发送' } }, { path: '/redpackshared/unpack/:send_id', name: 'RedPackSharedOpen', component: __WEBPACK_IMPORTED_MODULE_38__pages_RedPackSharedOpen__["a" /* default */], meta: { title: '打开多人利是' } }, { path: '/redpackshared/receive/:send_id', name: 'RedPackSharedReceive', component: __WEBPACK_IMPORTED_MODULE_37__pages_RedPackSharedReceive__["a" /* default */], meta: { title: '多人利是接收' } }, { path: '/props', name: 'Props', component: __WEBPACK_IMPORTED_MODULE_19__pages_Props__["a" /* default */], meta: { title: '道具背包' } }, { path: '/prop/detail', name: 'PropDetail', component: __WEBPACK_IMPORTED_MODULE_21__pages_PropDetail__["a" /* default */], meta: { title: '道具详情' } }, { path: '/prop/receive', name: 'PropReceive', component: __WEBPACK_IMPORTED_MODULE_25__pages_PropReceive__["a" /* default */], meta: { title: '道具接收' } }, { path: '/prop/send', name: 'PropSend', component: __WEBPACK_IMPORTED_MODULE_23__pages_PropSend__["a" /* default */], meta: { title: '道具发送' } }, { path: '/prop/sale/info', name: 'PropSaleInfo', component: __WEBPACK_IMPORTED_MODULE_24__pages_PropSaleInfo__["a" /* default */], meta: { title: '道具销售' } }, { path: '/game/info', name: 'GameInfo', component: __WEBPACK_IMPORTED_MODULE_20__pages_GameInfo__["a" /* default */], meta: { title: '游戏信息' } }, { path: '/contract/info', name: 'ContractInfo', component: __WEBPACK_IMPORTED_MODULE_26__pages_ContractInfo__["a" /* default */], meta: { title: '交易对信息' } }, { path: '/wechat/pay', name: 'WeChatPay', component: __WEBPACK_IMPORTED_MODULE_29__pages_WeChatPay__["a" /* default */], meta: { title: '微信支付' } }, { path: '/lucky', name: 'LuckyWheel', component: __WEBPACK_IMPORTED_MODULE_34__pages_luckywheel__["a" /* default */], meta: { title: '幸运大转盘' } }]
+    routes: [{ path: '/', redirect: 'Login' }, { path: '/login', name: 'Login', component: __WEBPACK_IMPORTED_MODULE_34__pages_Login__["a" /* default */], meta: { title: 'Vallnet' } }, { path: '/home', name: 'Home', component: __WEBPACK_IMPORTED_MODULE_2__pages_Home__["a" /* default */], meta: { title: 'Vallnet' } }, { path: '/about', name: 'About', component: __WEBPACK_IMPORTED_MODULE_28__pages_About__["a" /* default */], meta: { title: '关于我们' } }, { path: '/member', name: 'Member', component: __WEBPACK_IMPORTED_MODULE_29__pages_Member__["a" /* default */], meta: { title: '成员' } }, { path: '/mine', name: 'Mine', component: __WEBPACK_IMPORTED_MODULE_14__pages_Mine__["a" /* default */], meta: { title: '我的' } }, { path: '/mygame', name: 'MyGame', component: __WEBPACK_IMPORTED_MODULE_33__pages_MyGame__["a" /* default */], meta: { title: '我的游戏' } }, { path: '/message', name: 'Message', component: __WEBPACK_IMPORTED_MODULE_31__pages_Message__["a" /* default */], meta: { title: '消息' } }, { path: '/message/read', name: 'MailReader', component: __WEBPACK_IMPORTED_MODULE_23__pages_MailReader__["a" /* default */], meta: { title: '邮件阅读' } }, { path: '/market', name: 'Market', component: __WEBPACK_IMPORTED_MODULE_3__pages_Market__["a" /* default */], meta: { title: 'Market' } }, { path: '/pocket', name: 'Pocket', component: __WEBPACK_IMPORTED_MODULE_5__pages_Pocket__["a" /* default */], meta: { title: '背包' } }, { path: '/pocket/info', name: 'ItemInfo', component: __WEBPACK_IMPORTED_MODULE_6__pages_ItemInfo__["a" /* default */], meta: { title: '背包 - 道具详情' } }, { path: '/crowds', name: 'Crowds', component: __WEBPACK_IMPORTED_MODULE_4__pages_Crowds__["a" /* default */], meta: { title: '众筹-百谷王游戏金链' } }, { path: '/crowd/my', name: 'StocksMine', component: __WEBPACK_IMPORTED_MODULE_9__pages_StocksMine__["a" /* default */], meta: { title: 'StocksMine' } }, { path: '/crowd/my/info', name: 'MyStockInfo', component: __WEBPACK_IMPORTED_MODULE_10__pages_MyStockInfo__["a" /* default */], meta: { title: '代练宝宝' } }, { path: '/crowd/my/sale', name: 'MyStockSale', component: __WEBPACK_IMPORTED_MODULE_11__pages_MyStockSale__["a" /* default */], meta: { title: '挂单出售中' } }, { path: '/crowd/my/send', name: 'MyStockSend', component: __WEBPACK_IMPORTED_MODULE_12__pages_MyStockSend__["a" /* default */], meta: { title: '凭证转让' } }, { path: '/crowd/info', name: 'CrowdInfo', component: __WEBPACK_IMPORTED_MODULE_7__pages_CrowdInfo__["a" /* default */], meta: { title: '众筹详情-百谷王游戏金链' } }, { path: '/crowd/order', name: 'CrowdOrder', component: __WEBPACK_IMPORTED_MODULE_8__pages_CrowdOrder__["a" /* default */], meta: { title: '确认订单' } }, { path: '/crowd/prePay', name: 'CrowdPrePay', component: __WEBPACK_IMPORTED_MODULE_13__pages_CrowdPrePay__["a" /* default */], meta: { title: '选择回报' } }, { path: '/crowd/SendSuccess', name: 'SendSuccess', component: __WEBPACK_IMPORTED_MODULE_45__pages_SendSuccess__["a" /* default */], meta: { title: '发送成功' } }, { path: '/crowd/SendFail', name: 'SendFail', component: __WEBPACK_IMPORTED_MODULE_46__pages_SendFail__["a" /* default */], meta: { title: ' 发送失败' } }, { path: '/crowd/SendConfirm', name: 'SendConfirm', component: __WEBPACK_IMPORTED_MODULE_47__pages_SendConfirm__["a" /* default */], meta: { title: '发送确认' } }, { path: '/crowd/TransList', name: 'TransList', component: __WEBPACK_IMPORTED_MODULE_48__pages_TransList__["a" /* default */], meta: { title: '交易清单' } }, { path: '/crowd/BuySuccess', name: 'BuySuccess', component: __WEBPACK_IMPORTED_MODULE_40__pages_BuySuccess__["a" /* default */], meta: { title: '购买成功' } }, { path: '/crowd/BuyFail', name: 'BuyFail', component: __WEBPACK_IMPORTED_MODULE_41__pages_BuyFail__["a" /* default */], meta: { title: ' 购买失败' } }, { path: '/crowd/PaySuccess', name: 'PaySuccess', component: __WEBPACK_IMPORTED_MODULE_42__pages_PaySuccess__["a" /* default */], meta: { title: '支付成功' } }, { path: '/crowd/HouseAddress', name: 'HouseAddress', component: __WEBPACK_IMPORTED_MODULE_43__pages_HouseAddress__["a" /* default */], meta: { title: '收货地址' } }, { path: '/crowd/HouseAddressAdd', name: 'HouseAddressAdd', component: __WEBPACK_IMPORTED_MODULE_44__pages_HouseAddressAdd__["a" /* default */], meta: { title: '添加收货地址' } }, { path: '/wallet', name: 'Wallet', component: __WEBPACK_IMPORTED_MODULE_15__pages_Wallet__["a" /* default */], meta: { title: '我的钱包' } }, { path: '/wallet/pay/:order', name: 'PayOrder', component: __WEBPACK_IMPORTED_MODULE_17__pages_PayOrder__["a" /* default */], meta: { title: '支付' } }, { path: '/wallet/send', name: 'WalletSend', component: __WEBPACK_IMPORTED_MODULE_16__pages_WalletSend__["a" /* default */], meta: { title: '转账' } }, { path: '/wallet/receive', name: 'WalletReceive', component: __WEBPACK_IMPORTED_MODULE_18__pages_WalletReceive__["a" /* default */], meta: { title: '接受转账' } }, { path: '/wallet/trans', name: 'WalletTrans', component: __WEBPACK_IMPORTED_MODULE_19__pages_WalletTrans__["a" /* default */], meta: { title: '交易对' } }, { path: '/redpack/act', name: 'RedPackAct', component: __WEBPACK_IMPORTED_MODULE_32__pages_RedPackAct__["a" /* default */], meta: { title: '利是Act' } }, { path: '/redpackshared', name: 'RedPackShared', component: __WEBPACK_IMPORTED_MODULE_36__pages_RedPackShared__["a" /* default */], meta: { title: '多人利是管理' } }, { path: '/redpackshared/send', name: 'RedPackSharedSend', component: __WEBPACK_IMPORTED_MODULE_37__pages_RedPackSharedSend__["a" /* default */], meta: { title: '多人利是发送' } }, { path: '/redpackshared/unpack/:send_id', name: 'RedPackSharedOpen', component: __WEBPACK_IMPORTED_MODULE_39__pages_RedPackSharedOpen__["a" /* default */], meta: { title: '打开多人利是' } }, { path: '/redpackshared/receive/:send_id', name: 'RedPackSharedReceive', component: __WEBPACK_IMPORTED_MODULE_38__pages_RedPackSharedReceive__["a" /* default */], meta: { title: '多人利是接收' } }, { path: '/props', name: 'Props', component: __WEBPACK_IMPORTED_MODULE_20__pages_Props__["a" /* default */], meta: { title: '道具背包' } }, { path: '/prop/detail', name: 'PropDetail', component: __WEBPACK_IMPORTED_MODULE_22__pages_PropDetail__["a" /* default */], meta: { title: '道具详情' } }, { path: '/prop/receive', name: 'PropReceive', component: __WEBPACK_IMPORTED_MODULE_26__pages_PropReceive__["a" /* default */], meta: { title: '道具接收' } }, { path: '/prop/send', name: 'PropSend', component: __WEBPACK_IMPORTED_MODULE_24__pages_PropSend__["a" /* default */], meta: { title: '道具发送' } }, { path: '/prop/sale/info', name: 'PropSaleInfo', component: __WEBPACK_IMPORTED_MODULE_25__pages_PropSaleInfo__["a" /* default */], meta: { title: '道具销售' } }, { path: '/game/info', name: 'GameInfo', component: __WEBPACK_IMPORTED_MODULE_21__pages_GameInfo__["a" /* default */], meta: { title: '游戏信息' } }, { path: '/contract/info', name: 'ContractInfo', component: __WEBPACK_IMPORTED_MODULE_27__pages_ContractInfo__["a" /* default */], meta: { title: '交易对信息' } }, { path: '/wechat/pay', name: 'WeChatPay', component: __WEBPACK_IMPORTED_MODULE_30__pages_WeChatPay__["a" /* default */], meta: { title: '微信支付' } }, { path: '/lucky', name: 'LuckyWheel', component: __WEBPACK_IMPORTED_MODULE_35__pages_luckywheel__["a" /* default */], meta: { title: '幸运大转盘' } }]
 }));
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, "/"))
 
@@ -17430,13 +17752,6 @@ module.exports = __webpack_require__.p + "static/img/bean_500.6732d3b.png";
 
 /***/ }),
 
-/***/ "hRI8":
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
 /***/ "hdVd":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -18085,13 +18400,6 @@ var Component = normalizeComponent(
 /***/ }),
 
 /***/ "htVN":
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ "i2cN":
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
@@ -22845,6 +23153,13 @@ var Member_Component = Member_normalizeComponent(
 
 /***/ }),
 
+/***/ "oRCV":
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
 /***/ "odqc":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -26253,6 +26568,13 @@ var Component = normalizeComponent(
 /***/ }),
 
 /***/ "uEyI":
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ "uMTb":
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
