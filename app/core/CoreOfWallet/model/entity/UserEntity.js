@@ -13,7 +13,6 @@ class UserEntity extends BaseUserEntity
 
     /**
      * 索引值，用于配合Mapping类的索引/反向索引。
-     * 
      * @note 集成Ranking接口时，也必须拥有此函数
      */
     IndexOf(type){

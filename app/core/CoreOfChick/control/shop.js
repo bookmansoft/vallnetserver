@@ -42,11 +42,12 @@ class shop extends facade.Control
         
         switch(params.mode) {
             case 2: {
+                //URLSchema 模式，生成订单后跳转钱包、立即支付
                 break;
             }
 
             default: {
-                //向主网发送消息
+                //Notify 模式，通过向主网发送消息，来通知钱包有待支付订单
                 let ret = await this.core.service.gamegoldHelper.execute('sys.notify', [
                     data.addr,
                     JSON.stringify(data),

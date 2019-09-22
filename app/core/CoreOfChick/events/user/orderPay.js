@@ -38,7 +38,7 @@ function handle(event) {
     //向客户端下行购买成功通知
     pUser.notify({type: NotifyType.buyItem, info:{tradeNo: item.getAttr('trade_no'), product: item.getAttr('product')}});
 
-    return {code: ReturnCode.Success, data: {account: item.getAttr('domainid')}};
+    return {code: ReturnCode.Success, data: {domainid: item.getAttr('domainid')}};
 }
 
 module.exports.handle = handle;

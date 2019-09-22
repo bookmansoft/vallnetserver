@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let {TableField, PurchaseStatus, IndexType, EntityType} = facade.const;
+let {SettleType, TableField, PurchaseStatus, IndexType, EntityType} = facade.const;
 let uuid = require('uuid');
 let fetch = require('node-fetch')
 
@@ -115,6 +115,7 @@ class wallet extends facade.Control
             params.addr = user.baseMgr.info.getAttr('acaddr');  //用户地址
 
             params.sn = params.sn || uuid.v1(); 
+            params.fee_type = SettleType.Gamegold;
 
             //查询CP信息
             let cpObj = this.core.GetObject(EntityType.blockgame, params.cid, IndexType.Domain);

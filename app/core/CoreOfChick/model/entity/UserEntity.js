@@ -1,6 +1,6 @@
 let facade = require('gamecloud');
 let BaseUserEntity = facade.BaseUserEntity
-let {em_UserVipLevel, UserVipLevelSetting} = facade.const
+let {IndexType, em_UserVipLevel, UserVipLevelSetting} = facade.const
 
 /**
  * 用户角色类，继承自框架的 BaseUserEntity
@@ -17,6 +17,27 @@ class UserEntity extends BaseUserEntity
     tick() {
         this.baseMgr.vip.checkSweep(); //检测扫荡是否结束，如果结束则自动计算奖励
         this.baseMgr.slave.CheckStatus(); //释放到期奴隶，或者解放自身
+    }
+
+    /**
+     * 索引值，用于配合Mapping类的索引/反向索引。
+     * @note 集成Ranking接口时，也必须拥有此函数
+     */
+    IndexOf(type){
+        switch(type){
+            case IndexType.Domain:
+                return this.domainId;
+            case IndexType.Account:
+                return this.account;
+            case IndexType.Name:
+                return this.name;
+            case IndexType.Foreign:
+                return this.openid;
+            case IndexType.Phone:
+                return this.baseMgr.info.getAttr('phone');
+            default:
+                return this.orm.id;
+        }
     }
 
     /**

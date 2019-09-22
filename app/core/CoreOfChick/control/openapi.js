@@ -1,11 +1,11 @@
 let fetch = require('node-fetch')
 let crypto = require('crypto');
-let uuid = require('uuid');
 let facade = require('gamecloud')
+let BonusObject = facade.Util.BonusObject
 let toolkit = require('gamerpc')
 let { stringify } = require('../../../util/stringUtil');
 let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
-let {NotifyType, ReturnCode, UserStatus, PurchaseStatus, EntityType, IndexType} = facade.const
+let {em_Condition_Type, ReturnCode, EntityType, IndexType} = facade.const
 
 //游戏名称静态配置信息
 let cp_name = 'cp_chick';
@@ -89,17 +89,33 @@ class openapi extends facade.Control
             })) {
                 return {code: -1};
             }
+
+            let pUser = this.core.GetObject(EntityType.User, user.uid, IndexType.Foreign);
+            if(!pUser) {
+                return {code: -1};
+            }
             
             let order = this.core.GetObject(EntityType.BuyLog, params.sn, IndexType.Domain);
             if(!order) {
-                return {code: ReturnCode.illegalData};
+                let item = this.core.fileMap.shopOuter[params.oid];
+                if(!item) { 
+                    return {code: ReturnCode.illegalData};
+                }
+    
+                await this.core.GetMapping(EntityType.BuyLog).Create(
+                    `${pUser.domainId}`,                                //domainid      用户标识
+                    params.sn,                                          //trade_no      订单号，是否可以考虑使用某种标准化格式，如'201901018888'
+                    JSON.stringify(BonusObject.convert(item.bonus)),    //product       订单内容
+                    params.oid,                                         //product_desc  订单文字描述
+                    item.price,                                         //total_fee     订单总价
+                    params.fee_type,                                    //fee_type      支付类型(支付宝、微信、游戏金等)，注意不是货币类型，当前设定中，每种支付类型下只使用其默认货币类型，如支付宝/人民币
+                );
             }
-
-            return { code: 0 };
         } catch(e) {
+            return { code: -1 };
         }
 
-        return { code: -1 };
+        return { code: 0 };
     }
     
     /**
@@ -136,17 +152,12 @@ class openapi extends facade.Control
                 return {code:ReturnCode.illegalData};
             }
 
-            let mitem = this.core.fileMap.shopOuter[order.getAttr('product_desc')];
-            if(!order) {
-                return {code:ReturnCode.illegalData};
-            }
-
             let ret = await this.core.notifyEvent('user.orderPay', {data: {trade_no: order.getAttr('trade_no'), price: order.getAttr('total_fee')}});
             if(ret.code != ReturnCode.Success) {
                 return {code:ReturnCode.illegalData};
             }
 
-            let pUser = this.core.GetObject(EntityType.User, ret.data.account, IndexType.Domain);
+            let pUser = this.core.GetObject(EntityType.User, ret.data.domainid, IndexType.Domain);
             if(!pUser) {
                 return {code: ReturnCode.userIllegal};
             }
@@ -155,13 +166,18 @@ class openapi extends facade.Control
             this.core.notifyEvent('user.afterPurchase', {user:pUser, amount: order.getAttr('total_fee')});
 
             let now = Date.parse(new Date())/1000;
-            let tm1 = mitem.times.split(",");
-            if(now >= parseInt(tm1[0]) && now <= parseInt(tm1[1])){
-                if(!!mitem.extra){
-                    let extra = BonusObject.convert(mitem.extra);
-                    pUser.getBonus(extra);
+
+            let mitem = this.core.fileMap.shopOuter[order.getAttr('product_desc')];
+            if(!!mitem) {
+                let tm1 = mitem.times.split(",");
+                if(now >= parseInt(tm1[0]) && now <= parseInt(tm1[1])){
+                    if(!!mitem.extra){
+                        let extra = BonusObject.convert(mitem.extra);
+                        pUser.getBonus(extra);
+                    }
                 }
             }
+
             return { code: 0 };
         } catch (e) {
             console.error(e);
@@ -224,9 +240,9 @@ class openapi extends facade.Control
     getInfo() {
         //随机生成若干道具并添加到数组中
         let propArray = new Array();
-        let propCount = 5;
-        for (let i = 0; i < propCount; i++) {
-            propArray.push(this.createProp(`${cp_name}_prop_${i}`));
+
+        for(let key of Object.keys(this.core.fileMap.shopOuter)) {
+            propArray.push(this.createProp(this.core.fileMap.shopOuter[key]));
         }
 
         //编组cpInfo
@@ -281,21 +297,18 @@ class openapi extends facade.Control
      * @param {*} params    {id:"道具模板编码"}
      */
     responseProp(params) {
-        return this.createProp(params.id);
+        return this.createProp(this.core.fileMap.shopOuter[params.id]);
     }
 
     /**
-     * 以 propid 作为模板编码，创建一个模拟游戏道具
-     * @param {*} propid
+     * 用配置表信息，转换格式为一个道具数据对象
+     * @param {*} prop
      */
-    createProp(propid) {
-        let propIndexArray = propid.split('_prop_');
-        let propIndex = propIndexArray[propIndexArray.length - 1];
-
-        let prop = {
-            "id": propid,
-            "props_name": `${arrayGame[0].Prop.Name}-${propIndex}`,
-            "props_desc": arrayGame[0].Prop.Desc,
+    createProp(prop) {
+        return {
+            "id": prop.itemid,
+            "props_name": prop.bonus,
+            "props_desc": prop.bonus,
             "icon": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_icon.jpg`,
             "large_icon": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_large_icon.jpg`,
             "more_icon": [
@@ -304,18 +317,12 @@ class openapi extends facade.Control
                 `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_pic3.jpg`
             ],
             "props_type": "装备",
-            "props_price": (parseInt(propIndex)+1)*100000,
+            "props_price": prop.price,
             "props_createtime": "2018-12-22 16:22:30",
             "props_rank": 3,
             "props_status": 1,
-            "state": 1,
-            "props_extra": {
-                "attr1": "属性1",
-                "attr2": "属性2",
-            },
+            "state": 1
         };
-
-        return prop;
     }
 
     /**
@@ -422,10 +429,6 @@ let arrayGame = [
         Title: '鸡小德历险记',
         Desc: '带领鸡小德以出神入化的跳跃技能破碎虚空',
         Provider: '原石互娱',
-        Prop: {
-            Name: '金箍棒',
-            Desc: '东海龙宫镇宫之宝',
-        },
     },
 ];
 
