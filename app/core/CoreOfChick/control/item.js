@@ -8,6 +8,7 @@ let {ReturnCode} = facade.const
 class item extends facade.Control 
 {
     /**
+     * 使用指定道具
      * @param {UserEntity} pUser 
      * @param {*} info 
      */
@@ -28,9 +29,10 @@ class item extends facade.Control
     }
 
     /**
+     * 获取道具列表
      * @param {UserEntity} pUser 
      */
-    list(pUser){
+    list(pUser) {
         return {code: facade.const.ReturnCode.Success, data:pUser.getPocket().getList()};
     }
 }

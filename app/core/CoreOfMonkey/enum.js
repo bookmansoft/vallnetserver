@@ -1192,6 +1192,7 @@ ActivityType.len = Object.keys(ActivityType).length; //枚举的数量
 const ActivityScoreRate = {
     0:10,
     1:1,    
+    2:1,
 }
 
 /**
