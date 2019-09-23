@@ -135,14 +135,14 @@
                             <td><img src='${item.icon}' style='width:120px;height:120px;' /></td>
                             <td style='width:25px'></td>
                             <td>
-                                <p>名称：<span>${item.props_name}</span></p>
-                                <p>价格：<span>${item.props_price/100000}Kg</span></p>
+                                <p>名称：<span>${item.prop_name}</span></p>
+                                <p>价格：<span>${item.prop_price/100000}Kg</span></p>
                                 <p>道具含金量：<span>20%</span></p>
                             </td>
                         </tr>
                         <tr><td style='height:15px'></td></tr>
                         <tr>
-                            <td><button type='button' class='am-btn am-btn-warning am-radius' onclick='buy(\"${item.id}\",${item.props_price},\"${item.icon}\",\"${item.props_name}\")'>购买道具</button></td>
+                            <td><button type='button' class='am-btn am-btn-warning am-radius' onclick='buy(\"${item.id}\",${item.prop_price},\"${item.icon}\",\"${item.prop_name}\")'>购买道具</button></td>
                         </tr>
                         </table></div>`;
                     $("#divProp").append($(sDiv));
@@ -154,7 +154,7 @@
     /**
      * 发起购买道具请求，服务端收到后，将通过 sys.notify 发送订单，用户再通过钱包支付
      */
-    function buy(id, price, icon, props_name) {
+    function buy(id, price, icon, prop_name) {
         $.ajax({
             type: "POST",
             url: `${location.origin}${location.pathname}testnet/order/notify`,
@@ -164,7 +164,7 @@
                 "uid": mainVue.cp.uid,
                 "price":price,
                 "url":icon,
-                "props_name":props_name
+                "prop_name":prop_name
             },
             success: function(result){
                 alert("道具已经在路上，稍后请到“我的道具”查看！");
@@ -191,8 +191,8 @@
                             <td><img src='${result.data[i].icon}' style='width:120px;height:120px;' /></td>
                             <td style='width:25px'></td>
                             <td>
-                                <p>名称：<span>${result.data[i].props_name}</span></p>
-                                <p>价格：<span>${result.data[i].props_price/100000}Kg</span></p>
+                                <p>名称：<span>${result.data[i].prop_name}</span></p>
+                                <p>价格：<span>${result.data[i].prop_price/100000}Kg</span></p>
                                 <p>道具含金量：<span>${result.data[i].gold/100000}Kg</span></p>
                             </td>
                         </tr>

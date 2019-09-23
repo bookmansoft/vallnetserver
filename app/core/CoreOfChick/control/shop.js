@@ -33,7 +33,7 @@ class shop extends facade.Control
             oid: '',                                    //道具原始编码
             price: item.price,                          //价格，单位尘
             url: '',                                    //道具图标URL
-            props_name: '',                             //道具名称
+            prop_name: '',                              //道具名称
             sn: params.sn,                              //订单编号
             addr: acaddr,                               //用户地址
             confirmed: -1,                              //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已

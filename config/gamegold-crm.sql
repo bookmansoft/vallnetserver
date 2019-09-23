@@ -328,29 +328,6 @@ CREATE TABLE IF NOT EXISTS `our_block_user_redpack_act` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-crm.prop 结构
-CREATE TABLE IF NOT EXISTS `prop` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `props_id` varchar(200) DEFAULT '0' COMMENT '游戏道具返回的原始id',
-  `props_name` varchar(200) DEFAULT NULL COMMENT '道具名称',
-  `props_type` varchar(200) DEFAULT '0' COMMENT '道具类型',
-  `cid` varchar(500) DEFAULT NULL COMMENT 'cp_id',
-  `props_desc` text COMMENT '道具描述',
-  `icon_url` varchar(200) DEFAULT NULL COMMENT '道具封面图',
-  `icon_preview` text COMMENT '道具图库',
-  `status` int(2) DEFAULT '1' COMMENT '1 默认创建 ',
-  `props_price` int(10) DEFAULT '0' COMMENT '游戏金含量',
-  `props_rank` int(2) DEFAULT '1' COMMENT '游戏金等级',
-  `propsAt` datetime DEFAULT NULL,
-  `createdAt` datetime DEFAULT NULL,
-  `updatedAt` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `PropsId` (`props_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 数据导出被取消选择。
-
-
 -- 导出  过程 gamegold-crm.survive 结构
 DELIMITER //
 CREATE DEFINER=`gamecloud`@`%` PROCEDURE `survive`(IN `time` VARCHAR(50), OUT `r1` FLOAT, OUT `r3` FLOAT, OUT `r7` FLOAT)

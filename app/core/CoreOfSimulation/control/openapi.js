@@ -49,7 +49,7 @@ class openapi extends facade.Control
             oid: params.oid,                  //道具原始编码
             price: params.price,              //价格，单位尘
             url: params.url,                  //道具图标URL
-            props_name: params.props_name,    //道具名称
+            prop_name: params.prop_name,      //道具名称
             sn: uuid.v1(),                    //订单编号
             addr: user.addr,                  //用户地址
             confirmed: -1,                    //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
@@ -109,7 +109,7 @@ class openapi extends facade.Control
                 oid: params.oid,                  //道具原始编码
                 price: params.price,              //价格，单位尘
                 url: params.url,                  //道具图标URL
-                props_name: params.props_name,    //道具名称
+                prop_name: params.prop_name,      //道具名称
                 sn: params.sn,                    //订单编号
                 addr: user.addr,                  //用户地址
                 confirmed: -1,                    //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
@@ -205,9 +205,9 @@ class openapi extends facade.Control
                     pid: item.pid,
                     oid: item.oid,
                     gold: item.gold,
-                    props_price: prop.props_price,
-                    props_name: prop.props_name,
-                    props_rank: prop.props_rank,
+                    prop_price: prop.prop_price,
+                    prop_name: prop.prop_name,
+                    prop_rank: prop.prop_rank,
                     icon: prop.icon,
                 });
             }
@@ -342,23 +342,18 @@ class openapi extends facade.Control
 
         let prop = {
             "id": propid,
-            "props_name": `${arrayGame[groupNum].Prop.Name}-${propIndex}`,
-            "props_desc": arrayGame[groupNum].Prop.Desc,
+            "prop_name": `${arrayGame[groupNum].Prop.Name}-${propIndex}`,
+            "prop_desc": arrayGame[groupNum].Prop.Desc,
+            "prop_price": (parseInt(propIndex)+1)*100000,
+            "prop_type": "装备",
+            "prop_rank": 3, //含金量
             "icon": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_icon.jpg",
             "large_icon": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_large_icon.jpg",
-            "more_icon": [`http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_pic1.jpg",
-            `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_pic2.jpg",
-            `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_pic3.jpg"],
-            "props_type": "装备",
-            "props_price": (parseInt(propIndex)+1)*100000,
-            "props_createtime": "2018-12-22 16:22:30",
-            "props_rank": 3,
-            "props_status": 1,
-            "state": 1,
-            "props_extra": {
-                "attr1": "属性1",
-                "attr2": "属性2",
-            },
+            "more_icon": [
+                `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_pic1.jpg",
+                `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_pic2.jpg",
+                `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/` + groupNum + "/prop_pic3.jpg"
+            ],
         };
 
         return prop;

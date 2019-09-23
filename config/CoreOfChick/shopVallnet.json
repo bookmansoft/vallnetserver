@@ -1,0 +1,32 @@
+{
+	"14072":{
+		"id": 14072,
+		"prop_name": "一小袋钻石",
+		"prop_desc": "D,180",
+		"prop_type": "钻石",
+		"prop_rank": 3,
+		"prop_price": 15000000,
+		"icon": "prop_icon.jpg",
+		"large_icon": "prop_large_icon.jpg",
+		"more_icon": [
+			"prop_pic1.jpg",
+			"prop_pic2.jpg",
+			"prop_pic3.jpg"
+		]
+	},
+	"14075":{
+		"id": 14075,
+		"prop_name": "一大袋钻石",
+		"prop_desc": "D,2250",
+		"prop_type": "钻石",
+		"prop_rank": 3,
+		"prop_price": 150000000,
+		"icon": "prop_icon.jpg",
+		"large_icon": "prop_large_icon.jpg",
+		"more_icon": [
+			"prop_pic1.jpg",
+			"prop_pic2.jpg",
+			"prop_pic3.jpg"
+		]
+	}
+}

@@ -97,7 +97,7 @@ class openapi extends facade.Control
             
             let order = this.core.GetObject(EntityType.BuyLog, params.sn, IndexType.Domain);
             if(!order) {
-                let item = this.core.fileMap.shopOuter[params.oid];
+                let item = this.core.fileMap.shopVallnet[params.oid];
                 if(!item) { 
                     return {code: ReturnCode.illegalData};
                 }
@@ -167,7 +167,7 @@ class openapi extends facade.Control
 
             let now = Date.parse(new Date())/1000;
 
-            let mitem = this.core.fileMap.shopOuter[order.getAttr('product_desc')];
+            let mitem = this.core.fileMap.shopVallnet[order.getAttr('product_desc')];
             if(!!mitem) {
                 let tm1 = mitem.times.split(",");
                 if(now >= parseInt(tm1[0]) && now <= parseInt(tm1[1])){
@@ -222,9 +222,9 @@ class openapi extends facade.Control
                     pid: item.pid,
                     oid: item.oid,
                     gold: item.gold,
-                    props_price: prop.props_price,
-                    props_name: prop.props_name,
-                    props_rank: prop.props_rank,
+                    prop_price: prop.prop_price,
+                    prop_name: prop.prop_name,
+                    prop_rank: prop.prop_rank,
                     icon: prop.icon,
                 });
             }
@@ -241,8 +241,8 @@ class openapi extends facade.Control
         //随机生成若干道具并添加到数组中
         let propArray = new Array();
 
-        for(let key of Object.keys(this.core.fileMap.shopOuter)) {
-            propArray.push(this.createProp(this.core.fileMap.shopOuter[key]));
+        for(let key of Object.keys(this.core.fileMap.shopVallnet)) {
+            propArray.push(this.createProp(this.core.fileMap.shopVallnet[key]));
         }
 
         //编组cpInfo
@@ -253,10 +253,10 @@ class openapi extends facade.Control
             },
             "game": {
                 "cp_name": cp_name,
-                "game_title": `${arrayGame[0].Title}(${cp_name})`,
-                "cp_type": arrayGame[0].Type,
-                "desc": arrayGame[0].Desc,
-                "provider": arrayGame[0].Provider,
+                "game_title": `${arrayGame.Title}(${cp_name})`,
+                "cp_type": arrayGame.Type,
+                "desc": arrayGame.Desc,
+                "provider": arrayGame.Provider,
                 "icon_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/icon_img.jpg`,
                 "small_img_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/small_img.jpg`,
                 "large_img_url": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/large_img.jpg`,
@@ -297,7 +297,7 @@ class openapi extends facade.Control
      * @param {*} params    {id:"道具模板编码"}
      */
     responseProp(params) {
-        return this.createProp(this.core.fileMap.shopOuter[params.id]);
+        return this.createProp(this.core.fileMap.shopVallnet[params.id]);
     }
 
     /**
@@ -305,24 +305,12 @@ class openapi extends facade.Control
      * @param {*} prop
      */
     createProp(prop) {
-        return {
-            "id": prop.itemid,
-            "props_name": prop.bonus,
-            "props_desc": prop.bonus,
-            "icon": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_icon.jpg`,
-            "large_icon": `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_large_icon.jpg`,
-            "more_icon": [
-                `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_pic1.jpg`,
-                `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_pic2.jpg`,
-                `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/prop_pic3.jpg`
-            ],
-            "props_type": "装备",
-            "props_price": prop.price,
-            "props_createtime": "2018-12-22 16:22:30",
-            "props_rank": 3,
-            "props_status": 1,
-            "state": 1
-        };
+        let root = `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/`;
+        prop.icon = `${root}${prop.icon}`;
+        prop.large_icon = `${root}${prop.large_icon}`;
+        prop.more_icon = prop.more_icon.map(img=>`${root}${img}`)
+
+        return prop;
     }
 
     /**
@@ -423,14 +411,12 @@ class openapi extends facade.Control
 
 //#region 供模拟系统使用的配置信息
 
-let arrayGame = [
-    {
-        Type: 'PZL', 
-        Title: '鸡小德历险记',
-        Desc: '带领鸡小德以出神入化的跳跃技能破碎虚空',
-        Provider: '原石互娱',
-    },
-];
+let arrayGame = {
+    Type: 'PZL', 
+    Title: '鸡小德历险记',
+    Desc: '带领鸡小德以出神入化的跳跃技能破碎虚空',
+    Provider: '原石互娱',
+};
 
 //#endregion
 

@@ -59,12 +59,12 @@ class prop extends facade.Control {
             return { code: -1, msg: '接收地址不能为空' };
         }
 
-        let props_rank = 3;
-        let props_price = params.props_price;
+        let prop_rank = 3;
+        let prop_price = params.prop_price;
         let cid = params.cid;
         let oid = params.id;
 
-        let rank = parseInt(props_rank);
+        let rank = parseInt(prop_rank);
         if (rank == 1) {
             rank = 0.05;
         } else if (rank == 2) {
@@ -79,8 +79,8 @@ class prop extends facade.Control {
             return { code: -2, msg: '道具含金量值错误' };
         }
 
-        props_price = Math.round(props_price*rank); //取整
-        if (props_price <= 0) {
+        prop_price = Math.round(prop_price*rank); //取整
+        if (prop_price <= 0) {
             return { code: -1, msg: '道具含金量不正确' };
         }
         if (cid == '') {
@@ -92,7 +92,7 @@ class prop extends facade.Control {
 
         let ret = [];
         for (let i = 0; i < addr.length; i++) {
-            let retOrderOld = await this.core.service.RemoteNode.conn(user.cid).execute('prop.order', [cid, oid, props_price, addr[i]]);
+            let retOrderOld = await this.core.service.RemoteNode.conn(user.cid).execute('prop.order', [cid, oid, prop_price, addr[i]]);
             if(!!retOrderOld && retOrderOld.result) {
                 ret.push(retOrderOld.result);
             }
