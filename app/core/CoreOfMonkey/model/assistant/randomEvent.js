@@ -5,8 +5,9 @@ let GateEvent = facade.Util.GateEvent
 
 class randomEvent extends baseMgr
 {
-    constructor(parent){
-        super(parent, 'login', 200);
+    constructor(parent, options) {
+        options = options || {attr: 'login', size: 200};
+		super(parent, options);
     }
 
     /**

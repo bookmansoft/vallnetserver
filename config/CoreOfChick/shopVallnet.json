@@ -12,7 +12,9 @@
 			"prop_pic1.jpg",
 			"prop_pic2.jpg",
 			"prop_pic3.jpg"
-		]
+		],
+		"extra":"D,180",
+		"times":"1506787200,1507478399"
 	},
 	"14075":{
 		"id": 14075,
@@ -27,6 +29,8 @@
 			"prop_pic1.jpg",
 			"prop_pic2.jpg",
 			"prop_pic3.jpg"
-		]
+		],
+		"extra":"D,2250",
+		"times":"1506787200,1507478399"
 	}
 }

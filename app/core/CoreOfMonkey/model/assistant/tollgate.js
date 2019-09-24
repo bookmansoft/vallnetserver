@@ -24,8 +24,9 @@ let TollgateHangup = facade.Util.TollgateHangup
  */
 class tollgate extends baseMgr
 {
-    constructor(parent){
-        super(parent, 'Tollgate', 500);
+    constructor(parent, options) {
+        options = options || {attr: 'Tollgate', size: 500};
+        super(parent, options);
 
         /**
          * 当前关卡信息
