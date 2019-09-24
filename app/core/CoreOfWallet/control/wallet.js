@@ -110,12 +110,19 @@ class wallet extends facade.Control
      */
     async OrderPay(user, params) {
         try {
-            params.time = Date.now()/1000;                      //时间戳
-            params.confirmed = -1;                              //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
-            params.addr = user.baseMgr.info.getAttr('acaddr');  //用户地址
+            /** params {
+                    sn          //订单编号
+                    time        //订单生成时间戳
+                    confirmed   //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+                    oid         //道具模板编码
+                    fee_type    //订单支付类型
+                }
+            */
 
-            params.sn = params.sn || uuid.v1(); 
-            params.fee_type = SettleType.Gamegold;
+            params.time = Date.now()/1000;                      //订单生成时间戳
+            params.confirmed = -1;                              //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
+            params.sn = params.sn || uuid.v1();                 //订单编号
+            params.fee_type = SettleType.Gamegold;              //订单支付类型
 
             //查询CP信息
             let cpObj = this.core.GetObject(EntityType.blockgame, params.cid, IndexType.Domain);
@@ -157,14 +164,6 @@ class wallet extends facade.Control
             if(ret.code != 0) {
                 return {code: ret.code, msg: ret.error.message};
             } else {
-                /** params {
-                        sn          //订单编号
-                        time        //订单生成时间戳
-                        confirmed   //确认数，-1表示尚未被主网确认，而当确认数标定为0时，表示已被主网确认，只是没有上链而已
-                        addr        //用户地址
-                        oid         //道具模板编码
-                    }
-                */
                 return {code: 0, data: ret.result};
             }
         } catch(e) {

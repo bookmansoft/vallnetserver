@@ -1,4 +1,3 @@
-let fetch = require('node-fetch')
 let crypto = require('crypto');
 let facade = require('gamecloud')
 let BonusObject = facade.Util.BonusObject
@@ -24,14 +23,15 @@ class openapi extends facade.Control
      */
     get router() {
         return [
+            //#region 与Vallnet相关的生态接口
+            [`/info`, 'getInfo'],                                     //获取游戏基本描述信息
+            [`/${remoteSetup.type}/order/confirm`, 'confirmOrder'],   //订单完成回调接口
+            [`/${remoteSetup.type}/order/add`, 'addOrder'],           //游戏服务端通过该接口接收钱包提交的订单，只缓存但不做进一步处理。钱包以此方式提交订单后，会进一步执行订单支付流程
+            //#endregion
             ['/auth360', 'auth360'],                                  //模拟 360 网关下发签名集
             ['/test/ping', 'ping'],                                   //PING测试接口
             ['/pay360', 'pay360'],                                    //360 发货回调路由
             ['/txpay', 'txpay'],                                      //腾讯支付回调路由
-            [`/info`, 'getInfo'],                                     //获取游戏基本描述信息
-            ['/prop/:id', 'responseProp'],                            //获取指定道具模板信息
-            [`/${remoteSetup.type}/order/confirm`, 'confirmOrder'],   //订单完成回调接口
-            [`/${remoteSetup.type}/order/add`, 'addOrder'],           //游戏服务端通过该接口接收钱包提交的订单，只缓存但不做进一步处理。钱包以此方式提交订单后，会进一步执行订单支付流程
         ];
     }
 
@@ -101,8 +101,8 @@ class openapi extends facade.Control
                 await this.core.GetMapping(EntityType.BuyLog).Create(
                     `${pUser.domainId}`,                                //domainid      用户标识
                     params.sn,                                          //trade_no      订单号，是否可以考虑使用某种标准化格式，如'201901018888'
-                    JSON.stringify(BonusObject.convert(item.prop_desc)),//product       订单内容
-                    params.oid,                                         //product_desc  订单文字描述
+                    JSON.stringify(BonusObject.convert(item.prop_desc)),//product       订单待执行内容
+                    item.id,                                            //product_desc  订单附加信息, 此处填写了商品编号
                     item.prop_price,                                    //total_fee     订单总价
                     params.fee_type,                                    //fee_type      支付类型(支付宝、微信、游戏金等)，注意不是货币类型，当前设定中，每种支付类型下只使用其默认货币类型，如支付宝/人民币
                 );
@@ -230,26 +230,6 @@ class openapi extends facade.Control
             "proplist": propArray
         };
         return cpInfo;
-    }
-
-    /**
-     * 查询指定道具模板的描述信息对象
-     * @param {*} params    {id:"道具模板编码"}
-     */
-    responseProp(params) {
-        let prop = this.core.fileMap.shopVallnet[params.id];
-        let root = `http://${this.core.options.webserver.mapping}:${this.core.options.webserver.port}/image/5/`;
-        return {
-            "id": prop.id,
-            "prop_name": prop.prop_name,
-            "prop_desc": prop.prop_desc,
-            "prop_type": prop.prop_type,
-            "prop_rank": prop.prop_rank,
-            "prop_price": prop.prop_price,
-            "icon": `${root}${prop.icon}`,
-            "large_icon": `${root}${prop.large_icon}`,
-            "more_icon": prop.more_icon.map(img=>`${root}${img}`),
-        };
     }
 
     /**

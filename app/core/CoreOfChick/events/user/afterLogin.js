@@ -2,14 +2,14 @@
  * Created by liub on 2017-05-26.
  */
 let facade = require('gamecloud')
-let {NotifyType, UserStatus,em_Condition_Type} = facade.const
+let {GetResType, NotifyType, UserStatus,em_Condition_Type} = facade.const
 
 /**
  * 用户登录后，用来执行一些后续操作，例如获取腾讯会员信息、蓝钻特权等
  * @note 事件处理函数，this由外部注入，指向Facade
  * @param data
  */
-function handle(data){
+async function handle(data){
     data.user.loginTime = facade.util.now(); //记录登录时间
 
     data.curTime = new Date();//记录当前时间，为后续流程提供统一的时间标尺
@@ -42,6 +42,31 @@ function handle(data){
     }
 
     try {
+        let retProps = await this.service.gamegoldHelper.execute('prop.remoteQuery', [[
+            ['size', -1],
+            ['pst', 9],
+            ['cid', this.service.gamegoldHelper.cid],
+            ['current.address', data.user.baseMgr.info.getAttr('acaddr')]
+        ]]);
+
+        //将来自主网的道具缓存下来
+        data.user.equipNet = {};
+        for (let item of retProps.result.list) {
+            /* item {
+                pid,
+                oid,
+                gold,
+             * }
+             */
+            let ptype = GetResType(item.oid);
+            data.user.equipNet[item.pid] = {
+                sn: item.pid,
+                type: ptype,
+                id: item.oid - ptype,
+                price: item.gold,
+            };
+        }
+
         data.user.baseMgr.info.SetStatus(UserStatus.online, false);
 
         //刷新资源、体力值

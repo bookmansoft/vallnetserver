@@ -33,7 +33,7 @@ class prop extends facade.Control {
     }
 
     /**
-     * 制备道具并发放给指定地址，相当于同时执行了 prop.creae 和 prop.send
+     * 制备道具并发放给指定地址，相当于同时执行了 prop.create 和 prop.send
      * @param {*} user
      * @param {*} payload
      * @returns

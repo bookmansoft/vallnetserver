@@ -63,7 +63,7 @@ class shop extends facade.Control
             `${user.domainId}`,                                //domainid      用户标识
             data.sn,                                           //trade_no      订单号，是否可以考虑使用某种标准化格式，如'201901018888'
             JSON.stringify(BonusObject.convert(item.bonus)),   //product       订单内容
-            params.itemid,                                     //product_desc  订单文字描述
+            item.id,                                           //product_desc  订单附加信息，此处填写了订单编号
             item.price,                                        //total_fee     订单总价
             params.fee_type,                                   //fee_type      支付类型(支付宝、微信、游戏金等)，注意不是货币类型，当前设定中，每种支付类型下只使用其默认货币类型，如支付宝/人民币
         );

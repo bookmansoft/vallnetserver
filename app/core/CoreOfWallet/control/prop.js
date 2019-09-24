@@ -89,25 +89,6 @@ class prop extends facade.Control
     }
 
     /**
-     * 道具发送
-     * @param {*} user 
-     * @param {*} params 
-     */
-    async PropOrder(user, params)  {
-        let cid = params.cid;
-        let prop_ori_id = params.prop_ori_id;
-        let prop_value = params.prop_value;
-        let user_addr = params.user_addr;
-        let ret = await this.core.service.gamegoldHelper.execute('prop.order', [
-            cid, //游戏编号
-            prop_ori_id, //道具原始
-            prop_value, //道具含金量
-            user_addr //游戏内玩家的有效地址
-        ]);
-        return {code: 0, data: ret.result};
-    }
-
-    /**
      * 道具数量
      * @param {*} user 
      * @param {*} params 

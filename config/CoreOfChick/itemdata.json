@@ -229,7 +229,9 @@
 		"pic":"fenxiang_nuli_jiacan",
 		"type":"I",
 		"desc":"给奴隶加餐消耗的道具；无法直接使用",
-		"price":0
+		"price":0,
+		"prop_rank":1,
+		"prop_price":1000000
 	},
 	"40403":{
 		"id":403,
