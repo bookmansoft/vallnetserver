@@ -25,8 +25,8 @@ class openapi extends facade.Control
         return [
             //#region 与Vallnet相关的生态接口
             [`/info`, 'getInfo'],                                     //获取游戏基本描述信息
-            [`/${remoteSetup.type}/order/confirm`, 'confirmOrder'],   //订单完成回调接口
-            [`/${remoteSetup.type}/order/add`, 'addOrder'],           //游戏服务端通过该接口接收钱包提交的订单，只缓存但不做进一步处理。钱包以此方式提交订单后，会进一步执行订单支付流程
+            [`/${remoteSetup.type}/order/confirm`, 'confirmOrder'],   //订单完成回调接口。此接口目前在逻辑服上直接配置, 实际运用中要单独配置且支持 LB + Stick 
+            [`/${remoteSetup.type}/order/add`, 'addOrder'],           //游戏服务端通过该接口接收钱包提交的订单，只缓存但不做进一步处理。钱包以此方式提交订单后，会进一步执行订单支付流程。此接口目前在逻辑服上直接配置, 实际运用中要单独配置且支持 LB + Stick 
             //#endregion
             ['/auth360', 'auth360'],                                  //模拟 360 网关下发签名集
             ['/test/ping', 'ping'],                                   //PING测试接口
@@ -88,7 +88,19 @@ class openapi extends facade.Control
 
             let pUser = this.core.GetObject(EntityType.User, user.uid, IndexType.Foreign);
             if(!pUser) {
-                return {code: -1};
+                //如果用户不存在，接下来为该认证信息创建对应的新用户
+                let profile = await this.core.control['authgg'].getProfile({openid: user.uid});
+                profile.acaddr = user.addr;
+                pUser = await this.core.GetMapping(EntityType.User).Create('百晓生', 'authgg.Chick', profile.unionid, true);
+                if (!!pUser) {
+                    Object.keys(profile).map(key=>{
+                        pUser.baseMgr.info.SetRecord(key, profile[key]);
+                    });
+                    await this.core.notifyEvent('user.afterRegister', {user:pUser});
+                    this.core.notifyEvent('user.newAttr', {user: pUser, attr:[{type:'uid', value:pUser.id}, {type:'name', value:pUser.name}]});
+                } else {
+                    return {code: -1};
+                }
             }
             
             let order = this.core.GetObject(EntityType.BuyLog, params.sn, IndexType.Domain);
