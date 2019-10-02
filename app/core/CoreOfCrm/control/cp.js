@@ -149,6 +149,24 @@ class cp extends facade.Control {
     }
 
     /**
+     * 查询账户中对应指定CP的推广地址
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async getGuiderAddress(user, params) {
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('token.user', [
+            params.items.cid,
+            user.account,
+        ]);
+
+        if(ret.code == 0) {
+            return { code: 0, data: ret.result.data.addr};
+        } else {
+            return { code: ret.code};
+        }
+    }
+
+    /**
      * 查询并返回CP对象
      * @param {*} user 
      * @param {*} objData 

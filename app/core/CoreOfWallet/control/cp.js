@@ -111,7 +111,66 @@ class cp extends facade.Control
      */
     async UserToken(user, params) {
         let pack = await this.core.service.gamegoldHelper.getUserToken(user, params.cid);
+        let gd = user.baseMgr.info.getAttr('guider');
+        if(!!gd) {
+            gd = gd.split(',');
+            if(Date.now()/1000 - praseInt(gd[1]) < 3600*24*14) {
+                this.core.service.gamegoldHelper.execute('order.getGuider', [
+                    pack.addr,
+                ]).then(ret=>{
+                    if(ret.code == 0 && !ret.result) { //查询成功，指定地址没有设置推广员
+                        this.core.service.gamegoldHelper.execute('order.setGuider', [
+                            gd[0],
+                            params.cid,
+                            pack.addr,
+                        ]);
+                    }
+                });
+            } 
+        }
         return {code: 0, data: pack};
+    }
+
+    /**
+     * 记录师徒关系
+     * @param {*} user 
+     * @param {*} params 
+     */
+    async setGuider(user, params) {
+        if(!!params.cid) { //产品二维码引导而来
+            let cpObj = this.core.GetObject(EntityType.blockgame, params.cid, IndexType.Domain);
+            if(!!cpObj) { 
+                let pack = await this.core.service.gamegoldHelper.getUserToken(user, params.cid);
+                pack.cpurl = cpObj.orm.cpurl;
+
+                this.core.service.gamegoldHelper.execute('order.getGuider', [
+                    pack.addr,
+                ]).then(ret=>{
+                    if(ret.code == 0 && !ret.result) { //查询成功，指定地址没有设置推广员
+                        this.core.service.gamegoldHelper.execute('order.setGuider', [
+                            params.src,
+                            params.cid,
+                            pack.addr,
+                        ]);
+                    }
+                });
+
+                return { code: 0, data: pack};
+            } else {
+                return { code: -1};
+            }
+        } else { //平台二维码引导而来
+            let gd = user.baseMgr.info.getAttr('guider');
+            if(!!gd) {
+                gd = gd.split(',');
+                if(Date.now()/1000 - praseInt(gd[1]) > 3600*24*14) {
+                    user.baseMgr.info.setAttr('guider', `${params.src},${(Date.now()/1000)|0}`);
+                } 
+            } else {
+                user.baseMgr.info.setAttr('guider', `${params.src},${(Date.now()/1000)|0}`);
+            }
+            return { code: 0};
+        }
     }
 
     /**
