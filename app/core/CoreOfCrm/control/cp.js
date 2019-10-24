@@ -148,14 +148,57 @@ class cp extends facade.Control {
         }
     }
 
+    async queryGuider(user, params) {
+        let dt = {};
+
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('order.queryGuider', [
+            params.items.gaddr,
+        ]);
+
+        if(ret.code == 0) {
+            dt.users = ret.result;
+
+            ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.record', [
+                5,
+                null,
+                0,
+                [['addr', params.items.gaddr], ['@sum','price']]
+            ]);
+
+            if(ret.code == 0) {
+                dt.amount = ret.result.price;
+                return { code: 0, data: dt};
+            }
+        }
+
+        return { code: ret.code};
+    }
+
     /**
-     * 查询账户中对应指定CP的推广地址
-     * @param {*} user 
-     * @param {*} params 
+     * 查询媒体分润记录
      */
+    async queryAds(user, params) {
+        //构造查询条件
+        let paramArray = [['page', params.currentPage||1]];
+
+        let ret = await this.core.service.RemoteNode.conn(user.cid).execute('stock.record', [
+            5,
+            params.cid,
+            0,
+            paramArray,
+        ]);
+
+        let $data = { list: ret.result.list, pagination: { "total": ret.result.count, "pageSize": 10, "current": ret.result.cur } };
+        $data.total = ret.result.page;
+        $data.page = ret.result.cur;
+
+        return {code:0, data: $data};        
+    }
+
     async getGuiderAddress(user, params) {
+        let cid = params.items.cid || user.cid; //如果调用时没有指定CP编码，就以推广员的终端授权编码作为默认编码
         let ret = await this.core.service.RemoteNode.conn(user.cid).execute('token.user', [
-            params.items.cid,
+            cid,
             user.account,
         ]);
 

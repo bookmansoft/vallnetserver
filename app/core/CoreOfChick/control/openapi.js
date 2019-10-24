@@ -165,7 +165,7 @@ class openapi extends facade.Control
                 return {code:ReturnCode.illegalData};
             }
 
-            let pUser = this.core.GetObject(EntityType.User, ret.data.domainid, IndexType.Domain);
+            let pUser = this.core.GetObject(EntityType.User, order.getAttr('domainid'), IndexType.Domain);
             if(!pUser) {
                 return {code: ReturnCode.userIllegal};
             }
