@@ -66,17 +66,17 @@ async function handle(data){
                 price: item.gold,
             };
         }
-
-        data.user.baseMgr.info.SetStatus(UserStatus.online, false);
-
-        //刷新资源、体力值
-        data.user.baseMgr.vip.checkActivityStatus();//检测并修复排名活动的相关信息
-        data.user.baseMgr.item.AutoAddAP();//	刷新体力
-
-        data.user.notify({type: NotifyType.actions, info: data.user.getActionMgr().getInfo()});
     } catch(e){
         console.error(e);
     }
+
+    data.user.baseMgr.info.SetStatus(UserStatus.online, false);
+
+    //刷新资源、体力值
+    data.user.baseMgr.vip.checkActivityStatus();//检测并修复排名活动的相关信息
+    data.user.baseMgr.item.AutoAddAP();//	刷新体力
+
+    data.user.notify({type: NotifyType.actions, info: data.user.getActionMgr().getInfo()});
 }
 
 module.exports.handle = handle;

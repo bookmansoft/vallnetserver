@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS `m_player` (
 
 -- 导出  过程 gamegold-chick-ios-1.survive 结构
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `survive`(IN `time` VARCHAR(50), OUT `r1` FLOAT, OUT `r3` FLOAT, OUT `r7` FLOAT)
+CREATE DEFINER=`sa`@`localhost` PROCEDURE `survive`(IN `time` VARCHAR(50), OUT `r1` FLOAT, OUT `r3` FLOAT, OUT `r7` FLOAT)
 BEGIN 
   declare a int; 
   declare b1 int; 

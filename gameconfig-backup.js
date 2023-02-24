@@ -61,15 +61,6 @@ let masterConfig = [
 ];
 
 /**
- * 缓存服务器连接信息
- */
-let redis = {
-    "host": "127.0.0.1",
-    "port": 6379,
-    "opts": {}
-};
-
-/**
  * 特约核心节点连接信息
  */
 let vallnet = {
@@ -157,7 +148,6 @@ let config = {
                 "PoolMax": 500,             //最大数据库并发连接
                 "game_secret": "",
                 "game_name": "游戏云",
-                "redis": redis,
                 "mysql": sqlOfWallet,
                 "node": vallnet,
                 "wechat": wechat,

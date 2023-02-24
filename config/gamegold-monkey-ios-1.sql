@@ -10,11 +10,11 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- 导出 gamegold-chick-ios-1 的数据库结构
-CREATE DATABASE IF NOT EXISTS `gamegold-chick-ios-1` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `gamegold-chick-ios-1`;
+-- 导出 gamegold-monkey-ios-1 的数据库结构
+CREATE DATABASE IF NOT EXISTS `gamegold-monkey-ios-1` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `gamegold-monkey-ios-1`;
 
--- 导出  表 gamegold-chick-ios-1.activity 结构
+-- 导出  表 gamegold-monkey-ios-1.activity 结构
 CREATE TABLE IF NOT EXISTS `activity` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `lastTime` varchar(50) DEFAULT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `activity` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-chick-ios-1.ally_news 结构
+-- 导出  表 gamegold-monkey-ios-1.ally_news 结构
 CREATE TABLE IF NOT EXISTS `ally_news` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `aid` int(11) DEFAULT '0',
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `ally_news` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-chick-ios-1.ally_object 结构
+-- 导出  表 gamegold-monkey-ios-1.ally_object 结构
 CREATE TABLE IF NOT EXISTS `ally_object` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `experience` int(11) DEFAULT '0',
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `ally_object` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-chick-ios-1.buylogs 结构
+-- 导出  表 gamegold-monkey-ios-1.buylogs 结构
 CREATE TABLE IF NOT EXISTS `buylogs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `trade_no` varchar(128) NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `buylogs` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-chick-ios-1.login 结构
+-- 导出  表 gamegold-monkey-ios-1.login 结构
 CREATE TABLE IF NOT EXISTS `login` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) DEFAULT NULL,
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `login` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-chick-ios-1.mails 结构
+-- 导出  表 gamegold-monkey-ios-1.mails 结构
 CREATE TABLE IF NOT EXISTS `mails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `src` varchar(100) DEFAULT NULL,
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `mails` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-chick-ios-1.migrations 结构
+-- 导出  表 gamegold-monkey-ios-1.migrations 结构
 CREATE TABLE IF NOT EXISTS `migrations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
 -- 数据导出被取消选择。
 
 
--- 导出  表 gamegold-chick-ios-1.m_player 结构
+-- 导出  表 gamegold-monkey-ios-1.m_player 结构
 CREATE TABLE IF NOT EXISTS `m_player` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain` varchar(50) DEFAULT 'official',
@@ -160,9 +160,9 @@ CREATE TABLE IF NOT EXISTS `m_player` (
 -- 数据导出被取消选择。
 
 
--- 导出  过程 gamegold-chick-ios-1.survive 结构
+-- 导出  过程 gamegold-monkey-ios-1.survive 结构
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `survive`(IN `time` VARCHAR(50), OUT `r1` FLOAT, OUT `r3` FLOAT, OUT `r7` FLOAT)
+CREATE DEFINER=`sa`@`localhost` PROCEDURE `survive`(IN `time` VARCHAR(50), OUT `r1` FLOAT, OUT `r3` FLOAT, OUT `r7` FLOAT)
 BEGIN 
   declare a int; 
   declare b1 int; 
@@ -186,7 +186,7 @@ END//
 DELIMITER ;
 
 
--- 导出  表 gamegold-chick-ios-1.system 结构
+-- 导出  表 gamegold-monkey-ios-1.system 结构
 CREATE TABLE IF NOT EXISTS `system` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `activity` varchar(500) DEFAULT NULL,
