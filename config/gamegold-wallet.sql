@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS `our_block_games` (
   INDEX `sort` (`sort`) USING BTREE,
   INDEX `game_title` (`game_title`) USING BTREE,
   INDEX `category_id` (`category_id`) USING BTREE,
-  INDEX `provider_id` (`provider_id`) USING BTREE,
+  INDEX `provider_id` (`provider_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 数据导出被取消选择。

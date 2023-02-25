@@ -83,35 +83,33 @@ async function handle(sofar) {
                     sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.GetRecord('phone'), usr.id], IndexType.Phone);
                 }
 
-                //检测并生成专用账户、专用地址
-                if(!usr.baseMgr.info.getAttr('acid')) {
-                    try {
-                        let rt = await sofar.facade.service.gamegoldHelper.execute('account.create', [{name: usr.account}]);
-                        if(rt.code == 0) {
-                            usr.baseMgr.info.setAttr('acaddr', rt.result.receiveAddress);
-                            usr.baseMgr.info.setAttr('acid', rt.result.accountIndex); //记录用户帐户索引值备查
-
-                            accountIndex
-                        }
-                    } catch(e) {
-                        console.log(`create account ${usr.domainId}`, e.message);
-                    }
-                }
+                //TODO 暂时封存:检测并生成专用账户、专用地址
+                // if(!usr.baseMgr.info.getAttr('acid')) {
+                //     try {
+                //         let rt = await sofar.facade.service.gamegoldHelper.execute('account.create', [{name: usr.account}]);
+                //         if(rt.code == 0) {
+                //             usr.baseMgr.info.setAttr('acaddr', rt.result.receiveAddress);
+                //             usr.baseMgr.info.setAttr('acid', rt.result.accountIndex); //记录用户帐户索引值备查
+                //         }
+                //     } catch(e) {
+                //         console.log(`create account ${usr.domainId}`, e.message);
+                //     }
+                // }
 
                 sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token);   //添加一定有效期的令牌类型的反向索引
                 if(!!usr.baseMgr.info.GetRecord('phone')) {
                     sofar.facade.GetMapping(EntityType.User).addId([usr.baseMgr.info.GetRecord('phone'), usr.id], IndexType.Phone);
                 }
 
-                //查询账户余额, 这样用户登录后就能看到最新的余额信息
-                let rt = await sofar.facade.service.gamegoldHelper.execute('balance.all', [usr.account]);
-                if(!!rt && rt.code == 0) {
-                    usr.baseMgr.info.setAttr('confirmed', rt.result.confirmed);
-                    usr.baseMgr.info.setAttr('unconfirmed', rt.result.unconfirmed - rt.result.locked);
-                } else {
+                //TODO 暂时封存:查询账户余额, 这样用户登录后就能看到最新的余额信息
+                // let rt = await sofar.facade.service.gamegoldHelper.execute('balance.all', [usr.account]);
+                // if(!!rt && rt.code == 0) {
+                //     usr.baseMgr.info.setAttr('confirmed', rt.result.confirmed);
+                //     usr.baseMgr.info.setAttr('unconfirmed', rt.result.unconfirmed - rt.result.locked);
+                // } else {
                     usr.baseMgr.info.setAttr('confirmed', 0);
                     usr.baseMgr.info.setAttr('unconfirmed', 0);
-                }
+                // }
 
                 //触发并实时执行"登录后"事件, 注意将事件触发置于此可以：1. 用户持密码或两节点登录时触发 2. 用户持 token 登录时不触发，避免了频繁触发带来的性能问题
                 sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});
