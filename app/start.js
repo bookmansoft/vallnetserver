@@ -21,7 +21,7 @@ NotifyType.notify = 10002;      //主网通告，例如用来通知一笔待支�
 
 //#region 解析环境变量
 let env = !!process.env.sys ? JSON.parse(process.env.sys) : {
-    serverType: "Wallet",       //待调测的服务器类型
+    serverType: "CoreOfWallet", //待调测的服务器类型
     serverId: 1,                //待调测的服务器编号
     portal: true                //指示该服务器兼任门户（索引服务器），注意索引服务器只能有一台，因此该配置信息具有排他性
 };  
@@ -46,23 +46,11 @@ if(env.constructor == String) {
         });
 
         //开启索引服务
-        await facade.boot({serverType: "Index", serverId: 1});
+        await facade.boot({serverType: "CoreOfIndex", serverId: 1});
 
         //开启Auth服务
-        await facade.boot({serverType: "Auth", serverId: 1});
+        await facade.boot({serverType: "CoreOfAuth", serverId: 1});
     }
-
-    //加载CRM管理节点
-    //await facade.boot({serverType: "CRM",serverId: 1});
-
-    //加载 模拟游戏节点
-    //await facade.boot({serverType: "Simu", serverId: 1});
-
-    //加载 游戏-Chick 节点
-    await facade.boot({serverType: "Chick", serverId: 1});
-    
-    //加载 游戏-Monkey 节点
-    //await facade.boot({serverType: "Monkey", serverId: 1});
 
     //加载钱包节点
     await facade.boot(env);

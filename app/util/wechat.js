@@ -9,7 +9,7 @@ let https = require('https')
 
 let cache = require('./memcache')
 let {md5, sha1} = require('./encrtyto')
-let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
+let wechatcfg = facade.ini.servers["CoreOfIndex"][1].wechat; //全节点配置信息
 
 // 收到微信支付的回调通知，进行相应的处理
 // 支付完成后，微信会把相关支付结果及用户信息通过数据流的形式发送给商户，商户需要接收处理，并按文档规范返回应答，注意：

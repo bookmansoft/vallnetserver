@@ -10,7 +10,7 @@
 
 let facade = require('gamecloud')
 let CoreOfBase = facade.CoreOfBase
-let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
+let remoteSetup = facade.ini.servers["CoreOfIndex"][1].node; //全节点配置信息
 let {EntityType, TableField} = facade.const
 
 //#region 新增自定义数据表类型(大于100)

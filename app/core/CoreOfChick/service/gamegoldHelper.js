@@ -6,7 +6,7 @@ class gamegoldHelper extends gh
 {
     constructor(core) {
         super(core);
-        this.remote.setup(facade.ini.servers["Chick"][1].node);
+        this.remote.setup(facade.ini.servers["CoreOfChickIOS"][1].node);
     }
 
     /**

@@ -4,7 +4,7 @@ let uuid = require('uuid');
 let facade = require('gamecloud')
 let toolkit = require('gamerpc')
 let { stringify, hashInt } = require('../../../util/stringUtil');
-let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
+let remoteSetup = facade.ini.servers["CoreOfIndex"][1].node; //全节点配置信息
  
 /**
  * 游戏商接入百谷王生态平台必须实现的交互接口

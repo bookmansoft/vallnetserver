@@ -1,7 +1,7 @@
 let facade = require('gamecloud')
 let { ReturnCode, EntityType, TableField } = facade.const
 let fetch = require("node-fetch");
-let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
+let remoteSetup = facade.ini.servers["CoreOfIndex"][1].node; //全节点配置信息
 let uuid = require('uuid');
 let Indicator = facade.tools.Indicator;
 

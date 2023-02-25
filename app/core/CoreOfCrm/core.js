@@ -14,7 +14,7 @@ class CoreOfCrm extends CoreOfLogic
      * @returns {Array}
      */
     static get mapping() {
-        this.$mapping = ['CRM'];
+        this.$mapping = ['CoreOfCrm'];
         return this.$mapping;
     }
 }

@@ -14,7 +14,7 @@ class CoreOfWallet extends CoreOfLogic
      * @returns {Array}
      */
     static get mapping() {
-        this.$mapping = ['Wallet'];
+        this.$mapping = ['CoreOfWallet'];
         return this.$mapping;
     }
 }

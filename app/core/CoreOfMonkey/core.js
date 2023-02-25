@@ -14,7 +14,7 @@ class CoreOfMonkey extends CoreOfLogic
      * @returns {Array}
      */
     static get mapping() {
-        this.$mapping = ['Monkey'];
+        this.$mapping = ['CoreOfMonkeyIOS'];
         return this.$mapping;
     }
 }

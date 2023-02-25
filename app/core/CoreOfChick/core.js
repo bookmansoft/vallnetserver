@@ -14,7 +14,7 @@ class CoreOfChick extends CoreOfLogic
      * @returns {Array}
      */
     static get mapping() {
-        this.$mapping = ['Chick'];
+        this.$mapping = ['CoreOfChickIOS'];
         return this.$mapping;
     }
 }

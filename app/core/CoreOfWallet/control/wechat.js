@@ -2,7 +2,7 @@ const fs = require('fs')
 const axios = require('axios')
 let facade = require('gamecloud')
 let {EntityType} = facade.const;
-let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
+let wechatcfg = facade.ini.servers["CoreOfIndex"][1].wechat; //全节点配置信息
 
 /**
  * 微信接口

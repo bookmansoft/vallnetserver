@@ -139,7 +139,7 @@ let wechat = {
  */
 let config = {
     "servers":{
-        "Index":{
+        "CoreOfIndex":{
             "1":{
                 "debug": true,              //！！！上线时一定要修改为false！！！ 本地测试模式
                 "UrlHead": "http",          //协议选择: http/https
@@ -171,7 +171,7 @@ let config = {
                 }
             }
         },
-        "Image":{ //新增图片服务器
+        "CoreOfImage":{ //新增图片服务器
             "1":{
                 "mysql": sqlOfWallet,
                 "webserver": {
@@ -181,7 +181,7 @@ let config = {
                 }
             }
         },
-        "Auth":{ //新增验证服务器
+        "CoreOfAuth":{ //新增验证服务器
             "1":{
                 "webserver": {
                     "mapping": "127.0.0.1",
@@ -190,7 +190,7 @@ let config = {
                 }
             }
         },
-        "Wallet":{
+        "CoreOfWallet":{
             "1":{
                 "mysql": sqlOfWallet,
                 "webserver": {
@@ -200,7 +200,7 @@ let config = {
                 }
             }
         },
-        "CRM":{ //新增CRM管理服务器
+        "CoreOfCRM":{ //新增CRM管理服务器
             "1":{
                 "mysql": sqlOfCRM,
                 "sms": smsConfig,
@@ -213,7 +213,7 @@ let config = {
                 }
             }
         },
-        "Chick":{ //新增游戏服务器
+        "CoreOfChickIOS":{ //新增游戏服务器
             "1":{
                 "mysql": sqlOfChick,
                 "webserver": {

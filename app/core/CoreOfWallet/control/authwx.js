@@ -1,5 +1,5 @@
 let facade = require('gamecloud')
-let wechatcfg = facade.ini.servers["Index"][1].wechat; //全节点配置信息
+let wechatcfg = facade.ini.servers["CoreOfIndex"][1].wechat; //全节点配置信息
 
 /**
  * 自定义认证接口 - 微信专用

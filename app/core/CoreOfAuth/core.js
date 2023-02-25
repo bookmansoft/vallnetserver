@@ -20,7 +20,7 @@ class CoreOfAuth extends facade.CoreOfBase
      * @returns {Array}
      */
     static get mapping() {
-        this.$mapping = ['Auth'];
+        this.$mapping = ['CoreOfAuth'];
         return this.$mapping;
     }
 
@@ -35,7 +35,7 @@ class CoreOfAuth extends facade.CoreOfBase
         this.StartSocketServer(app);
         
         //对内建立以索引服务器为中心的星状通讯链路
-        this.initConnector("Index", 1);
+        this.initConnector("CoreOfIndex", 1);
     }
 }
 

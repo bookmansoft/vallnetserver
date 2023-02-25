@@ -190,7 +190,7 @@ facade.boot({
 ```js
 let config = {
     "servers":{
-        "Index":{
+        "CoreOfIndex":{
             "1":{
                 "UrlHead": "https",  //将协议由 http 修改为 https
             }

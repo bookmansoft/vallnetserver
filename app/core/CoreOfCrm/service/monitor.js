@@ -8,7 +8,7 @@ class monitor extends gamegoldHelper
 {
     constructor(core) {
         super(core);
-        this.remote.setup(facade.ini.servers["Index"][1].node);
+        this.remote.setup(facade.ini.servers["CoreOfIndex"][1].node);
     }
 }
 

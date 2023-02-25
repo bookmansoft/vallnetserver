@@ -33,7 +33,7 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}\\app\\start.js",
-            "env": {"sys": "{\"serverType\": \"Wallet\", \"serverId\": 1, \"portal\": \"true\"}"},
+            "env": {"sys": "{\"serverType\": \"CoreOfChickIOS\", \"serverId\": 1, \"portal\": \"true\"}"},
         }
     ]
 }

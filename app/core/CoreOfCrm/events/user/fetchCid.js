@@ -3,7 +3,7 @@
  */
 let facade = require('gamecloud')
 let {EntityType, IndexType} = facade.const
-let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
+let remoteSetup = facade.ini.servers["CoreOfIndex"][1].node; //全节点配置信息
 
 async function handle(data){ //用户数据发生变化
     if(this.options.master.includes(data.user.openid)) {

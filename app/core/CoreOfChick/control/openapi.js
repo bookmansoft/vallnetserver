@@ -3,7 +3,7 @@ let facade = require('gamecloud')
 let BonusObject = facade.Util.BonusObject
 let toolkit = require('gamerpc')
 let { stringify } = require('../../../util/stringUtil');
-let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
+let remoteSetup = facade.ini.servers["CoreOfIndex"][1].node; //全节点配置信息
 let {em_Condition_Type, ReturnCode, EntityType, IndexType} = facade.const
 
 /**

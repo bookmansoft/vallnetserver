@@ -1,6 +1,6 @@
 let facade = require('gamecloud');
 let {EntityType, IndexType} = facade.const;
-let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
+let remoteSetup = facade.ini.servers["CoreOfIndex"][1].node; //全节点配置信息
 
 /**
  * Created by liub on 2019.06.05

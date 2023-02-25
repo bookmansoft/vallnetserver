@@ -10,7 +10,7 @@ class CoreOfSimulation extends facade.CoreOfBase
      * @returns {Array}
      */
     static get mapping() {
-        this.$mapping = ['Simu'];
+        this.$mapping = ['CoreOfSimu'];
         return this.$mapping;
     }
 

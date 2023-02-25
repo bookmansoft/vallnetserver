@@ -42,11 +42,11 @@ class login extends facade.Control
     async getFriendList(user, objData){
         try{
             let result = {code:ReturnCode.Success, data:{list:{}}};
-            let list = await user.getTxFriendMgr().refreshSocialNetwork();
-            if(list.length > 0){
+            result.data.list = await user.getTxFriendMgr().refreshSocialNetwork();
+            if(result.data.list.length > 0){
                 //分包下行
                 let pac = [];
-                for(let idx in list){
+                for(let idx in result.data.list){
                     pac.push(result.data.list[idx]);
                     if(pac.length >= 20){
                         user.notify({type: NotifyType.friends, info: pac});

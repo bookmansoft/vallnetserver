@@ -1,7 +1,7 @@
 let facade = require('gamecloud');
 let {EntityType, IndexType, ReturnCode} = facade.const
 const toolkit = require('gamerpc')
-let remoteSetup = facade.ini.servers["Index"][1].node; //全节点配置信息
+let remoteSetup = facade.ini.servers["CoreOfIndex"][1].node; //全节点配置信息
 
 class RemoteNode extends facade.Service
 {
