@@ -130,10 +130,10 @@ class authOfNew extends facade.Control
 ```js
 it('验证自定义验签流程', async () => {
     remote.setUserInfo({
-        domain:         'wx',               //登录域
+        domain:         'CoreOfWallet',     //登录域
         openid:         'wx.111',           //验证域
-        openkey:        '111'               //和 openid 配套的用于验证目的的字段
-        auth:           {},
+        openkey:        '111'               //雁阵码，和 openid 配套使用
+        auth:           {},                 //认证信息集合
     });
 });
 ```
