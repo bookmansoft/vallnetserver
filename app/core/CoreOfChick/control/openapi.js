@@ -91,7 +91,7 @@ class openapi extends facade.Control
                 //如果用户不存在，接下来为该认证信息创建对应的新用户
                 let profile = await this.core.control['authgg'].getProfile({openid: user.uid});
                 profile.acaddr = user.addr;
-                pUser = await this.core.GetMapping(EntityType.User).Create('百晓生', 'authgg.Chick', profile.unionid, true);
+                pUser = await this.core.GetMapping(EntityType.User).Create('百晓生', 'CoreOfChickIOS', profile.unionid, true);
                 if (!!pUser) {
                     Object.keys(profile).map(key=>{
                         pUser.baseMgr.info.SetRecord(key, profile[key]);
