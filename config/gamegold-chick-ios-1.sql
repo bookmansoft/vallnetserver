@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `m_player` (
   `pet` varchar(500) DEFAULT NULL,
   `txinfo` varchar(500) DEFAULT NULL,
   `txBule` varchar(500) DEFAULT NULL,
-  `item` varchar(500) DEFAULT NULL,
+  `item` varchar(2000) DEFAULT NULL,
   `vip` varchar(500) DEFAULT NULL,
   `friend` varchar(500) DEFAULT NULL,
   `task` varchar(500) DEFAULT NULL,
