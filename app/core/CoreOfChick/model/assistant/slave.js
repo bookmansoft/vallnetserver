@@ -92,12 +92,12 @@ class slave extends baseMgr {
                 // 	"id":401,
                 // 	"desc":"鞭打奴隶消耗的道具；无法直接使用",
                 // },
-                let ret = this.parent.baseMgr.item.useItem(401, 1);
+                let ret = this.parent.core.control.item.useItem(this.parent, {id: 40401, num: 1});
                 if(ret.code == ReturnCode.Success){
                     let fri = this.parent.getTxFriendMgr().getFriend(openid);
                     // 奴隶收到鞭挞推送消息
                     if(!!fri) {
-                        let desc = facade.config.slaveMsg["lash"].desc;
+                        let desc = this.parent.core.fileMap.slaveMsg["lash"].desc;
                         this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
 					}
                 }
@@ -129,7 +129,7 @@ class slave extends baseMgr {
                     let fri = this.parent.getTxFriendMgr().getFriend(openid);
                     // 奴隶主收到赎身推送消息
                     if(!!fri) {
-                        let desc = facade.config.slaveMsg["ransom"].desc;
+                        let desc = this.parent.core.fileMap.slaveMsg["ransom"].desc;
                         this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
                     }
                     return ReturnCode.Success;
@@ -156,12 +156,12 @@ class slave extends baseMgr {
             // 	"id":402,
             // 	"desc":"给奴隶加餐消耗的道具；无法直接使用",
             // },
-            let ret = this.parent.baseMgr.item.useItem(402, 1);
+            let ret = this.parent.baseMgr.item.useItem(40402, 1);
             if(ret.code == ReturnCode.Success){
                 let fri = this.parent.getTxFriendMgr().getFriend(openid);
                 // 奴隶收到喂食推送消息
                 if(!!fri) {
-                    let desc = facade.config.slaveMsg["food"].desc;
+                    let desc = this.parent.core.fileMap.slaveMsg["food"].desc;
                     desc = desc.replace("&slave",decodeURIComponent(fri.name));
                     this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
                 }
@@ -189,7 +189,7 @@ class slave extends baseMgr {
             let fri = this.parent.getTxFriendMgr().getFriend(openid);
             // 奴隶主收到报复推送消息
             if(!!fri) {
-                let desc = facade.config.slaveMsg["avange"].desc;
+                let desc = this.parent.core.fileMap.slaveMsg["avange"].desc;
                 this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
             }
             return ReturnCode.Success;
@@ -212,7 +212,7 @@ class slave extends baseMgr {
             // 	"id":403,
             // 	"desc":"报复奴隶主消耗的道具；无法直接使用",
             // },
-            let ret = this.parent.baseMgr.item.useItem(403, 1);
+            let ret = this.parent.baseMgr.item.useItem(40403, 1);
             if(ret.code == ReturnCode.Success){
                 if(this.parent.getActionMgr().GetExecuteNum(this.parent.core.const.ActionExecuteType.slaveFlattery)<=3){
                     mst.time -= this.parent.core.fileMap.DataConst.slave.catchTime * 0.05;
