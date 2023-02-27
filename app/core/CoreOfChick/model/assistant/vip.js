@@ -213,17 +213,18 @@ class vip extends baseMgr
         let cur = new Date();
         if(this.valid){ //处于VIP有效期内
             //一周七天，每天的奖励都不一样
-            ret.data.bonus = this.parent.core.fileMap.vip.bonus[cur.getDay()].bonus;        //VIP每日奖励
+            ret.data.bonus = JSON.parse(JSON.stringify(this.parent.core.fileMap.vip.bonus[cur.getDay()].bonus));        //VIP每日奖励
         }
         else{
             //一周七天，每天的奖励都不一样
-            ret.data.bonus = this.parent.core.fileMap.vip.bonus[cur.getDay()].normalBonus;  //普通玩家每日奖励
+            ret.data.bonus = JSON.parse(JSON.stringify(this.parent.core.fileMap.vip.bonus[cur.getDay()].normalBonus));  //普通玩家每日奖励
         }
 
         let day = cur.toLocaleDateString();
         if(day != this.v.refresh){
             this.v.refresh = day;
             this.dirty = true;
+            //注意这里可能改变传入对象的数值，因为存在随机道具的玩法，因此上面没有直接传入配置表对象
             this.parent.getBonus(ret.data.bonus);
         }
         else{

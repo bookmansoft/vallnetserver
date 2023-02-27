@@ -1,6 +1,6 @@
 {
   "name": "vallnet_wallet_server",
-  "version": "5.1.5",
+  "version": "6.0.0",
   "author": "bookmansoft <ceo@920.cc>",
   "contributors": [
     "bookmansoft <ceo@920.cc>"
@@ -44,7 +44,6 @@
   "homepage": "https://github.com/bookmansoft/vallnetserver#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^6.2.0",
     "should": "^11.2.1"
   },
   "optionalDependencies": {
@@ -55,8 +54,8 @@
   "dependencies": {
     "axios": "^0.19.0",
     "crc-32": "^1.0.2",
-    "gamecloud": "^5.1.5",
-    "gamerpc": "^5.0.2",
+    "gamecloud": "^6.0.0",
+    "gamerpc": "^7.0.0",
     "nodemailer": "^6.2.1",
     "qr-image": "^3.2.0",
     "request": "^2.88.0",
