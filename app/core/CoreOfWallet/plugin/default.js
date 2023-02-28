@@ -213,13 +213,13 @@ async function startAfter(core) {
     //#region 远程调用相关的示例代码
 
     //调用索引服上的服务接口
-    //await core.remoteService(`dailyactivity.getList`, ['authwx.Wallet', 'alice']);
+    //await core.remoteService(`dailyactivity.getList`, ['CoreOfWallet', 'authwx.alice']);
 
     //向用户发送一封邮件, 注意该调用没有指定目标逻辑节点，而是提供了 domain/openid 信息，由索引服进行适配
     // await core.remoteCall('routeCommand', {
     //     func: 'userNotify',
-    //     domain: 'authwx.Wallet',
-    //     openid: '021Pkmz4023vzD1111z40e6wz40Pkmzg',
+    //     domain: 'CoreOfWallet',
+    //     openid: 'authwx.021Pkmz4023vzD1111z40e6wz40Pkmzg',
     //     msg: {
     //         type: NotifyType.DailyActivityInstantBonus,
     //         info: {}

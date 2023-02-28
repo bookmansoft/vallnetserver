@@ -29,16 +29,15 @@ class authwx extends facade.Control
      *  目前鸡小德并未启用链上道具功能，只是在钻石层面与主网做了衔接
      */
     async check(oemInfo) {
-        // if(this.core.service.gamegoldHelper.cid == oemInfo.cid && toolkit.verifyData({
-        //     data: {
-        //         cid: oemInfo.cid,
-        //         uid: oemInfo.uid,
-        //         time: oemInfo.time,
-        //         addr: oemInfo.addr,
-        //         pubkey: oemInfo.pubkey,
-        //     },
-        //     sig: oemInfo.sig
-        // })) {
+        if(this.core.options.serverType == oemInfo.auth.cid && toolkit.verifyData({
+            data: {
+                cid: oemInfo.auth.cid,
+                time: oemInfo.auth.time,
+                addr: oemInfo.auth.addr,
+                pubkey: oemInfo.auth.pubkey,
+            },
+            sig: oemInfo.auth.sig
+        })) {
             let profile = {
                 "openid": oemInfo.openid,
                 "nickname": "百晓生",
@@ -49,7 +48,7 @@ class authwx extends facade.Control
                 "country": "CN",
                 "headimgurl": "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI5Qw1flMibKSBwZ8MXSmod0YsC7d9fornhL9KibjGvrsia0AMoZaXHicHf0ibNNIw0hoic69282UjFOwBg/132",
                 "unionid": oemInfo.openid,
-                "acaddr": oemInfo.addr || '',
+                "acaddr": oemInfo.auth.addr || '',
             };
 
             //取链上道具，即使失败也不影响登录
@@ -89,9 +88,9 @@ class authwx extends facade.Control
                 current_prop_count: 0,
                 props: props, //链上道具列表, 如果为 null 表示网络异常、确权失败，如果为 [] 才表示无链上道具
             }
-        // } else {
-        //     throw new Error('auth error');
-        // }
+        } else {
+            throw new Error('auth error');
+        }
     }
 
     /**

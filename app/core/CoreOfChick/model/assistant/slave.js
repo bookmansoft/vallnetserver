@@ -80,24 +80,22 @@ class slave extends baseMgr {
         this.CheckStatus();
         if(!this.parent.getTxFriendMgr().getFriend(openid)){ //没有发现指定好友
             return [ReturnCode.socialNoEnemyToAttack, 0];
-        }
-        else{
+        } else {
             let slv = this.getSlave(openid);
-            if(!slv){//当前对象未被抓捕
+            if(!slv) {//当前对象未被抓捕
                 return [ReturnCode.socialSimUserNotExist, 0];
-            }
-            else{
+            } else {
                 //检测并扣除所需道具
                 // "401":{
                 // 	"id":401,
                 // 	"desc":"鞭打奴隶消耗的道具；无法直接使用",
                 // },
-                let ret = this.parent.baseMgr.item.useItem(401, 1);
+                let ret = this.parent.core.control.item.useItem(this.parent, {id: 40401, num: 1});
                 if(ret.code == ReturnCode.Success){
                     let fri = this.parent.getTxFriendMgr().getFriend(openid);
                     // 奴隶收到鞭挞推送消息
                     if(!!fri) {
-                        let desc = facade.config.slaveMsg["lash"].desc;
+                        let desc = this.parent.core.fileMap.slaveMsg["lash"].desc;
                         this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
 					}
                 }
@@ -114,12 +112,12 @@ class slave extends baseMgr {
         this.CheckStatus();
 
         if(!this.parent.getTxFriendMgr().getFriend(openid)){ //没有发现指定好友
-            return ReturnCode.socialNoEnemyToAttack;
+            return [ReturnCode.socialNoEnemyToAttack];
         }
         else{
             let master = this.getMaster(openid);
             if(!master){ 
-                return ReturnCode.socialSimUserNotExist;
+                return [ReturnCode.socialSimUserNotExist];
             }            
             else{
                 //检测并扣除所需道具
@@ -129,13 +127,12 @@ class slave extends baseMgr {
                     let fri = this.parent.getTxFriendMgr().getFriend(openid);
                     // 奴隶主收到赎身推送消息
                     if(!!fri) {
-                        let desc = facade.config.slaveMsg["ransom"].desc;
+                        let desc = this.parent.core.fileMap.slaveMsg["ransom"].desc;
                         this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
                     }
-                    return ReturnCode.Success;
-                }
-                else{
-                    return ReturnCode.DiamondNotEnough;
+                    return [ReturnCode.Success];
+                } else {
+                    return [ReturnCode.DiamondNotEnough];
                 }
             }
         }
@@ -145,28 +142,30 @@ class slave extends baseMgr {
         this.CheckStatus();
 
         if(!this.parent.getTxFriendMgr().getFriend(openid)){ //没有发现指定好友
-            return ReturnCode.socialNoEnemyToAttack;
-        }
-        else if(!this.findSlave(openid)){ //当前对象未被抓捕
-            return ReturnCode.socialSimUserNotExist;
-        }
-        else{
-            //检测并扣除所需道具
-            // "402":{
-            // 	"id":402,
-            // 	"desc":"给奴隶加餐消耗的道具；无法直接使用",
-            // },
-            let ret = this.parent.baseMgr.item.useItem(402, 1);
-            if(ret.code == ReturnCode.Success){
-                let fri = this.parent.getTxFriendMgr().getFriend(openid);
-                // 奴隶收到喂食推送消息
-                if(!!fri) {
-                    let desc = facade.config.slaveMsg["food"].desc;
-                    desc = desc.replace("&slave",decodeURIComponent(fri.name));
-                    this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
+            return [ReturnCode.socialNoEnemyToAttack];
+        } else {
+            let slv = this.getSlave(openid);
+            if(!slv) {//当前对象未被抓捕
+                return [ReturnCode.socialSimUserNotExist];
+            } else {
+                //检测并扣除所需道具
+                // "402":{
+                // 	"id":402,
+                // 	"desc":"给奴隶加餐消耗的道具；无法直接使用",
+                // },
+                let ret = this.parent.core.control.item.useItem(this.parent, {id: 40402, num: 1});
+                if(ret.code == ReturnCode.Success){
+                    let fri = this.parent.getTxFriendMgr().getFriend(openid);
+                    // 奴隶收到喂食推送消息
+                    if(!!fri) {
+                        let desc = this.parent.core.fileMap.slaveMsg["food"].desc;
+                        desc = desc.replace("&slave",decodeURIComponent(fri.name));
+                        this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
+					}
                 }
+
+                return [ret.code, slv.time];
             }
-            return ret.code;
         }
     }
 
@@ -174,58 +173,64 @@ class slave extends baseMgr {
         this.CheckStatus();
 
         if(!this.parent.getTxFriendMgr().getFriend(openid)){ //没有发现指定好友
-            return ReturnCode.socialNoEnemyToAttack;
-        }
-        else if(!this.findMaster(openid)){
-            return ReturnCode.socialSimUserNotExist;
-        }
-        else{
-            //检测并扣除所需道具
-            // "403":{
-            // 	"id":403,
-            // 	"desc":"报复奴隶主消耗的道具；无法直接使用",
-            // },
-            // let ret = this.parent.baseMgr.item.useItem(403, 1);
-            let fri = this.parent.getTxFriendMgr().getFriend(openid);
-            // 奴隶主收到报复推送消息
-            if(!!fri) {
-                let desc = facade.config.slaveMsg["avange"].desc;
-                this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
+            return [ReturnCode.socialNoEnemyToAttack];
+        } else {
+            let mst = this.getMaster(openid);
+            if(!mst) {//当前未被抓捕
+                return [ReturnCode.socialSimUserNotExist];
+            } else {
+                //检测并扣除所需道具
+                // "403":{
+                // 	"id":403,
+                // 	"desc":"报复奴隶主消耗的道具；无法直接使用",
+                // },
+                let ret = this.parent.core.control.item.useItem(this.parent, {id: 40403, num: 1});
+                if(ret.code == ReturnCode.Success){
+                    let fri = this.parent.getTxFriendMgr().getFriend(openid);
+                    // 奴隶主收到报复推送消息
+                    if(!!fri) {
+                        let desc = this.parent.core.fileMap.slaveMsg["avange"].desc;
+                        desc = desc.replace("&slave",decodeURIComponent(fri.name));
+                        this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
+                    }
+                }
+                
+                return [ret.code, slv.time];
             }
-            return ReturnCode.Success;
         }
     }
+
     flattery(openid){
         this.CheckStatus();
 
         if(!this.parent.getTxFriendMgr().getFriend(openid)){ //没有发现指定好友
-            return [ReturnCode.socialNoEnemyToAttack, 0];
-        }
-        else{
+            return [ReturnCode.socialNoEnemyToAttack];
+        } else {
             let mst = this.getMaster(openid);
-            if(!mst){
-                return [ReturnCode.socialSimUserNotExist, 0];
-            }
-
-            //检测并扣除所需道具
-            // "403":{
-            // 	"id":403,
-            // 	"desc":"报复奴隶主消耗的道具；无法直接使用",
-            // },
-            let ret = this.parent.baseMgr.item.useItem(403, 1);
-            if(ret.code == ReturnCode.Success){
-                if(this.parent.getActionMgr().GetExecuteNum(this.parent.core.const.ActionExecuteType.slaveFlattery)<=3){
-                    mst.time -= this.parent.core.fileMap.DataConst.slave.catchTime * 0.05;
+            if(!mst) {//当前未被抓捕
+                return [ReturnCode.socialSimUserNotExist];
+            } else {
+                //检测并扣除所需道具
+                // "403":{
+                // 	"id":403,
+                // 	"desc":"报复奴隶主消耗的道具；无法直接使用",
+                // },
+                let ret = this.parent.core.control.item.useItem(this.parent, {id: 40403, num: 1});
+                if(ret.code == ReturnCode.Success){
+                    if(this.parent.getActionMgr().GetExecuteNum(this.parent.core.const.ActionExecuteType.slaveFlattery)<=3){
+                        mst.time -= this.parent.core.fileMap.DataConst.slave.catchTime * 0.05;
+                    }
+                    this.CheckStatus();
+                    let fri = this.parent.getTxFriendMgr().getFriend(openid);
+                    // 奴隶主收到谄媚推送消息
+                    if(!!fri) {
+                        let desc = this.parent.core.fileMap.slaveMsg["flattery"].desc;
+                        this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
+                    }
                 }
-                this.CheckStatus();
-                let fri = this.parent.getTxFriendMgr().getFriend(openid);
-                // 奴隶主收到谄媚推送消息
-                if(!!fri) {
-                    let desc = this.parent.core.slaveMsg["flattery"].desc;
-                    this.parent.core.service.txApi.send_gamebar_msg(this.parent,openid,3,desc,"V1_AND_QZ_4.9.3_148_RDM_T");
-                }
+                
+                return [ret.code, mst.time - facade.util.now()];
             }
-            return [ret.code, mst.time - facade.util.now()];
         }
     }
     /**
@@ -419,7 +424,7 @@ class slave extends baseMgr {
     /**
      * 添加一个奴隶
      */
-    addSlave(openid){
+    addSlave(openid) {
         this.CheckStatus();
 
         let $find = false;
@@ -442,18 +447,6 @@ class slave extends baseMgr {
             this.parent.baseMgr.info.SetStatus(UserStatus.master); //修改奴隶主状态位
 
             return ReturnCode.Success;
-        }
-
-        let m = {
-            "type":3105,
-            "info":{
-                "src":"777.492",
-                "dst":"777.493",
-                "bonus":[
-                    {"type":"M","num":-1000},
-                    {"type":"I","id":22,"num":20}
-                ]
-            }
         }
     }
 
