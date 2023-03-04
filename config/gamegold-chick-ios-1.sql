@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `m_player` (
   `setting` varchar(500) DEFAULT NULL,
   `hisGateNo` int(11) DEFAULT '1',
   `role` int(11) DEFAULT '1001',
-  `info` varchar(500) DEFAULT NULL,
+  `info` varchar(1000) DEFAULT NULL,
   `pet` varchar(500) DEFAULT NULL,
   `txinfo` varchar(500) DEFAULT NULL,
   `txBule` varchar(500) DEFAULT NULL,

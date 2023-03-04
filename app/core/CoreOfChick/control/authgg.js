@@ -29,7 +29,7 @@ class authwx extends facade.Control
      *  目前鸡小德并未启用链上道具功能，只是在钻石层面与主网做了衔接
      */
     async check(oemInfo) {
-        if(this.core.service.gamegoldHelper.cid == oemInfo.auth.cid && toolkit.verifyData({
+        if(this.core.service.gamegoldHelper.cname == oemInfo.auth.cid && toolkit.verifyData({
             data: {
                 cid: oemInfo.auth.cid,
                 time: oemInfo.auth.time,

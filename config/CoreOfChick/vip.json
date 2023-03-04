@@ -26,8 +26,8 @@
       "normalBonus": [{"type":"I", "id":22, "num":20}]
     },
     "6": {
-      "bonus": [{"type":"D", "num":100}],
-      "normalBonus": [{"type":"D", "num":50}]
+      "bonus": [{"type":"GAS", "num":1000000},{"type":"NFT", "id":702, "num":1}],
+      "normalBonus": [{"type":"GAS", "num":500000},{"type":"NFT", "id":701, "num":1}]
     }
   },
   "skill": [

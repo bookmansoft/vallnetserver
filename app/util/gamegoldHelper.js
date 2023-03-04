@@ -42,6 +42,13 @@ class gamegoldHelper extends facade.Service
         return this.remote.getTerminalConfig().cpid;
     }
 
+    /**
+     * CP名称
+     */
+    get cname() {
+        return this.remote.getTerminalConfig().cpname;
+    }
+
     watch(cb, etype = '0') {
         this.remote.watch(cb, etype);
         return this;

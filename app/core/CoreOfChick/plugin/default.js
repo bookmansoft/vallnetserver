@@ -72,43 +72,35 @@ async function startAfter(core) {
     core.autoTaskMgr.addMonitor(new orderMonitor(), 10*1000);
 
     //兑换游戏金接口
-    core.RegisterResHandle('GG', async (user, bonus) => {
+    core.RegisterResHandle(core.const.ResType.GAS, async (user, bonus) => {
         console.log('exchange gamegold', bonus);
         let ret = await core.service.gamegoldHelper.execute('tx.send', [user.baseMgr.info.getAttr('acaddr'), bonus.num]);
         return ret;
     });
 
     //上链道具
-    core.RegisterResHandle('NFT', async (user, bonus) => {
+    core.RegisterResHandle(core.const.ResType.NFT, async (user, bonus) => {
         console.log('equipment record of NFT', bonus);
 
         //查询道具配置表
-        let bi = core.fileMap.itemdata[bonus.id];
-        if(!!bi) {
+        if(typeof bonus.type == 'string') {
+            bonus.type = core.const.ResType[bonus.type];
+        }
+        let bi = core.fileMap.itemdata[parseInt(bonus.type) + parseInt(bonus.id)];
+        if(!!bi && !!bi.oid) {
             let prop_price = bi.prop_price;
-            let rank = parseInt(bi.prop_rank);
-            if (rank == 1) {
-                rank = 0.05;
-            } else if (rank == 2) {
-                rank = 0.1;
-            } else if (rank == 3) {
-                rank = 0.2;
-            } else if (rank == 4) {
-                rank = 0.5;
-            } else if (rank == 5) {
-                rank = 0.8;
-            } else {
-                rank = 1;
-            }
-            prop_price = (prop_price*rank) | 0;
 
             //将道具上链
-            await core.service.gamegoldHelper.execute('prop.order', [
+            return core.service.gamegoldHelper.execute('prop.order', [
                 core.service.gamegoldHelper.cid, 
-                bonus.id,
+                bi.oid,
                 prop_price,
-                user.baseMgr.info.getAttr('acaddr')
-            ]);
+                user.baseMgr.info.getAttr('acaddr'),
+            ]).then(ret=>{
+                console.log(ret);
+            }).catch(e=>{
+                console.log(e);
+            });
         }
     });
 
