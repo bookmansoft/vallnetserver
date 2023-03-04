@@ -29,7 +29,7 @@ class authwx extends facade.Control
      *  目前鸡小德并未启用链上道具功能，只是在钻石层面与主网做了衔接
      */
     async check(oemInfo) {
-        if(this.core.options.serverType == oemInfo.auth.cid && toolkit.verifyData({
+        if(this.core.service.gamegoldHelper.cid == oemInfo.auth.cid && toolkit.verifyData({
             data: {
                 cid: oemInfo.auth.cid,
                 time: oemInfo.auth.time,
@@ -38,56 +38,7 @@ class authwx extends facade.Control
             },
             sig: oemInfo.auth.sig
         })) {
-            let profile = {
-                "openid": oemInfo.openid,
-                "nickname": "百晓生",
-                "sex": 1,
-                "language": "zh_CN",
-                "city": "Fuzhou",
-                "province": "Fujian",
-                "country": "CN",
-                "headimgurl": "http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTI5Qw1flMibKSBwZ8MXSmod0YsC7d9fornhL9KibjGvrsia0AMoZaXHicHf0ibNNIw0hoic69282UjFOwBg/132",
-                "unionid": oemInfo.openid,
-                "acaddr": oemInfo.auth.addr || '',
-            };
-
-            //取链上道具，即使失败也不影响登录
-            let props = [];
-            // try {
-            //     let retProps = await this.core.service.gamegoldHelper.execute('prop.remoteQuery', [[
-            //         ['size', -1],
-            //         ['pst', 9],
-            //         ['cid', this.core.service.gamegoldHelper.cid],
-            //         ['current.address',  profile.acaddr],
-            //     ]]);
-        
-            //     for (let item of retProps.result.list) {
-            //         props.push({
-            //             pid: item.pid,      //主网道具唯一标识
-            //             oid: item.oid,      //CP端模板标识
-            //             gold: item.gold,    //道具真实含金量
-            //         });
-            //     }
-            // } catch(e) {
-            //     console.log(e.message);
-            //     props = null;
-            // }
-    
-            return {
-                openid : profile.openid,
-                nickname: profile.nickname,
-                sex: profile.sex,
-                country: profile.country,
-                province: profile.province,
-                city: profile.city,
-                avatar_uri: profile.headimgurl || './static/img/icon/mine_no.png',
-                unionid: profile.unionid,
-                acaddr: profile.addr,
-                openkey: oemInfo.openkey,
-                prop_count: 0,
-                current_prop_count: 0,
-                props: props, //链上道具列表, 如果为 null 表示网络异常、确权失败，如果为 [] 才表示无链上道具
-            }
+            return this.getProfile(oemInfo);
         } else {
             throw new Error('auth error');
         }
@@ -108,7 +59,30 @@ class authwx extends facade.Control
             "country":"CN",
             "headimgurl":"./static/img/icon/mine_no.png",
             "unionid":oemInfo.openid,
+            "acaddr": oemInfo.auth.addr || '',
         }
+
+        //取链上道具，即使失败也不影响登录
+        let props = [];
+        // try {
+        //     let retProps = await this.core.service.gamegoldHelper.execute('prop.remoteQuery', [[
+        //         ['size', -1],
+        //         ['pst', 9],
+        //         ['cid', this.core.service.gamegoldHelper.cpid],
+        //         ['current.address',  profile.acaddr],
+        //     ]]);
+    
+        //     for (let item of retProps.result.list) {
+        //         props.push({
+        //             pid: item.pid,      //主网道具唯一标识
+        //             oid: item.oid,      //CP端模板标识
+        //             gold: item.gold,    //道具真实含金量
+        //         });
+        //     }
+        // } catch(e) {
+        //     console.log(e.message);
+        //     props = null;
+        // }
 
         //做统一的格式转换
         return {
@@ -118,10 +92,13 @@ class authwx extends facade.Control
             country: profile.country,
             province: profile.province,
             city: profile.city,
-            avatar_uri: profile.headimgurl,
+            avatar_uri: profile.headimgurl || './static/img/icon/mine_no.png',
+            unionid: profile.unionid,
+            acaddr: profile.acaddr,
+            openkey: oemInfo.openkey,
             prop_count: 0,
             current_prop_count: 0,
-            unionid: profile.unionid,                                               
+            props: props, //链上道具列表, 如果为 null 表示网络异常、确权失败，如果为 [] 才表示无链上道具
         }
     }
 }

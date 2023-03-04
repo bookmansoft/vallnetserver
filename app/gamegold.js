@@ -111,10 +111,6 @@ node.mempool.on('tx', addItem);
       console.log('prop/receive:', msg);
     });
 
-    wdb.on('balance.account.client', msg => {
-      console.log('balance.account.client', msg);
-    });
-
     wdb.on('balance.client', msg => {
       console.log('balance.client', msg);
     });

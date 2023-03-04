@@ -53,8 +53,9 @@ async function handle(sofar) {
                     //禁止多点登录
                     sofar.facade.notifyEvent('socket.userKick', {sid:usr.socket});
                 }
-            }
-            else if(!!unionid) {//新玩家注册
+                //刷新用户地址
+                usr.baseMgr.info.SetRecord('acaddr', sofar.msg.oemInfo.acaddr);
+            } else if(!!unionid) {//新玩家注册
                 let profile = await sofar.facade.control[auth].getProfile(sofar.msg.oemInfo);
                 usr = await sofar.facade.GetMapping(EntityType.User).Create(profile.nickname, sofar.msg.oemInfo.domain, unionid);
                 if (!!usr) {
