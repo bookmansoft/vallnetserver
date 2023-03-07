@@ -69,10 +69,10 @@ let vallnet = {
     head:   'http',               //远程服务器通讯协议，分为 http 和 https
     id:     'primary',            //默认访问的钱包编号
     apiKey: 'bookmansoft',        //远程服务器基本校验密码
-    hmacSalt: '',                 //远程服务器链码
     cid:    'xxxxxxxx-game-gold-root-xxxxxxxxxxxx', //授权节点编号，用于访问远程钱包时的认证
     token:  '',                   //授权节点令牌固定量，用于访问远程钱包时的认证
     structured: true,             //返回结构化的参数
+    cpname: 'CoreOfChickIOS',
 };
 
 /**
@@ -222,7 +222,7 @@ let config = {
                     "host": "127.0.0.1",
                     "port": 9201
                 },
-                node: vallnet,
+                "node": vallnet,
             }
         }
     }
