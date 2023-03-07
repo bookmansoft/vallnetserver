@@ -29,16 +29,18 @@ class authwx extends facade.Control
      *  目前鸡小德并未启用链上道具功能，只是在钻石层面与主网做了衔接
      */
     async check(oemInfo) {
-        if(this.core.service.gamegoldHelper.cname == oemInfo.auth.cid && toolkit.verifyData({
-            data: {
-                cid: oemInfo.auth.cid,
-                time: oemInfo.auth.time,
-                addr: oemInfo.auth.addr,
-                pubkey: oemInfo.auth.pubkey,
-            },
-            sig: oemInfo.auth.sig
-        })) {
-            return this.getProfile(oemInfo);
+        if(this.core.service.gamegoldHelper.cid == oemInfo.auth.cid) {
+            if(toolkit.verifyData({
+                data: {
+                    cid: oemInfo.auth.cid,
+                    time: oemInfo.auth.time,
+                    addr: oemInfo.auth.addr,
+                    pubkey: oemInfo.auth.pubkey,
+                },
+                sig: oemInfo.auth.sig
+            })) {
+                return this.getProfile(oemInfo);
+            }
         } else {
             throw new Error('auth error');
         }
@@ -64,25 +66,17 @@ class authwx extends facade.Control
 
         //取链上道具，即使失败也不影响登录
         let props = [];
-        // try {
-        //     let retProps = await this.core.service.gamegoldHelper.execute('prop.remoteQuery', [[
-        //         ['size', -1],
-        //         ['pst', 9],
-        //         ['cid', this.core.service.gamegoldHelper.cpid],
-        //         ['current.address',  profile.acaddr],
-        //     ]]);
-    
-        //     for (let item of retProps.result.list) {
-        //         props.push({
-        //             pid: item.pid,      //主网道具唯一标识
-        //             oid: item.oid,      //CP端模板标识
-        //             gold: item.gold,    //道具真实含金量
-        //         });
-        //     }
-        // } catch(e) {
-        //     console.log(e.message);
-        //     props = null;
-        // }
+        try {
+            let retProps = await this.core.service.gamegoldHelper.remote.get(`props/address/${profile.acaddr}`);
+        
+            //将来自主网的道具缓存下来
+            for (let item of retProps.result.list) {
+                props.push(item);
+            }
+        } catch(e) {
+            console.log(e.message);
+            props = [];
+        }
 
         //做统一的格式转换
         return {

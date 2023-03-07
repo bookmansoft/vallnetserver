@@ -74,6 +74,7 @@ async function startAfter(core) {
     //兑换游戏金接口
     core.RegisterResHandle(core.const.ResType.GAS, async (user, bonus) => {
         console.log('exchange gamegold', bonus);
+
         let ret = await core.service.gamegoldHelper.execute('tx.send', [user.baseMgr.info.getAttr('acaddr'), bonus.num]);
         return ret;
     });
@@ -82,25 +83,27 @@ async function startAfter(core) {
     core.RegisterResHandle(core.const.ResType.NFT, async (user, bonus) => {
         console.log('equipment record of NFT', bonus);
 
-        //查询道具配置表
+        //将字符串形式的奖励类型转为数字
         if(typeof bonus.type == 'string') {
             bonus.type = core.const.ResType[bonus.type];
         }
-        let bi = core.fileMap.itemdata[parseInt(bonus.type) + parseInt(bonus.id)];
-        if(!!bi && !!bi.oid) {
-            let prop_price = bi.prop_price;
 
-            //将道具上链
-            return core.service.gamegoldHelper.execute('prop.order', [
-                core.service.gamegoldHelper.cid, 
-                bi.oid,
-                prop_price,
-                user.baseMgr.info.getAttr('acaddr'),
-            ]).then(ret=>{
-                console.log(ret);
-            }).catch(e=>{
-                console.log(e);
-            });
+        //查询道具配置表
+        let xid = parseInt(bonus.type) + parseInt(bonus.id);
+        let bi = core.fileMap.itemdata[xid];
+        if(!!bi && !!bi.oid) {
+            let list = core.nftMap.get(bi.oid);
+            if(list.length > 0) { //转赠道具
+                let item = list.pop();
+                core.service.gamegoldHelper.execute('prop.send', [
+                    user.baseMgr.info.getAttr('acaddr'),
+                    item,
+                ]).then(ret=>{
+                    console.log(ret);
+                }).catch(e=>{
+                    console.log(e);
+                });
+            }
         }
     });
 

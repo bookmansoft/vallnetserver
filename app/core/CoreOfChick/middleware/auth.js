@@ -74,6 +74,12 @@ async function handle(sofar) {
             if (!!usr) {
                 usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌
                 usr.time = CommonFunc.now();                //记录标识令牌有效期的时间戳
+
+                if(!usr.vallnet) {
+                    usr.vallnet = {};
+                }
+                usr.vallnet.props = sofar.msg.oemInfo.props;//记录NFT列表
+                
                 sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token);   //添加一定有效期的令牌类型的反向索引
                 sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});//发送"登录后"事件
             }

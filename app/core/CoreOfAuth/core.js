@@ -29,7 +29,7 @@ class CoreOfAuth extends facade.CoreOfBase
      * @param {*} app 
      */
     async Start(app){
-        super.Start(app);
+        await super.Start(app);
 
         //对外开放RPC接口
         this.StartSocketServer(app);
