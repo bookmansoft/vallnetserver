@@ -41,35 +41,6 @@ async function handle(data){
         }
     }
 
-    try {
-        let retProps = await this.service.gamegoldHelper.execute('prop.remoteQuery', [[
-            ['size', -1],
-            ['pst', 9],
-            ['cid', this.service.gamegoldHelper.cid],
-            ['current.address', data.user.baseMgr.info.getAttr('acaddr')]
-        ]]);
-
-        //将来自主网的道具缓存下来
-        data.user.equipNet = {};
-        for (let item of retProps.result.list) {
-            /* item {
-                pid,
-                oid,
-                gold,
-             * }
-             */
-            let ptype = GetResType(item.oid);
-            data.user.equipNet[item.pid] = {
-                sn: item.pid,
-                type: ptype,
-                id: item.oid - ptype,
-                price: item.gold,
-            };
-        }
-    } catch(e){
-        console.error(e);
-    }
-
     data.user.baseMgr.info.SetStatus(UserStatus.online, false);
 
     //刷新资源、体力值

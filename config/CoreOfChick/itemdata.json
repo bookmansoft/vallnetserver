@@ -344,5 +344,25 @@
 		"type":"role",
 		"desc":"",
 		"price":0
+	},
+	"60701":{
+		"id":701,
+		"oid": "NFTI0001-0001-0001-0001-000000000000",
+		"prop_price": 1000000,
+		"name":"鹊翎",
+		"pic":"fenxiang_daoju_qy",
+		"type":"NFT",
+		"desc":"七夕预热活动道具，活动期间通过关卡掉落",
+		"price":0
+	},
+	"60702":{
+		"id":702,
+		"oid": "NFTI0001-0001-0001-0002-000000000000",
+		"prop_price": 1000000,
+		"name":"幸运卡牌",
+		"pic":"fenxiang_daoju_xingy",
+		"type":"NFT",
+		"desc":"酷跑大奖赛预热赛道具，预热期间通过关卡掉落",
+		"price":0
 	}
 }

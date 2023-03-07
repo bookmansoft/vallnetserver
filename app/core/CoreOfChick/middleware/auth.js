@@ -53,8 +53,9 @@ async function handle(sofar) {
                     //禁止多点登录
                     sofar.facade.notifyEvent('socket.userKick', {sid:usr.socket});
                 }
-            }
-            else if(!!unionid) {//新玩家注册
+                //刷新用户地址
+                usr.baseMgr.info.SetRecord('acaddr', sofar.msg.oemInfo.acaddr);
+            } else if(!!unionid) {//新玩家注册
                 let profile = await sofar.facade.control[auth].getProfile(sofar.msg.oemInfo);
                 usr = await sofar.facade.GetMapping(EntityType.User).Create(profile.nickname, sofar.msg.oemInfo.domain, unionid);
                 if (!!usr) {
@@ -73,6 +74,12 @@ async function handle(sofar) {
             if (!!usr) {
                 usr.sign = sofar.msg.oemInfo.token;         //记录登录令牌
                 usr.time = CommonFunc.now();                //记录标识令牌有效期的时间戳
+
+                if(!usr.vallnet) {
+                    usr.vallnet = {};
+                }
+                usr.vallnet.props = sofar.msg.oemInfo.props;//记录NFT列表
+                
                 sofar.facade.GetMapping(EntityType.User).addId([usr.sign, usr.id],IndexType.Token);   //添加一定有效期的令牌类型的反向索引
                 sofar.facade.notifyEvent('user.afterLogin', {user:usr, objData:sofar.msg});//发送"登录后"事件
             }

@@ -32,8 +32,8 @@ async function startAfter(core) {
     //Remoting 示例代码
     // setTimeout(()=>{
     //     core.remoteCall('userNotify', {
-    //         domain: 'authwx.Wallet',
-    //         openid: '021Pkmz4023vzD1111z40e6wz40Pkmzg',
+    //         domain: 'CoreOfWallet',
+    //         openid: 'authwx.021Pkmz4023vzD1111z40e6wz40Pkmzg',
     //         msg: { type: NotifyType.DailyActivityState, info: {} }
     //     }, null, {stype:'Wallet', sid:1});
     // }, 10000);

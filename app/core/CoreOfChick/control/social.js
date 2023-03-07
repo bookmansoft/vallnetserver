@@ -68,8 +68,7 @@ class social extends facade.Control
                             }
                         }
                     }
-                }
-                catch(e){
+                } catch(e) {
                     console.error(e);
 
                     $msg.info.code = ReturnCode.Error;
@@ -201,7 +200,7 @@ class social extends facade.Control
                 {
                     $msg.info.src = objData.openid;
                     $msg.info.dst = user.openid;
-                    $msg.info.code = user.baseMgr.slave.avenge(objData.openid);
+                    [$msg.info.code, ] = user.baseMgr.slave.avenge(objData.openid);
                     if($msg.info.code == ReturnCode.Success){
                         if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.slaveAvenge, 1, true)) {
                             //向好友发送消息
@@ -224,7 +223,7 @@ class social extends facade.Control
                     $msg.info.src = user.openid;
                     $msg.info.dst = objData.openid;
                     //检测是否能够实施此动作，目标用户是否是自己的奴隶
-                    $msg.info.code = user.baseMgr.slave.food(objData.openid);
+                    [$msg.info.code, ] = user.baseMgr.slave.food(objData.openid);
                     if($msg.info.code == ReturnCode.Success){
                         if(user.getActionMgr().Execute(this.core.const.ActionExecuteType.slaveFood, 1, true)) {
                             //向好友发送消息
@@ -279,7 +278,7 @@ class social extends facade.Control
                 { //检测并消耗赎身道具
                     $msg.info.src = objData.openid;
                     $msg.info.dst = user.openid;
-                    $msg.info.code = user.baseMgr.slave.ransom(objData.openid);
+                    [$msg.info.code, ] = user.baseMgr.slave.ransom(objData.openid);
                     if($msg.info.code == ReturnCode.Success){
                         //向好友发送消息
                         user.socialNotify($msg, objData.openid);
